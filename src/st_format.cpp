@@ -54,7 +54,7 @@ static void _fetch_prefix(_ST_PRIVATE::format_data_object &data)
     };
 }
 
-ST::format_spec fetch_next_format(_ST_PRIVATE::format_data_object &data)
+ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &data)
 {
     _fetch_prefix(data);
     ST_ASSERT(*data.m_format_str == '{', "Too many actual parameters for format string");
@@ -66,7 +66,7 @@ ST::format_spec fetch_next_format(_ST_PRIVATE::format_data_object &data)
 
         switch (*ptr) {
         case 0:
-            ST_ASSERT(0, "Unterminated format specifier.");
+            ST_ASSERT(false, "Unterminated format specifier");
             abort();
         case '}':
             // Done with format spec
@@ -132,7 +132,7 @@ ST::format_spec fetch_next_format(_ST_PRIVATE::format_data_object &data)
             break;
         }
         default:
-            ST_ASSERT(0, "Unexpected character in format string");
+            ST_ASSERT(false, "Unexpected character in format string");
             break;
         }
     }
@@ -316,7 +316,7 @@ static void _format_char(const ST::format_spec &format,
             _format_char(format, output, value); \
             break; \
         default: \
-            ST_ASSERT(0, "Unexpected digit class"); \
+            ST_ASSERT(false, "Unexpected digit class"); \
             break; \
         } \
     } \
@@ -344,7 +344,7 @@ static void _format_char(const ST::format_spec &format,
             _format_char(format, output, value); \
             break; \
         default: \
-            ST_ASSERT(0, "Unexpected digit class"); \
+            ST_ASSERT(false, "Unexpected digit class"); \
             break; \
         } \
     }
@@ -437,7 +437,7 @@ ST_FORMAT_TYPE(char)
         _format_char(format, output, value);
         break;
     default:
-        ST_ASSERT(0, "Unexpected digit class");
+        ST_ASSERT(false, "Unexpected digit class");
         break;
     }
 }
@@ -465,7 +465,7 @@ ST_FORMAT_TYPE(wchar_t)
         _format_char(format, output, value);
         break;
     default:
-        ST_ASSERT(0, "Unexpected digit class");
+        ST_ASSERT(false, "Unexpected digit class");
         break;
     }
 }

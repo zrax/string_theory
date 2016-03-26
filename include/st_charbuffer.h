@@ -82,7 +82,7 @@ namespace ST
 
 #ifdef ST_HAVE_RVALUE_MOVE
         buffer(buffer<char_T> &&move) ST_NOEXCEPT
-            : m_size(std::move(m_size))
+            : m_size(std::move(move.m_size))
         {
             _copy_buffer(m_data, move.m_data, sizeof(m_data));
             move.m_size = 0;

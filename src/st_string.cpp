@@ -490,8 +490,8 @@ ST::utf16_buffer ST::string::to_utf16() const
             bigch |= (*sp++ & 0x3F);
             bigch -= 0x10000;
 
-            *dp++ = 0xD800 | ((bigch >> 10) & 0x3FFF);
-            *dp++ = 0xDC00 | ((bigch      ) & 0x3FFF);
+            *dp++ = 0xD800 | ((bigch >> 10) & 0x3FF);
+            *dp++ = 0xDC00 | ((bigch      ) & 0x3FF);
         } else if ((*sp & 0xF0) == 0xE0) {
             bigch  = (*sp++ & 0x0F) << 12;
             bigch |= (*sp++ & 0x3F) << 6;
@@ -715,7 +715,7 @@ ST_ssize_t ST::string::find(const char *substr, case_sensitivity_t cs)
         size_t sublen = strlen(substr);
         const char *cp = c_str();
         const char *ep = cp + size();
-        while (cp + sublen < ep) {
+        while (cp + sublen <= ep) {
             if (strnicmp(cp, substr, sublen) == 0)
                 return cp - c_str();
             ++cp;

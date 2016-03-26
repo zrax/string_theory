@@ -37,7 +37,7 @@ namespace _ST_PRIVATE
     {
         ST::format_spec format = fetch_next_format(data);
         _ST_impl_format_data_handler(format, data.m_output, value);
-        return format(data, args...);
+        return _ST_PRIVATE::format(data, args...);
     }
 }
 

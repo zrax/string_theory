@@ -99,7 +99,12 @@ if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS)
         src/st_format.cpp
         src/st_stlformatter.cpp
     )
+    set(ST_HAVE_FORMAT TRUE)
 endif()
 
 add_library(string_theory
     ${ST_HEADERS} ${ST_SOURCES})
+
+enable_testing()
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
+add_subdirectory(test EXCLUDE_FROM_ALL)
