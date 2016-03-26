@@ -16,6 +16,10 @@
 cmake_minimum_required(VERSION 2.8)
 project(string_theory)
 
+set(ST_MAJOR_VERSION 1)
+set(ST_MINOR_VERSION 0)
+set(ST_VERSION ${ST_MAJOR_VERSION}.${ST_MINOR_VERSION})
+
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_COMPILER_ID}" MATCHES ".*Clang")
     set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
 
@@ -102,9 +106,53 @@ if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS)
     set(ST_HAVE_FORMAT TRUE)
 endif()
 
-add_library(string_theory
-    ${ST_HEADERS} ${ST_SOURCES})
+set(ST_INSTALL_LIB_DIR "lib" CACHE PATH "Path to install shared libraries")
+set(ST_INSTALL_INCLUDE_DIR "include" CACHE PATH "Path to install headers")
+set(ST_INSTALL_CMAKE_DIR "lib/cmake" CACHE PATH "Path to install CMake files")
+
+foreach(path LIB INCLUDE CMAKE)
+    set(var ST_INSTALL_${path}_DIR)
+    if(NOT IS_ABSOLUTE "${${var}}")
+        set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
+    endif()
+endforeach()
+
+add_library(string_theory SHARED
+            ${ST_HEADERS} ${ST_SOURCES})
+
+set_target_properties(string_theory PROPERTIES
+    VERSION ${ST_VERSION}
+    SOVERSION ${ST_MAJOR_VERSION}
+)
+
+install(TARGETS string_theory
+        EXPORT string_theory-targets
+        LIBRARY DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT shlib
+)
+install(FILES ${ST_HEADERS}
+        DESTINATION "${ST_INSTALL_INCLUDE_DIR}/string_theory" COMPONENT dev)
+
+export(TARGETS string_theory
+       FILE "${PROJECT_BINARY_DIR}/string_theory-targets.cmake")
+export(PACKAGE string_theory)
+
+file(RELATIVE_PATH REL_INCLUDE_DIR "${ST_INSTALL_CMAKE_DIR}"
+     "${ST_INSTALL_INCLUDE_DIR}")
+set(ST_CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
+configure_file(cmake/string_theory-config.cmake.in
+               "${PROJECT_BINARY_DIR}/string_theory-config.cmake" @ONLY)
+set(ST_CONF_INCLUDE_DIRS "\${STRING_THEORY_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+configure_file(cmake/string_theory-config.cmake.in
+               "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/string_theory-config.cmake" @ONLY)
+configure_file(cmake/string_theory-config-version.cmake.in
+               "${PROJECT_BINARY_DIR}/string_theory-config-version.cmake" @ONLY)
+
+install(FILES
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/string_theory-config.cmake"
+        "${PROJECT_BINARY_DIR}/string_theory-config-version.cmake"
+        DESTINATION "${ST_INSTALL_CMAKE_DIR}" COMPONENT dev)
+install(EXPORT string_theory-targets
+        DESTINATION "${ST_INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 enable_testing()
-add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 add_subdirectory(test EXCLUDE_FROM_ALL)
