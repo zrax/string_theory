@@ -1,0 +1,80 @@
+/*  This file is part of string_theory.
+
+    string_theory is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    string_theory is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with string_theory.  If not, see <http://www.gnu.org/licenses/>.  */
+
+#ifndef _ST_CONFIG_H
+#define _ST_CONFIG_H
+
+#cmakedefine ST_HAVE_NOEXCEPT
+#cmakedefine ST_HAVE_OVERRIDE
+#cmakedefine ST_HAVE_STATIC_ASSERT
+#cmakedefine ST_HAVE_RVALUE_MOVE
+#cmakedefine ST_HAVE_CHAR_TYPES
+#cmakedefine ST_HAVE_INT64
+#cmakedefine ST_HAVE_DELETED_FUNC
+#cmakedefine ST_HAVE_VARARG_TEMPLATE
+#cmakedefine ST_HAVE_TYPE_TRAITS
+
+#ifdef ST_HAVE_NOEXCEPT
+#   define ST_NOEXCEPT noexcept
+#else
+#   define ST_NOEXCEPT throw()
+#endif
+
+#ifdef ST_HAVE_OVERRIDE
+#   define ST_OVERRIDE override
+#else
+#   define ST_OVERRIDE
+#endif
+
+#ifdef ST_HAVE_STATIC_ASSERT
+#   define ST_STATIC_ASSERT(x, msg) static_assert((x), msg);
+#else
+#   define ST_STATIC_ASSERT(x, msg)
+#endif
+
+#ifndef ST_HAVE_CHAR_TYPES
+    typedef unsigned short  char16_t;
+    typedef unsigned int    char32_t;
+#endif
+
+#ifdef ST_HAVE_DELETED_FUNC
+#   define ST_DISABLE_COPY(name) \
+        name(const name &) = delete; \
+        void operator=(const name &) = delete;
+#else
+#   define ST_DISABLE_COPY(name) \
+    private: \
+        name(const name &) { } \
+        void operator=(const name &) { }
+#endif
+
+#define ST_WCHAR_BYTES          (@ST_WCHAR_BYTES@)
+#define ST_SIZET_BYTES          (@ST_SIZET_BYTES@)
+#define ST_SHORT_STRING_LEN     (16)
+#define ST_STACK_STRING_LEN     (256)
+
+// MSVC doesn't provide ssize_t
+#ifdef _MSC_VER
+#   ifdef _WIN64
+        typedef __int64 ST_ssize_t;
+#   else
+        typedef int ST_ssize_t;
+#   endif
+#else
+#   include <sys/types.h>
+    typedef ssize_t ST_ssize_t;
+#endif
+
+#endif // _ST_CONFIG_H
