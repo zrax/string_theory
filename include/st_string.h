@@ -44,7 +44,7 @@ namespace ST
         substitute_invalid
     };
 
-    class string
+    class ST_EXPORT string
     {
     public:
         static const string null;
@@ -502,7 +502,7 @@ namespace ST
         static string fill(size_t count, char c);
     };
 
-    struct hash
+    struct ST_EXPORT hash
     {
         size_t operator()(const string &str) const ST_NOEXCEPT;
 
@@ -514,7 +514,7 @@ namespace ST
         }
     };
 
-    struct hash_i : public hash
+    struct ST_EXPORT hash_i : public hash
     {
     protected:
         unsigned char fetch_char(const string &str, size_t index)
@@ -524,7 +524,7 @@ namespace ST
         }
     };
 
-    struct less_i
+    struct ST_EXPORT less_i
     {
         bool operator()(const string &left, const string &right)
             const ST_NOEXCEPT
@@ -533,7 +533,7 @@ namespace ST
         }
     };
 
-    struct equal_i
+    struct ST_EXPORT equal_i
     {
         bool operator()(const string &left, const string &right)
         const ST_NOEXCEPT
@@ -543,16 +543,16 @@ namespace ST
     };
 }
 
-extern ST::string operator+(const ST::string &left, const ST::string &right);
-extern ST::string operator+(const ST::string &left, const char *right);
-extern ST::string operator+(const char *left, const ST::string &right);
+ST_EXPORT ST::string operator+(const ST::string &left, const ST::string &right);
+ST_EXPORT ST::string operator+(const ST::string &left, const char *right);
+ST_EXPORT ST::string operator+(const char *left, const ST::string &right);
 
-inline ST::string operator+(const ST::string &left, const wchar_t *right)
+ST_EXPORT inline ST::string operator+(const ST::string &left, const wchar_t *right)
 {
     return operator+(left, ST::string(right));
 }
 
-inline ST::string operator+(const wchar_t *left, const ST::string &right)
+ST_EXPORT inline ST::string operator+(const wchar_t *left, const ST::string &right)
 {
     return operator+(ST::string(left), right);
 }

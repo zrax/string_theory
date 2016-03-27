@@ -20,11 +20,11 @@
 #include <string>
 #include <complex>
 
-ST_DECL_FORMAT_TYPE(const std::string &);
-ST_DECL_FORMAT_TYPE(const std::wstring &);
+ST_DECL_FORMAT_TYPE_EXPORT(const std::string &);
+ST_DECL_FORMAT_TYPE_EXPORT(const std::wstring &);
 
 template <typename value_T>
-ST_FORMAT_TYPE(const std::complex<value_T> &)
+ST_EXPORT ST_FORMAT_TYPE(const std::complex<value_T> &)
 {
     ST_FORMAT_FORWARD(value.real());
     output.append_char('+');

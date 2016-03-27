@@ -20,7 +20,7 @@
 
 namespace ST
 {
-    class string_stream
+    class ST_EXPORT string_stream
     {
         ST_DISABLE_COPY(string_stream)
 
@@ -36,13 +36,13 @@ namespace ST
 #ifdef ST_HAVE_RVALUE_MOVE
         string_stream(string_stream &&move) ST_NOEXCEPT
         {
-            _copy_buffer(m_stack, move.m_stack, sizeof(m_stack));
+            _ST_PRIVATE::_copy_buffer(m_stack, move.m_stack, sizeof(m_stack));
             move.m_alloc = 0;
         }
 
         string_stream &operator=(string_stream &&move) ST_NOEXCEPT
         {
-            _copy_buffer(m_stack, move.m_stack, sizeof(m_stack));
+            _ST_PRIVATE::_copy_buffer(m_stack, move.m_stack, sizeof(m_stack));
             m_alloc = move.m_alloc;
             m_size = move.m_size;
             move.m_alloc = 0;

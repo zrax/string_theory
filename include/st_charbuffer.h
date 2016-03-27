@@ -23,18 +23,21 @@
 #  include <utility>    // For std::move
 #endif
 
-namespace ST
+namespace _ST_PRIVATE
 {
     // Avoid including <cstring> in this header...
-    extern void _zero_buffer(void *buffer, size_t size);
-    extern void _fill_buffer(void *buffer, int ch, size_t count);
-    extern void _copy_buffer(void *dest, const void *src, size_t size);
+    ST_EXPORT void _zero_buffer(void *buffer, size_t size);
+    ST_EXPORT void _fill_buffer(void *buffer, int ch, size_t count);
+    ST_EXPORT void _copy_buffer(void *dest, const void *src, size_t size);
+}
 
+namespace ST
+{
     template<typename char_T>
-    class buffer
+    class ST_EXPORT buffer
     {
     private:
-        struct _sref
+        struct ST_EXPORT _sref
         {
             unsigned int m_refs;
             const char_T *m_data;
@@ -69,13 +72,13 @@ namespace ST
         buffer() ST_NOEXCEPT
             : m_size()
         {
-            _zero_buffer(m_data, sizeof(m_data));
+            _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
         }
 
         buffer(const buffer<char_T> &copy) ST_NOEXCEPT
             : m_size(copy.m_size)
         {
-            _copy_buffer(m_data, copy.m_data, sizeof(m_data));
+            _ST_PRIVATE::_copy_buffer(m_data, copy.m_data, sizeof(m_data));
             if (is_reffed())
                 m_ref->add_ref();
         }
@@ -84,7 +87,7 @@ namespace ST
         buffer(buffer<char_T> &&move) ST_NOEXCEPT
             : m_size(std::move(move.m_size))
         {
-            _copy_buffer(m_data, move.m_data, sizeof(m_data));
+            _ST_PRIVATE::_copy_buffer(m_data, move.m_data, sizeof(m_data));
             move.m_size = 0;
         }
 #endif
@@ -92,9 +95,9 @@ namespace ST
         buffer(const char_T *data, size_t size)
             : m_size(size)
         {
-            _zero_buffer(m_data, sizeof(m_data));
+            _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
             char_T *copy_data = is_reffed() ? new char_T[size + 1] : m_data;
-            _copy_buffer(copy_data, data, size * sizeof(char_T));
+            _ST_PRIVATE::_copy_buffer(copy_data, data, size * sizeof(char_T));
             copy_data[size] = 0;
 
             if (is_reffed())
@@ -114,7 +117,7 @@ namespace ST
             if (is_reffed())
                 m_ref->dec_ref();
 
-            _copy_buffer(m_data, copy.m_data, sizeof(m_data));
+            _ST_PRIVATE::_copy_buffer(m_data, copy.m_data, sizeof(m_data));
             m_size = copy.m_size;
             return *this;
         }
@@ -125,7 +128,7 @@ namespace ST
             if (is_reffed())
                 m_ref->dec_ref();
 
-            _copy_buffer(m_data, move.m_data, sizeof(m_data));
+            _ST_PRIVATE::_copy_buffer(m_data, move.m_data, sizeof(m_data));
             m_size = std::move(move.m_size);
             move.m_size = 0;
             return *this;

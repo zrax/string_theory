@@ -16,6 +16,8 @@
 #ifndef _ST_ASSERT_H
 #define _ST_ASSERT_H
 
+#include "st_config.h"
+
 #include <functional>
 
 namespace ST
@@ -23,15 +25,19 @@ namespace ST
     typedef std::function<void (const char *condition_str,
                                 const char *filename, int line,
                                 const char *message)> assert_handler_t;
-    extern assert_handler_t _assert_handler;
 
-    extern void set_assert_handler(assert_handler_t handler);
+    ST_EXPORT void set_assert_handler(assert_handler_t handler);
+}
+
+namespace _ST_PRIVATE
+{
+    ST_EXPORT extern ST::assert_handler_t _assert_handler;
 }
 
 #define ST_ASSERT(condition, message) \
     do { \
-        if (!(condition) && ST::_assert_handler) \
-            ST::_assert_handler(#condition, __FILE__, __LINE__, message); \
+        if (!(condition) && _ST_PRIVATE::_assert_handler) \
+            _ST_PRIVATE::_assert_handler(#condition, __FILE__, __LINE__, message); \
     } while (0)
 
 #endif

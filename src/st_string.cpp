@@ -834,7 +834,7 @@ ST::string ST::string::substr(ST_ssize_t start, size_t count) const
 
     string sub;
     char *sub_data = sub.m_buffer.create_writable_buffer(count);
-    ST::_copy_buffer(sub_data, c_str() + start, count);
+    _ST_PRIVATE::_copy_buffer(sub_data, c_str() + start, count);
     sub_data[count] = 0;
 
     return sub;
@@ -955,7 +955,7 @@ ST::string ST::string::fill(size_t count, char c)
 {
     char_buffer result;
     char *data = result.create_writable_buffer(count);
-    ST::_fill_buffer(data, c, count);
+    _ST_PRIVATE::_fill_buffer(data, c, count);
     data[count] = 0;
     return result;
 }
@@ -985,8 +985,8 @@ ST::string operator+(const ST::string &left, const ST::string &right)
 {
     ST::char_buffer cat;
     char *catp = cat.create_writable_buffer(left.size() + right.size());
-    ST::_copy_buffer(catp, left.c_str(), left.size());
-    ST::_copy_buffer(catp + left.size(), right.c_str(), right.size());
+    _ST_PRIVATE::_copy_buffer(catp, left.c_str(), left.size());
+    _ST_PRIVATE::_copy_buffer(catp + left.size(), right.c_str(), right.size());
     catp[cat.size()] = 0;
 
     return ST::string(cat, ST::assume_valid);
@@ -997,8 +997,8 @@ ST::string operator+(const ST::string &left, const char *right)
     ST::char_buffer cat;
     size_t rsize = strlen(right);
     char *catp = cat.create_writable_buffer(left.size() + rsize);
-    ST::_copy_buffer(catp, left.c_str(), left.size());
-    ST::_copy_buffer(catp + left.size(), right, rsize);
+    _ST_PRIVATE::_copy_buffer(catp, left.c_str(), left.size());
+    _ST_PRIVATE::_copy_buffer(catp + left.size(), right, rsize);
     catp[cat.size()] = 0;
 
     return cat;
@@ -1009,8 +1009,8 @@ ST::string operator+(const char *left, const ST::string &right)
     ST::char_buffer cat;
     size_t lsize = strlen(left);
     char *catp = cat.create_writable_buffer(lsize + right.size());
-    ST::_copy_buffer(catp, left, lsize);
-    ST::_copy_buffer(catp + lsize, right.c_str(), right.size());
+    _ST_PRIVATE::_copy_buffer(catp, left, lsize);
+    _ST_PRIVATE::_copy_buffer(catp + lsize, right.c_str(), right.size());
     catp[cat.size()] = 0;
 
     return cat;

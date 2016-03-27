@@ -73,6 +73,8 @@ if(NOT ST_SIZET_BYTES)
     endif()
 endif()
 
+add_definitions(-DST_BUILD_EXPORTS)
+
 configure_file("${PROJECT_SOURCE_DIR}/include/st_config.h.in"
                "${PROJECT_BINARY_DIR}/include/st_config.h")
 include_directories("${PROJECT_BINARY_DIR}/include")
@@ -106,6 +108,7 @@ if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS)
     set(ST_HAVE_FORMAT TRUE)
 endif()
 
+set(ST_INSTALL_BIN_DIR "bin" CACHE PATH "Path to install DLLs on Windows")
 set(ST_INSTALL_LIB_DIR "lib" CACHE PATH "Path to install shared libraries")
 set(ST_INSTALL_INCLUDE_DIR "include" CACHE PATH "Path to install headers")
 set(ST_INSTALL_CMAKE_DIR "lib/cmake" CACHE PATH "Path to install CMake files")
@@ -117,7 +120,14 @@ foreach(path LIB INCLUDE CMAKE)
     endif()
 endforeach()
 
-add_library(string_theory SHARED
+option(ST_BUILD_STATIC "Build string_theory as a static library" OFF)
+if(ST_BUILD_STATIC)
+    set(ST_LIB_TYPE STATIC)
+else()
+    set(ST_LIB_TYPE SHARED)
+endif()
+
+add_library(string_theory ${ST_LIB_TYPE}
             ${ST_HEADERS} ${ST_SOURCES})
 
 set_target_properties(string_theory PROPERTIES
@@ -127,7 +137,9 @@ set_target_properties(string_theory PROPERTIES
 
 install(TARGETS string_theory
         EXPORT string_theory-targets
+        RUNTIME DESTINATION "${ST_INSTALL_BIN_DIR}" COMPONENT shlib
         LIBRARY DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT shlib
+        ARCHIVE DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT shlib
 )
 install(FILES ${ST_HEADERS}
         DESTINATION "${ST_INSTALL_INCLUDE_DIR}/string_theory" COMPONENT dev)

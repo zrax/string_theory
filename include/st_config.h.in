@@ -77,4 +77,14 @@
     typedef ssize_t ST_ssize_t;
 #endif
 
+#ifdef WIN32
+#   ifdef ST_BUILD_EXPORTS
+#       define ST_EXPORT __declspec(dllexport)
+#   else
+#       define ST_EXPORT __declspec(dllimport)
+#   endif
+#else
+#   define ST_EXPORT
+#endif
+
 #endif // _ST_CONFIG_H
