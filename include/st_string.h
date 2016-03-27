@@ -316,6 +316,8 @@ namespace ST
         string &operator+=(const char *cstr);
         string &operator+=(const wchar_t *wstr);
 
+        string &operator+=(const string &other);
+
         static inline string from_utf8(const char *utf8,
                                        size_t size = ST_AUTO_SIZE,
                                        utf_validation_t validation = assert_validity)

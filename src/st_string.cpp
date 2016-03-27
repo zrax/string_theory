@@ -225,6 +225,12 @@ ST::string &ST::string::operator+=(const wchar_t *wstr)
     return *this;
 }
 
+ST::string &ST::string::operator+=(const ST::string &other)
+{
+    set(*this + other);
+    return *this;
+}
+
 void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                                      utf_validation_t validation)
 {
