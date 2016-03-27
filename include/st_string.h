@@ -393,6 +393,8 @@ namespace ST
         uint64_t to_uint64(int base = 0) const ST_NOEXCEPT;
 #endif
 
+        bool to_bool() const ST_NOEXCEPT;
+
         int compare(const string &str, case_sensitivity_t cs = case_sensitive)
             const ST_NOEXCEPT;
         int compare(const char *str, case_sensitivity_t cs = case_sensitive)

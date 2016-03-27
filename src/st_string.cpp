@@ -662,6 +662,15 @@ uint64_t ST::string::to_uint64(int base) const ST_NOEXCEPT
 }
 #endif
 
+bool ST::string::to_bool() const ST_NOEXCEPT
+{
+    if (compare_i("true") == 0)
+        return true;
+    else if (compare_i("false") == 0)
+        return false;
+    return to_int() != 0;
+}
+
 int ST::string::compare(const string &str, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     return (cs == case_sensitive) ? strcmp(c_str(), str.c_str())
