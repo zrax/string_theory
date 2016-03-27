@@ -67,12 +67,8 @@ namespace ST
 }
 
 #define ST_DECL_FORMAT_TYPE(type_T) \
-    extern void _ST_impl_format_data_handler(const ST::format_spec &, \
-                                             ST::string_stream &, type_T)
-
-#define ST_DECL_FORMAT_TYPE_EXPORT(type_T) \
-    ST_EXPORT void _ST_impl_format_data_handler(const ST::format_spec &, \
-                                                ST::string_stream &, type_T)
+    void _ST_impl_format_data_handler(const ST::format_spec &, \
+                                      ST::string_stream &, type_T)
 
 #define ST_FORMAT_TYPE(type_T) \
     void _ST_impl_format_data_handler(const ST::format_spec &format, \
@@ -81,27 +77,27 @@ namespace ST
 #define ST_FORMAT_FORWARD(fwd_value) \
     _ST_impl_format_data_handler(format, output, (fwd_value))
 
-ST_DECL_FORMAT_TYPE_EXPORT(char);
-ST_DECL_FORMAT_TYPE_EXPORT(wchar_t);
-ST_DECL_FORMAT_TYPE_EXPORT(signed char);
-ST_DECL_FORMAT_TYPE_EXPORT(unsigned char);
-ST_DECL_FORMAT_TYPE_EXPORT(short);
-ST_DECL_FORMAT_TYPE_EXPORT(unsigned short);
-ST_DECL_FORMAT_TYPE_EXPORT(int);
-ST_DECL_FORMAT_TYPE_EXPORT(unsigned int);
+ST_EXPORT ST_DECL_FORMAT_TYPE(char);
+ST_EXPORT ST_DECL_FORMAT_TYPE(wchar_t);
+ST_EXPORT ST_DECL_FORMAT_TYPE(signed char);
+ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned char);
+ST_EXPORT ST_DECL_FORMAT_TYPE(short);
+ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned short);
+ST_EXPORT ST_DECL_FORMAT_TYPE(int);
+ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned int);
 
 #ifdef ST_HAVE_INT64
-ST_DECL_FORMAT_TYPE_EXPORT(int64_t);
-ST_DECL_FORMAT_TYPE_EXPORT(uint64_t);
+ST_EXPORT ST_DECL_FORMAT_TYPE(int64_t);
+ST_EXPORT ST_DECL_FORMAT_TYPE(uint64_t);
 #endif
 
-ST_DECL_FORMAT_TYPE_EXPORT(float);
-ST_DECL_FORMAT_TYPE_EXPORT(double);
+ST_EXPORT ST_DECL_FORMAT_TYPE(float);
+ST_EXPORT ST_DECL_FORMAT_TYPE(double);
 
-ST_DECL_FORMAT_TYPE_EXPORT(const char *);
-ST_DECL_FORMAT_TYPE_EXPORT(const wchar_t *);
-ST_DECL_FORMAT_TYPE_EXPORT(const ST::string &);
+ST_EXPORT ST_DECL_FORMAT_TYPE(const char *);
+ST_EXPORT ST_DECL_FORMAT_TYPE(const wchar_t *);
+ST_EXPORT ST_DECL_FORMAT_TYPE(const ST::string &);
 
-ST_DECL_FORMAT_TYPE_EXPORT(bool);
+ST_EXPORT ST_DECL_FORMAT_TYPE(bool);
 
 #endif // _ST_FORMATTER_H
