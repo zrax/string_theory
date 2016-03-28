@@ -23,13 +23,19 @@
 #   include <cstdint>
 #endif
 
+/* This can be set globally for your project in order to change the default
+ * behavior for verification of unicode data during string conversions. */
+#ifndef ST_DEFAULT_VALIDATION
+#   define ST_DEFAULT_VALIDATION ST::check_validity
+#endif
+
 #define ST_AUTO_SIZE    (static_cast<size_t>(-1))
 #define ST_WHITESPACE   " \t\r\n"
 
 namespace ST
 {
-    extern int _lower_char(int ch);
-    extern int _upper_char(int ch);
+    int _lower_char(int ch);
+    int _upper_char(int ch);
 
     ST_STRONG_ENUM(case_sensitivity_t)
     {
@@ -41,12 +47,14 @@ namespace ST
 
     ST_STRONG_ENUM(utf_validation_t)
     {
-        assume_valid,
-        assert_validity,
-        substitute_invalid
+        assume_valid,       //! Don't do any checking
+        substitute_invalid, //! Replace invalid sequences with a substitute
+        check_validity,     //! Throw a ST::unicode_error for invalid sequences
+        assert_validity     //! call ST_ASSERT for invalid sequences
     };
     ST_ENUM_CONSTANT(utf_validation_t, assume_valid);
     ST_ENUM_CONSTANT(utf_validation_t, substitute_invalid);
+    ST_ENUM_CONSTANT(utf_validation_t, check_validity);
     ST_ENUM_CONSTANT(utf_validation_t, assert_validity);
 
     class ST_EXPORT string
@@ -71,13 +79,13 @@ namespace ST
         string() ST_NOEXCEPT { }
 
         string(const char *cstr, size_t size = ST_AUTO_SIZE,
-               utf_validation_t validation = assert_validity)
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf8(cstr, size, validation);
         }
 
         string(const wchar_t *wstr, size_t size = ST_AUTO_SIZE,
-               utf_validation_t validation = assert_validity)
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_wchar(wstr, size, validation);
         }
@@ -119,59 +127,59 @@ namespace ST
 #endif
 
         string(const char_buffer &init,
-               utf_validation_t validation = assert_validity) ST_NOEXCEPT
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             set(init, validation);
         }
 
 #ifdef ST_HAVE_RVALUE_MOVE
         string(char_buffer &&init,
-               utf_validation_t validation = assert_validity) ST_NOEXCEPT
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             set(std::move(init), validation);
         }
 #endif
 
         string(const utf16_buffer &init,
-               utf_validation_t validation = assert_validity)
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf16(init.data(), init.size(), validation);
         }
 
         string(const utf32_buffer &init,
-               utf_validation_t validation = assert_validity)
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf32(init.data(), init.size(), validation);
         }
 
         string(const wchar_buffer &init,
-               utf_validation_t validation = assert_validity)
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_wchar(init.data(), init.size(), validation);
         }
 
         void set(const char *cstr, size_t size = ST_AUTO_SIZE,
-                 utf_validation_t validation = assert_validity)
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf8(cstr, size, validation);
         }
 
         void set(const wchar_t *wstr, size_t size = ST_AUTO_SIZE,
-                 utf_validation_t validation = assert_validity)
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_wchar(wstr, size, validation);
         }
 
         template <size_t size>
         void set(const char (&literal)[size],
-                 utf_validation_t validation = assert_validity)
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf8(literal, size - 1, validation);
         }
 
         template <size_t size>
         void set(char (&literal)[size],
-                 utf_validation_t validation = assert_validity)
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             // Not using optimized version, as this may have been called
             // with a stack buffer rather than an actual literal
@@ -180,14 +188,14 @@ namespace ST
 
         template <size_t size>
         void set(const wchar_t (&literal)[size],
-                 utf_validation_t validation = assert_validity)
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_wchar(literal, size - 1, validation);
         }
 
         template <size_t size>
         void set(wchar_t (&literal)[size],
-                 utf_validation_t validation = assert_validity)
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             // Not using optimized version, as this may have been called
             // with a stack buffer rather than an actual literal
@@ -207,27 +215,27 @@ namespace ST
 #endif
 
         void set(const char_buffer &init,
-                 utf_validation_t validation = assert_validity);
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION);
 
 #ifdef ST_HAVE_RVALUE_MOVE
         void set(char_buffer &&init,
-                 utf_validation_t validation = assert_validity);
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION);
 #endif
 
         void set(const utf16_buffer &init,
-                 utf_validation_t validation = assert_validity)
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf16(init.data(), init.size(), validation);
         }
 
         void set(const utf32_buffer &init,
-                 utf_validation_t validation = assert_validity)
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf32(init.data(), init.size(), validation);
         }
 
         void set(const wchar_buffer &init,
-                 utf_validation_t validation = assert_validity)
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_wchar(init.data(), init.size(), validation);
         }
@@ -325,7 +333,7 @@ namespace ST
 
         static inline string from_utf8(const char *utf8,
                                        size_t size = ST_AUTO_SIZE,
-                                       utf_validation_t validation = assert_validity)
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
             str._convert_from_utf8(utf8, size, validation);
@@ -334,7 +342,7 @@ namespace ST
 
         static inline string from_utf16(const char16_t *utf16,
                                         size_t size = ST_AUTO_SIZE,
-                                        utf_validation_t validation = assert_validity)
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
             str._convert_from_utf16(utf16, size, validation);
@@ -343,7 +351,7 @@ namespace ST
 
         static inline string from_utf32(const char32_t *utf32,
                                         size_t size = ST_AUTO_SIZE,
-                                        utf_validation_t validation = assert_validity)
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
             str._convert_from_utf32(utf32, size, validation);
@@ -352,7 +360,7 @@ namespace ST
 
         static inline string from_wchar(const wchar_t *wstr,
                                         size_t size = ST_AUTO_SIZE,
-                                        utf_validation_t validation = assert_validity)
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
             str._convert_from_wchar(wstr, size, validation);
@@ -511,7 +519,7 @@ namespace ST
         string after_last(char sep) const;
 
         string replace(const char *from, const char *to,
-                       utf_validation_t validation = assert_validity) const;
+                       utf_validation_t validation = ST_DEFAULT_VALIDATION) const;
 
         string to_upper() const;
         string to_lower() const;

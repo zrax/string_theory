@@ -101,6 +101,41 @@ static void _assert_utf8_buffer(const ST::char_buffer &buffer)
     }
 }
 
+#define _CHECK_SEQUENCE(condition, message) \
+    do { \
+        if (!(condition)) \
+            throw ST::unicode_error(message); \
+    } while (0)
+
+static void _check_utf8_buffer(const ST::char_buffer &buffer)
+{
+    const char *sp = buffer.data();
+    const char *ep = sp + buffer.size();
+    while (sp < ep) {
+        unsigned char uch = *sp++;
+        if ((uch & 0xF8) == 0xF0) {
+            // Four bytes
+            _CHECK_SEQUENCE(sp + 3 <= ep, "Incomplete UTF-8 sequence");
+            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (1)");
+            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (2)");
+            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (3)");
+        } else if ((uch & 0xF0) == 0xE0) {
+            // Three bytes
+            _CHECK_SEQUENCE(sp + 2 <= ep, "Incomplete UTF-8 sequence");
+            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (1)");
+            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (2)");
+        } else if ((uch & 0xE0) == 0xC0) {
+            // Two bytes
+            _CHECK_SEQUENCE(sp + 1 <= ep, "Incomplete UTF-8 sequence");
+            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (1)");
+        } else if ((uch & 0xC0) == 0x80) {
+            _CHECK_SEQUENCE(false, "Invalid UTF-8 marker byte");
+        } else if ((uch & 0x80) != 0) {
+            _CHECK_SEQUENCE(false, "UTF-8 character out of range");
+        }
+    }
+}
+
 static ST::char_buffer _cleanup_utf8_buffer(const ST::char_buffer &buffer)
 {
     bool valid = true;
@@ -177,6 +212,11 @@ void ST::string::set(const char_buffer &init, utf_validation_t validation)
         _assert_utf8_buffer(m_buffer);
         break;
 
+    case check_validity:
+        m_buffer = init;
+        _check_utf8_buffer(m_buffer);
+        break;
+
     case substitute_invalid:
         m_buffer = _cleanup_utf8_buffer(init);
         break;
@@ -198,6 +238,10 @@ void ST::string::set(char_buffer &&init, utf_validation_t validation)
     switch (validation) {
     case assert_validity:
         _assert_utf8_buffer(m_buffer);
+        break;
+
+    case check_validity:
+        _check_utf8_buffer(m_buffer);
         break;
 
     case substitute_invalid:
@@ -274,6 +318,8 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
 
             if (sp + 1 >= ep) {
                 switch (validation) {
+                case check_validity:
+                    throw ST::unicode_error("Incomplete surrogate pair");
                 case assert_validity:
                     ST_ASSERT(false, "Incomplete surrogate pair");
                     /* fall through */
@@ -290,6 +336,8 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                 bigch += (*sp++ & 0x3FF) << 10;
                 if (*sp < 0xDC00 || *sp > 0xDFFF) {
                     switch (validation) {
+                    case check_validity:
+                        throw ST::unicode_error("Invalid surrogate pair");
                     case assert_validity:
                         ST_ASSERT(false, "Invalid surrogate pair");
                         /* fall through */
@@ -309,6 +357,8 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                 bigch += (*sp++ & 0x3FF);
                 if (*sp < 0xD800 || *sp >= 0xDC00) {
                     switch (validation) {
+                    case check_validity:
+                        throw ST::unicode_error("Invalid surrogate pair");
                     case assert_validity:
                         ST_ASSERT(false, "Invalid surrogate pair");
                         /* fall through */
@@ -383,7 +433,9 @@ void ST::string::_convert_from_utf32(const char32_t *utf32, size_t size,
     sp = utf32;
     while (sp < ep) {
         if (*sp > 0x10FFFF) {
-            if (validation == assert_validity)
+            if (validation == check_validity)
+                throw ST::unicode_error("Unicode character out of range");
+            else if (validation == assert_validity)
                 ST_ASSERT(false, "Unicode character out of range");
             *dp++ = 0xE0 | ((BADCHAR_SUBSTITUTE >> 12) & 0x0F);
             *dp++ = 0x80 | ((BADCHAR_SUBSTITUTE >>  6) & 0x3F);
@@ -1015,6 +1067,8 @@ ST::string ST::string::to_lower() const
 std::vector<ST::string> ST::string::split(const char *splitter,
                                           size_t max_splits) const
 {
+    ST_ASSERT(splitter, "ST::string::split called with null splitter");
+
     std::vector<string> result;
 
     // Performance improvement when splitter is "safe"
@@ -1048,6 +1102,9 @@ std::vector<ST::string> ST::string::split(const char *splitter,
 std::vector<ST::string> ST::string::split(char split_char,
                                           size_t max_splits) const
 {
+    ST_ASSERT(split_char && static_cast<unsigned int>(split_char) < 0x80,
+              "Split character should be in range '\\x01'-'\\x7f'");
+
     std::vector<string> result;
 
     const char *next = c_str();

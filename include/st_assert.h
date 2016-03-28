@@ -19,6 +19,7 @@
 #include "st_config.h"
 
 #include <functional>
+#include <exception>
 
 namespace ST
 {
@@ -27,6 +28,14 @@ namespace ST
                                 const char *message)> assert_handler_t;
 
     ST_EXPORT void set_assert_handler(assert_handler_t handler);
+
+    class ST_EXPORT unicode_error : public std::runtime_error
+    {
+    public:
+        explicit unicode_error(const char *message)
+            : std::runtime_error(message)
+        { }
+    };
 }
 
 namespace _ST_PRIVATE
