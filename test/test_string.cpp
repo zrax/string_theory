@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <wchar.h>
+#include <cmath>
 
 static const char32_t test_data[] = {
     0x20,       0x7f,       /* Normal ASCII chars */
@@ -248,6 +249,209 @@ TEST(string, concatenation)
     EXPECT_EQ(expected_long, input3.c_str() + input4);
     EXPECT_EQ(input1, input1 + "");
     EXPECT_EQ(input1, "" + input1);
+}
+
+TEST(string, to_int)
+{
+    EXPECT_EQ(0, ST::string("0").to_int());
+    EXPECT_EQ(0, ST::string("+0").to_int());
+    EXPECT_EQ(0, ST::string("-0").to_int());
+
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(0, ST::string("0").to_int64());
+    EXPECT_EQ(0, ST::string("+0").to_int64());
+    EXPECT_EQ(0, ST::string("-0").to_int64());
+#endif
+
+    EXPECT_EQ(-80000, ST::string("-80000").to_int());
+    EXPECT_EQ(80000, ST::string("80000").to_int());
+    EXPECT_EQ(80000, ST::string("+80000").to_int());
+    EXPECT_EQ(-80000, ST::string("-0x13880").to_int());
+    EXPECT_EQ(80000, ST::string("0x13880").to_int());
+    EXPECT_EQ(80000, ST::string("+0x13880").to_int());
+    EXPECT_EQ(-80000, ST::string("-0234200").to_int());
+    EXPECT_EQ(80000, ST::string("0234200").to_int());
+    EXPECT_EQ(80000, ST::string("+0234200").to_int());
+    EXPECT_EQ(-80000, ST::string("-13880").to_int(16));
+    EXPECT_EQ(80000, ST::string("13880").to_int(16));
+    EXPECT_EQ(80000, ST::string("+13880").to_int(16));
+    EXPECT_EQ(-80000, ST::string("-234200").to_int(8));
+    EXPECT_EQ(80000, ST::string("234200").to_int(8));
+    EXPECT_EQ(80000, ST::string("+234200").to_int(8));
+
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(-1000000000000LL, ST::string("-1000000000000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST::string("1000000000000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST::string("+1000000000000").to_int64());
+    EXPECT_EQ(-1000000000000LL, ST::string("-0xe8d4a51000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST::string("0xe8d4a51000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST::string("+0xe8d4a51000").to_int64());
+    EXPECT_EQ(-1000000000000LL, ST::string("-016432451210000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST::string("016432451210000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST::string("+016432451210000").to_int64());
+    EXPECT_EQ(-1000000000000LL, ST::string("-e8d4a51000").to_int64(16));
+    EXPECT_EQ(1000000000000LL, ST::string("e8d4a51000").to_int64(16));
+    EXPECT_EQ(1000000000000LL, ST::string("+e8d4a51000").to_int64(16));
+    EXPECT_EQ(-1000000000000LL, ST::string("-16432451210000").to_int64(8));
+    EXPECT_EQ(1000000000000LL, ST::string("16432451210000").to_int64(8));
+    EXPECT_EQ(1000000000000LL, ST::string("+16432451210000").to_int64(8));
+#endif
+
+    EXPECT_EQ(-2147483648, ST::string("-2147483648").to_int());
+    EXPECT_EQ(2147483647, ST::string("2147483647").to_int());
+    EXPECT_EQ(2147483647, ST::string("+2147483647").to_int());
+    EXPECT_EQ(-2147483648, ST::string("-0x80000000").to_int());
+    EXPECT_EQ(2147483647, ST::string("0x7FFFFFFF").to_int());
+    EXPECT_EQ(2147483647, ST::string("+0x7FFFFFFF").to_int());
+    EXPECT_EQ(-2147483648, ST::string("-020000000000").to_int());
+    EXPECT_EQ(2147483647, ST::string("017777777777").to_int());
+    EXPECT_EQ(2147483647, ST::string("+017777777777").to_int());
+    EXPECT_EQ(-2147483648, ST::string("-80000000").to_int(16));
+    EXPECT_EQ(2147483647, ST::string("7FFFFFFF").to_int(16));
+    EXPECT_EQ(2147483647, ST::string("+7FFFFFFF").to_int(16));
+    EXPECT_EQ(-2147483648, ST::string("-20000000000").to_int(8));
+    EXPECT_EQ(2147483647, ST::string("17777777777").to_int(8));
+    EXPECT_EQ(2147483647, ST::string("+17777777777").to_int(8));
+
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(-9223372036854775808LL, ST::string("-9223372036854775808").to_int64());
+    EXPECT_EQ(9223372036854775807LL, ST::string("9223372036854775807").to_int64());
+    EXPECT_EQ(9223372036854775807LL, ST::string("+9223372036854775807").to_int64());
+    EXPECT_EQ(-9223372036854775808LL, ST::string("-0x8000000000000000").to_int64());
+    EXPECT_EQ(9223372036854775807LL, ST::string("0x7FFFFFFFFFFFFFFF").to_int64());
+    EXPECT_EQ(9223372036854775807LL, ST::string("+0x7FFFFFFFFFFFFFFF").to_int64());
+    EXPECT_EQ(-9223372036854775808LL, ST::string("-01000000000000000000000").to_int64());
+    EXPECT_EQ(9223372036854775807LL, ST::string("0777777777777777777777").to_int64());
+    EXPECT_EQ(9223372036854775807LL, ST::string("+0777777777777777777777").to_int64());
+    EXPECT_EQ(-9223372036854775808LL, ST::string("-8000000000000000").to_int64(16));
+    EXPECT_EQ(9223372036854775807LL, ST::string("7FFFFFFFFFFFFFFF").to_int64(16));
+    EXPECT_EQ(9223372036854775807LL, ST::string("+7FFFFFFFFFFFFFFF").to_int64(16));
+    EXPECT_EQ(-9223372036854775808LL, ST::string("-1000000000000000000000").to_int64(8));
+    EXPECT_EQ(9223372036854775807LL, ST::string("777777777777777777777").to_int64(8));
+    EXPECT_EQ(9223372036854775807LL, ST::string("+777777777777777777777").to_int64(8));
+#endif
+
+    // Empty string is treated as zero for compatibility with strtol
+    EXPECT_EQ(0, ST::string::null.to_int());
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(0, ST::string::null.to_int64());
+#endif
+}
+
+TEST(string, to_uint)
+{
+    EXPECT_EQ(0, ST::string("0").to_uint());
+    EXPECT_EQ(0, ST::string("+0").to_uint());
+    EXPECT_EQ(0, ST::string("-0").to_uint());
+
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(0, ST::string("0").to_uint64());
+    EXPECT_EQ(0, ST::string("+0").to_uint64());
+    EXPECT_EQ(0, ST::string("-0").to_uint64());
+#endif
+
+    EXPECT_EQ(80000, ST::string("80000").to_uint());
+    EXPECT_EQ(80000, ST::string("+80000").to_uint());
+    EXPECT_EQ(80000, ST::string("0x13880").to_uint());
+    EXPECT_EQ(80000, ST::string("+0x13880").to_uint());
+    EXPECT_EQ(80000, ST::string("0234200").to_uint());
+    EXPECT_EQ(80000, ST::string("+0234200").to_uint());
+    EXPECT_EQ(80000, ST::string("13880").to_uint(16));
+    EXPECT_EQ(80000, ST::string("+13880").to_uint(16));
+    EXPECT_EQ(80000, ST::string("234200").to_uint(8));
+    EXPECT_EQ(80000, ST::string("+234200").to_uint(8));
+
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(1000000000000ULL, ST::string("1000000000000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST::string("+1000000000000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST::string("0xe8d4a51000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST::string("+0xe8d4a51000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST::string("016432451210000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST::string("+016432451210000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST::string("e8d4a51000").to_uint64(16));
+    EXPECT_EQ(1000000000000ULL, ST::string("+e8d4a51000").to_uint64(16));
+    EXPECT_EQ(1000000000000ULL, ST::string("16432451210000").to_uint64(8));
+    EXPECT_EQ(1000000000000ULL, ST::string("+16432451210000").to_uint64(8));
+#endif
+
+    EXPECT_EQ(4294967295UL, ST::string("4294967295").to_uint());
+    EXPECT_EQ(4294967295UL, ST::string("+4294967295").to_uint());
+    EXPECT_EQ(4294967295UL, ST::string("0xFFFFFFFF").to_uint());
+    EXPECT_EQ(4294967295UL, ST::string("+0xFFFFFFFF").to_uint());
+    EXPECT_EQ(4294967295UL, ST::string("037777777777").to_uint());
+    EXPECT_EQ(4294967295UL, ST::string("+037777777777").to_uint());
+
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(18446744073709551615ULL, ST::string("18446744073709551615").to_uint64());
+    EXPECT_EQ(18446744073709551615ULL, ST::string("+18446744073709551615").to_uint64());
+    EXPECT_EQ(18446744073709551615ULL, ST::string("0xFFFFFFFFFFFFFFFF").to_uint64());
+    EXPECT_EQ(18446744073709551615ULL, ST::string("+0xFFFFFFFFFFFFFFFF").to_uint64());
+    EXPECT_EQ(18446744073709551615ULL, ST::string("01777777777777777777777").to_uint64());
+    EXPECT_EQ(18446744073709551615ULL, ST::string("+01777777777777777777777").to_uint64());
+#endif
+
+    // Empty string is treated as zero for compatibility with strtoul
+    EXPECT_EQ(0, ST::string::null.to_uint());
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(0, ST::string::null.to_uint64());
+#endif
+}
+
+TEST(string, to_float)
+{
+    EXPECT_EQ(0.0f, ST::string("0").to_float());
+    EXPECT_EQ(0.0f, ST::string("+0").to_float());
+    EXPECT_EQ(0.0f, ST::string("-0").to_float());
+
+    EXPECT_EQ(0.0, ST::string("0").to_double());
+    EXPECT_EQ(0.0, ST::string("+0").to_double());
+    EXPECT_EQ(0.0, ST::string("-0").to_double());
+
+    EXPECT_EQ(-16.0f, ST::string("-16").to_float());
+    EXPECT_EQ(16.0f, ST::string("16").to_float());
+    EXPECT_EQ(16.0f, ST::string("+16").to_float());
+    EXPECT_EQ(-16.0f, ST::string("-16.0").to_float());
+    EXPECT_EQ(16.0f, ST::string("16.0").to_float());
+    EXPECT_EQ(16.0f, ST::string("+16.0").to_float());
+    EXPECT_EQ(-16.0f, ST::string("-1.6e1").to_float());
+    EXPECT_EQ(16.0f, ST::string("1.6e1").to_float());
+    EXPECT_EQ(16.0f, ST::string("+1.6e1").to_float());
+
+    EXPECT_EQ(-16.0, ST::string("-16").to_double());
+    EXPECT_EQ(16.0, ST::string("16").to_double());
+    EXPECT_EQ(16.0, ST::string("+16").to_double());
+    EXPECT_EQ(-16.0, ST::string("-16.0").to_double());
+    EXPECT_EQ(16.0, ST::string("16.0").to_double());
+    EXPECT_EQ(16.0, ST::string("+16.0").to_double());
+    EXPECT_EQ(-16.0, ST::string("-1.6e1").to_double());
+    EXPECT_EQ(16.0, ST::string("1.6e1").to_double());
+    EXPECT_EQ(16.0, ST::string("+1.6e1").to_double());
+
+    EXPECT_TRUE(std::isinf(ST::string("INF").to_float()));
+    EXPECT_TRUE(std::isnan(ST::string("NAN").to_float()));
+
+    EXPECT_TRUE(std::isinf(ST::string("INF").to_double()));
+    EXPECT_TRUE(std::isnan(ST::string("NAN").to_double()));
+
+    // Empty string is treated as zero for compatibility with strtod
+    EXPECT_EQ(0.0f, ST::string::null.to_float());
+    EXPECT_EQ(0.0, ST::string::null.to_double());
+}
+
+TEST(string, to_bool)
+{
+    EXPECT_TRUE(ST::string("true").to_bool());
+    EXPECT_TRUE(ST::string("TRUE").to_bool());
+    EXPECT_FALSE(ST::string("false").to_bool());
+    EXPECT_FALSE(ST::string("FALSE").to_bool());
+
+    EXPECT_FALSE(ST::string("0").to_bool());
+    EXPECT_TRUE(ST::string("1").to_bool());
+    EXPECT_TRUE(ST::string("-1").to_bool());
+    EXPECT_TRUE(ST::string("1000").to_bool());
+    EXPECT_TRUE(ST::string("0x1000").to_bool());
+
+    EXPECT_FALSE(ST::string::null.to_bool());
 }
 
 TEST(string, compare)
