@@ -885,6 +885,78 @@ bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const
                                   : strnicmp(c_str() + start, suffix, count) == 0;
 }
 
+ST::string ST::string::before_first(const char *sep) const
+{
+    ST_ssize_t first = find(sep);
+    if (first >= 0)
+        return left(first);
+    else
+        return *this;
+}
+
+ST::string ST::string::before_first(char sep) const
+{
+    ST_ssize_t first = find(sep);
+    if (first >= 0)
+        return left(first);
+    else
+        return *this;
+}
+
+ST::string ST::string::after_first(const char *sep) const
+{
+    ST_ssize_t first = find(sep);
+    if (first >= 0)
+        return substr(first + strlen(sep));
+    else
+        return null;
+}
+
+ST::string ST::string::after_first(char sep) const
+{
+    ST_ssize_t first = find(sep);
+    if (first >= 0)
+        return substr(first + 1);
+    else
+        return null;
+}
+
+ST::string ST::string::before_last(const char *sep) const
+{
+    ST_ssize_t last = find_last(sep);
+    if (last >= 0)
+        return left(last);
+    else
+        return null;
+}
+
+ST::string ST::string::before_last(char sep) const
+{
+    ST_ssize_t last = find_last(sep);
+    if (last >= 0)
+        return left(last);
+    else
+        return null;
+}
+
+ST::string ST::string::after_last(const char *sep) const
+{
+    ST_ssize_t last = find_last(sep);
+    if (last >= 0)
+        return substr(last + strlen(sep));
+    else
+        return *this;
+}
+
+ST::string ST::string::after_last(char sep) const
+{
+    ST_ssize_t last = find_last(sep);
+    if (last >= 0)
+        return substr(last + 1);
+    else
+        return *this;
+}
+
 ST::string ST::string::replace(const char *from, const char *to,
                                utf_validation_t validation) const
 {
@@ -970,6 +1042,27 @@ std::vector<ST::string> ST::string::split(const char *splitter,
     }
 
     result.push_back(string(next, end - next, validation));
+    return result;
+}
+
+std::vector<ST::string> ST::string::split(char split_char,
+                                          size_t max_splits) const
+{
+    std::vector<string> result;
+
+    const char *next = c_str();
+    const char *end = next + size();
+    while (max_splits) {
+        const char *sp = strchr(next, split_char);
+        if (!sp)
+            break;
+
+        result.push_back(string(next, sp - next, assume_valid));
+        next = sp + 1;
+        --max_splits;
+    }
+
+    result.push_back(string(next, end - next, assume_valid));
     return result;
 }
 

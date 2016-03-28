@@ -492,6 +492,53 @@ TEST(string, ends_with)
     EXPECT_TRUE(ST::string("xxx").ends_with(""));
 }
 
+TEST(string, before_after)
+{
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA;BBB").before_first(';'));
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA##SEP##BBB").before_first("##SEP##"));
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA;BBB;CCC").before_first(';'));
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA##SEP##BBB##SEP##CCC").before_first("##SEP##"));
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").before_first(';'));
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").before_first("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string(";").before_first(';'));
+    EXPECT_EQ(ST::string(""), ST::string("##SEP##").before_first("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string("").before_first(';'));
+    EXPECT_EQ(ST::string(""), ST::string("").before_first("##SEP##"));
+
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA;BBB").before_last(';'));
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA##SEP##BBB").before_last("##SEP##"));
+    EXPECT_EQ(ST::string("AAA;BBB"), ST::string("AAA;BBB;CCC").before_last(';'));
+    EXPECT_EQ(ST::string("AAA##SEP##BBB"), ST::string("AAA##SEP##BBB##SEP##CCC").before_last("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string("AAA").before_last(';'));
+    EXPECT_EQ(ST::string(""), ST::string("AAA").before_last("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string(";").before_last(';'));
+    EXPECT_EQ(ST::string(""), ST::string("##SEP##").before_last("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string("").before_last(';'));
+    EXPECT_EQ(ST::string(""), ST::string("").before_last("##SEP##"));
+
+    EXPECT_EQ(ST::string("BBB"), ST::string("AAA;BBB").after_first(';'));
+    EXPECT_EQ(ST::string("BBB"), ST::string("AAA##SEP##BBB").after_first("##SEP##"));
+    EXPECT_EQ(ST::string("BBB;CCC"), ST::string("AAA;BBB;CCC").after_first(';'));
+    EXPECT_EQ(ST::string("BBB##SEP##CCC"), ST::string("AAA##SEP##BBB##SEP##CCC").after_first("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string("AAA").after_first(';'));
+    EXPECT_EQ(ST::string(""), ST::string("AAA").after_first("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string(";").after_first(';'));
+    EXPECT_EQ(ST::string(""), ST::string("##SEP##").after_first("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string("").after_first(';'));
+    EXPECT_EQ(ST::string(""), ST::string("").after_first("##SEP##"));
+
+    EXPECT_EQ(ST::string("BBB"), ST::string("AAA;BBB").after_last(';'));
+    EXPECT_EQ(ST::string("BBB"), ST::string("AAA##SEP##BBB").after_last("##SEP##"));
+    EXPECT_EQ(ST::string("CCC"), ST::string("AAA;BBB;CCC").after_last(';'));
+    EXPECT_EQ(ST::string("CCC"), ST::string("AAA##SEP##BBB##SEP##CCC").after_last("##SEP##"));
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").after_last(';'));
+    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").after_last("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string(";").after_last(';'));
+    EXPECT_EQ(ST::string(""), ST::string("##SEP##").after_last("##SEP##"));
+    EXPECT_EQ(ST::string(""), ST::string("").after_last(';'));
+    EXPECT_EQ(ST::string(""), ST::string("").after_last("##SEP##"));
+}
+
 TEST(string, replace)
 {
     EXPECT_EQ(ST::string("xxYYxx"), ST::string("xxAAxx").replace("A", "Y"));
@@ -644,6 +691,68 @@ TEST(string, split)
     expected9.push_back(ST::string::null);
     EXPECT_EQ(expected9, ST::string("").split("-"));
     EXPECT_EQ(expected9, ST::string("").split("-", 4));
+}
+
+TEST(string, split_char)
+{
+    std::vector<ST::string> expected1;
+    expected1.push_back("aaa");
+    expected1.push_back("b");
+    expected1.push_back("ccc");
+    expected1.push_back("d");
+    expected1.push_back("èèè");
+    const ST::string input1("aaa-b-ccc-d-èèè");
+    EXPECT_EQ(expected1, input1.split('-'));
+    EXPECT_EQ(expected1, input1.split('-', 4));
+    EXPECT_EQ(expected1, input1.split('-', 10));
+
+    std::vector<ST::string> expected2;
+    expected2.push_back("aaa");
+    expected2.push_back("b");
+    expected2.push_back("ccc-d-èèè");
+    EXPECT_EQ(expected2, input1.split('-', 2));
+
+    std::vector<ST::string> expected3;
+    expected3.push_back(input1);
+    EXPECT_EQ(expected3, input1.split('-', 0));
+    EXPECT_EQ(expected3, input1.split('x'));
+    EXPECT_EQ(expected3, input1.split('x', 4));
+
+    std::vector<ST::string> expected4;
+    expected4.push_back("");
+    expected4.push_back("aaa");
+    expected4.push_back("b");
+    expected4.push_back("ccc");
+    expected4.push_back("d");
+    expected4.push_back("èèè");
+    expected4.push_back("");
+    const ST::string input3("-aaa-b-ccc-d-èèè-");
+    EXPECT_EQ(expected4, input3.split('-'));
+    EXPECT_EQ(expected4, input3.split('-', 6));
+    EXPECT_EQ(expected4, input3.split('-', 10));
+
+    std::vector<ST::string> expected5;
+    expected5.push_back("");
+    expected5.push_back("");
+    expected5.push_back("");
+    expected5.push_back("");
+    expected5.push_back("");
+    const ST::string input4("----");
+    EXPECT_EQ(expected5, input4.split('-'));
+    EXPECT_EQ(expected5, input4.split('-', 4));
+    EXPECT_EQ(expected5, input4.split('-', 10));
+
+    std::vector<ST::string> expected6;
+    expected6.push_back("");
+    expected6.push_back("");
+    expected6.push_back("--");
+    EXPECT_EQ(expected6, input4.split('-', 2));
+
+    // split never provides an empty vector, even for empty input
+    std::vector<ST::string> expected9;
+    expected9.push_back(ST::string::null);
+    EXPECT_EQ(expected9, ST::string("").split('-'));
+    EXPECT_EQ(expected9, ST::string("").split('-', 4));
 }
 
 TEST(string, fill)

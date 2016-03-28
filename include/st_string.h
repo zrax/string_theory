@@ -496,6 +496,15 @@ namespace ST
         bool starts_with(const char *prefix, case_sensitivity_t cs = case_sensitive) const;
         bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const;
 
+        string before_first(const char *sep) const;
+        string before_first(char sep) const;
+        string after_first(const char *sep) const;
+        string after_first(char sep) const;
+        string before_last(const char *sep) const;
+        string before_last(char sep) const;
+        string after_last(const char *sep) const;
+        string after_last(char sep) const;
+
         string replace(const char *from, const char *to,
                        utf_validation_t validation = assert_validity) const;
 
@@ -503,6 +512,8 @@ namespace ST
         string to_lower() const;
 
         std::vector<string> split(const char *splitter,
+                                  size_t max_splits = ST_AUTO_SIZE) const;
+        std::vector<string> split(char split_char,
                                   size_t max_splits = ST_AUTO_SIZE) const;
 
         std::vector<string> tokenize(const char *delims = ST_WHITESPACE) const;
