@@ -55,6 +55,8 @@ try_compile(ST_HAVE_VARARG_TEMPLATE "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_vararg_template.cpp")
 try_compile(ST_HAVE_TYPE_TRAITS "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_type_traits.cpp")
+try_compile(ST_HAVE_CONSTEXPR "${PROJECT_BINARY_DIR}"
+            "${PROJECT_SOURCE_DIR}/cmake/check_constexpr.cpp")
 
 include(CheckTypeSize)
 if(NOT ST_WCHAR_BYTES)

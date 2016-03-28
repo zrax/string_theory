@@ -25,6 +25,7 @@
 #cmakedefine ST_HAVE_DELETED_FUNC
 #cmakedefine ST_HAVE_VARARG_TEMPLATE
 #cmakedefine ST_HAVE_TYPE_TRAITS
+#cmakedefine ST_HAVE_CONSTEXPR
 #cmakedefine01 ST_BUILD_SHARED
 
 #ifdef ST_HAVE_NOEXCEPT
@@ -59,6 +60,14 @@
     private: \
         name(const name &) { } \
         void operator=(const name &) { }
+#endif
+
+#ifdef ST_HAVE_CONSTEXPR
+#   define ST_STRONG_ENUM(name) enum class name
+#   define ST_ENUM_CONSTANT(type, name) constexpr type name = type::name
+#else
+#   define ST_STRONG_ENUM(name) enum name
+#   define ST_ENUM_CONSTANT(type, name)
 #endif
 
 #define ST_WCHAR_BYTES          (@ST_WCHAR_BYTES@)

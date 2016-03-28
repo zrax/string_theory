@@ -31,18 +31,23 @@ namespace ST
     extern int _lower_char(int ch);
     extern int _upper_char(int ch);
 
-    enum case_sensitivity_t
+    ST_STRONG_ENUM(case_sensitivity_t)
     {
         case_sensitive,
         case_insensitive
     };
+    ST_ENUM_CONSTANT(case_sensitivity_t, case_sensitive);
+    ST_ENUM_CONSTANT(case_sensitivity_t, case_insensitive);
 
-    enum utf_validation_t
+    ST_STRONG_ENUM(utf_validation_t)
     {
         assume_valid,
         assert_validity,
         substitute_invalid
     };
+    ST_ENUM_CONSTANT(utf_validation_t, assume_valid);
+    ST_ENUM_CONSTANT(utf_validation_t, substitute_invalid);
+    ST_ENUM_CONSTANT(utf_validation_t, assert_validity);
 
     class ST_EXPORT string
     {
