@@ -490,6 +490,12 @@ namespace ST
             return substr(this->size() - size, size);
         }
 
+        bool starts_with(const ST::string &prefix, case_sensitivity_t cs = case_sensitive) const;
+        bool ends_with(const ST::string &suffix, case_sensitivity_t cs = case_sensitive) const;
+
+        bool starts_with(const char *prefix, case_sensitivity_t cs = case_sensitive) const;
+        bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const;
+
         string replace(const char *from, const char *to,
                        utf_validation_t validation = assert_validity) const;
 

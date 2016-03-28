@@ -74,7 +74,7 @@ TEST(string, utility)
     EXPECT_EQ(ST::string::null, ST::string{});
 
     EXPECT_EQ(0, ST::string::null.size());
-    EXPECT_EQ(true, ST::string::null.is_empty());
+    EXPECT_TRUE(ST::string::null.is_empty());
 
     // Short and Long string length
     EXPECT_EQ(4, ST::string("1234").size());
@@ -466,6 +466,30 @@ TEST(string, substrings)
     EXPECT_EQ(ST::string("AAA"), ST::string("xxxxAAA").substr(-3, 6));
     EXPECT_EQ(ST::string("AAA"), ST::string("AAAxxxx").substr(-10, 3));
     EXPECT_EQ(ST::string("AAA"), ST::string("AAA").substr(-10, 10));
+}
+
+TEST(string, starts_with)
+{
+    EXPECT_TRUE(ST::string("AAA").starts_with("AAA"));
+    EXPECT_TRUE(ST::string("AAAxxx").starts_with("AAA"));
+    EXPECT_TRUE(ST::string("AAAAA").starts_with("AAA"));
+    EXPECT_FALSE(ST::string("xxx").starts_with("AAA"));
+    EXPECT_FALSE(ST::string("AAxxx").starts_with("AAA"));
+    EXPECT_FALSE(ST::string("xAAAxxx").starts_with("AAA"));
+    EXPECT_FALSE(ST::string("").starts_with("AAA"));
+    EXPECT_TRUE(ST::string("xxx").starts_with(""));
+}
+
+TEST(string, ends_with)
+{
+    EXPECT_TRUE(ST::string("AAA").ends_with("AAA"));
+    EXPECT_TRUE(ST::string("xxxAAA").ends_with("AAA"));
+    EXPECT_TRUE(ST::string("AAAAA").ends_with("AAA"));
+    EXPECT_FALSE(ST::string("xxx").ends_with("AAA"));
+    EXPECT_FALSE(ST::string("xxxAA").ends_with("AAA"));
+    EXPECT_FALSE(ST::string("xxxAAAx").ends_with("AAA"));
+    EXPECT_FALSE(ST::string("").ends_with("AAA"));
+    EXPECT_TRUE(ST::string("xxx").ends_with(""));
 }
 
 TEST(string, replace)
