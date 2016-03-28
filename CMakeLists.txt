@@ -73,7 +73,15 @@ if(NOT ST_SIZET_BYTES)
     endif()
 endif()
 
-add_definitions(-DST_BUILD_EXPORTS)
+option(ST_BUILD_STATIC "Build string_theory as a static library" OFF)
+if(ST_BUILD_STATIC)
+    set(ST_LIB_TYPE STATIC)
+    set(ST_BUILD_SHARED FALSE)
+else()
+    set(ST_LIB_TYPE SHARED)
+    set(ST_BUILD_SHARED TRUE)
+    add_definitions(-DST_BUILD_EXPORTS)
+endif()
 
 configure_file("${PROJECT_SOURCE_DIR}/include/st_config.h.in"
                "${PROJECT_BINARY_DIR}/include/st_config.h")
@@ -119,13 +127,6 @@ foreach(path LIB INCLUDE CMAKE)
         set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
     endif()
 endforeach()
-
-option(ST_BUILD_STATIC "Build string_theory as a static library" OFF)
-if(ST_BUILD_STATIC)
-    set(ST_LIB_TYPE STATIC)
-else()
-    set(ST_LIB_TYPE SHARED)
-endif()
 
 add_library(string_theory ${ST_LIB_TYPE}
             ${ST_HEADERS} ${ST_SOURCES})
