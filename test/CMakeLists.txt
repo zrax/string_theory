@@ -10,3 +10,6 @@ if(ST_HAVE_FORMAT)
     target_link_libraries(test_format gtest gtest_main string_theory)
     add_test(NAME test_format COMMAND test_format)
 endif()
+
+add_executable(string_profile profile.cpp)
+target_link_libraries(string_profile string_theory)
