@@ -159,8 +159,11 @@ namespace ST
             }
         }
 
-        static size_t strlen(const char_T *buffer)
+        static inline size_t strlen(const char_T *buffer)
         {
+            if (!buffer)
+                return 0;
+
             size_t length = 0;
             for ( ; *buffer++; ++length)
                 ;

@@ -58,16 +58,12 @@ int ST::_upper_char(int ch)
 void ST::string::_convert_from_utf8(const char *utf8, size_t size,
                                     utf_validation_t validation)
 {
-    ST_ASSERT(size == ST_AUTO_SIZE || size < HUGE_BUFFER_SIZE,
-              "String data buffer is too large");
+    ST_ASSERT(size < HUGE_BUFFER_SIZE, "String data buffer is too large");
 
     if (!utf8) {
         m_buffer = char_buffer();
         return;
     }
-
-    if (size == ST_AUTO_SIZE)
-        size = ::strlen(utf8);
 
     set(char_buffer(utf8, size), validation);
 }
@@ -278,15 +274,11 @@ ST::string &ST::string::operator+=(const ST::string &other)
 void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                                      utf_validation_t validation)
 {
-    ST_ASSERT(size == ST_AUTO_SIZE || size < HUGE_BUFFER_SIZE,
-              "String data buffer is too large");
+    ST_ASSERT(size < HUGE_BUFFER_SIZE, "String data buffer is too large");
 
     m_buffer = char_buffer();
     if (!utf16)
         return;
-
-    if (size == ST_AUTO_SIZE)
-        size = utf16_buffer::strlen(utf16);
 
     // Calculate the UTF-8 size
     size_t convlen = 0;
@@ -397,15 +389,11 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
 void ST::string::_convert_from_utf32(const char32_t *utf32, size_t size,
                                      utf_validation_t validation)
 {
-    ST_ASSERT(size == ST_AUTO_SIZE || size < HUGE_BUFFER_SIZE,
-              "String data buffer is too large");
+    ST_ASSERT(size < HUGE_BUFFER_SIZE, "String data buffer is too large");
 
     m_buffer = char_buffer();
     if (!utf32)
         return;
-
-    if (size == ST_AUTO_SIZE)
-        size = utf32_buffer::strlen(utf32);
 
     // Calculate the UTF-8 size
     size_t convlen = 0;
@@ -472,15 +460,11 @@ void ST::string::_convert_from_wchar(const wchar_t *wstr, size_t size,
 
 void ST::string::_convert_from_latin_1(const char *astr, size_t size)
 {
-    ST_ASSERT(size == ST_AUTO_SIZE || size < HUGE_BUFFER_SIZE,
-              "String data buffer is too large");
+    ST_ASSERT(size < HUGE_BUFFER_SIZE, "String data buffer is too large");
 
     m_buffer = char_buffer();
     if (!astr)
         return;
-
-    if (size == ST_AUTO_SIZE)
-        size = ::strlen(astr);
 
     // Calculate the UTF-8 size
     size_t convlen = 0;

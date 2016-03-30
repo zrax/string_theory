@@ -81,19 +81,23 @@ namespace ST
         string(const char *cstr, size_t size = ST_AUTO_SIZE,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
+            if (size == ST_AUTO_SIZE)
+                size = ST::char_buffer::strlen(cstr);
             _convert_from_utf8(cstr, size, validation);
         }
 
         string(const wchar_t *wstr, size_t size = ST_AUTO_SIZE,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
+            if (size == ST_AUTO_SIZE)
+                size = ST::wchar_buffer::strlen(wstr);
             _convert_from_wchar(wstr, size, validation);
         }
 
         template <size_t size>
         string(const char (&literal)[size])
         {
-            _convert_from_utf8(literal, size - 1, assert_validity);
+            _convert_from_utf8(literal, size - 1, assume_valid);
         }
 
         template <size_t size>
@@ -101,21 +105,23 @@ namespace ST
         {
             // Not using optimized version, as this may have been called
             // with a stack buffer rather than an actual literal
-            _convert_from_utf8(buffer, ST_AUTO_SIZE, assert_validity);
+            size_t real_size = ST::char_buffer::strlen(buffer);
+            _convert_from_utf8(buffer, real_size, ST_DEFAULT_VALIDATION);
         }
 
         template <size_t size>
         string(const wchar_t (&literal)[size])
         {
-            _convert_from_wchar(literal, size - 1, assert_validity);
+            _convert_from_wchar(literal, size - 1, assume_valid);
         }
 
         template <size_t size>
-        string(wchar_t (&literal)[size])
+        string(wchar_t (&buffer)[size])
         {
             // Not using optimized version, as this may have been called
             // with a stack buffer rather than an actual literal
-            _convert_from_wchar(literal, size - 1, assert_validity);
+            size_t real_size = ST::wchar_buffer::strlen(buffer);
+            _convert_from_wchar(buffer, real_size, ST_DEFAULT_VALIDATION);
         }
 
         string(const string &copy) ST_NOEXCEPT
@@ -161,45 +167,51 @@ namespace ST
         void set(const char *cstr, size_t size = ST_AUTO_SIZE,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
+            if (size == ST_AUTO_SIZE)
+                size = ST::char_buffer::strlen(cstr);
             _convert_from_utf8(cstr, size, validation);
         }
 
         void set(const wchar_t *wstr, size_t size = ST_AUTO_SIZE,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
+            if (size == ST_AUTO_SIZE)
+                size = ST::wchar_buffer::strlen(wstr);
             _convert_from_wchar(wstr, size, validation);
         }
 
         template <size_t size>
         void set(const char (&literal)[size],
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+                 utf_validation_t validation = assume_valid)
         {
             _convert_from_utf8(literal, size - 1, validation);
         }
 
         template <size_t size>
-        void set(char (&literal)[size],
+        void set(char (&buffer)[size],
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             // Not using optimized version, as this may have been called
             // with a stack buffer rather than an actual literal
-            _convert_from_utf8(literal, ST_AUTO_SIZE, validation);
+            size_t real_size = ST::char_buffer::strlen(buffer);
+            _convert_from_utf8(buffer, real_size, validation);
         }
 
         template <size_t size>
         void set(const wchar_t (&literal)[size],
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+                 utf_validation_t validation = assume_valid)
         {
             _convert_from_wchar(literal, size - 1, validation);
         }
 
         template <size_t size>
-        void set(wchar_t (&literal)[size],
+        void set(wchar_t (&buffer)[size],
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             // Not using optimized version, as this may have been called
             // with a stack buffer rather than an actual literal
-            _convert_from_wchar(literal, ST_AUTO_SIZE, validation);
+            size_t real_size = ST::wchar_buffer::strlen(buffer);
+            _convert_from_wchar(buffer, real_size, validation);
         }
 
         void set(const string &copy) ST_NOEXCEPT
@@ -335,6 +347,9 @@ namespace ST
                                        size_t size = ST_AUTO_SIZE,
                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
+            if (size == ST_AUTO_SIZE)
+                size = ST::char_buffer::strlen(utf8);
+
             string str;
             str._convert_from_utf8(utf8, size, validation);
             return str;
@@ -344,6 +359,9 @@ namespace ST
                                         size_t size = ST_AUTO_SIZE,
                                         utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
+            if (size == ST_AUTO_SIZE)
+                size = ST::utf16_buffer::strlen(utf16);
+
             string str;
             str._convert_from_utf16(utf16, size, validation);
             return str;
@@ -353,6 +371,9 @@ namespace ST
                                         size_t size = ST_AUTO_SIZE,
                                         utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
+            if (size == ST_AUTO_SIZE)
+                size = ST::utf32_buffer::strlen(utf32);
+
             string str;
             str._convert_from_utf32(utf32, size, validation);
             return str;
@@ -362,6 +383,9 @@ namespace ST
                                         size_t size = ST_AUTO_SIZE,
                                         utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
+            if (size == ST_AUTO_SIZE)
+                size = ST::wchar_buffer::strlen(wstr);
+
             string str;
             str._convert_from_wchar(wstr, size, validation);
             return str;
@@ -370,6 +394,9 @@ namespace ST
         static inline string from_latin_1(const char *astr,
                                           size_t size = ST_AUTO_SIZE)
         {
+            if (size == ST_AUTO_SIZE)
+                size = ST::char_buffer::strlen(astr);
+
             string str;
             str._convert_from_latin_1(astr, size);
             return str;
