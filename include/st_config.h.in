@@ -27,6 +27,7 @@
 #cmakedefine ST_HAVE_VARARG_TEMPLATE
 #cmakedefine ST_HAVE_TYPE_TRAITS
 #cmakedefine ST_HAVE_CONSTEXPR
+#cmakedefine ST_INT64_IS_LONG
 #cmakedefine01 ST_BUILD_SHARED
 
 #ifdef ST_HAVE_NOEXCEPT

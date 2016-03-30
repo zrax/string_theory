@@ -59,6 +59,12 @@ try_compile(ST_HAVE_TYPE_TRAITS "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_type_traits.cpp")
 try_compile(ST_HAVE_CONSTEXPR "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_constexpr.cpp")
+try_compile(ST_INT64_IS_NOT_LONG "${PROJECT_BINARY_DIR}"
+            "${PROJECT_SOURCE_DIR}/cmake/check_int64_is_long.cpp")
+
+if(NOT ST_INT64_IS_NOT_LONG)
+    set(ST_INT64_IS_LONG TRUE)
+endif()
 
 include(CheckTypeSize)
 if(NOT ST_WCHAR_BYTES)
@@ -172,4 +178,4 @@ install(EXPORT string_theory-targets
         DESTINATION "${ST_INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 enable_testing()
-add_subdirectory(test EXCLUDE_FROM_ALL)
+add_subdirectory(test)

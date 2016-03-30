@@ -353,7 +353,10 @@ _ST_FORMAT_INT_TYPE(signed char, unsigned char)
 _ST_FORMAT_INT_TYPE(short, unsigned short)
 _ST_FORMAT_INT_TYPE(int, unsigned)
 _ST_FORMAT_INT_TYPE(long, unsigned long)
-_ST_FORMAT_INT_TYPE(long long, unsigned long long)
+
+#if defined(ST_HAVE_INT64) && !defined(ST_INT64_IS_LONG)
+_ST_FORMAT_INT_TYPE(int64_t, uint64_t)
+#endif
 
 ST_FORMAT_TYPE(float)
 {

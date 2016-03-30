@@ -15,10 +15,17 @@
 
 #include <cstdint>
 
+int64_t overloaded(long a)
+{
+    return static_cast<int64_t>(a);
+}
+
+int64_t overloaded(int64_t a)
+{
+    return a;
+}
+
 int main(int, char **)
 {
-    int64_t x = -1LL;
-    uint64_t y = 1ULL;
-
     return 0;
 }

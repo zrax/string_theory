@@ -19,7 +19,7 @@
 #include "st_config.h"
 
 #include <functional>
-#include <exception>
+#include <stdexcept>
 
 namespace ST
 {
