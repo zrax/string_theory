@@ -1,4 +1,5 @@
 #include "st_string.h"
+#include "st_assert.h"
 
 #include <gtest/gtest.h>
 #include <wchar.h>
@@ -94,11 +95,24 @@ TEST(string, stack_construction)
     EXPECT_EQ(ST::string("Test"), test);
     EXPECT_EQ(strlen("Test"), test.size());
 
+    wchar_t wstack_buf[256];
+    wcscpy(wstack_buf, L"Test");
+    ST::string wtest(wstack_buf);
+
+    EXPECT_EQ(ST::string(L"Test"), wtest);
+    EXPECT_EQ(strlen("Test"), wtest.size());
+
     strcpy(stack_buf, "operator=");
     test = stack_buf;
 
     EXPECT_EQ(ST::string("operator="), test);
     EXPECT_EQ(strlen("operator="), test.size());
+
+    wcscpy(wstack_buf, L"operator=");
+    wtest = wstack_buf;
+
+    EXPECT_EQ(ST::string(L"operator="), wtest);
+    EXPECT_EQ(strlen("operator="), wtest.size());
 }
 
 TEST(string, utf8)
@@ -196,30 +210,37 @@ TEST(string, conversion_errors)
 
     // Character outside of Unicode specification range
     const char32_t too_big_c[] = { 0xffffff, 0 };
+    EXPECT_THROW(ST::string::from_utf32(too_big_c, ST_AUTO_SIZE, ST::check_validity),
+                 ST::unicode_error);
     ST::utf32_buffer too_big = ST::string::from_utf32(too_big_c, ST_AUTO_SIZE,
                                                       ST::substitute_invalid).to_utf32();
     EXPECT_EQ(0, T_strcmp(unicode_replacement, too_big.data()));
 
     // Invalid surrogate pairs
     const char16_t incomplete_surr_c[] = { 0xd800, 0 };
+    EXPECT_THROW(ST::string::from_utf16(incomplete_surr_c, ST_AUTO_SIZE, ST::check_validity),
+                 ST::unicode_error);
     ST::string incomplete_surr = ST::string::from_utf16(incomplete_surr_c, ST_AUTO_SIZE,
                                                         ST::substitute_invalid);
     EXPECT_EQ(0, T_strcmp(unicode_replacement, incomplete_surr.to_utf32().data()));
 
     const char16_t double_low_c[] = { 0xd800, 0xd801, 0 };
+    EXPECT_THROW(ST::string::from_utf16(double_low_c, ST_AUTO_SIZE, ST::check_validity),
+                 ST::unicode_error);
     ST::string double_low = ST::string::from_utf16(double_low_c, ST_AUTO_SIZE,
                                                    ST::substitute_invalid);
     EXPECT_EQ(0, T_strcmp(unicode_replacement, double_low.to_utf32().data()));
 
     const char16_t bad_combo_c[] = { 0xdc00, 0x20, 0 };
+    EXPECT_THROW(ST::string::from_utf16(bad_combo_c, ST_AUTO_SIZE, ST::check_validity),
+                 ST::unicode_error);
     ST::string bad_combo = ST::string::from_utf16(bad_combo_c, ST_AUTO_SIZE,
                                                   ST::substitute_invalid);
     EXPECT_EQ(0, T_strcmp(unicode_replacement, bad_combo.to_utf32().data()));
 
     // Latin-1 doesn't have \ufffd, so it uses '?' instead
     const char32_t non_latin1_c[] = { 0x1ff, 0 };
-    ST::char_buffer non_latin1 = ST::string::from_utf32(non_latin1_c, ST_AUTO_SIZE,
-                                                        ST::substitute_invalid).to_latin_1();
+    ST::char_buffer non_latin1 = ST::string::from_utf32(non_latin1_c).to_latin_1();
     EXPECT_STREQ(latin1_replacement, non_latin1.data());
 }
 
