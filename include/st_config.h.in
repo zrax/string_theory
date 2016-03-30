@@ -18,6 +18,7 @@
 
 #cmakedefine ST_HAVE_NOEXCEPT
 #cmakedefine ST_HAVE_OVERRIDE
+#cmakedefine ST_HAVE_NULLPTR
 #cmakedefine ST_HAVE_STATIC_ASSERT
 #cmakedefine ST_HAVE_RVALUE_MOVE
 #cmakedefine ST_HAVE_CHAR_TYPES
@@ -38,6 +39,12 @@
 #   define ST_OVERRIDE override
 #else
 #   define ST_OVERRIDE
+#endif
+
+#ifdef ST_HAVE_NULLPTR
+#   define ST_NULLPTR nullptr
+#else
+#   define ST_NULLPTR 0
 #endif
 
 #ifdef ST_HAVE_STATIC_ASSERT

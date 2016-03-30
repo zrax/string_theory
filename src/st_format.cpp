@@ -118,7 +118,7 @@ ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
         {
-            char *end = nullptr;
+            char *end = ST_NULLPTR;
             spec.m_minimum_length = static_cast<int>(strtol(ptr, &end, 10));
             ptr = end - 1;
             break;
@@ -126,7 +126,7 @@ ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &
         case '.':
         {
             ST_ASSERT(*(ptr + 1), "Unterminated format specifier");
-            char *end = nullptr;
+            char *end = ST_NULLPTR;
             spec.m_precision = static_cast<int>(strtol(ptr + 1, &end, 10));
             ptr = end - 1;
             break;
@@ -389,7 +389,7 @@ ST_FORMAT_TYPE(double)
         (format.m_float_class == ST::float_fixed) ? 'f' : 'g';
     format_buffer[end] = 0;
 
-    int format_size = snprintf(nullptr, 0, format_buffer, value);
+    int format_size = snprintf(ST_NULLPTR, 0, format_buffer, value);
     ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
     ST::char_buffer out_buffer;
     char *fmt_out;

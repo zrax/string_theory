@@ -667,34 +667,34 @@ ST::char_buffer ST::string::to_latin_1() const
 
 int ST::string::to_int(int base) const ST_NOEXCEPT
 {
-    return static_cast<int>(strtol(c_str(), nullptr, base));
+    return static_cast<int>(strtol(c_str(), ST_NULLPTR, base));
 }
 
 unsigned int ST::string::to_uint(int base) const ST_NOEXCEPT
 {
-    return static_cast<unsigned int>(strtoul(c_str(), nullptr, base));
+    return static_cast<unsigned int>(strtoul(c_str(), ST_NULLPTR, base));
 }
 
 float ST::string::to_float() const ST_NOEXCEPT
 {
     // Use strtod to avoid requiring C99
-    return static_cast<float>(strtod(c_str(), nullptr));
+    return static_cast<float>(strtod(c_str(), ST_NULLPTR));
 }
 
 double ST::string::to_double() const ST_NOEXCEPT
 {
-    return strtod(c_str(), nullptr);
+    return strtod(c_str(), ST_NULLPTR);
 }
 
 #ifdef ST_HAVE_INT64
 int64_t ST::string::to_int64(int base) const ST_NOEXCEPT
 {
-    return static_cast<int64_t>(strtoll(c_str(), nullptr, base));
+    return static_cast<int64_t>(strtoll(c_str(), ST_NULLPTR, base));
 }
 
 uint64_t ST::string::to_uint64(int base) const ST_NOEXCEPT
 {
-    return static_cast<uint64_t>(strtoull(c_str(), nullptr, base));
+    return static_cast<uint64_t>(strtoull(c_str(), ST_NULLPTR, base));
 }
 #endif
 

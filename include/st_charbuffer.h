@@ -58,7 +58,7 @@ namespace ST
 
             _scope_deleter(buffer<char_T> *self)
             {
-                m_buffer = self->is_reffed() ? self->m_ref : nullptr;
+                m_buffer = self->is_reffed() ? self->m_ref : ST_NULLPTR;
             }
 
             ~_scope_deleter()

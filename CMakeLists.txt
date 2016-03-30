@@ -41,6 +41,8 @@ try_compile(ST_HAVE_NOEXCEPT "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_noexcept.cpp")
 try_compile(ST_HAVE_OVERRIDE "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_override.cpp")
+try_compile(ST_HAVE_NULLPTR "${PROJECT_BINARY_DIR}"
+            "${PROJECT_SOURCE_DIR}/cmake/check_nullptr.cpp")
 try_compile(ST_HAVE_STATIC_ASSERT "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_static_assert.cpp")
 try_compile(ST_HAVE_RVALUE_MOVE "${PROJECT_BINARY_DIR}"
