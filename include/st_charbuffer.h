@@ -37,28 +37,9 @@ namespace ST
     class ST_EXPORT buffer
     {
     private:
-        struct ST_EXPORT _sref
-        {
-            unsigned int m_refs;
-            const char_T *m_data;
-
-            _sref(const char_T *data) ST_NOEXCEPT
-                : m_refs(1), m_data(data)
-            { }
-
-            inline void add_ref() ST_NOEXCEPT { ++m_refs; }
-            inline void dec_ref() ST_NOEXCEPT
-            {
-                if (--m_refs == 0) {
-                    delete[] m_data;
-                    delete this;
-                }
-            }
-        };
-
         union
         {
-            _sref *m_ref;
+            char_T *m_ref;
             char_T m_data[ST_SHORT_STRING_LEN];
         };
         size_t m_size;
@@ -68,6 +49,24 @@ namespace ST
             return m_size >= ST_SHORT_STRING_LEN;
         }
 
+        struct _scope_deleter
+        {
+            // Useful for deleting the buffer at the *end* of a function,
+            // even though we must capture it at the beginning, in case
+            // the user does something silly like assign a buffer to itself.
+            char_T *m_buffer;
+
+            _scope_deleter(buffer<char_T> *self)
+            {
+                m_buffer = self->is_reffed() ? self->m_ref : nullptr;
+            }
+
+            ~_scope_deleter()
+            {
+                delete[] m_buffer;
+            }
+        };
+
     public:
         buffer() ST_NOEXCEPT
             : m_size()
@@ -75,12 +74,17 @@ namespace ST
             _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
         }
 
-        buffer(const buffer<char_T> &copy) ST_NOEXCEPT
+        buffer(const buffer<char_T> &copy)
             : m_size(copy.m_size)
         {
-            _ST_PRIVATE::_copy_buffer(m_data, copy.m_data, sizeof(m_data));
-            if (is_reffed())
-                m_ref->add_ref();
+            _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
+            if (is_reffed()) {
+                m_ref = new char_T[m_size + 1];
+                _ST_PRIVATE::_copy_buffer(m_ref, copy.m_ref, m_size * sizeof(char_T));
+                m_ref[m_size] = 0;
+            } else {
+                _ST_PRIVATE::_copy_buffer(m_data, copy.m_data, sizeof(m_data));
+            }
         }
 
 #ifdef ST_HAVE_RVALUE_MOVE
@@ -96,40 +100,37 @@ namespace ST
             : m_size(size)
         {
             _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
-            char_T *copy_data = is_reffed() ? new char_T[size + 1] : m_data;
-            _ST_PRIVATE::_copy_buffer(copy_data, data, size * sizeof(char_T));
-            copy_data[size] = 0;
-
-            if (is_reffed())
-                m_ref = new _sref(copy_data);
+            char_T *buffer = is_reffed() ? (m_ref = new char_T[m_size + 1]) : m_data;
+            _ST_PRIVATE::_copy_buffer(buffer, data, m_size * sizeof(char_T));
+            buffer[m_size] = 0;
         }
 
         ~buffer<char_T>() ST_NOEXCEPT
         {
             if (is_reffed())
-                m_ref->dec_ref();
+                delete[] m_ref;
         }
 
         buffer<char_T> &operator=(const buffer<char_T> &copy) ST_NOEXCEPT
         {
-            if (copy.is_reffed())
-                copy.m_ref->add_ref();
-            if (is_reffed())
-                m_ref->dec_ref();
-
-            _ST_PRIVATE::_copy_buffer(m_data, copy.m_data, sizeof(m_data));
+            _scope_deleter unref(this);
             m_size = copy.m_size;
+            if (is_reffed()) {
+                m_ref = new char_T[m_size + 1];
+                _ST_PRIVATE::_copy_buffer(m_ref, copy.m_ref, m_size * sizeof(char_T));
+                m_ref[m_size] = 0;
+            } else {
+                _ST_PRIVATE::_copy_buffer(m_data, copy.m_data, sizeof(m_data));
+            }
             return *this;
         }
 
 #ifdef ST_HAVE_RVALUE_MOVE
         buffer<char_T> &operator=(buffer<char_T> &&move) ST_NOEXCEPT
         {
-            if (is_reffed())
-                m_ref->dec_ref();
-
-            _ST_PRIVATE::_copy_buffer(m_data, move.m_data, sizeof(m_data));
+            _scope_deleter unref(this);
             m_size = std::move(move.m_size);
+            _ST_PRIVATE::_copy_buffer(m_data, move.m_data, sizeof(m_data));
             move.m_size = 0;
             return *this;
         }
@@ -137,7 +138,7 @@ namespace ST
 
         const char_T *data() const ST_NOEXCEPT
         {
-            return is_reffed() ? m_ref->m_data : m_data;
+            return is_reffed() ? m_ref : m_data;
         }
 
         size_t size() const ST_NOEXCEPT { return m_size; }
@@ -147,16 +148,13 @@ namespace ST
         char_T *create_writable_buffer(size_t size)
         {
             if (is_reffed())
-                m_ref->dec_ref();
+                delete[] m_ref;
 
             m_size = size;
-            if (is_reffed()) {
-                char_T *writable = new char_T[m_size + 1];
-                m_ref = new _sref(writable);
-                return writable;
-            } else {
+            if (is_reffed())
+                return m_ref = new char_T[m_size + 1];
+            else
                 return m_data;
-            }
         }
 
         static inline size_t strlen(const char_T *buffer)
