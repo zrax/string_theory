@@ -607,10 +607,10 @@ ST::wchar_buffer ST::string::to_wchar() const
 {
 #if ST_WCHAR_BYTES == 2
     utf16_buffer utf16 = to_utf16();
-    return *reinterpret_cast<wchar_buffer *>(&utf16);
+    return wchar_buffer(reinterpret_cast<const wchar_t *>(utf16.data()), utf16.size());
 #else
     utf32_buffer utf32 = to_utf32();
-    return *reinterpret_cast<wchar_buffer *>(&utf32);
+    return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32.data()), utf32.size());
 #endif
 }
 
