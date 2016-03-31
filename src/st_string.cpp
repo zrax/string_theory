@@ -614,7 +614,7 @@ ST::wchar_buffer ST::string::to_wchar() const
 #endif
 }
 
-ST::char_buffer ST::string::to_latin_1() const
+ST::char_buffer ST::string::to_latin_1(utf_validation_t validation) const
 {
     char_buffer result;
     if (is_empty())
@@ -658,7 +658,19 @@ ST::char_buffer ST::string::to_latin_1() const
         } else {
             bigch = *sp++;
         }
-        *dp++ = (bigch < 0x100) ? bigch : '?';
+
+        if (bigch >= 0x100) {
+            switch (validation) {
+            case check_validity:
+                throw ST::unicode_error("Latin-1 character out of range");
+            case assert_validity:
+                ST_ASSERT(false, "Latin-1 character out of range");
+                /* fall through */
+            default:
+                bigch = '?';
+            }
+        }
+        *dp++ = static_cast<char>(bigch);
     }
     astr[convlen] = 0;
 

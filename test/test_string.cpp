@@ -240,6 +240,8 @@ TEST(string, conversion_errors)
 
     // Latin-1 doesn't have \ufffd, so it uses '?' instead
     const char32_t non_latin1_c[] = { 0x1ff, 0 };
+    EXPECT_THROW(ST::string::from_utf32(non_latin1_c).to_latin_1(ST::check_validity),
+                 ST::unicode_error);
     ST::char_buffer non_latin1 = ST::string::from_utf32(non_latin1_c).to_latin_1();
     EXPECT_STREQ(latin1_replacement, non_latin1.data());
 }

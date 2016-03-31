@@ -332,7 +332,7 @@ namespace ST
         utf16_buffer to_utf16() const;
         utf32_buffer to_utf32() const;
         wchar_buffer to_wchar() const;
-        char_buffer to_latin_1() const;
+        char_buffer to_latin_1(utf_validation_t validation = substitute_invalid) const;
 
         size_t size() const ST_NOEXCEPT { return m_buffer.size(); }
 
