@@ -79,7 +79,21 @@ ST::string_stream &ST::string_stream::operator<<(unsigned int num)
     return append(buffer);
 }
 
-#ifdef ST_HAVE_INT64
+ST::string_stream &ST::string_stream::operator<<(long num)
+{
+    char buffer[24];
+    snprintf(buffer, sizeof(buffer), "%ld", num);
+    return append(buffer);
+}
+
+ST::string_stream &ST::string_stream::operator<<(unsigned long num)
+{
+    char buffer[24];
+    snprintf(buffer, sizeof(buffer), "%lu", num);
+    return append(buffer);
+}
+
+#if defined(ST_HAVE_INT64) && !defined(ST_INT64_IS_LONG)
 ST::string_stream &ST::string_stream::operator<<(int64_t num)
 {
     char buffer[24];
