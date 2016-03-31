@@ -64,6 +64,11 @@ int main(int, char **)
         volatile const char *V = short_str.c_str();
     });
 
+    _measure("Short ST::string (literal)", []() {
+        ST::string short_str = ST_LITERAL("Short");
+        volatile const char *V = short_str.c_str();
+    });
+
     _measure("Long std::string", []() {
         std::string long_str("This is a long string.  Testing the excessively long long string.");
         volatile const char *V = long_str.c_str();
@@ -77,6 +82,11 @@ int main(int, char **)
     _measure("Long ST::string (assume_valid)", []() {
         ST::string long_str("This is a long string.  Testing the excessively long long string.",
                             ST_AUTO_SIZE, ST::assume_valid);
+        volatile const char *V = long_str.c_str();
+    });
+
+    _measure("Long ST::string (literal)", []() {
+        ST::string long_str = ST_LITERAL("This is a long string.  Testing the excessively long long string.");
         volatile const char *V = long_str.c_str();
     });
 
