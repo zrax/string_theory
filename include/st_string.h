@@ -534,4 +534,26 @@ ST_EXPORT inline ST::string operator+(const wchar_t *left, const ST::string &rig
 #define ST_LITERAL(str) \
     ST::string::from_literal("" str "", sizeof(str) - 1)
 
+#ifdef ST_HAVE_USER_LITERALS
+inline ST::string operator"" _st(const char *str, size_t size)
+{
+    return ST::string::from_literal(str, size);
+}
+
+inline ST::string operator"" _st(const wchar_t *str, size_t size)
+{
+    return ST::string::from_wchar(str, size, ST::assume_valid);
+}
+
+inline ST::string operator"" _st(const char16_t *str, size_t size)
+{
+    return ST::string::from_utf16(str, size, ST::assume_valid);
+}
+
+inline ST::string operator"" _st(const char32_t *str, size_t size)
+{
+    return ST::string::from_utf32(str, size, ST::assume_valid);
+}
+#endif
+
 #endif // _ST_STRING_H
