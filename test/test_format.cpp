@@ -40,7 +40,7 @@ TEST(format, errors)
     EXPECT_DEATH(ST::format("{", 1), "Unterminated format specifier");
     EXPECT_DEATH(ST::format("{.", 1), "Unterminated format specifier");
     EXPECT_DEATH(ST::format("{_", 1), "Unterminated format specifier");
-    EXPECT_DEATH(ST::format(nullptr, 1), "Passed a null format string");
+    EXPECT_DEATH(ST::format(ST_NULLPTR, 1), "Passed a null format string");
 }
 
 TEST(format, strings)

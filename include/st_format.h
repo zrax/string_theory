@@ -54,15 +54,15 @@ namespace ST
         _ST_PRIVATE::format_data_object data;
         data.m_format_str = fmt_str;
         data.m_is_utf8 = true;
-        data.m_validation = assert_validity;
+        data.m_validation = ST_DEFAULT_VALIDATION;
         ST::format_spec format = _ST_PRIVATE::fetch_next_format(data);
         _ST_impl_format_data_handler(format, data.m_output, value);
         return _ST_PRIVATE::format(data, args...);
     }
 
     template <typename type_T, typename... args_T>
-    ST_EXPORT string format(const char *fmt_str, type_T value, args_T ...args,
-                            utf_validation_t validation)
+    ST_EXPORT string format(utf_validation_t validation, const char *fmt_str,
+                            type_T value, args_T ...args)
     {
         _ST_PRIVATE::format_data_object data;
         data.m_format_str = fmt_str;
