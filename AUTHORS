@@ -1,0 +1,14 @@
+string_theory was originally ported from the plString and plFormat classes
+from http://github.com/H-uru/Plasma.  It has since been extracted into its
+own independent library (string_theory) by Michael Hansen.
+
+Contributors to H-uru/Plasma's string library:
+- Michael Hansen @zrax
+- Darryl Pogue @dpogue
+- Anne Marije van der Meer @Lunanne
+- Adam Johnson @Hoikas
+- Bartek Bok @boq
+- Joseph Davies @Deledrius (regex support - not ported to string_theory)
+
+Authors and contributors to string_theory:
+- Michael Hansen @zrax
