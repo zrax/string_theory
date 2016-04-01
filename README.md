@@ -53,9 +53,9 @@ String Theory is designed to provide:
   on a variety of compilers and systems.  For `ST::string`, this ends up being
   a bit slower than C++'s `std::string` due to the extra encoding work.
   However, in my tests `ST::string_stream` tends to be faster or at least on
-  par with `std::string`, and `ST::format` generally clocks in significantly
-  faster than `boost::format` (albeit slower than non-type-safe formatters
-  like `sprintf`).
+  par with `std::stringstream`, and `ST::format` generally clocks in
+  significantly faster than `boost::format` (albeit slower than non-type-safe
+  formatters like `sprintf`).
 - Cross Platform.  String Theory is supported on any platform that provides a
   reasonably modern C++ compiler.  You can use it with older compilers as well,
   but note that the feature set may become somewhat reduced by doing so.
