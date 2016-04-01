@@ -24,6 +24,7 @@
 #include <gtest/gtest.h>
 #include <wchar.h>
 #include <cmath>
+#include <limits>
 
 static const char32_t test_data[] = {
     0x20,       0x7f,       /* Normal ASCII chars */
@@ -340,38 +341,42 @@ TEST(string, to_int)
     EXPECT_EQ(1000000000000LL, ST::string("+16432451210000").to_int64(8));
 #endif
 
-    EXPECT_EQ(-2147483648, ST::string("-2147483648").to_int());
-    EXPECT_EQ(2147483647, ST::string("2147483647").to_int());
-    EXPECT_EQ(2147483647, ST::string("+2147483647").to_int());
-    EXPECT_EQ(-2147483648, ST::string("-0x80000000").to_int());
-    EXPECT_EQ(2147483647, ST::string("0x7FFFFFFF").to_int());
-    EXPECT_EQ(2147483647, ST::string("+0x7FFFFFFF").to_int());
-    EXPECT_EQ(-2147483648, ST::string("-020000000000").to_int());
-    EXPECT_EQ(2147483647, ST::string("017777777777").to_int());
-    EXPECT_EQ(2147483647, ST::string("+017777777777").to_int());
-    EXPECT_EQ(-2147483648, ST::string("-80000000").to_int(16));
-    EXPECT_EQ(2147483647, ST::string("7FFFFFFF").to_int(16));
-    EXPECT_EQ(2147483647, ST::string("+7FFFFFFF").to_int(16));
-    EXPECT_EQ(-2147483648, ST::string("-20000000000").to_int(8));
-    EXPECT_EQ(2147483647, ST::string("17777777777").to_int(8));
-    EXPECT_EQ(2147483647, ST::string("+17777777777").to_int(8));
+    static const int int32_min = std::numeric_limits<int>::min();
+    static const int int32_max = std::numeric_limits<int>::max();
+    EXPECT_EQ(int32_min, ST::string("-2147483648").to_int());
+    EXPECT_EQ(int32_max, ST::string("2147483647").to_int());
+    EXPECT_EQ(int32_max, ST::string("+2147483647").to_int());
+    EXPECT_EQ(int32_min, ST::string("-0x80000000").to_int());
+    EXPECT_EQ(int32_max, ST::string("0x7FFFFFFF").to_int());
+    EXPECT_EQ(int32_max, ST::string("+0x7FFFFFFF").to_int());
+    EXPECT_EQ(int32_min, ST::string("-020000000000").to_int());
+    EXPECT_EQ(int32_max, ST::string("017777777777").to_int());
+    EXPECT_EQ(int32_max, ST::string("+017777777777").to_int());
+    EXPECT_EQ(int32_min, ST::string("-80000000").to_int(16));
+    EXPECT_EQ(int32_max, ST::string("7FFFFFFF").to_int(16));
+    EXPECT_EQ(int32_max, ST::string("+7FFFFFFF").to_int(16));
+    EXPECT_EQ(int32_min, ST::string("-20000000000").to_int(8));
+    EXPECT_EQ(int32_max, ST::string("17777777777").to_int(8));
+    EXPECT_EQ(int32_max, ST::string("+17777777777").to_int(8));
 
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(-9223372036854775808LL, ST::string("-9223372036854775808").to_int64());
-    EXPECT_EQ(9223372036854775807LL, ST::string("9223372036854775807").to_int64());
-    EXPECT_EQ(9223372036854775807LL, ST::string("+9223372036854775807").to_int64());
-    EXPECT_EQ(-9223372036854775808LL, ST::string("-0x8000000000000000").to_int64());
-    EXPECT_EQ(9223372036854775807LL, ST::string("0x7FFFFFFFFFFFFFFF").to_int64());
-    EXPECT_EQ(9223372036854775807LL, ST::string("+0x7FFFFFFFFFFFFFFF").to_int64());
-    EXPECT_EQ(-9223372036854775808LL, ST::string("-01000000000000000000000").to_int64());
-    EXPECT_EQ(9223372036854775807LL, ST::string("0777777777777777777777").to_int64());
-    EXPECT_EQ(9223372036854775807LL, ST::string("+0777777777777777777777").to_int64());
-    EXPECT_EQ(-9223372036854775808LL, ST::string("-8000000000000000").to_int64(16));
-    EXPECT_EQ(9223372036854775807LL, ST::string("7FFFFFFFFFFFFFFF").to_int64(16));
-    EXPECT_EQ(9223372036854775807LL, ST::string("+7FFFFFFFFFFFFFFF").to_int64(16));
-    EXPECT_EQ(-9223372036854775808LL, ST::string("-1000000000000000000000").to_int64(8));
-    EXPECT_EQ(9223372036854775807LL, ST::string("777777777777777777777").to_int64(8));
-    EXPECT_EQ(9223372036854775807LL, ST::string("+777777777777777777777").to_int64(8));
+    static const long long int64_min = std::numeric_limits<long long>::min();
+    static const long long int64_max = std::numeric_limits<long long>::max();
+    EXPECT_EQ(int64_min, ST::string("-9223372036854775808").to_int64());
+    EXPECT_EQ(int64_max, ST::string("9223372036854775807").to_int64());
+    EXPECT_EQ(int64_max, ST::string("+9223372036854775807").to_int64());
+    EXPECT_EQ(int64_min, ST::string("-0x8000000000000000").to_int64());
+    EXPECT_EQ(int64_max, ST::string("0x7FFFFFFFFFFFFFFF").to_int64());
+    EXPECT_EQ(int64_max, ST::string("+0x7FFFFFFFFFFFFFFF").to_int64());
+    EXPECT_EQ(int64_min, ST::string("-01000000000000000000000").to_int64());
+    EXPECT_EQ(int64_max, ST::string("0777777777777777777777").to_int64());
+    EXPECT_EQ(int64_max, ST::string("+0777777777777777777777").to_int64());
+    EXPECT_EQ(int64_min, ST::string("-8000000000000000").to_int64(16));
+    EXPECT_EQ(int64_max, ST::string("7FFFFFFFFFFFFFFF").to_int64(16));
+    EXPECT_EQ(int64_max, ST::string("+7FFFFFFFFFFFFFFF").to_int64(16));
+    EXPECT_EQ(int64_min, ST::string("-1000000000000000000000").to_int64(8));
+    EXPECT_EQ(int64_max, ST::string("777777777777777777777").to_int64(8));
+    EXPECT_EQ(int64_max, ST::string("+777777777777777777777").to_int64(8));
 #endif
 
     // Empty string is treated as zero for compatibility with strtol
@@ -417,20 +422,22 @@ TEST(string, to_uint)
     EXPECT_EQ(1000000000000ULL, ST::string("+16432451210000").to_uint64(8));
 #endif
 
-    EXPECT_EQ(4294967295UL, ST::string("4294967295").to_uint());
-    EXPECT_EQ(4294967295UL, ST::string("+4294967295").to_uint());
-    EXPECT_EQ(4294967295UL, ST::string("0xFFFFFFFF").to_uint());
-    EXPECT_EQ(4294967295UL, ST::string("+0xFFFFFFFF").to_uint());
-    EXPECT_EQ(4294967295UL, ST::string("037777777777").to_uint());
-    EXPECT_EQ(4294967295UL, ST::string("+037777777777").to_uint());
+    static const unsigned int uint32_max = std::numeric_limits<unsigned int>::max();
+    EXPECT_EQ(uint32_max, ST::string("4294967295").to_uint());
+    EXPECT_EQ(uint32_max, ST::string("+4294967295").to_uint());
+    EXPECT_EQ(uint32_max, ST::string("0xFFFFFFFF").to_uint());
+    EXPECT_EQ(uint32_max, ST::string("+0xFFFFFFFF").to_uint());
+    EXPECT_EQ(uint32_max, ST::string("037777777777").to_uint());
+    EXPECT_EQ(uint32_max, ST::string("+037777777777").to_uint());
 
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(18446744073709551615ULL, ST::string("18446744073709551615").to_uint64());
-    EXPECT_EQ(18446744073709551615ULL, ST::string("+18446744073709551615").to_uint64());
-    EXPECT_EQ(18446744073709551615ULL, ST::string("0xFFFFFFFFFFFFFFFF").to_uint64());
-    EXPECT_EQ(18446744073709551615ULL, ST::string("+0xFFFFFFFFFFFFFFFF").to_uint64());
-    EXPECT_EQ(18446744073709551615ULL, ST::string("01777777777777777777777").to_uint64());
-    EXPECT_EQ(18446744073709551615ULL, ST::string("+01777777777777777777777").to_uint64());
+    static const unsigned long long uint64_max = std::numeric_limits<unsigned long long>::max();
+    EXPECT_EQ(uint64_max, ST::string("18446744073709551615").to_uint64());
+    EXPECT_EQ(uint64_max, ST::string("+18446744073709551615").to_uint64());
+    EXPECT_EQ(uint64_max, ST::string("0xFFFFFFFFFFFFFFFF").to_uint64());
+    EXPECT_EQ(uint64_max, ST::string("+0xFFFFFFFFFFFFFFFF").to_uint64());
+    EXPECT_EQ(uint64_max, ST::string("01777777777777777777777").to_uint64());
+    EXPECT_EQ(uint64_max, ST::string("+01777777777777777777777").to_uint64());
 #endif
 
     // Empty string is treated as zero for compatibility with strtoul
