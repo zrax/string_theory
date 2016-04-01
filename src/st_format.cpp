@@ -90,6 +90,10 @@ ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &
             ST_ASSERT(spec.m_pad, "Unterminated format specifier");
             ++ptr;
             break;
+        case '0':
+            // For easier porting from %08X-style printf strings
+            spec.m_pad = '0';
+            break;
         case 'x':
             spec.m_digit_class = ST::digit_hex;
             break;
@@ -120,8 +124,8 @@ ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &
         case 'E':
             spec.m_float_class = ST::float_exp_upper;
             break;
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
+        case '1': case '2': case '3': case '4': case '5':
+        case '6': case '7': case '8': case '9':
         {
             char *end = ST_NULLPTR;
             spec.m_minimum_length = static_cast<int>(strtol(ptr, &end, 10));
