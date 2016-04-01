@@ -104,12 +104,19 @@ configure_file("${PROJECT_SOURCE_DIR}/include/st_config.h.in"
                "${PROJECT_BINARY_DIR}/include/st_config.h")
 include_directories("${PROJECT_BINARY_DIR}/include")
 
-set(ST_HEADERS
+set(ST_HEADERS_PRIV
     include/st_assert.h
     include/st_charbuffer.h
     include/st_string.h
     include/st_stringstream.h
     "${PROJECT_BINARY_DIR}/include/st_config.h"
+)
+set(ST_HEADERS_PUB
+    include/assert
+    include/char_buffer
+    include/exceptions
+    include/string
+    include/string_stream
 )
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
@@ -121,10 +128,15 @@ set(ST_SOURCES
 )
 
 if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS)
-    set(ST_HEADERS ${ST_HEADERS}
+    set(ST_HEADERS_PRIV ${ST_HEADERS_PRIV}
         include/st_formatter.h
         include/st_format.h
         include/st_stlformatter.h
+    )
+    set(ST_HEADERS_PUB ${ST_HEADERS_PUB}
+        include/formatter
+        include/format
+        include/stl_formatter
     )
     set(ST_SOURCES ${ST_SOURCES}
         src/st_format.cpp
@@ -146,7 +158,7 @@ foreach(path LIB INCLUDE CMAKE)
 endforeach()
 
 add_library(string_theory ${ST_LIB_TYPE}
-            ${ST_HEADERS} ${ST_SOURCES})
+            ${ST_HEADERS_PRIV} ${ST_SOURCES})
 
 set_target_properties(string_theory PROPERTIES
     VERSION ${ST_VERSION}
@@ -159,7 +171,7 @@ install(TARGETS string_theory
         LIBRARY DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT shlib
         ARCHIVE DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT shlib
 )
-install(FILES ${ST_HEADERS}
+install(FILES ${ST_HEADERS_PRIV} ${ST_HEADERS_PUB}
         DESTINATION "${ST_INSTALL_INCLUDE_DIR}/string_theory" COMPONENT dev)
 
 export(TARGETS string_theory
