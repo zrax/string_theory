@@ -85,7 +85,7 @@ Contributing to String Theory
 
 String Theory is Open Source software, licensed under the
 [MIT license](https://opensource.org/licenses/MIT).  Contributions are welcome,
-and are accepted as issues or pull requests on GitHub:
+and may be submitted as issues and/or pull requests on GitHub:
 http://github.com/zrax/string_theory.
 
 Some ideas for areas to contribute:

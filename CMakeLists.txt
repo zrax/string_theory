@@ -112,11 +112,11 @@ set(ST_HEADERS_PRIV
     "${PROJECT_BINARY_DIR}/include/st_config.h"
 )
 set(ST_HEADERS_PUB
-    include/assert
-    include/char_buffer
-    include/exceptions
-    include/string
-    include/string_stream
+    include/string_theory/assert
+    include/string_theory/char_buffer
+    include/string_theory/exceptions
+    include/string_theory/string
+    include/string_theory/string_stream
 )
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
@@ -134,9 +134,9 @@ if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS)
         include/st_stlformatter.h
     )
     set(ST_HEADERS_PUB ${ST_HEADERS_PUB}
-        include/formatter
-        include/format
-        include/stl_formatter
+        include/string_theory/formatter
+        include/string_theory/format
+        include/string_theory/stl_formatter
     )
     set(ST_SOURCES ${ST_SOURCES}
         src/st_format.cpp
