@@ -96,12 +96,12 @@ TEST(string, utility)
     EXPECT_EQ(ST::string::null, ST::string(""));
     EXPECT_EQ(ST::string::null, ST::string{});
 
-    EXPECT_EQ(0, ST::string::null.size());
+    EXPECT_EQ(0U, ST::string::null.size());
     EXPECT_TRUE(ST::string::null.is_empty());
 
     // Short and Long string length
-    EXPECT_EQ(4, ST::string("1234").size());
-    EXPECT_EQ(32, ST::string("12345678901234567890123456789012").size());
+    EXPECT_EQ(4U, ST::string("1234").size());
+    EXPECT_EQ(32U, ST::string("12345678901234567890123456789012").size());
 
     // ST::string stores data as UTF-8 internally
     EXPECT_EQ(utf8_test_data_length, ST::string(utf8_test_data).size());
@@ -151,12 +151,12 @@ TEST(string, utf8)
 
     // Empty strings
     ST::string empty = ST::string::from_utf8("");
-    EXPECT_EQ(0, empty.size());
+    EXPECT_EQ(0U, empty.size());
     EXPECT_EQ(0, T_strcmp(empty.c_str(), ""));
 
     const char32_t empty_data[] = { 0 };
     empty = ST::string::from_utf32(empty_data);
-    EXPECT_EQ(0, empty.size());
+    EXPECT_EQ(0U, empty.size());
     EXPECT_EQ(0, T_strcmp(empty.c_str(), ""));
 }
 
@@ -175,7 +175,7 @@ TEST(string, utf16)
     // Empty string
     const char16_t empty_data[] = { 0 };
     ST::string empty = ST::string::from_utf16(empty_data);
-    EXPECT_EQ(0, empty.size());
+    EXPECT_EQ(0U, empty.size());
     EXPECT_EQ(0, T_strcmp(empty.c_str(), ""));
 }
 
@@ -196,7 +196,7 @@ TEST(string, latin_1)
 
     // Empty string
     ST::string empty = ST::string::from_latin_1("");
-    EXPECT_EQ(0, empty.size());
+    EXPECT_EQ(0U, empty.size());
     EXPECT_EQ(0, T_strcmp(empty.c_str(), ""));
 }
 
@@ -219,7 +219,7 @@ TEST(string, wchar)
 
     // Empty string
     ST::string empty = ST::string::from_wchar(L"");
-    EXPECT_EQ(0, empty.size());
+    EXPECT_EQ(0U, empty.size());
     EXPECT_EQ(0, T_strcmp(empty.c_str(), ""));
 }
 
@@ -388,26 +388,26 @@ TEST(string, to_int)
 
 TEST(string, to_uint)
 {
-    EXPECT_EQ(0, ST::string("0").to_uint());
-    EXPECT_EQ(0, ST::string("+0").to_uint());
-    EXPECT_EQ(0, ST::string("-0").to_uint());
+    EXPECT_EQ(0U, ST::string("0").to_uint());
+    EXPECT_EQ(0U, ST::string("+0").to_uint());
+    EXPECT_EQ(0U, ST::string("-0").to_uint());
 
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(0, ST::string("0").to_uint64());
-    EXPECT_EQ(0, ST::string("+0").to_uint64());
-    EXPECT_EQ(0, ST::string("-0").to_uint64());
+    EXPECT_EQ(0U, ST::string("0").to_uint64());
+    EXPECT_EQ(0U, ST::string("+0").to_uint64());
+    EXPECT_EQ(0U, ST::string("-0").to_uint64());
 #endif
 
-    EXPECT_EQ(80000, ST::string("80000").to_uint());
-    EXPECT_EQ(80000, ST::string("+80000").to_uint());
-    EXPECT_EQ(80000, ST::string("0x13880").to_uint());
-    EXPECT_EQ(80000, ST::string("+0x13880").to_uint());
-    EXPECT_EQ(80000, ST::string("0234200").to_uint());
-    EXPECT_EQ(80000, ST::string("+0234200").to_uint());
-    EXPECT_EQ(80000, ST::string("13880").to_uint(16));
-    EXPECT_EQ(80000, ST::string("+13880").to_uint(16));
-    EXPECT_EQ(80000, ST::string("234200").to_uint(8));
-    EXPECT_EQ(80000, ST::string("+234200").to_uint(8));
+    EXPECT_EQ(80000U, ST::string("80000").to_uint());
+    EXPECT_EQ(80000U, ST::string("+80000").to_uint());
+    EXPECT_EQ(80000U, ST::string("0x13880").to_uint());
+    EXPECT_EQ(80000U, ST::string("+0x13880").to_uint());
+    EXPECT_EQ(80000U, ST::string("0234200").to_uint());
+    EXPECT_EQ(80000U, ST::string("+0234200").to_uint());
+    EXPECT_EQ(80000U, ST::string("13880").to_uint(16));
+    EXPECT_EQ(80000U, ST::string("+13880").to_uint(16));
+    EXPECT_EQ(80000U, ST::string("234200").to_uint(8));
+    EXPECT_EQ(80000U, ST::string("+234200").to_uint(8));
 
 #ifdef ST_HAVE_INT64
     EXPECT_EQ(1000000000000ULL, ST::string("1000000000000").to_uint64());
@@ -441,9 +441,9 @@ TEST(string, to_uint)
 #endif
 
     // Empty string is treated as zero for compatibility with strtoul
-    EXPECT_EQ(0, ST::string::null.to_uint());
+    EXPECT_EQ(0U, ST::string::null.to_uint());
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(0, ST::string::null.to_uint64());
+    EXPECT_EQ(0U, ST::string::null.to_uint64());
 #endif
 }
 
