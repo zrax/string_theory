@@ -27,7 +27,10 @@
 #include <sstream>
 
 #include "st_format.h"
-#include <boost/format.hpp>
+
+#ifdef ST_PROFILE_HAVE_BOOST
+#   include <boost/format.hpp>
+#endif
 
 static void _measure(const char *title, std::function<void()> fun)
 {
@@ -138,11 +141,13 @@ int main(int, char **)
         volatile const char *V = foo.c_str();
     });
 
+#ifdef ST_PROFILE_HAVE_BOOST
     _measure("boost::format", []() {
         std::string foo = (boost::format("This %1% is %2$6.2f a %3% test %4%.")
                            % 42 % M_PI % "<Singin' in the rain>" % '?').str();
         volatile const char *V = foo.c_str();
     });
+#endif
 
     _measure("std::stringstream (~format)", []() {
         std::stringstream ss;
