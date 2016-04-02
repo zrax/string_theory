@@ -148,7 +148,7 @@ endif()
 set(ST_INSTALL_BIN_DIR "bin" CACHE PATH "Path to install DLLs on Windows")
 set(ST_INSTALL_LIB_DIR "lib" CACHE PATH "Path to install shared libraries")
 set(ST_INSTALL_INCLUDE_DIR "include" CACHE PATH "Path to install headers")
-set(ST_INSTALL_CMAKE_DIR "lib/cmake" CACHE PATH "Path to install CMake files")
+set(ST_INSTALL_CMAKE_DIR "${ST_INSTALL_LIB_DIR}/cmake" CACHE PATH "Path to install CMake files")
 
 foreach(path LIB INCLUDE CMAKE)
     set(var ST_INSTALL_${path}_DIR)
@@ -169,16 +169,16 @@ install(TARGETS string_theory
         EXPORT string_theory-targets
         RUNTIME DESTINATION "${ST_INSTALL_BIN_DIR}" COMPONENT shlib
         LIBRARY DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT shlib
-        ARCHIVE DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT shlib
+        ARCHIVE DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT staticlib
 )
 install(FILES ${ST_HEADERS_PRIV} ${ST_HEADERS_PUB}
-        DESTINATION "${ST_INSTALL_INCLUDE_DIR}/string_theory" COMPONENT dev)
+        DESTINATION "${ST_INSTALL_INCLUDE_DIR}/string_theory" COMPONENT devel)
 
 export(TARGETS string_theory
        FILE "${PROJECT_BINARY_DIR}/string_theory-targets.cmake")
 export(PACKAGE string_theory)
 
-file(RELATIVE_PATH REL_INCLUDE_DIR "${ST_INSTALL_CMAKE_DIR}"
+file(RELATIVE_PATH REL_INCLUDE_DIR "${ST_INSTALL_CMAKE_DIR}/string_theory"
      "${ST_INSTALL_INCLUDE_DIR}")
 set(ST_CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
 configure_file(cmake/string_theory-config.cmake.in
@@ -192,9 +192,9 @@ configure_file(cmake/string_theory-config-version.cmake.in
 install(FILES
         "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/string_theory-config.cmake"
         "${PROJECT_BINARY_DIR}/string_theory-config-version.cmake"
-        DESTINATION "${ST_INSTALL_CMAKE_DIR}" COMPONENT dev)
+        DESTINATION "${ST_INSTALL_CMAKE_DIR}/string_theory" COMPONENT devel)
 install(EXPORT string_theory-targets
-        DESTINATION "${ST_INSTALL_CMAKE_DIR}" COMPONENT dev)
+        DESTINATION "${ST_INSTALL_CMAKE_DIR}/string_theory" COMPONENT devel)
 
 enable_testing()
 add_subdirectory(test)
