@@ -25,11 +25,16 @@
 #include <chrono>
 #include <functional>
 #include <sstream>
+#include <cmath>
 
 #include "st_format.h"
 
 #ifdef ST_PROFILE_HAVE_BOOST
 #   include <boost/format.hpp>
+#endif
+
+#ifndef M_PI
+#   define M_PI (3.14159265358979)
 #endif
 
 static void _measure(const char *title, std::function<void()> fun)
