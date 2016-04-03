@@ -93,15 +93,15 @@ TEST(string, helpers)
 TEST(string, utility)
 {
     // Special string null constant
-    EXPECT_EQ(ST::string::null, ST::string(""));
+    EXPECT_EQ(ST::string::null, ST_LITERAL(""));
     EXPECT_EQ(ST::string::null, ST::string{});
 
     EXPECT_EQ(0U, ST::string::null.size());
     EXPECT_TRUE(ST::string::null.is_empty());
 
     // Short and Long string length
-    EXPECT_EQ(4U, ST::string("1234").size());
-    EXPECT_EQ(32U, ST::string("12345678901234567890123456789012").size());
+    EXPECT_EQ(4U, ST_LITERAL("1234").size());
+    EXPECT_EQ(32U, ST_LITERAL("12345678901234567890123456789012").size());
 
     // ST::string stores data as UTF-8 internally
     EXPECT_EQ(utf8_test_data_length, ST::string(utf8_test_data).size());
@@ -113,7 +113,7 @@ TEST(string, stack_construction)
     strcpy(stack_buf, "Test");
     ST::string test(stack_buf);
 
-    EXPECT_EQ(ST::string("Test"), test);
+    EXPECT_EQ(ST_LITERAL("Test"), test);
     EXPECT_EQ(strlen("Test"), test.size());
 
     wchar_t wstack_buf[256];
@@ -126,7 +126,7 @@ TEST(string, stack_construction)
     strcpy(stack_buf, "operator=");
     test = stack_buf;
 
-    EXPECT_EQ(ST::string("operator="), test);
+    EXPECT_EQ(ST_LITERAL("operator="), test);
     EXPECT_EQ(strlen("operator="), test.size());
 
     wcscpy(wstack_buf, L"operator=");
@@ -297,86 +297,86 @@ TEST(string, concatenation)
 
 TEST(string, to_int)
 {
-    EXPECT_EQ(0, ST::string("0").to_int());
-    EXPECT_EQ(0, ST::string("+0").to_int());
-    EXPECT_EQ(0, ST::string("-0").to_int());
+    EXPECT_EQ(0, ST_LITERAL("0").to_int());
+    EXPECT_EQ(0, ST_LITERAL("+0").to_int());
+    EXPECT_EQ(0, ST_LITERAL("-0").to_int());
 
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(0, ST::string("0").to_int64());
-    EXPECT_EQ(0, ST::string("+0").to_int64());
-    EXPECT_EQ(0, ST::string("-0").to_int64());
+    EXPECT_EQ(0, ST_LITERAL("0").to_int64());
+    EXPECT_EQ(0, ST_LITERAL("+0").to_int64());
+    EXPECT_EQ(0, ST_LITERAL("-0").to_int64());
 #endif
 
-    EXPECT_EQ(-80000, ST::string("-80000").to_int());
-    EXPECT_EQ(80000, ST::string("80000").to_int());
-    EXPECT_EQ(80000, ST::string("+80000").to_int());
-    EXPECT_EQ(-80000, ST::string("-0x13880").to_int());
-    EXPECT_EQ(80000, ST::string("0x13880").to_int());
-    EXPECT_EQ(80000, ST::string("+0x13880").to_int());
-    EXPECT_EQ(-80000, ST::string("-0234200").to_int());
-    EXPECT_EQ(80000, ST::string("0234200").to_int());
-    EXPECT_EQ(80000, ST::string("+0234200").to_int());
-    EXPECT_EQ(-80000, ST::string("-13880").to_int(16));
-    EXPECT_EQ(80000, ST::string("13880").to_int(16));
-    EXPECT_EQ(80000, ST::string("+13880").to_int(16));
-    EXPECT_EQ(-80000, ST::string("-234200").to_int(8));
-    EXPECT_EQ(80000, ST::string("234200").to_int(8));
-    EXPECT_EQ(80000, ST::string("+234200").to_int(8));
+    EXPECT_EQ(-80000, ST_LITERAL("-80000").to_int());
+    EXPECT_EQ(80000, ST_LITERAL("80000").to_int());
+    EXPECT_EQ(80000, ST_LITERAL("+80000").to_int());
+    EXPECT_EQ(-80000, ST_LITERAL("-0x13880").to_int());
+    EXPECT_EQ(80000, ST_LITERAL("0x13880").to_int());
+    EXPECT_EQ(80000, ST_LITERAL("+0x13880").to_int());
+    EXPECT_EQ(-80000, ST_LITERAL("-0234200").to_int());
+    EXPECT_EQ(80000, ST_LITERAL("0234200").to_int());
+    EXPECT_EQ(80000, ST_LITERAL("+0234200").to_int());
+    EXPECT_EQ(-80000, ST_LITERAL("-13880").to_int(16));
+    EXPECT_EQ(80000, ST_LITERAL("13880").to_int(16));
+    EXPECT_EQ(80000, ST_LITERAL("+13880").to_int(16));
+    EXPECT_EQ(-80000, ST_LITERAL("-234200").to_int(8));
+    EXPECT_EQ(80000, ST_LITERAL("234200").to_int(8));
+    EXPECT_EQ(80000, ST_LITERAL("+234200").to_int(8));
 
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(-1000000000000LL, ST::string("-1000000000000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST::string("1000000000000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST::string("+1000000000000").to_int64());
-    EXPECT_EQ(-1000000000000LL, ST::string("-0xe8d4a51000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST::string("0xe8d4a51000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST::string("+0xe8d4a51000").to_int64());
-    EXPECT_EQ(-1000000000000LL, ST::string("-016432451210000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST::string("016432451210000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST::string("+016432451210000").to_int64());
-    EXPECT_EQ(-1000000000000LL, ST::string("-e8d4a51000").to_int64(16));
-    EXPECT_EQ(1000000000000LL, ST::string("e8d4a51000").to_int64(16));
-    EXPECT_EQ(1000000000000LL, ST::string("+e8d4a51000").to_int64(16));
-    EXPECT_EQ(-1000000000000LL, ST::string("-16432451210000").to_int64(8));
-    EXPECT_EQ(1000000000000LL, ST::string("16432451210000").to_int64(8));
-    EXPECT_EQ(1000000000000LL, ST::string("+16432451210000").to_int64(8));
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-1000000000000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("1000000000000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+1000000000000").to_int64());
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-0xe8d4a51000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("0xe8d4a51000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+0xe8d4a51000").to_int64());
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-016432451210000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("016432451210000").to_int64());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+016432451210000").to_int64());
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-e8d4a51000").to_int64(16));
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("e8d4a51000").to_int64(16));
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+e8d4a51000").to_int64(16));
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-16432451210000").to_int64(8));
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("16432451210000").to_int64(8));
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+16432451210000").to_int64(8));
 #endif
 
     static const int int32_min = std::numeric_limits<int>::min();
     static const int int32_max = std::numeric_limits<int>::max();
-    EXPECT_EQ(int32_min, ST::string("-2147483648").to_int());
-    EXPECT_EQ(int32_max, ST::string("2147483647").to_int());
-    EXPECT_EQ(int32_max, ST::string("+2147483647").to_int());
-    EXPECT_EQ(int32_min, ST::string("-0x80000000").to_int());
-    EXPECT_EQ(int32_max, ST::string("0x7FFFFFFF").to_int());
-    EXPECT_EQ(int32_max, ST::string("+0x7FFFFFFF").to_int());
-    EXPECT_EQ(int32_min, ST::string("-020000000000").to_int());
-    EXPECT_EQ(int32_max, ST::string("017777777777").to_int());
-    EXPECT_EQ(int32_max, ST::string("+017777777777").to_int());
-    EXPECT_EQ(int32_min, ST::string("-80000000").to_int(16));
-    EXPECT_EQ(int32_max, ST::string("7FFFFFFF").to_int(16));
-    EXPECT_EQ(int32_max, ST::string("+7FFFFFFF").to_int(16));
-    EXPECT_EQ(int32_min, ST::string("-20000000000").to_int(8));
-    EXPECT_EQ(int32_max, ST::string("17777777777").to_int(8));
-    EXPECT_EQ(int32_max, ST::string("+17777777777").to_int(8));
+    EXPECT_EQ(int32_min, ST_LITERAL("-2147483648").to_int());
+    EXPECT_EQ(int32_max, ST_LITERAL("2147483647").to_int());
+    EXPECT_EQ(int32_max, ST_LITERAL("+2147483647").to_int());
+    EXPECT_EQ(int32_min, ST_LITERAL("-0x80000000").to_int());
+    EXPECT_EQ(int32_max, ST_LITERAL("0x7FFFFFFF").to_int());
+    EXPECT_EQ(int32_max, ST_LITERAL("+0x7FFFFFFF").to_int());
+    EXPECT_EQ(int32_min, ST_LITERAL("-020000000000").to_int());
+    EXPECT_EQ(int32_max, ST_LITERAL("017777777777").to_int());
+    EXPECT_EQ(int32_max, ST_LITERAL("+017777777777").to_int());
+    EXPECT_EQ(int32_min, ST_LITERAL("-80000000").to_int(16));
+    EXPECT_EQ(int32_max, ST_LITERAL("7FFFFFFF").to_int(16));
+    EXPECT_EQ(int32_max, ST_LITERAL("+7FFFFFFF").to_int(16));
+    EXPECT_EQ(int32_min, ST_LITERAL("-20000000000").to_int(8));
+    EXPECT_EQ(int32_max, ST_LITERAL("17777777777").to_int(8));
+    EXPECT_EQ(int32_max, ST_LITERAL("+17777777777").to_int(8));
 
 #ifdef ST_HAVE_INT64
     static const long long int64_min = std::numeric_limits<long long>::min();
     static const long long int64_max = std::numeric_limits<long long>::max();
-    EXPECT_EQ(int64_min, ST::string("-9223372036854775808").to_int64());
-    EXPECT_EQ(int64_max, ST::string("9223372036854775807").to_int64());
-    EXPECT_EQ(int64_max, ST::string("+9223372036854775807").to_int64());
-    EXPECT_EQ(int64_min, ST::string("-0x8000000000000000").to_int64());
-    EXPECT_EQ(int64_max, ST::string("0x7FFFFFFFFFFFFFFF").to_int64());
-    EXPECT_EQ(int64_max, ST::string("+0x7FFFFFFFFFFFFFFF").to_int64());
-    EXPECT_EQ(int64_min, ST::string("-01000000000000000000000").to_int64());
-    EXPECT_EQ(int64_max, ST::string("0777777777777777777777").to_int64());
-    EXPECT_EQ(int64_max, ST::string("+0777777777777777777777").to_int64());
-    EXPECT_EQ(int64_min, ST::string("-8000000000000000").to_int64(16));
-    EXPECT_EQ(int64_max, ST::string("7FFFFFFFFFFFFFFF").to_int64(16));
-    EXPECT_EQ(int64_max, ST::string("+7FFFFFFFFFFFFFFF").to_int64(16));
-    EXPECT_EQ(int64_min, ST::string("-1000000000000000000000").to_int64(8));
-    EXPECT_EQ(int64_max, ST::string("777777777777777777777").to_int64(8));
-    EXPECT_EQ(int64_max, ST::string("+777777777777777777777").to_int64(8));
+    EXPECT_EQ(int64_min, ST_LITERAL("-9223372036854775808").to_int64());
+    EXPECT_EQ(int64_max, ST_LITERAL("9223372036854775807").to_int64());
+    EXPECT_EQ(int64_max, ST_LITERAL("+9223372036854775807").to_int64());
+    EXPECT_EQ(int64_min, ST_LITERAL("-0x8000000000000000").to_int64());
+    EXPECT_EQ(int64_max, ST_LITERAL("0x7FFFFFFFFFFFFFFF").to_int64());
+    EXPECT_EQ(int64_max, ST_LITERAL("+0x7FFFFFFFFFFFFFFF").to_int64());
+    EXPECT_EQ(int64_min, ST_LITERAL("-01000000000000000000000").to_int64());
+    EXPECT_EQ(int64_max, ST_LITERAL("0777777777777777777777").to_int64());
+    EXPECT_EQ(int64_max, ST_LITERAL("+0777777777777777777777").to_int64());
+    EXPECT_EQ(int64_min, ST_LITERAL("-8000000000000000").to_int64(16));
+    EXPECT_EQ(int64_max, ST_LITERAL("7FFFFFFFFFFFFFFF").to_int64(16));
+    EXPECT_EQ(int64_max, ST_LITERAL("+7FFFFFFFFFFFFFFF").to_int64(16));
+    EXPECT_EQ(int64_min, ST_LITERAL("-1000000000000000000000").to_int64(8));
+    EXPECT_EQ(int64_max, ST_LITERAL("777777777777777777777").to_int64(8));
+    EXPECT_EQ(int64_max, ST_LITERAL("+777777777777777777777").to_int64(8));
 #endif
 
     // Empty string is treated as zero for compatibility with strtol
@@ -388,56 +388,56 @@ TEST(string, to_int)
 
 TEST(string, to_uint)
 {
-    EXPECT_EQ(0U, ST::string("0").to_uint());
-    EXPECT_EQ(0U, ST::string("+0").to_uint());
-    EXPECT_EQ(0U, ST::string("-0").to_uint());
+    EXPECT_EQ(0U, ST_LITERAL("0").to_uint());
+    EXPECT_EQ(0U, ST_LITERAL("+0").to_uint());
+    EXPECT_EQ(0U, ST_LITERAL("-0").to_uint());
 
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(0U, ST::string("0").to_uint64());
-    EXPECT_EQ(0U, ST::string("+0").to_uint64());
-    EXPECT_EQ(0U, ST::string("-0").to_uint64());
+    EXPECT_EQ(0U, ST_LITERAL("0").to_uint64());
+    EXPECT_EQ(0U, ST_LITERAL("+0").to_uint64());
+    EXPECT_EQ(0U, ST_LITERAL("-0").to_uint64());
 #endif
 
-    EXPECT_EQ(80000U, ST::string("80000").to_uint());
-    EXPECT_EQ(80000U, ST::string("+80000").to_uint());
-    EXPECT_EQ(80000U, ST::string("0x13880").to_uint());
-    EXPECT_EQ(80000U, ST::string("+0x13880").to_uint());
-    EXPECT_EQ(80000U, ST::string("0234200").to_uint());
-    EXPECT_EQ(80000U, ST::string("+0234200").to_uint());
-    EXPECT_EQ(80000U, ST::string("13880").to_uint(16));
-    EXPECT_EQ(80000U, ST::string("+13880").to_uint(16));
-    EXPECT_EQ(80000U, ST::string("234200").to_uint(8));
-    EXPECT_EQ(80000U, ST::string("+234200").to_uint(8));
+    EXPECT_EQ(80000U, ST_LITERAL("80000").to_uint());
+    EXPECT_EQ(80000U, ST_LITERAL("+80000").to_uint());
+    EXPECT_EQ(80000U, ST_LITERAL("0x13880").to_uint());
+    EXPECT_EQ(80000U, ST_LITERAL("+0x13880").to_uint());
+    EXPECT_EQ(80000U, ST_LITERAL("0234200").to_uint());
+    EXPECT_EQ(80000U, ST_LITERAL("+0234200").to_uint());
+    EXPECT_EQ(80000U, ST_LITERAL("13880").to_uint(16));
+    EXPECT_EQ(80000U, ST_LITERAL("+13880").to_uint(16));
+    EXPECT_EQ(80000U, ST_LITERAL("234200").to_uint(8));
+    EXPECT_EQ(80000U, ST_LITERAL("+234200").to_uint(8));
 
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(1000000000000ULL, ST::string("1000000000000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST::string("+1000000000000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST::string("0xe8d4a51000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST::string("+0xe8d4a51000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST::string("016432451210000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST::string("+016432451210000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST::string("e8d4a51000").to_uint64(16));
-    EXPECT_EQ(1000000000000ULL, ST::string("+e8d4a51000").to_uint64(16));
-    EXPECT_EQ(1000000000000ULL, ST::string("16432451210000").to_uint64(8));
-    EXPECT_EQ(1000000000000ULL, ST::string("+16432451210000").to_uint64(8));
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("1000000000000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+1000000000000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("0xe8d4a51000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+0xe8d4a51000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("016432451210000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+016432451210000").to_uint64());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("e8d4a51000").to_uint64(16));
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+e8d4a51000").to_uint64(16));
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("16432451210000").to_uint64(8));
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+16432451210000").to_uint64(8));
 #endif
 
     static const unsigned int uint32_max = std::numeric_limits<unsigned int>::max();
-    EXPECT_EQ(uint32_max, ST::string("4294967295").to_uint());
-    EXPECT_EQ(uint32_max, ST::string("+4294967295").to_uint());
-    EXPECT_EQ(uint32_max, ST::string("0xFFFFFFFF").to_uint());
-    EXPECT_EQ(uint32_max, ST::string("+0xFFFFFFFF").to_uint());
-    EXPECT_EQ(uint32_max, ST::string("037777777777").to_uint());
-    EXPECT_EQ(uint32_max, ST::string("+037777777777").to_uint());
+    EXPECT_EQ(uint32_max, ST_LITERAL("4294967295").to_uint());
+    EXPECT_EQ(uint32_max, ST_LITERAL("+4294967295").to_uint());
+    EXPECT_EQ(uint32_max, ST_LITERAL("0xFFFFFFFF").to_uint());
+    EXPECT_EQ(uint32_max, ST_LITERAL("+0xFFFFFFFF").to_uint());
+    EXPECT_EQ(uint32_max, ST_LITERAL("037777777777").to_uint());
+    EXPECT_EQ(uint32_max, ST_LITERAL("+037777777777").to_uint());
 
 #ifdef ST_HAVE_INT64
     static const unsigned long long uint64_max = std::numeric_limits<unsigned long long>::max();
-    EXPECT_EQ(uint64_max, ST::string("18446744073709551615").to_uint64());
-    EXPECT_EQ(uint64_max, ST::string("+18446744073709551615").to_uint64());
-    EXPECT_EQ(uint64_max, ST::string("0xFFFFFFFFFFFFFFFF").to_uint64());
-    EXPECT_EQ(uint64_max, ST::string("+0xFFFFFFFFFFFFFFFF").to_uint64());
-    EXPECT_EQ(uint64_max, ST::string("01777777777777777777777").to_uint64());
-    EXPECT_EQ(uint64_max, ST::string("+01777777777777777777777").to_uint64());
+    EXPECT_EQ(uint64_max, ST_LITERAL("18446744073709551615").to_uint64());
+    EXPECT_EQ(uint64_max, ST_LITERAL("+18446744073709551615").to_uint64());
+    EXPECT_EQ(uint64_max, ST_LITERAL("0xFFFFFFFFFFFFFFFF").to_uint64());
+    EXPECT_EQ(uint64_max, ST_LITERAL("+0xFFFFFFFFFFFFFFFF").to_uint64());
+    EXPECT_EQ(uint64_max, ST_LITERAL("01777777777777777777777").to_uint64());
+    EXPECT_EQ(uint64_max, ST_LITERAL("+01777777777777777777777").to_uint64());
 #endif
 
     // Empty string is treated as zero for compatibility with strtoul
@@ -449,39 +449,39 @@ TEST(string, to_uint)
 
 TEST(string, to_float)
 {
-    EXPECT_EQ(0.0f, ST::string("0").to_float());
-    EXPECT_EQ(0.0f, ST::string("+0").to_float());
-    EXPECT_EQ(0.0f, ST::string("-0").to_float());
+    EXPECT_EQ(0.0f, ST_LITERAL("0").to_float());
+    EXPECT_EQ(0.0f, ST_LITERAL("+0").to_float());
+    EXPECT_EQ(0.0f, ST_LITERAL("-0").to_float());
 
-    EXPECT_EQ(0.0, ST::string("0").to_double());
-    EXPECT_EQ(0.0, ST::string("+0").to_double());
-    EXPECT_EQ(0.0, ST::string("-0").to_double());
+    EXPECT_EQ(0.0, ST_LITERAL("0").to_double());
+    EXPECT_EQ(0.0, ST_LITERAL("+0").to_double());
+    EXPECT_EQ(0.0, ST_LITERAL("-0").to_double());
 
-    EXPECT_EQ(-16.0f, ST::string("-16").to_float());
-    EXPECT_EQ(16.0f, ST::string("16").to_float());
-    EXPECT_EQ(16.0f, ST::string("+16").to_float());
-    EXPECT_EQ(-16.0f, ST::string("-16.0").to_float());
-    EXPECT_EQ(16.0f, ST::string("16.0").to_float());
-    EXPECT_EQ(16.0f, ST::string("+16.0").to_float());
-    EXPECT_EQ(-16.0f, ST::string("-1.6e1").to_float());
-    EXPECT_EQ(16.0f, ST::string("1.6e1").to_float());
-    EXPECT_EQ(16.0f, ST::string("+1.6e1").to_float());
+    EXPECT_EQ(-16.0f, ST_LITERAL("-16").to_float());
+    EXPECT_EQ(16.0f, ST_LITERAL("16").to_float());
+    EXPECT_EQ(16.0f, ST_LITERAL("+16").to_float());
+    EXPECT_EQ(-16.0f, ST_LITERAL("-16.0").to_float());
+    EXPECT_EQ(16.0f, ST_LITERAL("16.0").to_float());
+    EXPECT_EQ(16.0f, ST_LITERAL("+16.0").to_float());
+    EXPECT_EQ(-16.0f, ST_LITERAL("-1.6e1").to_float());
+    EXPECT_EQ(16.0f, ST_LITERAL("1.6e1").to_float());
+    EXPECT_EQ(16.0f, ST_LITERAL("+1.6e1").to_float());
 
-    EXPECT_EQ(-16.0, ST::string("-16").to_double());
-    EXPECT_EQ(16.0, ST::string("16").to_double());
-    EXPECT_EQ(16.0, ST::string("+16").to_double());
-    EXPECT_EQ(-16.0, ST::string("-16.0").to_double());
-    EXPECT_EQ(16.0, ST::string("16.0").to_double());
-    EXPECT_EQ(16.0, ST::string("+16.0").to_double());
-    EXPECT_EQ(-16.0, ST::string("-1.6e1").to_double());
-    EXPECT_EQ(16.0, ST::string("1.6e1").to_double());
-    EXPECT_EQ(16.0, ST::string("+1.6e1").to_double());
+    EXPECT_EQ(-16.0, ST_LITERAL("-16").to_double());
+    EXPECT_EQ(16.0, ST_LITERAL("16").to_double());
+    EXPECT_EQ(16.0, ST_LITERAL("+16").to_double());
+    EXPECT_EQ(-16.0, ST_LITERAL("-16.0").to_double());
+    EXPECT_EQ(16.0, ST_LITERAL("16.0").to_double());
+    EXPECT_EQ(16.0, ST_LITERAL("+16.0").to_double());
+    EXPECT_EQ(-16.0, ST_LITERAL("-1.6e1").to_double());
+    EXPECT_EQ(16.0, ST_LITERAL("1.6e1").to_double());
+    EXPECT_EQ(16.0, ST_LITERAL("+1.6e1").to_double());
 
-    EXPECT_TRUE(std::isinf(ST::string("INF").to_float()));
-    EXPECT_TRUE(std::isnan(ST::string("NAN").to_float()));
+    EXPECT_TRUE(std::isinf(ST_LITERAL("INF").to_float()));
+    EXPECT_TRUE(std::isnan(ST_LITERAL("NAN").to_float()));
 
-    EXPECT_TRUE(std::isinf(ST::string("INF").to_double()));
-    EXPECT_TRUE(std::isnan(ST::string("NAN").to_double()));
+    EXPECT_TRUE(std::isinf(ST_LITERAL("INF").to_double()));
+    EXPECT_TRUE(std::isnan(ST_LITERAL("NAN").to_double()));
 
     // Empty string is treated as zero for compatibility with strtod
     EXPECT_EQ(0.0f, ST::string::null.to_float());
@@ -490,16 +490,16 @@ TEST(string, to_float)
 
 TEST(string, to_bool)
 {
-    EXPECT_TRUE(ST::string("true").to_bool());
-    EXPECT_TRUE(ST::string("TRUE").to_bool());
-    EXPECT_FALSE(ST::string("false").to_bool());
-    EXPECT_FALSE(ST::string("FALSE").to_bool());
+    EXPECT_TRUE(ST_LITERAL("true").to_bool());
+    EXPECT_TRUE(ST_LITERAL("TRUE").to_bool());
+    EXPECT_FALSE(ST_LITERAL("false").to_bool());
+    EXPECT_FALSE(ST_LITERAL("FALSE").to_bool());
 
-    EXPECT_FALSE(ST::string("0").to_bool());
-    EXPECT_TRUE(ST::string("1").to_bool());
-    EXPECT_TRUE(ST::string("-1").to_bool());
-    EXPECT_TRUE(ST::string("1000").to_bool());
-    EXPECT_TRUE(ST::string("0x1000").to_bool());
+    EXPECT_FALSE(ST_LITERAL("0").to_bool());
+    EXPECT_TRUE(ST_LITERAL("1").to_bool());
+    EXPECT_TRUE(ST_LITERAL("-1").to_bool());
+    EXPECT_TRUE(ST_LITERAL("1000").to_bool());
+    EXPECT_TRUE(ST_LITERAL("0x1000").to_bool());
 
     EXPECT_FALSE(ST::string::null.to_bool());
 }
@@ -507,87 +507,87 @@ TEST(string, to_bool)
 TEST(string, compare)
 {
     // Same length, case sensitive
-    EXPECT_EQ(0, ST::string("abc").compare("abc", ST::case_sensitive));
-    EXPECT_GT(0, ST::string("abc").compare("abd", ST::case_sensitive));
-    EXPECT_LT(0, ST::string("abc").compare("abb", ST::case_sensitive));
-    EXPECT_GT(0, ST::string("abC").compare("abc", ST::case_sensitive));
-    EXPECT_GT(0, ST::string("Abc").compare("abc", ST::case_sensitive));
+    EXPECT_EQ(0, ST_LITERAL("abc").compare("abc", ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("abc").compare("abd", ST::case_sensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare("abb", ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("abC").compare("abc", ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("Abc").compare("abc", ST::case_sensitive));
     EXPECT_EQ(0, ST::string().compare("", ST::case_sensitive));
 
     // Same length, case insensitive
-    EXPECT_EQ(0, ST::string("abc").compare("abc", ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("abc").compare("ABC", ST::case_insensitive));
-    EXPECT_GT(0, ST::string("abc").compare("abD", ST::case_insensitive));
-    EXPECT_LT(0, ST::string("abc").compare("abB", ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("abc").compare("abc", ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("abc").compare("ABC", ST::case_insensitive));
+    EXPECT_GT(0, ST_LITERAL("abc").compare("abD", ST::case_insensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare("abB", ST::case_insensitive));
     EXPECT_EQ(0, ST::string().compare("", ST::case_insensitive));
 
     // Mismatched length, case sensitive
-    EXPECT_LT(0, ST::string("abc").compare("ab", ST::case_sensitive));
-    EXPECT_GT(0, ST::string("abc").compare("abcd", ST::case_sensitive));
-    EXPECT_LT(0, ST::string("abc").compare("", ST::case_sensitive));
-    EXPECT_GT(0, ST::string("").compare("abc", ST::case_sensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare("ab", ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("abc").compare("abcd", ST::case_sensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare("", ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("").compare("abc", ST::case_sensitive));
 
     // Mismatched length, case insensitive
-    EXPECT_LT(0, ST::string("abc").compare("Ab", ST::case_insensitive));
-    EXPECT_GT(0, ST::string("abc").compare("Abcd", ST::case_insensitive));
-    EXPECT_LT(0, ST::string("abc").compare("", ST::case_insensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare("Ab", ST::case_insensitive));
+    EXPECT_GT(0, ST_LITERAL("abc").compare("Abcd", ST::case_insensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare("", ST::case_insensitive));
     EXPECT_GT(0, ST::string().compare("abc", ST::case_insensitive));
 }
 
 TEST(string, compare_n)
 {
     // Same length, case sensitive
-    EXPECT_EQ(0, ST::string("abcXX").compare_n("abcYY", 3, ST::case_sensitive));
-    EXPECT_GT(0, ST::string("abcXX").compare_n("abdYY", 3, ST::case_sensitive));
-    EXPECT_LT(0, ST::string("abcXX").compare_n("abbYY", 3, ST::case_sensitive));
-    EXPECT_GT(0, ST::string("abCXX").compare_n("abcYY", 3, ST::case_sensitive));
-    EXPECT_GT(0, ST::string("AbcXX").compare_n("abcYY", 3, ST::case_sensitive));
+    EXPECT_EQ(0, ST_LITERAL("abcXX").compare_n("abcYY", 3, ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("abcXX").compare_n("abdYY", 3, ST::case_sensitive));
+    EXPECT_LT(0, ST_LITERAL("abcXX").compare_n("abbYY", 3, ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("abCXX").compare_n("abcYY", 3, ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("AbcXX").compare_n("abcYY", 3, ST::case_sensitive));
 
     // Same length, case insensitive
-    EXPECT_EQ(0, ST::string("abcXX").compare_n("abcYY", 3, ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("abcXX").compare_n("ABCYY", 3, ST::case_insensitive));
-    EXPECT_GT(0, ST::string("abcXX").compare_n("abDYY", 3, ST::case_insensitive));
-    EXPECT_LT(0, ST::string("abcXX").compare_n("abBYY", 3, ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("abcXX").compare_n("abcYY", 3, ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("abcXX").compare_n("ABCYY", 3, ST::case_insensitive));
+    EXPECT_GT(0, ST_LITERAL("abcXX").compare_n("abDYY", 3, ST::case_insensitive));
+    EXPECT_LT(0, ST_LITERAL("abcXX").compare_n("abBYY", 3, ST::case_insensitive));
 
     // Mismatched length, case sensitive
-    EXPECT_LT(0, ST::string("abc").compare_n("ab", 3, ST::case_sensitive));
-    EXPECT_GT(0, ST::string("abc").compare_n("abcd", 4, ST::case_sensitive));
-    EXPECT_LT(0, ST::string("abc").compare_n("", 3, ST::case_sensitive));
-    EXPECT_GT(0, ST::string("").compare_n("abc", 3, ST::case_sensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare_n("ab", 3, ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("abc").compare_n("abcd", 4, ST::case_sensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare_n("", 3, ST::case_sensitive));
+    EXPECT_GT(0, ST_LITERAL("").compare_n("abc", 3, ST::case_sensitive));
 
     // Mismatched length, case insensitive
-    EXPECT_LT(0, ST::string("abc").compare_n("Ab", 3, ST::case_insensitive));
-    EXPECT_GT(0, ST::string("abc").compare_n("Abcd", 4, ST::case_insensitive));
-    EXPECT_LT(0, ST::string("abc").compare_n("", 3, ST::case_insensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare_n("Ab", 3, ST::case_insensitive));
+    EXPECT_GT(0, ST_LITERAL("abc").compare_n("Abcd", 4, ST::case_insensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare_n("", 3, ST::case_insensitive));
     EXPECT_GT(0, ST::string().compare_n("abc", 3, ST::case_insensitive));
 }
 
 TEST(string, find_char)
 {
     // Available char, case sensitive
-    EXPECT_EQ(0, ST::string("Aaaaaaaa").find('A', ST::case_sensitive));
-    EXPECT_EQ(0, ST::string("AaaaAaaa").find('A', ST::case_sensitive));
-    EXPECT_EQ(4, ST::string("aaaaAaaa").find('A', ST::case_sensitive));
-    EXPECT_EQ(7, ST::string("aaaaaaaA").find('A', ST::case_sensitive));
+    EXPECT_EQ(0, ST_LITERAL("Aaaaaaaa").find('A', ST::case_sensitive));
+    EXPECT_EQ(0, ST_LITERAL("AaaaAaaa").find('A', ST::case_sensitive));
+    EXPECT_EQ(4, ST_LITERAL("aaaaAaaa").find('A', ST::case_sensitive));
+    EXPECT_EQ(7, ST_LITERAL("aaaaaaaA").find('A', ST::case_sensitive));
 
     // Available char, case insensitive
-    EXPECT_EQ(0, ST::string("Abbbbbbb").find('A', ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("AbbbAbbb").find('A', ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("bbbbAbbb").find('A', ST::case_insensitive));
-    EXPECT_EQ(7, ST::string("bbbbbbbA").find('A', ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("abbbbbbb").find('A', ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("abbbabbb").find('A', ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("bbbbabbb").find('A', ST::case_insensitive));
-    EXPECT_EQ(7, ST::string("bbbbbbba").find('A', ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("Abbbbbbb").find('a', ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("AbbbAbbb").find('a', ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("bbbbAbbb").find('a', ST::case_insensitive));
-    EXPECT_EQ(7, ST::string("bbbbbbbA").find('a', ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("Abbbbbbb").find('A', ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("AbbbAbbb").find('A', ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("bbbbAbbb").find('A', ST::case_insensitive));
+    EXPECT_EQ(7, ST_LITERAL("bbbbbbbA").find('A', ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("abbbbbbb").find('A', ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("abbbabbb").find('A', ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("bbbbabbb").find('A', ST::case_insensitive));
+    EXPECT_EQ(7, ST_LITERAL("bbbbbbba").find('A', ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("Abbbbbbb").find('a', ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("AbbbAbbb").find('a', ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("bbbbAbbb").find('a', ST::case_insensitive));
+    EXPECT_EQ(7, ST_LITERAL("bbbbbbbA").find('a', ST::case_insensitive));
 
     // Unavailable char
-    EXPECT_EQ(-1, ST::string("AaaaAaaa").find('C', ST::case_sensitive));
-    EXPECT_EQ(-1, ST::string("caaacaaa").find('C', ST::case_sensitive));
-    EXPECT_EQ(-1, ST::string("AaaaAaaa").find('C', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("AaaaAaaa").find('C', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("caaacaaa").find('C', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("AaaaAaaa").find('C', ST::case_insensitive));
 
     // Empty string
     EXPECT_EQ(-1, ST::string().find('A', ST::case_sensitive));
@@ -597,29 +597,29 @@ TEST(string, find_char)
 TEST(string, find_last_char)
 {
     // Available char, case sensitive
-    EXPECT_EQ(0, ST::string("Aaaaaaaa").find_last('A', ST::case_sensitive));
-    EXPECT_EQ(4, ST::string("AaaaAaaa").find_last('A', ST::case_sensitive));
-    EXPECT_EQ(4, ST::string("aaaaAaaa").find_last('A', ST::case_sensitive));
-    EXPECT_EQ(7, ST::string("aaaaaaaA").find_last('A', ST::case_sensitive));
+    EXPECT_EQ(0, ST_LITERAL("Aaaaaaaa").find_last('A', ST::case_sensitive));
+    EXPECT_EQ(4, ST_LITERAL("AaaaAaaa").find_last('A', ST::case_sensitive));
+    EXPECT_EQ(4, ST_LITERAL("aaaaAaaa").find_last('A', ST::case_sensitive));
+    EXPECT_EQ(7, ST_LITERAL("aaaaaaaA").find_last('A', ST::case_sensitive));
 
     // Available char, case insensitive
-    EXPECT_EQ(0, ST::string("Abbbbbbb").find_last('A', ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("AbbbAbbb").find_last('A', ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("bbbbAbbb").find_last('A', ST::case_insensitive));
-    EXPECT_EQ(7, ST::string("bbbbbbbA").find_last('A', ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("abbbbbbb").find_last('A', ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("abbbabbb").find_last('A', ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("bbbbabbb").find_last('A', ST::case_insensitive));
-    EXPECT_EQ(7, ST::string("bbbbbbba").find_last('A', ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("Abbbbbbb").find_last('a', ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("AbbbAbbb").find_last('a', ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("bbbbAbbb").find_last('a', ST::case_insensitive));
-    EXPECT_EQ(7, ST::string("bbbbbbbA").find_last('a', ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("Abbbbbbb").find_last('A', ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("AbbbAbbb").find_last('A', ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("bbbbAbbb").find_last('A', ST::case_insensitive));
+    EXPECT_EQ(7, ST_LITERAL("bbbbbbbA").find_last('A', ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("abbbbbbb").find_last('A', ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("abbbabbb").find_last('A', ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("bbbbabbb").find_last('A', ST::case_insensitive));
+    EXPECT_EQ(7, ST_LITERAL("bbbbbbba").find_last('A', ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("Abbbbbbb").find_last('a', ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("AbbbAbbb").find_last('a', ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("bbbbAbbb").find_last('a', ST::case_insensitive));
+    EXPECT_EQ(7, ST_LITERAL("bbbbbbbA").find_last('a', ST::case_insensitive));
 
     // Unavailable char
-    EXPECT_EQ(-1, ST::string("AaaaAaaa").find_last('C', ST::case_sensitive));
-    EXPECT_EQ(-1, ST::string("caaacaaa").find_last('C', ST::case_sensitive));
-    EXPECT_EQ(-1, ST::string("AaaaAaaa").find_last('C', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("AaaaAaaa").find_last('C', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("caaacaaa").find_last('C', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("AaaaAaaa").find_last('C', ST::case_insensitive));
 
     // Empty string
     EXPECT_EQ(-1, ST::string().find_last('A', ST::case_sensitive));
@@ -629,28 +629,28 @@ TEST(string, find_last_char)
 TEST(string, find)
 {
     // Available string, case sensitive
-    EXPECT_EQ(0, ST::string("ABCDabcd").find("ABCD", ST::case_sensitive));
-    EXPECT_EQ(4, ST::string("abcdABCDABCDabcd").find("ABCD", ST::case_sensitive));
-    EXPECT_EQ(4, ST::string("abcdABCDabcd").find("ABCD", ST::case_sensitive));
-    EXPECT_EQ(4, ST::string("abcdABCD").find("ABCD", ST::case_sensitive));
+    EXPECT_EQ(0, ST_LITERAL("ABCDabcd").find("ABCD", ST::case_sensitive));
+    EXPECT_EQ(4, ST_LITERAL("abcdABCDABCDabcd").find("ABCD", ST::case_sensitive));
+    EXPECT_EQ(4, ST_LITERAL("abcdABCDabcd").find("ABCD", ST::case_sensitive));
+    EXPECT_EQ(4, ST_LITERAL("abcdABCD").find("ABCD", ST::case_sensitive));
 
     // Available string, case insensitive
-    EXPECT_EQ(0, ST::string("ABCDxxxx").find("ABCD", ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("xxxxABCDABCDxxxx").find("ABCD", ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("xxxxABCDxxxx").find("ABCD", ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("xxxxABCD").find("ABCD", ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("abcdxxxx").find("ABCD", ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("xxxxabcdABCDxxxx").find("ABCD", ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("xxxxabcdxxxx").find("ABCD", ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("xxxxabcd").find("ABCD", ST::case_insensitive));
-    EXPECT_EQ(0, ST::string("ABCDxxxx").find("abcd", ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("xxxxABCDabcdxxxx").find("abcd", ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("xxxxABCDxxxx").find("abcd", ST::case_insensitive));
-    EXPECT_EQ(4, ST::string("xxxxABCD").find("abcd", ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("ABCDxxxx").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("xxxxABCDABCDxxxx").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("xxxxABCDxxxx").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("xxxxABCD").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("abcdxxxx").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("xxxxabcdABCDxxxx").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("xxxxabcdxxxx").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("xxxxabcd").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(0, ST_LITERAL("ABCDxxxx").find("abcd", ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("xxxxABCDabcdxxxx").find("abcd", ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("xxxxABCDxxxx").find("abcd", ST::case_insensitive));
+    EXPECT_EQ(4, ST_LITERAL("xxxxABCD").find("abcd", ST::case_insensitive));
 
     // Unavailable string
-    EXPECT_EQ(-1, ST::string("xxxx").find("ABCD", ST::case_sensitive));
-    EXPECT_EQ(-1, ST::string("xxxx").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find("ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find("ABCD", ST::case_insensitive));
 
     // Empty string
     EXPECT_EQ(-1, ST::string().find("AAAA", ST::case_sensitive));
@@ -658,166 +658,166 @@ TEST(string, find)
 
     // Unicode substring
     ST::string haystack;
-    haystack = ST::string("xxxx") + ST::string::from_utf32(test_data);
+    haystack = ST_LITERAL("xxxx") + ST::string::from_utf32(test_data);
     EXPECT_EQ(4, haystack.find(utf8_test_data, ST::case_sensitive));
     EXPECT_EQ(4, haystack.find(utf8_test_data, ST::case_insensitive));
 
-    haystack = ST::string::from_utf32(test_data) + ST::string("xxxx");
+    haystack = ST::string::from_utf32(test_data) + ST_LITERAL("xxxx");
     EXPECT_EQ(0, haystack.find(utf8_test_data, ST::case_sensitive));
     EXPECT_EQ(0, haystack.find(utf8_test_data, ST::case_insensitive));
 
-    haystack = ST::string("xxxx") + ST::string::from_utf32(test_data) + ST::string("xxxx");
+    haystack = ST_LITERAL("xxxx") + ST::string::from_utf32(test_data) + ST_LITERAL("xxxx");
     EXPECT_EQ(4, haystack.find(utf8_test_data, ST::case_sensitive));
     EXPECT_EQ(4, haystack.find(utf8_test_data, ST::case_insensitive));
 }
 
 TEST(string, trim)
 {
-    EXPECT_EQ(ST::string("xxx   "), ST::string("   xxx   ").trim_left(" \t\r\n"));
-    EXPECT_EQ(ST::string("xxx\t"), ST::string("\txxx\t").trim_left(" \t\r\n"));
-    EXPECT_EQ(ST::string("xxx\r\n"), ST::string("\r\nxxx\r\n").trim_left(" \t\r\n"));
-    EXPECT_EQ(ST::string("   xxx   "), ST::string("   xxx   ").trim_left("abc"));
-    EXPECT_EQ(ST::string("   xxx   "), ST::string("   xxx   ").trim_left("x"));
+    EXPECT_EQ(ST_LITERAL("xxx   "), ST_LITERAL("   xxx   ").trim_left(" \t\r\n"));
+    EXPECT_EQ(ST_LITERAL("xxx\t"), ST_LITERAL("\txxx\t").trim_left(" \t\r\n"));
+    EXPECT_EQ(ST_LITERAL("xxx\r\n"), ST_LITERAL("\r\nxxx\r\n").trim_left(" \t\r\n"));
+    EXPECT_EQ(ST_LITERAL("   xxx   "), ST_LITERAL("   xxx   ").trim_left("abc"));
+    EXPECT_EQ(ST_LITERAL("   xxx   "), ST_LITERAL("   xxx   ").trim_left("x"));
 
-    EXPECT_EQ(ST::string("   xxx"), ST::string("   xxx   ").trim_right(" \t\r\n"));
-    EXPECT_EQ(ST::string("\txxx"), ST::string("\txxx\t").trim_right(" \t\r\n"));
-    EXPECT_EQ(ST::string("\r\nxxx"), ST::string("\r\nxxx\r\n").trim_right(" \t\r\n"));
-    EXPECT_EQ(ST::string("   xxx   "), ST::string("   xxx   ").trim_right("abc"));
-    EXPECT_EQ(ST::string("   xxx   "), ST::string("   xxx   ").trim_right("x"));
+    EXPECT_EQ(ST_LITERAL("   xxx"), ST_LITERAL("   xxx   ").trim_right(" \t\r\n"));
+    EXPECT_EQ(ST_LITERAL("\txxx"), ST_LITERAL("\txxx\t").trim_right(" \t\r\n"));
+    EXPECT_EQ(ST_LITERAL("\r\nxxx"), ST_LITERAL("\r\nxxx\r\n").trim_right(" \t\r\n"));
+    EXPECT_EQ(ST_LITERAL("   xxx   "), ST_LITERAL("   xxx   ").trim_right("abc"));
+    EXPECT_EQ(ST_LITERAL("   xxx   "), ST_LITERAL("   xxx   ").trim_right("x"));
 
-    EXPECT_EQ(ST::string("xxx"), ST::string("   xxx   ").trim(" \t\r\n"));
-    EXPECT_EQ(ST::string("xxx"), ST::string("\txxx\t").trim(" \t\r\n"));
-    EXPECT_EQ(ST::string("xxx"), ST::string("\r\nxxx\r\n").trim(" \t\r\n"));
-    EXPECT_EQ(ST::string("   xxx   "), ST::string("   xxx   ").trim("abc"));
-    EXPECT_EQ(ST::string("   xxx   "), ST::string("   xxx   ").trim("x"));
+    EXPECT_EQ(ST_LITERAL("xxx"), ST_LITERAL("   xxx   ").trim(" \t\r\n"));
+    EXPECT_EQ(ST_LITERAL("xxx"), ST_LITERAL("\txxx\t").trim(" \t\r\n"));
+    EXPECT_EQ(ST_LITERAL("xxx"), ST_LITERAL("\r\nxxx\r\n").trim(" \t\r\n"));
+    EXPECT_EQ(ST_LITERAL("   xxx   "), ST_LITERAL("   xxx   ").trim("abc"));
+    EXPECT_EQ(ST_LITERAL("   xxx   "), ST_LITERAL("   xxx   ").trim("x"));
 }
 
 TEST(string, substrings)
 {
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").left(3));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAAxxxx").left(3));
-    EXPECT_EQ(ST::string("A"), ST::string("A").left(3));
-    EXPECT_EQ(ST::string(""), ST::string("").left(3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA").left(3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAAxxxx").left(3));
+    EXPECT_EQ(ST_LITERAL("A"), ST_LITERAL("A").left(3));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").left(3));
 
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").right(3));
-    EXPECT_EQ(ST::string("AAA"), ST::string("xxxxAAA").right(3));
-    EXPECT_EQ(ST::string("A"), ST::string("A").right(3));
-    EXPECT_EQ(ST::string(""), ST::string("").right(3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA").right(3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("xxxxAAA").right(3));
+    EXPECT_EQ(ST_LITERAL("A"), ST_LITERAL("A").right(3));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").right(3));
 
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAAxxxx").substr(0, 3));
-    EXPECT_EQ(ST::string("AAA"), ST::string("xxxxAAA").substr(4, 3));
-    EXPECT_EQ(ST::string("AAA"), ST::string("xxAAAxx").substr(2, 3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAAxxxx").substr(0, 3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("xxxxAAA").substr(4, 3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("xxAAAxx").substr(2, 3));
 
-    EXPECT_EQ(ST::string(""), ST::string("AAAA").substr(2, 0));
-    EXPECT_EQ(ST::string("AA"), ST::string("AAAA").substr(2, 4));
-    EXPECT_EQ(ST::string(""), ST::string("AAAA").substr(6, 4));
-    EXPECT_EQ(ST::string("AAAA"), ST::string("AAAA").substr(0, 4));
-    EXPECT_EQ(ST::string(""), ST::string("").substr(0, 4));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("AAAA").substr(2, 0));
+    EXPECT_EQ(ST_LITERAL("AA"), ST_LITERAL("AAAA").substr(2, 4));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("AAAA").substr(6, 4));
+    EXPECT_EQ(ST_LITERAL("AAAA"), ST_LITERAL("AAAA").substr(0, 4));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").substr(0, 4));
 
     // Negative indexes start from the right
-    EXPECT_EQ(ST::string("AAA"), ST::string("xxxxAAA").substr(-3, 3));
-    EXPECT_EQ(ST::string("AAA"), ST::string("xxAAAxx").substr(-5, 3));
-    EXPECT_EQ(ST::string("AAA"), ST::string("xxxxAAA").substr(-3, 6));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAAxxxx").substr(-10, 3));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").substr(-10, 10));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("xxxxAAA").substr(-3, 3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("xxAAAxx").substr(-5, 3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("xxxxAAA").substr(-3, 6));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAAxxxx").substr(-10, 3));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA").substr(-10, 10));
 }
 
 TEST(string, starts_with)
 {
-    EXPECT_TRUE(ST::string("AAA").starts_with("AAA"));
-    EXPECT_TRUE(ST::string("AAAxxx").starts_with("AAA"));
-    EXPECT_TRUE(ST::string("AAAAA").starts_with("AAA"));
-    EXPECT_FALSE(ST::string("xxx").starts_with("AAA"));
-    EXPECT_FALSE(ST::string("AAxxx").starts_with("AAA"));
-    EXPECT_FALSE(ST::string("xAAAxxx").starts_with("AAA"));
-    EXPECT_FALSE(ST::string("").starts_with("AAA"));
-    EXPECT_TRUE(ST::string("xxx").starts_with(""));
+    EXPECT_TRUE(ST_LITERAL("AAA").starts_with("AAA"));
+    EXPECT_TRUE(ST_LITERAL("AAAxxx").starts_with("AAA"));
+    EXPECT_TRUE(ST_LITERAL("AAAAA").starts_with("AAA"));
+    EXPECT_FALSE(ST_LITERAL("xxx").starts_with("AAA"));
+    EXPECT_FALSE(ST_LITERAL("AAxxx").starts_with("AAA"));
+    EXPECT_FALSE(ST_LITERAL("xAAAxxx").starts_with("AAA"));
+    EXPECT_FALSE(ST_LITERAL("").starts_with("AAA"));
+    EXPECT_TRUE(ST_LITERAL("xxx").starts_with(""));
 }
 
 TEST(string, ends_with)
 {
-    EXPECT_TRUE(ST::string("AAA").ends_with("AAA"));
-    EXPECT_TRUE(ST::string("xxxAAA").ends_with("AAA"));
-    EXPECT_TRUE(ST::string("AAAAA").ends_with("AAA"));
-    EXPECT_FALSE(ST::string("xxx").ends_with("AAA"));
-    EXPECT_FALSE(ST::string("xxxAA").ends_with("AAA"));
-    EXPECT_FALSE(ST::string("xxxAAAx").ends_with("AAA"));
-    EXPECT_FALSE(ST::string("").ends_with("AAA"));
-    EXPECT_TRUE(ST::string("xxx").ends_with(""));
+    EXPECT_TRUE(ST_LITERAL("AAA").ends_with("AAA"));
+    EXPECT_TRUE(ST_LITERAL("xxxAAA").ends_with("AAA"));
+    EXPECT_TRUE(ST_LITERAL("AAAAA").ends_with("AAA"));
+    EXPECT_FALSE(ST_LITERAL("xxx").ends_with("AAA"));
+    EXPECT_FALSE(ST_LITERAL("xxxAA").ends_with("AAA"));
+    EXPECT_FALSE(ST_LITERAL("xxxAAAx").ends_with("AAA"));
+    EXPECT_FALSE(ST_LITERAL("").ends_with("AAA"));
+    EXPECT_TRUE(ST_LITERAL("xxx").ends_with(""));
 }
 
 TEST(string, before_after)
 {
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA;BBB").before_first(';'));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA##SEP##BBB").before_first("##SEP##"));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA;BBB;CCC").before_first(';'));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA##SEP##BBB##SEP##CCC").before_first("##SEP##"));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").before_first(';'));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").before_first("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string(";").before_first(';'));
-    EXPECT_EQ(ST::string(""), ST::string("##SEP##").before_first("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string("").before_first(';'));
-    EXPECT_EQ(ST::string(""), ST::string("").before_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA;BBB").before_first(';'));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA##SEP##BBB").before_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA;BBB;CCC").before_first(';'));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA##SEP##BBB##SEP##CCC").before_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA").before_first(';'));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA").before_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL(";").before_first(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("##SEP##").before_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").before_first(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").before_first("##SEP##"));
 
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA;BBB").before_last(';'));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA##SEP##BBB").before_last("##SEP##"));
-    EXPECT_EQ(ST::string("AAA;BBB"), ST::string("AAA;BBB;CCC").before_last(';'));
-    EXPECT_EQ(ST::string("AAA##SEP##BBB"), ST::string("AAA##SEP##BBB##SEP##CCC").before_last("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string("AAA").before_last(';'));
-    EXPECT_EQ(ST::string(""), ST::string("AAA").before_last("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string(";").before_last(';'));
-    EXPECT_EQ(ST::string(""), ST::string("##SEP##").before_last("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string("").before_last(';'));
-    EXPECT_EQ(ST::string(""), ST::string("").before_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA;BBB").before_last(';'));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA##SEP##BBB").before_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("AAA;BBB"), ST_LITERAL("AAA;BBB;CCC").before_last(';'));
+    EXPECT_EQ(ST_LITERAL("AAA##SEP##BBB"), ST_LITERAL("AAA##SEP##BBB##SEP##CCC").before_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("AAA").before_last(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("AAA").before_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL(";").before_last(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("##SEP##").before_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").before_last(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").before_last("##SEP##"));
 
-    EXPECT_EQ(ST::string("BBB"), ST::string("AAA;BBB").after_first(';'));
-    EXPECT_EQ(ST::string("BBB"), ST::string("AAA##SEP##BBB").after_first("##SEP##"));
-    EXPECT_EQ(ST::string("BBB;CCC"), ST::string("AAA;BBB;CCC").after_first(';'));
-    EXPECT_EQ(ST::string("BBB##SEP##CCC"), ST::string("AAA##SEP##BBB##SEP##CCC").after_first("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string("AAA").after_first(';'));
-    EXPECT_EQ(ST::string(""), ST::string("AAA").after_first("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string(";").after_first(';'));
-    EXPECT_EQ(ST::string(""), ST::string("##SEP##").after_first("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string("").after_first(';'));
-    EXPECT_EQ(ST::string(""), ST::string("").after_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("BBB"), ST_LITERAL("AAA;BBB").after_first(';'));
+    EXPECT_EQ(ST_LITERAL("BBB"), ST_LITERAL("AAA##SEP##BBB").after_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("BBB;CCC"), ST_LITERAL("AAA;BBB;CCC").after_first(';'));
+    EXPECT_EQ(ST_LITERAL("BBB##SEP##CCC"), ST_LITERAL("AAA##SEP##BBB##SEP##CCC").after_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("AAA").after_first(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("AAA").after_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL(";").after_first(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("##SEP##").after_first("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").after_first(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").after_first("##SEP##"));
 
-    EXPECT_EQ(ST::string("BBB"), ST::string("AAA;BBB").after_last(';'));
-    EXPECT_EQ(ST::string("BBB"), ST::string("AAA##SEP##BBB").after_last("##SEP##"));
-    EXPECT_EQ(ST::string("CCC"), ST::string("AAA;BBB;CCC").after_last(';'));
-    EXPECT_EQ(ST::string("CCC"), ST::string("AAA##SEP##BBB##SEP##CCC").after_last("##SEP##"));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").after_last(';'));
-    EXPECT_EQ(ST::string("AAA"), ST::string("AAA").after_last("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string(";").after_last(';'));
-    EXPECT_EQ(ST::string(""), ST::string("##SEP##").after_last("##SEP##"));
-    EXPECT_EQ(ST::string(""), ST::string("").after_last(';'));
-    EXPECT_EQ(ST::string(""), ST::string("").after_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("BBB"), ST_LITERAL("AAA;BBB").after_last(';'));
+    EXPECT_EQ(ST_LITERAL("BBB"), ST_LITERAL("AAA##SEP##BBB").after_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("CCC"), ST_LITERAL("AAA;BBB;CCC").after_last(';'));
+    EXPECT_EQ(ST_LITERAL("CCC"), ST_LITERAL("AAA##SEP##BBB##SEP##CCC").after_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA").after_last(';'));
+    EXPECT_EQ(ST_LITERAL("AAA"), ST_LITERAL("AAA").after_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL(";").after_last(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("##SEP##").after_last("##SEP##"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").after_last(';'));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").after_last("##SEP##"));
 }
 
 TEST(string, replace)
 {
-    EXPECT_EQ(ST::string("xxYYxx"), ST::string("xxAAxx").replace("A", "Y"));
-    EXPECT_EQ(ST::string("xxAAxx"), ST::string("xxAAxx").replace("XX", "Y"));
-    EXPECT_EQ(ST::string("xxxx"), ST::string("xxAAxx").replace("A", ""));
-    EXPECT_EQ(ST::string("xxREPLACExx"), ST::string("xxFINDxx").replace("FIND", "REPLACE"));
-    EXPECT_EQ(ST::string("xxREPLACExxREPLACExx"), ST::string("xxFINDxxFINDxx").replace("FIND", "REPLACE"));
+    EXPECT_EQ(ST_LITERAL("xxYYxx"), ST_LITERAL("xxAAxx").replace("A", "Y"));
+    EXPECT_EQ(ST_LITERAL("xxAAxx"), ST_LITERAL("xxAAxx").replace("XX", "Y"));
+    EXPECT_EQ(ST_LITERAL("xxxx"), ST_LITERAL("xxAAxx").replace("A", ""));
+    EXPECT_EQ(ST_LITERAL("xxREPLACExx"), ST_LITERAL("xxFINDxx").replace("FIND", "REPLACE"));
+    EXPECT_EQ(ST_LITERAL("xxREPLACExxREPLACExx"), ST_LITERAL("xxFINDxxFINDxx").replace("FIND", "REPLACE"));
 
-    EXPECT_EQ(ST::string("YYxx"), ST::string("AAxx").replace("A", "Y"));
-    EXPECT_EQ(ST::string("AAxx"), ST::string("AAxx").replace("XX", "Y"));
-    EXPECT_EQ(ST::string("xx"), ST::string("AAxx").replace("A", ""));
-    EXPECT_EQ(ST::string("REPLACExx"), ST::string("FINDxx").replace("FIND", "REPLACE"));
-    EXPECT_EQ(ST::string("REPLACExxREPLACExx"), ST::string("FINDxxFINDxx").replace("FIND", "REPLACE"));
+    EXPECT_EQ(ST_LITERAL("YYxx"), ST_LITERAL("AAxx").replace("A", "Y"));
+    EXPECT_EQ(ST_LITERAL("AAxx"), ST_LITERAL("AAxx").replace("XX", "Y"));
+    EXPECT_EQ(ST_LITERAL("xx"), ST_LITERAL("AAxx").replace("A", ""));
+    EXPECT_EQ(ST_LITERAL("REPLACExx"), ST_LITERAL("FINDxx").replace("FIND", "REPLACE"));
+    EXPECT_EQ(ST_LITERAL("REPLACExxREPLACExx"), ST_LITERAL("FINDxxFINDxx").replace("FIND", "REPLACE"));
 
-    EXPECT_EQ(ST::string("xxYY"), ST::string("xxAA").replace("A", "Y"));
-    EXPECT_EQ(ST::string("xxAA"), ST::string("xxAA").replace("XX", "Y"));
-    EXPECT_EQ(ST::string("xx"), ST::string("xxAA").replace("A", ""));
-    EXPECT_EQ(ST::string("xxREPLACE"), ST::string("xxFIND").replace("FIND", "REPLACE"));
-    EXPECT_EQ(ST::string("xxREPLACExxREPLACE"), ST::string("xxFINDxxFIND").replace("FIND", "REPLACE"));
+    EXPECT_EQ(ST_LITERAL("xxYY"), ST_LITERAL("xxAA").replace("A", "Y"));
+    EXPECT_EQ(ST_LITERAL("xxAA"), ST_LITERAL("xxAA").replace("XX", "Y"));
+    EXPECT_EQ(ST_LITERAL("xx"), ST_LITERAL("xxAA").replace("A", ""));
+    EXPECT_EQ(ST_LITERAL("xxREPLACE"), ST_LITERAL("xxFIND").replace("FIND", "REPLACE"));
+    EXPECT_EQ(ST_LITERAL("xxREPLACExxREPLACE"), ST_LITERAL("xxFINDxxFIND").replace("FIND", "REPLACE"));
 
-    EXPECT_EQ(ST::string("YY"), ST::string("AA").replace("A", "Y"));
-    EXPECT_EQ(ST::string("AA"), ST::string("AA").replace("XX", "Y"));
-    EXPECT_EQ(ST::string(""), ST::string("AA").replace("A", ""));
-    EXPECT_EQ(ST::string("REPLACE"), ST::string("FIND").replace("FIND", "REPLACE"));
-    EXPECT_EQ(ST::string("REPLACExxREPLACE"), ST::string("FINDxxFIND").replace("FIND", "REPLACE"));
+    EXPECT_EQ(ST_LITERAL("YY"), ST_LITERAL("AA").replace("A", "Y"));
+    EXPECT_EQ(ST_LITERAL("AA"), ST_LITERAL("AA").replace("XX", "Y"));
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("AA").replace("A", ""));
+    EXPECT_EQ(ST_LITERAL("REPLACE"), ST_LITERAL("FIND").replace("FIND", "REPLACE"));
+    EXPECT_EQ(ST_LITERAL("REPLACExxREPLACE"), ST_LITERAL("FINDxxFIND").replace("FIND", "REPLACE"));
 }
 
 TEST(string, case_conversion)
@@ -829,15 +829,15 @@ TEST(string, case_conversion)
      * '{' = 'z' + 1
      */
 
-    EXPECT_EQ(ST::string("AAZZ"), ST::string("aazz").to_upper());
-    EXPECT_EQ(ST::string("AAZZ"), ST::string("AAZZ").to_upper());
-    EXPECT_EQ(ST::string("@AZ[`AZ{"), ST::string("@AZ[`az{").to_upper());
-    EXPECT_EQ(ST::string(""), ST::string("").to_upper());
+    EXPECT_EQ(ST_LITERAL("AAZZ"), ST_LITERAL("aazz").to_upper());
+    EXPECT_EQ(ST_LITERAL("AAZZ"), ST_LITERAL("AAZZ").to_upper());
+    EXPECT_EQ(ST_LITERAL("@AZ[`AZ{"), ST_LITERAL("@AZ[`az{").to_upper());
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").to_upper());
 
-    EXPECT_EQ(ST::string("aazz"), ST::string("aazz").to_lower());
-    EXPECT_EQ(ST::string("aazz"), ST::string("AAZZ").to_lower());
-    EXPECT_EQ(ST::string("@az[`az{"), ST::string("@AZ[`az{").to_lower());
-    EXPECT_EQ(ST::string(""), ST::string("").to_lower());
+    EXPECT_EQ(ST_LITERAL("aazz"), ST_LITERAL("aazz").to_lower());
+    EXPECT_EQ(ST_LITERAL("aazz"), ST_LITERAL("AAZZ").to_lower());
+    EXPECT_EQ(ST_LITERAL("@az[`az{"), ST_LITERAL("@AZ[`az{").to_lower());
+    EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("").to_lower());
 }
 
 TEST(string, tokenize)
@@ -865,8 +865,8 @@ TEST(string, tokenize)
     EXPECT_EQ(expected1, input2.tokenize("\t\n-;"));
 
     // tokenize will return an empty vector if there are no tokens in the input
-    EXPECT_EQ(std::vector<ST::string>{}, ST::string("\t;\n;").tokenize("\t\n-;"));
-    EXPECT_EQ(std::vector<ST::string>{}, ST::string("").tokenize("\t\n-;"));
+    EXPECT_EQ(std::vector<ST::string>{}, ST_LITERAL("\t;\n;").tokenize("\t\n-;"));
+    EXPECT_EQ(std::vector<ST::string>{}, ST_LITERAL("").tokenize("\t\n-;"));
 }
 
 TEST(string, split)
@@ -943,8 +943,8 @@ TEST(string, split)
     // split never provides an empty vector, even for empty input
     std::vector<ST::string> expected9;
     expected9.push_back(ST::string::null);
-    EXPECT_EQ(expected9, ST::string("").split("-"));
-    EXPECT_EQ(expected9, ST::string("").split("-", 4));
+    EXPECT_EQ(expected9, ST_LITERAL("").split("-"));
+    EXPECT_EQ(expected9, ST_LITERAL("").split("-", 4));
 }
 
 TEST(string, split_char)
@@ -1005,13 +1005,13 @@ TEST(string, split_char)
     // split never provides an empty vector, even for empty input
     std::vector<ST::string> expected9;
     expected9.push_back(ST::string::null);
-    EXPECT_EQ(expected9, ST::string("").split('-'));
-    EXPECT_EQ(expected9, ST::string("").split('-', 4));
+    EXPECT_EQ(expected9, ST_LITERAL("").split('-'));
+    EXPECT_EQ(expected9, ST_LITERAL("").split('-', 4));
 }
 
 TEST(string, fill)
 {
-    EXPECT_EQ(ST::string(""), ST::string::fill(0, 'a'));
-    EXPECT_EQ(ST::string("aaaaa"), ST::string::fill(5, 'a'));
-    EXPECT_EQ(ST::string("aaaaaaaaaaaaaaaaaaaa"), ST::string::fill(20, 'a'));
+    EXPECT_EQ(ST_LITERAL(""), ST::string::fill(0, 'a'));
+    EXPECT_EQ(ST_LITERAL("aaaaa"), ST::string::fill(5, 'a'));
+    EXPECT_EQ(ST_LITERAL("aaaaaaaaaaaaaaaaaaaa"), ST::string::fill(20, 'a'));
 }
