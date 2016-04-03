@@ -62,6 +62,25 @@ namespace ST
     ST_ENUM_CONSTANT(utf_validation_t, check_validity);
     ST_ENUM_CONSTANT(utf_validation_t, assert_validity);
 
+    class conversion_result
+    {
+        enum
+        {
+            result_ok = (1 << 0),
+            result_full_match = (1 << 1)
+        };
+
+    public:
+        explicit conversion_result() : m_flags() { }
+
+        bool ok() const { return (m_flags & result_ok) != 0; }
+        bool full_match() const { return (m_flags & result_full_match) != 0; }
+
+    private:
+        int m_flags;
+        friend class string;
+    };
+
     class ST_EXPORT string
     {
     public:
@@ -344,13 +363,19 @@ namespace ST
         bool is_empty() const ST_NOEXCEPT { return m_buffer.size() == 0; }
 
         int to_int(int base = 0) const ST_NOEXCEPT;
+        int to_int(conversion_result &result, int base = 0) const ST_NOEXCEPT;
         unsigned int to_uint(int base = 0) const ST_NOEXCEPT;
+        unsigned int to_uint(conversion_result &result, int base = 0) const ST_NOEXCEPT;
         float to_float() const ST_NOEXCEPT;
+        float to_float(conversion_result &result) const ST_NOEXCEPT;
         double to_double() const ST_NOEXCEPT;
+        double to_double(conversion_result &result) const ST_NOEXCEPT;
 
 #ifdef ST_HAVE_INT64
         int64_t to_int64(int base = 0) const ST_NOEXCEPT;
+        int64_t to_int64(conversion_result &result, int base = 0) const ST_NOEXCEPT;
         uint64_t to_uint64(int base = 0) const ST_NOEXCEPT;
+        uint64_t to_uint64(conversion_result &result, int base = 0) const ST_NOEXCEPT;
 #endif
 
         bool to_bool() const ST_NOEXCEPT;

@@ -687,9 +687,34 @@ int ST::string::to_int(int base) const ST_NOEXCEPT
     return static_cast<int>(strtol(c_str(), ST_NULLPTR, base));
 }
 
+int ST::string::to_int(ST::conversion_result &result, int base) const ST_NOEXCEPT
+{
+    char *end;
+    int value = static_cast<int>(strtol(c_str(), &end, base));
+    result.m_flags = 0;
+    if (end != c_str())
+        result.m_flags = ST::conversion_result::result_ok;
+    if (end == c_str() + size())
+        result.m_flags |= ST::conversion_result::result_full_match;
+    return value;
+}
+
 unsigned int ST::string::to_uint(int base) const ST_NOEXCEPT
 {
     return static_cast<unsigned int>(strtoul(c_str(), ST_NULLPTR, base));
+}
+
+unsigned int ST::string::to_uint(ST::conversion_result &result, int base)
+    const ST_NOEXCEPT
+{
+    char *end;
+    unsigned int value = static_cast<unsigned int>(strtoul(c_str(), &end, base));
+    result.m_flags = 0;
+    if (end != c_str())
+        result.m_flags = ST::conversion_result::result_ok;
+    if (end == c_str() + size())
+        result.m_flags |= ST::conversion_result::result_full_match;
+    return value;
 }
 
 float ST::string::to_float() const ST_NOEXCEPT
@@ -698,9 +723,34 @@ float ST::string::to_float() const ST_NOEXCEPT
     return static_cast<float>(strtod(c_str(), ST_NULLPTR));
 }
 
+float ST::string::to_float(ST::conversion_result &result) const ST_NOEXCEPT
+{
+    char *end;
+    // Use strtod to avoid requiring C99
+    float value = static_cast<float>(strtod(c_str(), &end));
+    result.m_flags = 0;
+    if (end != c_str())
+        result.m_flags = ST::conversion_result::result_ok;
+    if (end == c_str() + size())
+        result.m_flags |= ST::conversion_result::result_full_match;
+    return value;
+}
+
 double ST::string::to_double() const ST_NOEXCEPT
 {
     return strtod(c_str(), ST_NULLPTR);
+}
+
+double ST::string::to_double(ST::conversion_result &result) const ST_NOEXCEPT
+{
+    char *end;
+    double value = strtod(c_str(), &end);
+    result.m_flags = 0;
+    if (end != c_str())
+        result.m_flags = ST::conversion_result::result_ok;
+    if (end == c_str() + size())
+        result.m_flags |= ST::conversion_result::result_full_match;
+    return value;
 }
 
 #ifdef ST_HAVE_INT64
@@ -709,9 +759,35 @@ int64_t ST::string::to_int64(int base) const ST_NOEXCEPT
     return static_cast<int64_t>(strtoll(c_str(), ST_NULLPTR, base));
 }
 
+int64_t ST::string::to_int64(ST::conversion_result &result, int base)
+    const ST_NOEXCEPT
+{
+    char *end;
+    int64_t value = static_cast<int64_t>(strtoll(c_str(), &end, base));
+    result.m_flags = 0;
+    if (end != c_str())
+        result.m_flags = ST::conversion_result::result_ok;
+    if (end == c_str() + size())
+        result.m_flags |= ST::conversion_result::result_full_match;
+    return value;
+}
+
 uint64_t ST::string::to_uint64(int base) const ST_NOEXCEPT
 {
     return static_cast<uint64_t>(strtoull(c_str(), ST_NULLPTR, base));
+}
+
+uint64_t ST::string::to_uint64(ST::conversion_result &result, int base)
+    const ST_NOEXCEPT
+{
+    char *end;
+    uint64_t value = static_cast<uint64_t>(strtoull(c_str(), &end, base));
+    result.m_flags = 0;
+    if (end != c_str())
+        result.m_flags = ST::conversion_result::result_ok;
+    if (end == c_str() + size())
+        result.m_flags |= ST::conversion_result::result_full_match;
+    return value;
 }
 #endif
 

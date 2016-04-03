@@ -386,6 +386,72 @@ TEST(string, to_int)
 #endif
 }
 
+TEST(string, to_int_check)
+{
+    ST::conversion_result result;
+    (void) ST_LITERAL("0").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("100").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+100").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-100").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("0x1FF").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+0x1FF").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-0x1FF").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("1FF").to_int(result, 16);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+1FF").to_int(result, 16);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-1FF").to_int(result, 16);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("0100").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+0100").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-0100").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+
+    (void) ST_LITERAL("1FF").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("+1FF").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("-1FF").to_int(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("FF").to_int(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("+FF").to_int(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("-FF").to_int(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST::string::null.to_int(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_TRUE(result.full_match());
+}
+
 TEST(string, to_uint)
 {
     EXPECT_EQ(0U, ST_LITERAL("0").to_uint());
@@ -447,6 +513,36 @@ TEST(string, to_uint)
 #endif
 }
 
+TEST(string, to_uint_check)
+{
+    ST::conversion_result result;
+    (void) ST_LITERAL("0").to_uint(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("100").to_uint(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("0x1FF").to_uint(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("1FF").to_uint(result, 16);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("0100").to_uint(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+
+    (void) ST_LITERAL("1FF").to_uint(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("FF").to_uint(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST::string::null.to_uint(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_TRUE(result.full_match());
+}
+
 TEST(string, to_float)
 {
     EXPECT_EQ(0.0f, ST_LITERAL("0").to_float());
@@ -486,6 +582,120 @@ TEST(string, to_float)
     // Empty string is treated as zero for compatibility with strtod
     EXPECT_EQ(0.0f, ST::string::null.to_float());
     EXPECT_EQ(0.0, ST::string::null.to_double());
+}
+
+TEST(string, to_float_check)
+{
+    ST::conversion_result result;
+    (void) ST_LITERAL("0").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("0").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+
+    (void) ST_LITERAL("16").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+16").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-16").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("16").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+16").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-16").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+
+    (void) ST_LITERAL("16.0").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+16.0").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-16.0").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("16.0").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+16.0").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-16.0").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+
+    (void) ST_LITERAL("1.6e1").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+1.6e1").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-1.6e1").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("1.6e1").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("+1.6e1").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-1.6e1").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+
+    (void) ST_LITERAL("INF").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("NAN").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("INF").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("NAN").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+
+    (void) ST_LITERAL("16xx").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("INFxx").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("NANxx").to_float(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("16xx").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("INFxx").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("NANxx").to_double(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_FALSE(result.full_match());
+
+    (void) ST_LITERAL("xx").to_float(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("xx").to_double(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_FALSE(result.full_match());
+
+    (void) ST::string::null.to_float(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST::string::null.to_double(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_TRUE(result.full_match());
 }
 
 TEST(string, to_bool)
