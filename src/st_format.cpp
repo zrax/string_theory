@@ -248,7 +248,7 @@ static void _format_numeric_s(const ST::format_spec &format,
     if (value < 0 || format.m_always_signed)
         ++format_size;
 
-    if (format.m_class_prefix) {
+    if (value && format.m_class_prefix) {
         switch (format.m_digit_class) {
         case ST::digit_hex:
         case ST::digit_hex_upper:
@@ -273,7 +273,7 @@ static void _format_numeric_s(const ST::format_spec &format,
     else if (format.m_always_signed)
         *start++ = '+';
 
-    if (format.m_class_prefix) {
+    if (value && format.m_class_prefix) {
         switch (format.m_digit_class) {
         case ST::digit_hex:
             *start++ = '0';
@@ -340,7 +340,7 @@ static void _format_numeric_u(const ST::format_spec &format,
     if (format.m_always_signed)
         ++format_size;
 
-    if (format.m_class_prefix) {
+    if (value && format.m_class_prefix) {
         switch (format.m_digit_class) {
         case ST::digit_hex:
         case ST::digit_hex_upper:
@@ -363,7 +363,7 @@ static void _format_numeric_u(const ST::format_spec &format,
     if (format.m_always_signed)
         *start++ = '+';
 
-    if (format.m_class_prefix) {
+    if (value && format.m_class_prefix) {
         switch (format.m_digit_class) {
         case ST::digit_hex:
             *start++ = '0';

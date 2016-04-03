@@ -146,6 +146,7 @@ TEST(format, decimal)
     EXPECT_EQ(ST::string("xx4294967295xx"), ST::format("xx{}xx", std::numeric_limits<unsigned int>::max()));
     EXPECT_EQ(ST::string("xx+4294967295xx"), ST::format("xx{+}xx", std::numeric_limits<unsigned int>::max()));
 
+#ifdef ST_HAVE_INT64
     // 64-bit ints
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{}xx", (int64_t)0));
     EXPECT_EQ(ST::string("xx9223372036854775807xx"), ST::format("xx{}xx", std::numeric_limits<int64_t>::max()));
@@ -155,6 +156,48 @@ TEST(format, decimal)
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{}xx", (uint64_t)0));
     EXPECT_EQ(ST::string("xx18446744073709551615xx"), ST::format("xx{}xx", std::numeric_limits<uint64_t>::max()));
     EXPECT_EQ(ST::string("xx+18446744073709551615xx"), ST::format("xx{+}xx", std::numeric_limits<uint64_t>::max()));
+#endif
+}
+
+TEST(format, decimal_prefix)
+{
+    EXPECT_EQ(ST::string("xx1234xx"), ST::format("xx{#}xx", 1234));
+    EXPECT_EQ(ST::string("xx1234xx"), ST::format("xx{#d}xx", 1234));
+    EXPECT_EQ(ST::string("xx1234xx"), ST::format("xx{#2}xx", 1234));
+    EXPECT_EQ(ST::string("xx1234xx"), ST::format("xx{>#2}xx", 1234));
+    EXPECT_EQ(ST::string("xx1234xx"), ST::format("xx{<2#}xx", 1234));
+    EXPECT_EQ(ST::string("xx  1234xx"), ST::format("xx{#6}xx", 1234));
+    EXPECT_EQ(ST::string("xx  1234xx"), ST::format("xx{>#6}xx", 1234));
+    EXPECT_EQ(ST::string("xx1234  xx"), ST::format("xx{<#6}xx", 1234));
+
+    // Character types
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#d}xx", '\0'));
+    EXPECT_EQ(ST::string("xx65xx"), ST::format("xx{#d}xx", 'A'));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#d}xx", L'\0'));
+    EXPECT_EQ(ST::string("xx65xx"), ST::format("xx{#d}xx", L'A'));
+    EXPECT_EQ(ST::string("xx32767xx"), ST::format("xx{#d}xx", L'\u7fff'));
+
+    // 32-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#}xx", (int)0));
+    EXPECT_EQ(ST::string("xx2147483647xx"), ST::format("xx{#}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx+2147483647xx"), ST::format("xx{+#}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx-2147483648xx"), ST::format("xx{#}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx-2147483648xx"), ST::format("xx{+#}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#}xx", (unsigned int)0));
+    EXPECT_EQ(ST::string("xx4294967295xx"), ST::format("xx{#}xx", std::numeric_limits<unsigned int>::max()));
+    EXPECT_EQ(ST::string("xx+4294967295xx"), ST::format("xx{+#}xx", std::numeric_limits<unsigned int>::max()));
+
+#ifdef ST_HAVE_INT64
+    // 64-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#}xx", (int64_t)0));
+    EXPECT_EQ(ST::string("xx9223372036854775807xx"), ST::format("xx{#}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx+9223372036854775807xx"), ST::format("xx{+#}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx-9223372036854775808xx"), ST::format("xx{#}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx-9223372036854775808xx"), ST::format("xx{+#}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#}xx", (uint64_t)0));
+    EXPECT_EQ(ST::string("xx18446744073709551615xx"), ST::format("xx{#}xx", std::numeric_limits<uint64_t>::max()));
+    EXPECT_EQ(ST::string("xx+18446744073709551615xx"), ST::format("xx{+#}xx", std::numeric_limits<uint64_t>::max()));
+#endif
 }
 
 TEST(format, hex)
@@ -202,6 +245,7 @@ TEST(format, hex)
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{x}xx", (unsigned int)0));
     EXPECT_EQ(ST::string("xxffffffffxx"), ST::format("xx{x}xx", std::numeric_limits<unsigned int>::max()));
 
+#ifdef ST_HAVE_INT64
     // 64-bit ints
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{x}xx", (int64_t)0));
     EXPECT_EQ(ST::string("xx7fffffffffffffffxx"), ST::format("xx{x}xx", std::numeric_limits<int64_t>::max()));
@@ -210,6 +254,46 @@ TEST(format, hex)
     EXPECT_EQ(ST::string("xx-8000000000000000xx"), ST::format("xx{+x}xx", std::numeric_limits<int64_t>::min()));
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{x}xx", (uint64_t)0));
     EXPECT_EQ(ST::string("xxffffffffffffffffxx"), ST::format("xx{x}xx", std::numeric_limits<uint64_t>::max()));
+#endif
+}
+
+TEST(format, hex_prefix)
+{
+    EXPECT_EQ(ST::string("xx0x4d2xx"), ST::format("xx{#x}xx", 1234));
+    EXPECT_EQ(ST::string("xx0x4d2xx"), ST::format("xx{#x}xx", 1234));
+    EXPECT_EQ(ST::string("xx0x4d2xx"), ST::format("xx{#2x}xx", 1234));
+    EXPECT_EQ(ST::string("xx0x4d2xx"), ST::format("xx{>#2x}xx", 1234));
+    EXPECT_EQ(ST::string("xx0x4d2xx"), ST::format("xx{<#2x}xx", 1234));
+    EXPECT_EQ(ST::string("xx   0x4d2xx"), ST::format("xx{#8x}xx", 1234));
+    EXPECT_EQ(ST::string("xx   0x4d2xx"), ST::format("xx{>#8x}xx", 1234));
+    EXPECT_EQ(ST::string("xx0x4d2   xx"), ST::format("xx{<#8x}xx", 1234));
+
+    // Character types
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#x}xx", '\0'));
+    EXPECT_EQ(ST::string("xx0x41xx"), ST::format("xx{#x}xx", 'A'));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#x}xx", L'\0'));
+    EXPECT_EQ(ST::string("xx0x41xx"), ST::format("xx{#x}xx", L'A'));
+    EXPECT_EQ(ST::string("xx0x7fffxx"), ST::format("xx{#x}xx", L'\u7fff'));
+
+    // 32-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#x}xx", (int)0));
+    EXPECT_EQ(ST::string("xx0x7fffffffxx"), ST::format("xx{#x}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx+0x7fffffffxx"), ST::format("xx{+#x}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx-0x80000000xx"), ST::format("xx{#x}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx-0x80000000xx"), ST::format("xx{+#x}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#x}xx", (unsigned int)0));
+    EXPECT_EQ(ST::string("xx0xffffffffxx"), ST::format("xx{#x}xx", std::numeric_limits<unsigned int>::max()));
+
+#ifdef ST_HAVE_INT64
+    // 64-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#x}xx", (int64_t)0));
+    EXPECT_EQ(ST::string("xx0x7fffffffffffffffxx"), ST::format("xx{#x}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx+0x7fffffffffffffffxx"), ST::format("xx{+#x}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx-0x8000000000000000xx"), ST::format("xx{#x}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx-0x8000000000000000xx"), ST::format("xx{+#x}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#x}xx", (uint64_t)0));
+    EXPECT_EQ(ST::string("xx0xffffffffffffffffxx"), ST::format("xx{#x}xx", std::numeric_limits<uint64_t>::max()));
+#endif
 }
 
 TEST(format, hex_upper)
@@ -257,6 +341,7 @@ TEST(format, hex_upper)
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{X}xx", (unsigned int)0));
     EXPECT_EQ(ST::string("xxFFFFFFFFxx"), ST::format("xx{X}xx", std::numeric_limits<unsigned int>::max()));
 
+#ifdef ST_HAVE_INT64
     // 64-bit ints
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{X}xx", (int64_t)0));
     EXPECT_EQ(ST::string("xx7FFFFFFFFFFFFFFFxx"), ST::format("xx{X}xx", std::numeric_limits<int64_t>::max()));
@@ -265,6 +350,46 @@ TEST(format, hex_upper)
     EXPECT_EQ(ST::string("xx-8000000000000000xx"), ST::format("xx{+X}xx", std::numeric_limits<int64_t>::min()));
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{X}xx", (uint64_t)0));
     EXPECT_EQ(ST::string("xxFFFFFFFFFFFFFFFFxx"), ST::format("xx{X}xx", std::numeric_limits<uint64_t>::max()));
+#endif
+}
+
+TEST(format, hex_upper_prefix)
+{
+    EXPECT_EQ(ST::string("xx0X4D2xx"), ST::format("xx{#X}xx", 1234));
+    EXPECT_EQ(ST::string("xx0X4D2xx"), ST::format("xx{#X}xx", 1234));
+    EXPECT_EQ(ST::string("xx0X4D2xx"), ST::format("xx{#2X}xx", 1234));
+    EXPECT_EQ(ST::string("xx0X4D2xx"), ST::format("xx{>#2X}xx", 1234));
+    EXPECT_EQ(ST::string("xx0X4D2xx"), ST::format("xx{<#2X}xx", 1234));
+    EXPECT_EQ(ST::string("xx   0X4D2xx"), ST::format("xx{#8X}xx", 1234));
+    EXPECT_EQ(ST::string("xx   0X4D2xx"), ST::format("xx{>#8X}xx", 1234));
+    EXPECT_EQ(ST::string("xx0X4D2   xx"), ST::format("xx{<#8X}xx", 1234));
+
+    // Character types
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#X}xx", '\0'));
+    EXPECT_EQ(ST::string("xx0X41xx"), ST::format("xx{#X}xx", 'A'));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#X}xx", L'\0'));
+    EXPECT_EQ(ST::string("xx0X41xx"), ST::format("xx{#X}xx", L'A'));
+    EXPECT_EQ(ST::string("xx0X7FFFxx"), ST::format("xx{#X}xx", L'\u7fff'));
+
+    // 32-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#X}xx", (int)0));
+    EXPECT_EQ(ST::string("xx0X7FFFFFFFxx"), ST::format("xx{#X}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx+0X7FFFFFFFxx"), ST::format("xx{+#X}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx-0X80000000xx"), ST::format("xx{#X}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx-0X80000000xx"), ST::format("xx{+#X}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#X}xx", (unsigned int)0));
+    EXPECT_EQ(ST::string("xx0XFFFFFFFFxx"), ST::format("xx{#X}xx", std::numeric_limits<unsigned int>::max()));
+
+#ifdef ST_HAVE_INT64
+    // 64-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#X}xx", (int64_t)0));
+    EXPECT_EQ(ST::string("xx0X7FFFFFFFFFFFFFFFxx"), ST::format("xx{#X}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx+0X7FFFFFFFFFFFFFFFxx"), ST::format("xx{+#X}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx-0X8000000000000000xx"), ST::format("xx{#X}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx-0X8000000000000000xx"), ST::format("xx{+#X}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#X}xx", (uint64_t)0));
+    EXPECT_EQ(ST::string("xx0XFFFFFFFFFFFFFFFFxx"), ST::format("xx{#X}xx", std::numeric_limits<uint64_t>::max()));
+#endif
 }
 
 TEST(format, octal)
@@ -312,6 +437,7 @@ TEST(format, octal)
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{o}xx", (unsigned int)0));
     EXPECT_EQ(ST::string("xx37777777777xx"), ST::format("xx{o}xx", std::numeric_limits<unsigned int>::max()));
 
+#ifdef ST_HAVE_INT64
     // 64-bit ints
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{o}xx", (int64_t)0));
     EXPECT_EQ(ST::string("xx777777777777777777777xx"), ST::format("xx{o}xx", std::numeric_limits<int64_t>::max()));
@@ -320,6 +446,46 @@ TEST(format, octal)
     EXPECT_EQ(ST::string("xx-1000000000000000000000xx"), ST::format("xx{+o}xx", std::numeric_limits<int64_t>::min()));
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{o}xx", (uint64_t)0));
     EXPECT_EQ(ST::string("xx1777777777777777777777xx"), ST::format("xx{o}xx", std::numeric_limits<uint64_t>::max()));
+#endif
+}
+
+TEST(format, octal_prefix)
+{
+    EXPECT_EQ(ST::string("xx02322xx"), ST::format("xx{#o}xx", 1234));
+    EXPECT_EQ(ST::string("xx02322xx"), ST::format("xx{#o}xx", 1234));
+    EXPECT_EQ(ST::string("xx02322xx"), ST::format("xx{#2o}xx", 1234));
+    EXPECT_EQ(ST::string("xx02322xx"), ST::format("xx{>#2o}xx", 1234));
+    EXPECT_EQ(ST::string("xx02322xx"), ST::format("xx{<#2o}xx", 1234));
+    EXPECT_EQ(ST::string("xx  02322xx"), ST::format("xx{#7o}xx", 1234));
+    EXPECT_EQ(ST::string("xx  02322xx"), ST::format("xx{>#7o}xx", 1234));
+    EXPECT_EQ(ST::string("xx02322  xx"), ST::format("xx{<#7o}xx", 1234));
+
+    // Character types
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#o}xx", '\0'));
+    EXPECT_EQ(ST::string("xx0101xx"), ST::format("xx{#o}xx", 'A'));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#o}xx", L'\0'));
+    EXPECT_EQ(ST::string("xx0101xx"), ST::format("xx{#o}xx", L'A'));
+    EXPECT_EQ(ST::string("xx077777xx"), ST::format("xx{#o}xx", L'\u7fff'));
+
+    // 32-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#o}xx", (int)0));
+    EXPECT_EQ(ST::string("xx017777777777xx"), ST::format("xx{#o}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx+017777777777xx"), ST::format("xx{+#o}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx-020000000000xx"), ST::format("xx{#o}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx-020000000000xx"), ST::format("xx{+#o}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#o}xx", (unsigned int)0));
+    EXPECT_EQ(ST::string("xx037777777777xx"), ST::format("xx{#o}xx", std::numeric_limits<unsigned int>::max()));
+
+#ifdef ST_HAVE_INT64
+    // 64-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#o}xx", (int64_t)0));
+    EXPECT_EQ(ST::string("xx0777777777777777777777xx"), ST::format("xx{#o}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx+0777777777777777777777xx"), ST::format("xx{+#o}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx-01000000000000000000000xx"), ST::format("xx{#o}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx-01000000000000000000000xx"), ST::format("xx{+#o}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#o}xx", (uint64_t)0));
+    EXPECT_EQ(ST::string("xx01777777777777777777777xx"), ST::format("xx{#o}xx", std::numeric_limits<uint64_t>::max()));
+#endif
 }
 
 TEST(format, binary)
@@ -372,6 +538,7 @@ TEST(format, binary)
     EXPECT_EQ(ST::string("xx11111111111111111111111111111111xx"),
               ST::format("xx{b}xx", std::numeric_limits<unsigned int>::max()));
 
+#ifdef ST_HAVE_INT64
     // 64-bit ints
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{b}xx", (int64_t)0));
     EXPECT_EQ(ST::string("xx111111111111111111111111111111111111111111111111111111111111111xx"),
@@ -385,6 +552,56 @@ TEST(format, binary)
     EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{b}xx", (uint64_t)0));
     EXPECT_EQ(ST::string("xx1111111111111111111111111111111111111111111111111111111111111111xx"),
               ST::format("xx{b}xx", std::numeric_limits<uint64_t>::max()));
+#endif
+}
+
+TEST(format, binary_prefix)
+{
+    EXPECT_EQ(ST::string("xx0b10011010010xx"), ST::format("xx{#b}xx", 1234));
+    EXPECT_EQ(ST::string("xx0b10011010010xx"), ST::format("xx{#b}xx", 1234));
+    EXPECT_EQ(ST::string("xx0b10011010010xx"), ST::format("xx{#2b}xx", 1234));
+    EXPECT_EQ(ST::string("xx0b10011010010xx"), ST::format("xx{>#2b}xx", 1234));
+    EXPECT_EQ(ST::string("xx0b10011010010xx"), ST::format("xx{<#2b}xx", 1234));
+    EXPECT_EQ(ST::string("xx   0b10011010010xx"), ST::format("xx{#16b}xx", 1234));
+    EXPECT_EQ(ST::string("xx   0b10011010010xx"), ST::format("xx{>#16b}xx", 1234));
+    EXPECT_EQ(ST::string("xx0b10011010010   xx"), ST::format("xx{<#16b}xx", 1234));
+
+    // Character types
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#b}xx", '\0'));
+    EXPECT_EQ(ST::string("xx0b1000001xx"), ST::format("xx{#b}xx", 'A'));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#b}xx", L'\0'));
+    EXPECT_EQ(ST::string("xx0b1000001xx"), ST::format("xx{#b}xx", L'A'));
+    EXPECT_EQ(ST::string("xx0b111111111111111xx"), ST::format("xx{#b}xx", L'\u7fff'));
+
+    // 32-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#b}xx", (int)0));
+    EXPECT_EQ(ST::string("xx0b1111111111111111111111111111111xx"),
+              ST::format("xx{#b}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx+0b1111111111111111111111111111111xx"),
+              ST::format("xx{+#b}xx", std::numeric_limits<int>::max()));
+    EXPECT_EQ(ST::string("xx-0b10000000000000000000000000000000xx"),
+              ST::format("xx{#b}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx-0b10000000000000000000000000000000xx"),
+              ST::format("xx{+#b}xx", std::numeric_limits<int>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#b}xx", (unsigned int)0));
+    EXPECT_EQ(ST::string("xx0b11111111111111111111111111111111xx"),
+              ST::format("xx{#b}xx", std::numeric_limits<unsigned int>::max()));
+
+#ifdef ST_HAVE_INT64
+    // 64-bit ints
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#b}xx", (int64_t)0));
+    EXPECT_EQ(ST::string("xx0b111111111111111111111111111111111111111111111111111111111111111xx"),
+              ST::format("xx{#b}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx+0b111111111111111111111111111111111111111111111111111111111111111xx"),
+              ST::format("xx{+#b}xx", std::numeric_limits<int64_t>::max()));
+    EXPECT_EQ(ST::string("xx-0b1000000000000000000000000000000000000000000000000000000000000000xx"),
+              ST::format("xx{#b}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx-0b1000000000000000000000000000000000000000000000000000000000000000xx"),
+              ST::format("xx{+#b}xx", std::numeric_limits<int64_t>::min()));
+    EXPECT_EQ(ST::string("xx0xx"), ST::format("xx{#b}xx", (uint64_t)0));
+    EXPECT_EQ(ST::string("xx0b1111111111111111111111111111111111111111111111111111111111111111xx"),
+              ST::format("xx{#b}xx", std::numeric_limits<uint64_t>::max()));
+#endif
 }
 
 TEST(format, floating_point)
