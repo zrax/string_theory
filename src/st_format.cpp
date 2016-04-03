@@ -259,6 +259,34 @@ static void _format_decimal(const ST::format_spec &format,
     ST::format_string(format, output, buffer, format_size, ST::align_right);
 }
 
+template <typename uint_T>
+static void _format_udecimal(const ST::format_spec &format,
+                             ST::string_stream &output, uint_T value)
+{
+    size_t format_size = 0;
+    uint_T temp = value;
+    while (temp) {
+        ++format_size;
+        temp /= 10;
+    }
+
+    if (format_size == 0)
+        format_size = 1;
+
+    if (format.m_always_signed)
+        ++format_size;
+
+    ST_ASSERT(format_size < 24, "Format length too long");
+
+    char buffer[24];
+    _format_numeric_impl<uint_T>(buffer + format_size, value, 10);
+
+    if (format.m_always_signed)
+        buffer[0] = '+';
+
+    ST::format_string(format, output, buffer, format_size, ST::align_right);
+}
+
 static void _format_char(const ST::format_spec &format,
                          ST::string_stream &output, int ch)
 {
@@ -347,7 +375,7 @@ static void _format_char(const ST::format_spec &format,
             break; \
         case ST::digit_dec: \
         case ST::digit_default: \
-            _format_decimal<uint_T>(format, output, value); \
+            _format_udecimal<uint_T>(format, output, value); \
             break; \
         case ST::digit_char: \
             _format_char(format, output, value); \
@@ -470,7 +498,7 @@ ST_FORMAT_TYPE(wchar_t)
         _format_numeric<uint32_t>(format, output, value, 16, true);
         break;
     case ST::digit_dec:
-        _format_decimal<uint32_t>(format, output, value);
+        _format_udecimal<uint32_t>(format, output, value);
         break;
     case ST::digit_char:
     case ST::digit_default:
