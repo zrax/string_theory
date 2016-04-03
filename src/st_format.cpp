@@ -94,6 +94,9 @@ ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &
             // For easier porting from %08X-style printf strings
             spec.m_pad = '0';
             break;
+        case '#':
+            spec.m_class_prefix = true;
+            break;
         case 'x':
             spec.m_digit_class = ST::digit_hex;
             break;
@@ -177,8 +180,8 @@ void ST::format_string(const ST::format_spec &format, ST::string_stream &output,
     }
 }
 
-template <typename int_T>
-static void _format_numeric_impl(char *output_end, int_T value, int radix,
+template <typename uint_T>
+static void _format_numeric_impl(char *output_end, uint_T value, int radix,
                                  bool upper_case = false)
 {
     if (value == 0) {
@@ -187,7 +190,7 @@ static void _format_numeric_impl(char *output_end, int_T value, int radix,
     }
 
     while (value) {
-        int digit = (value % radix);
+        unsigned int digit = (value % radix);
         value /= radix;
         --output_end;
 
@@ -201,15 +204,39 @@ static void _format_numeric_impl(char *output_end, int_T value, int radix,
 }
 
 template <typename int_T>
-static void _format_numeric(const ST::format_spec &format,
-                            ST::string_stream &output, int_T value,
-                            int radix, bool upper_case = false)
+static void _format_numeric_s(const ST::format_spec &format,
+                              ST::string_stream &output, int_T value)
 {
-    ST_STATIC_ASSERT(std::is_unsigned<int_T>::value,
-                     "Signed numerics are currently only supported in Decimal formatting");
+    ST_STATIC_ASSERT(std::is_signed<int_T>::value,
+                     "Use _format_numeric_u for unsigned numerics");
+
+    int radix = 10;
+    bool upper_case = false;
+    switch (format.m_digit_class) {
+    case ST::digit_hex_upper:
+        upper_case = true;
+        /* fall through */
+    case ST::digit_hex:
+        radix = 16;
+        break;
+    case ST::digit_oct:
+        radix = 8;
+        break;
+    case ST::digit_bin:
+        radix = 2;
+        break;
+    case ST::digit_dec:
+    case ST::digit_default:
+        break;
+    default:
+        ST_ASSERT(false, "Invalid digit class for _format_numeric_s");
+    }
+
+    typedef typename std::make_unsigned<int_T>::type uint_T;
+    uint_T abs = (value < 0) ? -(uint_T)value : value;
 
     size_t format_size = 0;
-    int_T temp = value;
+    int_T temp = abs;
     while (temp) {
         ++format_size;
         temp /= radix;
@@ -218,56 +245,93 @@ static void _format_numeric(const ST::format_spec &format,
     if (format_size == 0)
         format_size = 1;
 
-    ST_ASSERT(format_size < 65, "Format length too long");
-
-    char buffer[65];
-    _format_numeric_impl<int_T>(buffer + format_size, value, radix, upper_case);
-    ST::format_string(format, output, buffer, format_size, ST::align_right);
-}
-
-// Currently, only decimal formatting supports rendering negative numbers
-template <typename int_T>
-static void _format_decimal(const ST::format_spec &format,
-                            ST::string_stream &output, int_T value)
-{
-    typedef typename std::make_unsigned<int_T>::type uint_T;
-    uint_T abs = (value < 0) ? -(uint_T)value : value;
-
-    size_t format_size = 0;
-    uint_T temp = abs;
-    while (temp) {
-        ++format_size;
-        temp /= 10;
-    }
-
-    if (format_size == 0)
-        format_size = 1;
-
     if (value < 0 || format.m_always_signed)
         ++format_size;
 
-    ST_ASSERT(format_size < 24, "Format length too long");
+    if (format.m_class_prefix) {
+        switch (format.m_digit_class) {
+        case ST::digit_hex:
+        case ST::digit_hex_upper:
+        case ST::digit_bin:
+            format_size += 2;
+            break;
+        case ST::digit_oct:
+            ++format_size;
+            break;
+        default:
+            break;
+        }
+    }
 
-    char buffer[24];
-    _format_numeric_impl<uint_T>(buffer + format_size, abs, 10);
+    char buffer[68];
+    ST_ASSERT(format_size < sizeof(buffer), "Format length too long");
+    _format_numeric_impl<uint_T>(buffer + format_size, abs, radix, upper_case);
 
+    char *start = buffer;
     if (value < 0)
-        buffer[0] = '-';
+        *start++ = '-';
     else if (format.m_always_signed)
-        buffer[0] = '+';
+        *start++ = '+';
+
+    if (format.m_class_prefix) {
+        switch (format.m_digit_class) {
+        case ST::digit_hex:
+            *start++ = '0';
+            *start++ = 'x';
+            break;
+        case ST::digit_hex_upper:
+            *start++ = '0';
+            *start++ = 'X';
+            break;
+        case ST::digit_bin:
+            *start++ = '0';
+            *start++ = 'b';
+            break;
+        case ST::digit_oct:
+            *start++ = '0';
+            break;
+        default:
+            break;
+        }
+    }
 
     ST::format_string(format, output, buffer, format_size, ST::align_right);
 }
 
 template <typename uint_T>
-static void _format_udecimal(const ST::format_spec &format,
-                             ST::string_stream &output, uint_T value)
+static void _format_numeric_u(const ST::format_spec &format,
+                              ST::string_stream &output, uint_T value)
 {
+    ST_STATIC_ASSERT(std::is_unsigned<uint_T>::value,
+                     "Use _format_numeric_s for signed numerics");
+
+    int radix = 10;
+    bool upper_case = false;
+    switch (format.m_digit_class) {
+    case ST::digit_hex_upper:
+        upper_case = true;
+        /* fall through */
+    case ST::digit_hex:
+        radix = 16;
+        break;
+    case ST::digit_oct:
+        radix = 8;
+        break;
+    case ST::digit_bin:
+        radix = 2;
+        break;
+    case ST::digit_dec:
+    case ST::digit_default:
+        break;
+    default:
+        ST_ASSERT(false, "Invalid digit class for _format_numeric_u");
+    }
+
     size_t format_size = 0;
     uint_T temp = value;
     while (temp) {
         ++format_size;
-        temp /= 10;
+        temp /= radix;
     }
 
     if (format_size == 0)
@@ -276,13 +340,50 @@ static void _format_udecimal(const ST::format_spec &format,
     if (format.m_always_signed)
         ++format_size;
 
-    ST_ASSERT(format_size < 24, "Format length too long");
+    if (format.m_class_prefix) {
+        switch (format.m_digit_class) {
+        case ST::digit_hex:
+        case ST::digit_hex_upper:
+        case ST::digit_bin:
+            format_size += 2;
+            break;
+        case ST::digit_oct:
+            ++format_size;
+            break;
+        default:
+            break;
+        }
+    }
 
-    char buffer[24];
-    _format_numeric_impl<uint_T>(buffer + format_size, value, 10);
+    char buffer[68];
+    ST_ASSERT(format_size < sizeof(buffer), "Format length too long");
+    _format_numeric_impl<uint_T>(buffer + format_size, value, radix, upper_case);
 
+    char *start = buffer;
     if (format.m_always_signed)
-        buffer[0] = '+';
+        *start++ = '+';
+
+    if (format.m_class_prefix) {
+        switch (format.m_digit_class) {
+        case ST::digit_hex:
+            *start++ = '0';
+            *start++ = 'x';
+            break;
+        case ST::digit_hex_upper:
+            *start++ = '0';
+            *start++ = 'X';
+            break;
+        case ST::digit_bin:
+            *start++ = '0';
+            *start++ = 'b';
+            break;
+        case ST::digit_oct:
+            *start++ = '0';
+            break;
+        default:
+            break;
+        }
+    }
 
     ST::format_string(format, output, buffer, format_size, ST::align_right);
 }
@@ -330,60 +431,18 @@ static void _format_char(const ST::format_spec &format,
 #define _ST_FORMAT_INT_TYPE(int_T, uint_T) \
     ST_FORMAT_TYPE(int_T) \
     { \
-        /* Note:  The use of unsigned here is not a typo -- we only format decimal \
-           values with a sign, so we can convert everything else to unsigned. */ \
-        switch (format.m_digit_class) { \
-        case ST::digit_bin: \
-            _format_numeric<uint_T>(format, output, value, 2); \
-            break; \
-        case ST::digit_oct: \
-            _format_numeric<uint_T>(format, output, value, 8); \
-            break; \
-        case ST::digit_hex: \
-            _format_numeric<uint_T>(format, output, value, 16, false); \
-            break; \
-        case ST::digit_hex_upper: \
-            _format_numeric<uint_T>(format, output, value, 16, true); \
-            break; \
-        case ST::digit_dec: \
-        case ST::digit_default: \
-            _format_decimal<int_T>(format, output, value); \
-            break; \
-        case ST::digit_char: \
+        if (format.m_digit_class == ST::digit_char) \
             _format_char(format, output, value); \
-            break; \
-        default: \
-            ST_ASSERT(false, "Unexpected digit class"); \
-            break; \
-        } \
+        else \
+            _format_numeric_s<int_T>(format, output, value); \
     } \
     \
     ST_FORMAT_TYPE(uint_T) \
     { \
-        switch (format.m_digit_class) { \
-        case ST::digit_bin: \
-            _format_numeric<uint_T>(format, output, value, 2); \
-            break; \
-        case ST::digit_oct: \
-            _format_numeric<uint_T>(format, output, value, 8); \
-            break; \
-        case ST::digit_hex: \
-            _format_numeric<uint_T>(format, output, value, 16, false); \
-            break; \
-        case ST::digit_hex_upper: \
-            _format_numeric<uint_T>(format, output, value, 16, true); \
-            break; \
-        case ST::digit_dec: \
-        case ST::digit_default: \
-            _format_udecimal<uint_T>(format, output, value); \
-            break; \
-        case ST::digit_char: \
+        if (format.m_digit_class == ST::digit_char) \
             _format_char(format, output, value); \
-            break; \
-        default: \
-            ST_ASSERT(false, "Unexpected digit class"); \
-            break; \
-        } \
+        else \
+            _format_numeric_u<uint_T>(format, output, value); \
     }
 
 _ST_FORMAT_INT_TYPE(signed char, unsigned char)
@@ -454,60 +513,18 @@ ST_FORMAT_TYPE(double)
 
 ST_FORMAT_TYPE(char)
 {
-    /* Note:  The use of unsigned here is not a typo -- we only format decimal
-       values with a sign, so we can convert everything else to unsigned. */
-    switch (format.m_digit_class) {
-    case ST::digit_bin:
-        _format_numeric<unsigned char>(format, output, value, 2);
-        break;
-    case ST::digit_oct:
-        _format_numeric<unsigned char>(format, output, value, 8);
-        break;
-    case ST::digit_hex:
-        _format_numeric<unsigned char>(format, output, value, 16, false);
-        break;
-    case ST::digit_hex_upper:
-        _format_numeric<unsigned char>(format, output, value, 16, true);
-        break;
-    case ST::digit_dec:
-        _format_decimal<signed char>(format, output, value);
-        break;
-    case ST::digit_char:
-    case ST::digit_default:
+    if (format.m_digit_class == ST::digit_char || format.m_digit_class == ST::digit_default)
         _format_char(format, output, value);
-        break;
-    default:
-        ST_ASSERT(false, "Unexpected digit class");
-        break;
-    }
+    else
+        _format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
 }
 
 ST_FORMAT_TYPE(wchar_t)
 {
-    switch (format.m_digit_class) {
-    case ST::digit_bin:
-        _format_numeric<uint32_t>(format, output, value, 2);
-        break;
-    case ST::digit_oct:
-        _format_numeric<uint32_t>(format, output, value, 8);
-        break;
-    case ST::digit_hex:
-        _format_numeric<uint32_t>(format, output, value, 16, false);
-        break;
-    case ST::digit_hex_upper:
-        _format_numeric<uint32_t>(format, output, value, 16, true);
-        break;
-    case ST::digit_dec:
-        _format_udecimal<uint32_t>(format, output, value);
-        break;
-    case ST::digit_char:
-    case ST::digit_default:
+    if (format.m_digit_class == ST::digit_char || format.m_digit_class == ST::digit_default)
         _format_char(format, output, value);
-        break;
-    default:
-        ST_ASSERT(false, "Unexpected digit class");
-        break;
-    }
+    else
+        _format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
 }
 
 ST_FORMAT_TYPE(const char *)
