@@ -100,13 +100,35 @@ ST_EXPORT ST_DECL_FORMAT_TYPE(int64_t);
 ST_EXPORT ST_DECL_FORMAT_TYPE(uint64_t);
 #endif
 
-ST_EXPORT ST_DECL_FORMAT_TYPE(float);
 ST_EXPORT ST_DECL_FORMAT_TYPE(double);
 
-ST_EXPORT ST_DECL_FORMAT_TYPE(const char *);
-ST_EXPORT ST_DECL_FORMAT_TYPE(const wchar_t *);
-ST_EXPORT ST_DECL_FORMAT_TYPE(const ST::string &);
+inline ST_FORMAT_TYPE(float)
+{
+    ST_FORMAT_FORWARD(double(value));
+}
 
-ST_EXPORT ST_DECL_FORMAT_TYPE(bool);
+inline ST_FORMAT_TYPE(const char *)
+{
+    ST::format_string(format, output, value, ST::char_buffer::strlen(value), ST::align_left);
+}
+
+inline ST_FORMAT_TYPE(const wchar_t *)
+{
+    ST::char_buffer utf8 = ST::string::from_wchar(value).to_utf8();
+    ST::format_string(format, output, utf8.data(), utf8.size(), ST::align_left);
+}
+
+inline ST_FORMAT_TYPE(const ST::string &)
+{
+    ST::format_string(format, output, value.c_str(), value.size(), ST::align_left);
+}
+
+inline ST_FORMAT_TYPE(bool)
+{
+    if (value)
+        ST::format_string(format, output, "true", 4, ST::align_left);
+    else
+        ST::format_string(format, output, "false", 5, ST::align_left);
+}
 
 #endif // _ST_FORMATTER_H

@@ -454,11 +454,6 @@ _ST_FORMAT_INT_TYPE(long, unsigned long)
 _ST_FORMAT_INT_TYPE(int64_t, uint64_t)
 #endif
 
-ST_FORMAT_TYPE(float)
-{
-    ST_FORMAT_FORWARD(double(value));
-}
-
 ST_FORMAT_TYPE(double)
 {
     char pad = format.m_pad ? format.m_pad : ' ';
@@ -525,25 +520,4 @@ ST_FORMAT_TYPE(wchar_t)
         _format_char(format, output, value);
     else
         _format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
-}
-
-ST_FORMAT_TYPE(const char *)
-{
-    ST::format_string(format, output, value, strlen(value), ST::align_left);
-}
-
-ST_FORMAT_TYPE(const wchar_t *)
-{
-    ST::char_buffer utf8 = ST::string::from_wchar(value).to_utf8();
-    ST::format_string(format, output, utf8.data(), utf8.size(), ST::align_left);
-}
-
-ST_FORMAT_TYPE(const ST::string &)
-{
-    ST::format_string(format, output, value.c_str(), value.size(), ST::align_left);
-}
-
-ST_FORMAT_TYPE(bool)
-{
-    ST_FORMAT_FORWARD(value ? "true" : "false");
 }

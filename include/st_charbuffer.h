@@ -38,7 +38,7 @@ namespace _ST_PRIVATE
 
 namespace ST
 {
-    template<typename char_T>
+    template <typename char_T>
     class ST_EXPORT buffer
     {
     private:

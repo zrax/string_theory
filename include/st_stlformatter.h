@@ -37,7 +37,7 @@ inline ST_FORMAT_TYPE(const std::wstring &)
 }
 
 template <typename value_T>
-ST_EXPORT ST_FORMAT_TYPE(const std::complex<value_T> &)
+ST_FORMAT_TYPE(const std::complex<value_T> &)
 {
     ST_FORMAT_FORWARD(value.real());
     output.append_char('+');
