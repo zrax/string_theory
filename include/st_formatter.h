@@ -69,8 +69,8 @@ namespace ST
     };
 
     ST_EXPORT void format_string(const format_spec &format, string_stream &output,
-                                const char *text, size_t size,
-                                alignment default_alignment);
+                                 const char *text, size_t size,
+                                 alignment default_alignment);
 }
 
 #define ST_DECL_FORMAT_TYPE(type_T) \

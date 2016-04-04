@@ -25,8 +25,16 @@
 #include <string>
 #include <complex>
 
-ST_EXPORT ST_DECL_FORMAT_TYPE(const std::string &);
-ST_EXPORT ST_DECL_FORMAT_TYPE(const std::wstring &);
+inline ST_FORMAT_TYPE(const std::string &)
+{
+    ST::format_string(format, output, value.c_str(), value.size(), ST::align_left);
+}
+
+inline ST_FORMAT_TYPE(const std::wstring &)
+{
+    ST::char_buffer utf8 = ST::string::from_wchar(value.c_str(), value.size()).to_utf8();
+    ST::format_string(format, output, utf8.data(), utf8.size(), ST::align_left);
+}
 
 template <typename value_T>
 ST_EXPORT ST_FORMAT_TYPE(const std::complex<value_T> &)

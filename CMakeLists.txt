@@ -140,7 +140,6 @@ if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS)
     )
     set(ST_SOURCES ${ST_SOURCES}
         src/st_format.cpp
-        src/st_stlformatter.cpp
     )
     set(ST_HAVE_FORMAT TRUE)
 endif()
