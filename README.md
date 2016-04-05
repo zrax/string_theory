@@ -56,6 +56,8 @@ String Theory is designed to provide:
   par with `std::stringstream`, and `ST::format` generally clocks in
   significantly faster than `boost::format` (albeit slower than non-type-safe
   formatters like `sprintf`).
+- Reentrance.  Another side-effect of immutable strings is that ST::string is
+  a fully reentrant string library with no locking necessary.
 - Cross Platform.  String Theory is supported on any platform that provides a
   reasonably modern C++ compiler.  You can use it with older compilers as well,
   but note that the feature set may become somewhat reduced by doing so.
