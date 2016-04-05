@@ -826,23 +826,39 @@ int ST::string::compare_n(const char *str, size_t count,
                                   : strnicmp(c_str(), str ? str : "", count);
 }
 
+static const char *_stristr(const char *haystack, const char *needle)
+{
+    // The "easy" way
+    size_t sublen = strlen(needle);
+    const char *cp = haystack;
+    const char *ep = cp + strlen(haystack);
+    while (cp + sublen <= ep) {
+        if (strnicmp(cp, needle, sublen) == 0)
+            return cp;
+        ++cp;
+    }
+    return ST_NULLPTR;
+}
+
+static const char *_strichr(const char *haystack, int ch)
+{
+    const char *cp = haystack;
+    while (*cp) {
+        if (ST::_lower_char(ch) == ST::_lower_char(*cp))
+            return cp;
+        ++cp;
+    }
+    return ST_NULLPTR;
+}
+
 ST_ssize_t ST::string::find(char ch, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     if (is_empty())
         return -1;
 
-    if (cs == case_sensitive) {
-        const char *cp = strchr(c_str(), ch);
-        return cp ? (cp - c_str()) : -1;
-    } else {
-        const char *cp = c_str();
-        while (*cp) {
-            if (ST::_lower_char(ch) == ST::_lower_char(*cp))
-                return cp - c_str();
-            ++cp;
-        }
-        return -1;
-    }
+    const char *cp = (cs == case_sensitive) ? strchr(c_str(), ch)
+                                            : _strichr(c_str(), ch);
+    return cp ? (cp - c_str()) : -1;
 }
 
 ST_ssize_t ST::string::find(const char *substr, case_sensitivity_t cs)
@@ -851,21 +867,9 @@ ST_ssize_t ST::string::find(const char *substr, case_sensitivity_t cs)
     if (!substr || !substr[0])
         return -1;
 
-    if (cs == case_sensitive) {
-        const char *cp = strstr(c_str(), substr);
-        return cp ? (cp - c_str()) : -1;
-    } else {
-        // The "easy" way
-        size_t sublen = strlen(substr);
-        const char *cp = c_str();
-        const char *ep = cp + size();
-        while (cp + sublen <= ep) {
-            if (strnicmp(cp, substr, sublen) == 0)
-                return cp - c_str();
-            ++cp;
-        }
-        return -1;
-    }
+    const char *cp = (cs == case_sensitive) ? strstr(c_str(), substr)
+                                            : _stristr(c_str(), substr);
+    return cp ? (cp - c_str()) : -1;
 }
 
 ST_ssize_t ST::string::find_last(char ch, case_sensitivity_t cs) const ST_NOEXCEPT
@@ -1014,72 +1018,72 @@ bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const
                                   : strnicmp(c_str() + start, suffix, count) == 0;
 }
 
-ST::string ST::string::before_first(const char *sep) const
+ST::string ST::string::before_first(const char *sep, case_sensitivity_t cs) const
 {
-    ST_ssize_t first = find(sep);
+    ST_ssize_t first = find(sep, cs);
     if (first >= 0)
         return left(first);
     else
         return *this;
 }
 
-ST::string ST::string::before_first(char sep) const
+ST::string ST::string::before_first(char sep, case_sensitivity_t cs) const
 {
-    ST_ssize_t first = find(sep);
+    ST_ssize_t first = find(sep, cs);
     if (first >= 0)
         return left(first);
     else
         return *this;
 }
 
-ST::string ST::string::after_first(const char *sep) const
+ST::string ST::string::after_first(const char *sep, case_sensitivity_t cs) const
 {
-    ST_ssize_t first = find(sep);
+    ST_ssize_t first = find(sep, cs);
     if (first >= 0)
         return substr(first + strlen(sep));
     else
         return null;
 }
 
-ST::string ST::string::after_first(char sep) const
+ST::string ST::string::after_first(char sep, case_sensitivity_t cs) const
 {
-    ST_ssize_t first = find(sep);
+    ST_ssize_t first = find(sep, cs);
     if (first >= 0)
         return substr(first + 1);
     else
         return null;
 }
 
-ST::string ST::string::before_last(const char *sep) const
+ST::string ST::string::before_last(const char *sep, case_sensitivity_t cs) const
 {
-    ST_ssize_t last = find_last(sep);
+    ST_ssize_t last = find_last(sep, cs);
     if (last >= 0)
         return left(last);
     else
         return null;
 }
 
-ST::string ST::string::before_last(char sep) const
+ST::string ST::string::before_last(char sep, case_sensitivity_t cs) const
 {
-    ST_ssize_t last = find_last(sep);
+    ST_ssize_t last = find_last(sep, cs);
     if (last >= 0)
         return left(last);
     else
         return null;
 }
 
-ST::string ST::string::after_last(const char *sep) const
+ST::string ST::string::after_last(const char *sep, case_sensitivity_t cs) const
 {
-    ST_ssize_t last = find_last(sep);
+    ST_ssize_t last = find_last(sep, cs);
     if (last >= 0)
         return substr(last + strlen(sep));
     else
         return *this;
 }
 
-ST::string ST::string::after_last(char sep) const
+ST::string ST::string::after_last(char sep, case_sensitivity_t cs) const
 {
-    ST_ssize_t last = find_last(sep);
+    ST_ssize_t last = find_last(sep, cs);
     if (last >= 0)
         return substr(last + 1);
     else
@@ -1087,6 +1091,7 @@ ST::string ST::string::after_last(char sep) const
 }
 
 ST::string ST::string::replace(const char *from, const char *to,
+                               case_sensitivity_t cs,
                                utf_validation_t validation) const
 {
     if (is_empty() || !from || !from[0])
@@ -1099,7 +1104,12 @@ ST::string ST::string::replace(const char *from, const char *to,
     const char *pstart = c_str();
     const char *pnext;
     size_t flen = strlen(from), tlen = strlen(to);
-    while ( (pnext = strstr(pstart, from)) ) {
+    for ( ;; ) {
+        pnext = (cs == case_sensitive) ? strstr(pstart, from)
+                                       : _stristr(pstart, from);
+        if (!pnext)
+            break;
+
         out.append(pstart, pnext - pstart);
         out.append(to, tlen);
         pstart = pnext + flen;
@@ -1141,8 +1151,8 @@ ST::string ST::string::to_lower() const
     return result;
 }
 
-std::vector<ST::string> ST::string::split(const char *splitter,
-                                          size_t max_splits) const
+std::vector<ST::string> ST::string::split(const char *splitter, size_t max_splits,
+                                          case_sensitivity_t cs) const
 {
     ST_ASSERT(splitter, "ST::string::split called with null splitter");
 
@@ -1163,7 +1173,8 @@ std::vector<ST::string> ST::string::split(const char *splitter,
     const char *end = next + size();
     size_t splitlen = strlen(splitter);
     while (max_splits) {
-        const char *sp = strstr(next, splitter);
+        const char *sp = (cs == case_sensitive) ? strstr(next, splitter)
+                                                : _stristr(next, splitter);
         if (!sp)
             break;
 
@@ -1176,8 +1187,8 @@ std::vector<ST::string> ST::string::split(const char *splitter,
     return result;
 }
 
-std::vector<ST::string> ST::string::split(char split_char,
-                                          size_t max_splits) const
+std::vector<ST::string> ST::string::split(char split_char, size_t max_splits,
+                                          case_sensitivity_t cs) const
 {
     ST_ASSERT(split_char && static_cast<unsigned int>(split_char) < 0x80,
               "Split character should be in range '\\x01'-'\\x7f'");
@@ -1187,7 +1198,8 @@ std::vector<ST::string> ST::string::split(char split_char,
     const char *next = c_str();
     const char *end = next + size();
     while (max_splits) {
-        const char *sp = strchr(next, split_char);
+        const char *sp = (cs == case_sensitive) ? strchr(next, split_char)
+                                                : _strichr(next, split_char);
         if (!sp)
             break;
 
