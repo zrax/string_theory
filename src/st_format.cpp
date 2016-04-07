@@ -88,12 +88,14 @@ ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &
             break;
         case '_':
             spec.m_pad = *(ptr + 1);
+            spec.m_numeric_pad = false;
             ST_ASSERT(spec.m_pad, "Unterminated format specifier");
             ++ptr;
             break;
         case '0':
             // For easier porting from %08X-style printf strings
             spec.m_pad = '0';
+            spec.m_numeric_pad = true;
             break;
         case '#':
             spec.m_class_prefix = true;
@@ -181,6 +183,100 @@ void ST::format_string(const ST::format_spec &format, ST::string_stream &output,
     }
 }
 
+enum numeric_type
+{
+    numeric_positive,
+    numeric_negative,
+    numeric_zero
+};
+
+static size_t _pad_size(const ST::format_spec &format, size_t size,
+                        numeric_type ntype)
+{
+    ST_ssize_t pad_size = format.m_minimum_length - size;
+
+    if (ntype == numeric_negative || format.m_always_signed)
+        --pad_size;
+
+    if (ntype != numeric_zero && format.m_class_prefix) {
+        switch (format.m_digit_class) {
+        case ST::digit_hex:
+        case ST::digit_hex_upper:
+        case ST::digit_bin:
+            pad_size -= 2;
+            break;
+        case ST::digit_oct:
+            pad_size -= 1;
+            break;
+        default:
+            break;
+        }
+    }
+
+    return (pad_size > 0) ? static_cast<size_t>(pad_size) : 0;
+}
+
+static void _format_numeric_prefix(const ST::format_spec &format,
+                                   ST::string_stream &output,
+                                   numeric_type ntype)
+{
+    if (ntype == numeric_negative)
+        output.append_char('-');
+    else if (format.m_always_signed)
+        output.append_char('+');
+
+    if (ntype != numeric_zero && format.m_class_prefix) {
+        switch (format.m_digit_class) {
+        case ST::digit_hex:
+            output.append("0x", 2);
+            break;
+        case ST::digit_hex_upper:
+            output.append("0X", 2);
+            break;
+        case ST::digit_bin:
+            output.append("0b", 2);
+            break;
+        case ST::digit_oct:
+            output.append_char('0');
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+static void _format_numeric_string(const ST::format_spec &format,
+                                   ST::string_stream &output,
+                                   const char *text, size_t size,
+                                   numeric_type ntype)
+{
+    char pad = format.m_pad ? format.m_pad : ' ';
+
+    size_t pad_size = _pad_size(format, size, ntype);
+
+    if (format.m_numeric_pad) {
+        _format_numeric_prefix(format, output, ntype);
+
+        // numeric padding is always right-aligned
+        output.append_char(pad, pad_size);
+        output.append(text, size);
+    } else {
+        ST::alignment align =
+            (format.m_alignment == ST::align_default)
+            ? ST::align_right : format.m_alignment;
+
+        if (align == ST::align_right) {
+            output.append_char(pad, pad_size);
+            _format_numeric_prefix(format, output, ntype);
+            output.append(text, size);
+        } else {
+            _format_numeric_prefix(format, output, ntype);
+            output.append(text, size);
+            output.append_char(pad, pad_size);
+        }
+    }
+}
+
 template <typename int_T>
 static void _format_numeric_s(const ST::format_spec &format,
                               ST::string_stream &output, int_T value)
@@ -220,60 +316,17 @@ static void _format_numeric_s(const ST::format_spec &format,
         temp /= radix;
     }
 
-    if (format_size == 0)
+    numeric_type ntype = (value < 0) ? numeric_negative : numeric_positive;
+    if (format_size == 0) {
         format_size = 1;
-
-    if (value < 0 || format.m_always_signed)
-        ++format_size;
-
-    if (value && format.m_class_prefix) {
-        switch (format.m_digit_class) {
-        case ST::digit_hex:
-        case ST::digit_hex_upper:
-        case ST::digit_bin:
-            format_size += 2;
-            break;
-        case ST::digit_oct:
-            ++format_size;
-            break;
-        default:
-            break;
-        }
+        ntype = numeric_zero;
     }
 
     char buffer[68];
     ST_ASSERT(format_size < sizeof(buffer), "Format length too long");
     _format_numeric_impl<uint_T>(buffer + format_size, abs, radix, upper_case);
 
-    char *start = buffer;
-    if (value < 0)
-        *start++ = '-';
-    else if (format.m_always_signed)
-        *start++ = '+';
-
-    if (value && format.m_class_prefix) {
-        switch (format.m_digit_class) {
-        case ST::digit_hex:
-            *start++ = '0';
-            *start++ = 'x';
-            break;
-        case ST::digit_hex_upper:
-            *start++ = '0';
-            *start++ = 'X';
-            break;
-        case ST::digit_bin:
-            *start++ = '0';
-            *start++ = 'b';
-            break;
-        case ST::digit_oct:
-            *start++ = '0';
-            break;
-        default:
-            break;
-        }
-    }
-
-    ST::format_string(format, output, buffer, format_size, ST::align_right);
+    _format_numeric_string(format, output, buffer, format_size, ntype);
 }
 
 template <typename uint_T>
@@ -312,58 +365,17 @@ static void _format_numeric_u(const ST::format_spec &format,
         temp /= radix;
     }
 
-    if (format_size == 0)
+    numeric_type ntype = numeric_positive;
+    if (format_size == 0) {
         format_size = 1;
-
-    if (format.m_always_signed)
-        ++format_size;
-
-    if (value && format.m_class_prefix) {
-        switch (format.m_digit_class) {
-        case ST::digit_hex:
-        case ST::digit_hex_upper:
-        case ST::digit_bin:
-            format_size += 2;
-            break;
-        case ST::digit_oct:
-            ++format_size;
-            break;
-        default:
-            break;
-        }
+        ntype = numeric_zero;
     }
 
     char buffer[68];
     ST_ASSERT(format_size < sizeof(buffer), "Format length too long");
     _format_numeric_impl<uint_T>(buffer + format_size, value, radix, upper_case);
 
-    char *start = buffer;
-    if (format.m_always_signed)
-        *start++ = '+';
-
-    if (value && format.m_class_prefix) {
-        switch (format.m_digit_class) {
-        case ST::digit_hex:
-            *start++ = '0';
-            *start++ = 'x';
-            break;
-        case ST::digit_hex_upper:
-            *start++ = '0';
-            *start++ = 'X';
-            break;
-        case ST::digit_bin:
-            *start++ = '0';
-            *start++ = 'b';
-            break;
-        case ST::digit_oct:
-            *start++ = '0';
-            break;
-        default:
-            break;
-        }
-    }
-
-    ST::format_string(format, output, buffer, format_size, ST::align_right);
+    _format_numeric_string(format, output, buffer, format_size, ntype);
 }
 
 static void _format_char(const ST::format_spec &format,

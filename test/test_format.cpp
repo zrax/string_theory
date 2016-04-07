@@ -113,6 +113,14 @@ TEST(format, decimal)
     EXPECT_EQ(ST_LITERAL("xx-1234   xx"), ST::format("xx{<8}xx", -1234));
     EXPECT_EQ(ST_LITERAL("xx+1234   xx"), ST::format("xx{<+8}xx", 1234));
 
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx001234xx"), ST::format("xx{06}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx001234xx"), ST::format("xx{<06}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0001234xx"), ST::format("xx{08}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0001234xx"), ST::format("xx{+08}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0001234xx"), ST::format("xx{<08}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0001234xx"), ST::format("xx{<+08}xx", 1234));
+
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{d}xx", '\0'));
     EXPECT_EQ(ST_LITERAL("xx65xx"), ST::format("xx{d}xx", 'A'));
@@ -178,6 +186,14 @@ TEST(format, decimal_prefix)
     EXPECT_EQ(ST_LITERAL("xx+1234   xx"), ST::format("xx{<#+8}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-1234   xx"), ST::format("xx{<#8}xx", -1234));
 
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx001234xx"), ST::format("xx{#06}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx001234xx"), ST::format("xx{<0#6}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0001234xx"), ST::format("xx{#08}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0001234xx"), ST::format("xx{#+08}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0001234xx"), ST::format("xx{<#08}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0001234xx"), ST::format("xx{<#+08}xx", 1234));
+
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{#d}xx", '\0'));
     EXPECT_EQ(ST_LITERAL("xx65xx"), ST::format("xx{#d}xx", 'A'));
@@ -222,6 +238,14 @@ TEST(format, hex)
     EXPECT_EQ(ST_LITERAL("xx  -4d2xx"), ST::format("xx{6x}xx", -1234));
     EXPECT_EQ(ST_LITERAL("xx+4d2  xx"), ST::format("xx{<+6x}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-4d2  xx"), ST::format("xx{<6x}xx", -1234));
+
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx0004d2xx"), ST::format("xx{06x}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx0004d2xx"), ST::format("xx{<06x}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-004d2xx"), ST::format("xx{06x}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+004d2xx"), ST::format("xx{+06x}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-004d2xx"), ST::format("xx{<06x}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+004d2xx"), ST::format("xx{<+06x}xx", 1234));
 
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{x}xx", '\0'));
@@ -284,6 +308,14 @@ TEST(format, hex_prefix)
     EXPECT_EQ(ST_LITERAL("xx+0x4d2  xx"), ST::format("xx{<+#8x}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-0x4d2  xx"), ST::format("xx{<#8x}xx", -1234));
 
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx0x0004d2xx"), ST::format("xx{#08x}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx0x0004d2xx"), ST::format("xx{<#08x}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0x004d2xx"), ST::format("xx{#08x}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0x004d2xx"), ST::format("xx{+#08x}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0x004d2xx"), ST::format("xx{<#08x}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0x004d2xx"), ST::format("xx{<+#08x}xx", 1234));
+
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{#x}xx", '\0'));
     EXPECT_EQ(ST_LITERAL("xx0x41xx"), ST::format("xx{#x}xx", 'A'));
@@ -326,6 +358,14 @@ TEST(format, hex_upper)
     EXPECT_EQ(ST_LITERAL("xx  -4D2xx"), ST::format("xx{6X}xx", -1234));
     EXPECT_EQ(ST_LITERAL("xx+4D2  xx"), ST::format("xx{<+6X}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-4D2  xx"), ST::format("xx{<6X}xx", -1234));
+
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx0004D2xx"), ST::format("xx{06X}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx0004D2xx"), ST::format("xx{<06X}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-004D2xx"), ST::format("xx{06X}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+004D2xx"), ST::format("xx{+06X}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-004D2xx"), ST::format("xx{<06X}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+004D2xx"), ST::format("xx{<+06X}xx", 1234));
 
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{X}xx", '\0'));
@@ -388,6 +428,14 @@ TEST(format, hex_upper_prefix)
     EXPECT_EQ(ST_LITERAL("xx+0X4D2  xx"), ST::format("xx{<+#8X}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-0X4D2  xx"), ST::format("xx{<#8X}xx", -1234));
 
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx0X0004D2xx"), ST::format("xx{#08X}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx0X0004D2xx"), ST::format("xx{<#08X}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0X004D2xx"), ST::format("xx{#08X}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0X004D2xx"), ST::format("xx{+#08X}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0X004D2xx"), ST::format("xx{<#08X}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0X004D2xx"), ST::format("xx{<+#08X}xx", 1234));
+
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{#X}xx", '\0'));
     EXPECT_EQ(ST_LITERAL("xx0X41xx"), ST::format("xx{#X}xx", 'A'));
@@ -430,6 +478,14 @@ TEST(format, octal)
     EXPECT_EQ(ST_LITERAL("xx   -2322xx"), ST::format("xx{8o}xx", -1234));
     EXPECT_EQ(ST_LITERAL("xx+2322   xx"), ST::format("xx{<+8o}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-2322   xx"), ST::format("xx{<8o}xx", -1234));
+
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx002322xx"), ST::format("xx{06o}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx002322xx"), ST::format("xx{<06o}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0002322xx"), ST::format("xx{08o}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0002322xx"), ST::format("xx{+08o}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0002322xx"), ST::format("xx{<08o}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0002322xx"), ST::format("xx{<+08o}xx", 1234));
 
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{o}xx", '\0'));
@@ -492,6 +548,14 @@ TEST(format, octal_prefix)
     EXPECT_EQ(ST_LITERAL("xx+02322  xx"), ST::format("xx{<#+8o}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-02322  xx"), ST::format("xx{<#8o}xx", -1234));
 
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx0002322xx"), ST::format("xx{#07o}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx0002322xx"), ST::format("xx{<#07o}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0002322xx"), ST::format("xx{#08o}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0002322xx"), ST::format("xx{#+08o}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0002322xx"), ST::format("xx{<#08o}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0002322xx"), ST::format("xx{<#+08o}xx", 1234));
+
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{#o}xx", '\0'));
     EXPECT_EQ(ST_LITERAL("xx0101xx"), ST::format("xx{#o}xx", 'A'));
@@ -534,6 +598,14 @@ TEST(format, binary)
     EXPECT_EQ(ST_LITERAL("xx    -10011010010xx"), ST::format("xx{16b}xx", -1234));
     EXPECT_EQ(ST_LITERAL("xx+10011010010    xx"), ST::format("xx{<+16b}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-10011010010    xx"), ST::format("xx{<16b}xx", -1234));
+
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx0000010011010010xx"), ST::format("xx{016b}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx0000010011010010xx"), ST::format("xx{<016b}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-000010011010010xx"), ST::format("xx{016b}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+000010011010010xx"), ST::format("xx{+016b}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-000010011010010xx"), ST::format("xx{<016b}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+000010011010010xx"), ST::format("xx{<+016b}xx", 1234));
 
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{b}xx", '\0'));
@@ -605,6 +677,14 @@ TEST(format, binary_prefix)
     EXPECT_EQ(ST_LITERAL("xx  -0b10011010010xx"), ST::format("xx{#16b}xx", -1234));
     EXPECT_EQ(ST_LITERAL("xx+0b10011010010  xx"), ST::format("xx{<#+16b}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-0b10011010010  xx"), ST::format("xx{<#16b}xx", -1234));
+
+    // Numeric padding
+    EXPECT_EQ(ST_LITERAL("xx0b00010011010010xx"), ST::format("xx{#016b}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx0b00010011010010xx"), ST::format("xx{<#016b}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0b0010011010010xx"), ST::format("xx{#016b}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0b0010011010010xx"), ST::format("xx{#+016b}xx", 1234));
+    EXPECT_EQ(ST_LITERAL("xx-0b0010011010010xx"), ST::format("xx{<#016b}xx", -1234));
+    EXPECT_EQ(ST_LITERAL("xx+0b0010011010010xx"), ST::format("xx{<#+016b}xx", 1234));
 
     // Character types
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{#b}xx", '\0'));

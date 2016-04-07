@@ -56,7 +56,7 @@ namespace ST
         format_spec()
             : m_minimum_length(), m_precision(-1), m_alignment(),
               m_digit_class(), m_float_class(), m_pad(), m_always_signed(),
-              m_class_prefix() { }
+              m_class_prefix(), m_numeric_pad() { }
 
         int m_minimum_length;
         int m_precision;
@@ -66,6 +66,7 @@ namespace ST
         char m_pad;
         bool m_always_signed;
         bool m_class_prefix;
+        bool m_numeric_pad;
     };
 
     ST_EXPORT void format_string(const format_spec &format, string_stream &output,
