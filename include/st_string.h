@@ -364,8 +364,8 @@ namespace ST
 
         static string from_int(int value, int base = 10, bool upper_case = false);
         static string from_uint(unsigned int value, int base = 10, bool upper_case = false);
-        static string from_float(float value);
-        static string from_double(double value);
+        static string from_float(float value, char format='g');
+        static string from_double(double value, char format='g');
 
 #ifdef ST_HAVE_INT64
         static string from_int64(int64_t value, int base = 10, bool upper_case = false);

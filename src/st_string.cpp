@@ -744,19 +744,26 @@ ST::string ST::string::from_uint(unsigned int value, int base, bool upper_case)
     return _mini_format_numeric_u<unsigned int>(base, upper_case, value);
 }
 
-ST::string ST::string::from_float(float value)
+ST::string ST::string::from_float(float value, char format)
 {
-    return from_double(double(value));
+    return from_double(double(value), format);
 }
 
-ST::string ST::string::from_double(double value)
+ST::string ST::string::from_double(double value, char format)
 {
-    int format_size = snprintf(ST_NULLPTR, 0, "%g", value);
+    static const char valid_formats[] = "efgEFG";
+    if (!strchr(valid_formats, format)) {
+        ST_ASSERT(false, "Unsupported floating-point format specifier");
+        format = 'g';
+    }
+
+    char format_spec[] = { '%', format, 0 };
+    int format_size = snprintf(ST_NULLPTR, 0, format_spec, value);
     ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
 
     ST::char_buffer out_buffer;
     char *fmt_out = out_buffer.create_writable_buffer(format_size);
-    snprintf(fmt_out, format_size + 1, "%g", value);
+    snprintf(fmt_out, format_size + 1, format_spec, value);
     return ST::string(out_buffer, ST::assume_valid);
 }
 
