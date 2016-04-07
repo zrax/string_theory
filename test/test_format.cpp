@@ -690,6 +690,10 @@ TEST(format, floating_point)
     EXPECT_EQ(ST_LITERAL("xx3.14159xx"), ST::format("xx{.6}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx1.6e+" EXTRA_DIGIT "04xx"), ST::format("xx{.2}xx", 16384.0));
     EXPECT_EQ(ST_LITERAL("xx0.0078xx"), ST::format("xx{.2}xx", 1.0 / 128));
+
+    // Special values
+    EXPECT_EQ(ST_LITERAL("xxinfxx"), ST::format("xx{f}xx", INFINITY));
+    EXPECT_EQ(ST_LITERAL("xxnanxx"), ST::format("xx{f}xx", NAN));
 }
 
 TEST(format, booleans)

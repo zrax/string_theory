@@ -362,6 +362,22 @@ namespace ST
 
         bool is_empty() const ST_NOEXCEPT { return m_buffer.size() == 0; }
 
+        static string from_int(int value, int base = 10, bool upper_case = false);
+        static string from_uint(unsigned int value, int base = 10, bool upper_case = false);
+        static string from_float(float value);
+        static string from_double(double value);
+
+#ifdef ST_HAVE_INT64
+        static string from_int64(int64_t value, int base = 10, bool upper_case = false);
+        static string from_uint64(uint64_t value, int base = 10, bool upper_case = false);
+#endif
+
+        static string from_bool(bool value)
+        {
+            return value ? from_literal("true", 4)
+                         : from_literal("false", 5);
+        }
+
         int to_int(int base = 0) const ST_NOEXCEPT;
         int to_int(conversion_result &result, int base = 0) const ST_NOEXCEPT;
         unsigned int to_uint(int base = 0) const ST_NOEXCEPT;

@@ -295,6 +295,117 @@ TEST(string, concatenation)
     EXPECT_EQ(input1, "" + input1);
 }
 
+TEST(string, from_int)
+{
+    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_int(0));
+    EXPECT_EQ(ST_LITERAL("-80000"), ST::string::from_int(-80000));
+    EXPECT_EQ(ST_LITERAL("80000"), ST::string::from_int(80000));
+    EXPECT_EQ(ST_LITERAL("-13880"), ST::string::from_int(-80000, 16));
+    EXPECT_EQ(ST_LITERAL("13880"), ST::string::from_int(80000, 16));
+    EXPECT_EQ(ST_LITERAL("-234200"), ST::string::from_int(-80000, 8));
+    EXPECT_EQ(ST_LITERAL("234200"), ST::string::from_int(80000, 8));
+
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_int64(0));
+    EXPECT_EQ(ST_LITERAL("-1000000000000"), ST::string::from_int64(-1000000000000LL));
+    EXPECT_EQ(ST_LITERAL("1000000000000"), ST::string::from_int64(1000000000000LL));
+    EXPECT_EQ(ST_LITERAL("-e8d4a51000"), ST::string::from_int64(-1000000000000LL, 16));
+    EXPECT_EQ(ST_LITERAL("e8d4a51000"), ST::string::from_int64(1000000000000LL, 16));
+    EXPECT_EQ(ST_LITERAL("-16432451210000"), ST::string::from_int64(-1000000000000LL, 8));
+    EXPECT_EQ(ST_LITERAL("16432451210000"), ST::string::from_int64(1000000000000LL, 8));
+#endif
+
+    static const int int32_min = std::numeric_limits<int>::min();
+    static const int int32_max = std::numeric_limits<int>::max();
+    EXPECT_EQ(ST_LITERAL("-2147483648"), ST::string::from_int(int32_min));
+    EXPECT_EQ(ST_LITERAL("2147483647"), ST::string::from_int(int32_max));
+    EXPECT_EQ(ST_LITERAL("-80000000"), ST::string::from_int(int32_min, 16));
+    EXPECT_EQ(ST_LITERAL("7fffffff"), ST::string::from_int(int32_max, 16, false));
+    EXPECT_EQ(ST_LITERAL("7FFFFFFF"), ST::string::from_int(int32_max, 16, true));
+    EXPECT_EQ(ST_LITERAL("-20000000000"), ST::string::from_int(int32_min, 8));
+    EXPECT_EQ(ST_LITERAL("17777777777"), ST::string::from_int(int32_max, 8));
+    EXPECT_EQ(ST_LITERAL("-10000000000000000000000000000000"), ST::string::from_int(int32_min, 2));
+    EXPECT_EQ(ST_LITERAL("1111111111111111111111111111111"), ST::string::from_int(int32_max, 2));
+
+#ifdef ST_HAVE_INT64
+    static const long long int64_min = std::numeric_limits<long long>::min();
+    static const long long int64_max = std::numeric_limits<long long>::max();
+    EXPECT_EQ(ST_LITERAL("-9223372036854775808"), ST::string::from_int64(int64_min));
+    EXPECT_EQ(ST_LITERAL("9223372036854775807"), ST::string::from_int64(int64_max));
+    EXPECT_EQ(ST_LITERAL("-8000000000000000"), ST::string::from_int64(int64_min, 16));
+    EXPECT_EQ(ST_LITERAL("7fffffffffffffff"), ST::string::from_int64(int64_max, 16, false));
+    EXPECT_EQ(ST_LITERAL("7FFFFFFFFFFFFFFF"), ST::string::from_int64(int64_max, 16, true));
+    EXPECT_EQ(ST_LITERAL("-1000000000000000000000"), ST::string::from_int64(int64_min, 8));
+    EXPECT_EQ(ST_LITERAL("777777777777777777777"), ST::string::from_int64(int64_max, 8));
+    EXPECT_EQ(ST_LITERAL("-1000000000000000000000000000000000000000000000000000000000000000"),
+              ST::string::from_int64(int64_min, 2));
+    EXPECT_EQ(ST_LITERAL("111111111111111111111111111111111111111111111111111111111111111"),
+              ST::string::from_int64(int64_max, 2));
+#endif
+}
+
+TEST(string, from_uint)
+{
+    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_uint(0));
+    EXPECT_EQ(ST_LITERAL("80000"), ST::string::from_uint(80000));
+    EXPECT_EQ(ST_LITERAL("13880"), ST::string::from_uint(80000, 16));
+    EXPECT_EQ(ST_LITERAL("234200"), ST::string::from_uint(80000, 8));
+
+#ifdef ST_HAVE_INT64
+    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_uint64(0));
+    EXPECT_EQ(ST_LITERAL("1000000000000"), ST::string::from_uint64(1000000000000ULL));
+    EXPECT_EQ(ST_LITERAL("e8d4a51000"), ST::string::from_uint64(1000000000000ULL, 16));
+    EXPECT_EQ(ST_LITERAL("16432451210000"), ST::string::from_uint64(1000000000000ULL, 8));
+#endif
+
+    static const int uint32_max = std::numeric_limits<unsigned int>::max();
+    EXPECT_EQ(ST_LITERAL("4294967295"), ST::string::from_uint(uint32_max));
+    EXPECT_EQ(ST_LITERAL("ffffffff"), ST::string::from_uint(uint32_max, 16, false));
+    EXPECT_EQ(ST_LITERAL("FFFFFFFF"), ST::string::from_uint(uint32_max, 16, true));
+    EXPECT_EQ(ST_LITERAL("37777777777"), ST::string::from_uint(uint32_max, 8));
+    EXPECT_EQ(ST_LITERAL("11111111111111111111111111111111"), ST::string::from_uint(uint32_max, 2));
+
+#ifdef ST_HAVE_INT64
+    static const unsigned long long uint64_max = std::numeric_limits<unsigned long long>::max();
+    EXPECT_EQ(ST_LITERAL("18446744073709551615"), ST::string::from_uint64(uint64_max));
+    EXPECT_EQ(ST_LITERAL("ffffffffffffffff"), ST::string::from_uint64(uint64_max, 16, false));
+    EXPECT_EQ(ST_LITERAL("FFFFFFFFFFFFFFFF"), ST::string::from_uint64(uint64_max, 16, true));
+    EXPECT_EQ(ST_LITERAL("1777777777777777777777"), ST::string::from_uint64(uint64_max, 8));
+    EXPECT_EQ(ST_LITERAL("1111111111111111111111111111111111111111111111111111111111111111"),
+              ST::string::from_uint64(uint64_max, 2));
+#endif
+}
+
+TEST(string, from_float)
+{
+    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_float(0.0f));
+    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_double(0.0));
+
+    EXPECT_EQ(ST_LITERAL("-16"), ST::string::from_float(-16.0f));
+    EXPECT_EQ(ST_LITERAL("16"), ST::string::from_float(16.0f));
+    EXPECT_EQ(ST_LITERAL("1.6"), ST::string::from_float(1.6f));
+    EXPECT_EQ(ST_LITERAL("16384.5"), ST::string::from_float(16384.5f));
+    EXPECT_EQ(ST_LITERAL("0.0078"), ST::string::from_float(0.0078f));
+
+    EXPECT_EQ(ST_LITERAL("-16"), ST::string::from_double(-16.0));
+    EXPECT_EQ(ST_LITERAL("16"), ST::string::from_double(16.0));
+    EXPECT_EQ(ST_LITERAL("1.6"), ST::string::from_double(1.6));
+    EXPECT_EQ(ST_LITERAL("16384.5"), ST::string::from_double(16384.5));
+    EXPECT_EQ(ST_LITERAL("0.0078"), ST::string::from_double(0.0078));
+
+    EXPECT_EQ(ST_LITERAL("inf"), ST::string::from_float(INFINITY));
+    EXPECT_EQ(ST_LITERAL("inf"), ST::string::from_double(INFINITY));
+    EXPECT_EQ(ST_LITERAL("nan"), ST::string::from_float(NAN));
+    EXPECT_EQ(ST_LITERAL("nan"), ST::string::from_double(NAN));
+}
+
+TEST(string, from_bool)
+{
+    EXPECT_EQ(ST_LITERAL("false"), ST::string::from_bool(false));
+    EXPECT_EQ(ST_LITERAL("true"), ST::string::from_bool(true));
+    EXPECT_EQ(ST_LITERAL("true"), ST::string::from_bool((bool)16));
+}
+
 TEST(string, to_int)
 {
     EXPECT_EQ(0, ST_LITERAL("0").to_int());
@@ -573,11 +684,11 @@ TEST(string, to_float)
     EXPECT_EQ(16.0, ST_LITERAL("1.6e1").to_double());
     EXPECT_EQ(16.0, ST_LITERAL("+1.6e1").to_double());
 
-    EXPECT_TRUE(std::isinf(ST_LITERAL("INF").to_float()));
-    EXPECT_TRUE(std::isnan(ST_LITERAL("NAN").to_float()));
+    EXPECT_TRUE(std::isinf(ST_LITERAL("inf").to_float()));
+    EXPECT_TRUE(std::isnan(ST_LITERAL("nan").to_float()));
 
-    EXPECT_TRUE(std::isinf(ST_LITERAL("INF").to_double()));
-    EXPECT_TRUE(std::isnan(ST_LITERAL("NAN").to_double()));
+    EXPECT_TRUE(std::isinf(ST_LITERAL("inf").to_double()));
+    EXPECT_TRUE(std::isnan(ST_LITERAL("nan").to_double()));
 
     // Empty string is treated as zero for compatibility with strtod
     EXPECT_EQ(0.0f, ST::string::null.to_float());

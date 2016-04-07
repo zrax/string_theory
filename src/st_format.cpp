@@ -19,6 +19,7 @@
     DEALINGS IN THE SOFTWARE. */
 
 #include "st_format.h"
+#include "st_format_priv.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -177,29 +178,6 @@ void ST::format_string(const ST::format_spec &format, ST::string_stream &output,
         }
     } else {
         output.append(text, size);
-    }
-}
-
-template <typename uint_T>
-static void _format_numeric_impl(char *output_end, uint_T value, int radix,
-                                 bool upper_case = false)
-{
-    if (value == 0) {
-        *(output_end - 1) = '0';
-        return;
-    }
-
-    while (value) {
-        unsigned int digit = (value % radix);
-        value /= radix;
-        --output_end;
-
-        if (digit < 10)
-            *output_end = '0' + digit;
-        else if (upper_case)
-            *output_end = 'A' + digit - 10;
-        else
-            *output_end = 'a' + digit - 10;
     }
 }
 

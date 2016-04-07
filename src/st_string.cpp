@@ -24,6 +24,7 @@
 #include <cctype>
 #include "st_assert.h"
 #include "st_stringstream.h"
+#include "st_format_priv.h"
 
 const ST::string ST::string::null;
 
@@ -681,6 +682,95 @@ ST::char_buffer ST::string::to_latin_1(utf_validation_t validation) const
 
     return result;
 }
+
+template <typename int_T>
+static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value)
+{
+    typedef typename std::make_unsigned<int_T>::type uint_T;
+    uint_T abs = (value < 0) ? -(uint_T)value : value;
+
+    size_t format_size = 0;
+    int_T temp = abs;
+    while (temp) {
+        ++format_size;
+        temp /= radix;
+    }
+
+    if (format_size == 0)
+        format_size = 1;
+
+    if (value < 0)
+        ++format_size;
+
+    ST::char_buffer result;
+    char *buffer = result.create_writable_buffer(format_size);
+    _format_numeric_impl<uint_T>(buffer + format_size, abs, radix, upper_case);
+    buffer[format_size] = 0;
+
+    if (value < 0)
+        buffer[0] = '-';
+
+    return ST::string(result, ST::assume_valid);
+}
+
+template <typename uint_T>
+static ST::string _mini_format_numeric_u(int radix, bool upper_case, uint_T value)
+{
+    size_t format_size = 0;
+    uint_T temp = value;
+    while (temp) {
+        ++format_size;
+        temp /= radix;
+    }
+
+    if (format_size == 0)
+        format_size = 1;
+
+    ST::char_buffer result;
+    char *buffer = result.create_writable_buffer(format_size);
+    _format_numeric_impl<uint_T>(buffer + format_size, value, radix, upper_case);
+    buffer[format_size] = 0;
+
+    return ST::string(result, ST::assume_valid);
+}
+
+ST::string ST::string::from_int(int value, int base, bool upper_case)
+{
+    return _mini_format_numeric_s<int>(base, upper_case, value);
+}
+
+ST::string ST::string::from_uint(unsigned int value, int base, bool upper_case)
+{
+    return _mini_format_numeric_u<unsigned int>(base, upper_case, value);
+}
+
+ST::string ST::string::from_float(float value)
+{
+    return from_double(double(value));
+}
+
+ST::string ST::string::from_double(double value)
+{
+    int format_size = snprintf(ST_NULLPTR, 0, "%g", value);
+    ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
+
+    ST::char_buffer out_buffer;
+    char *fmt_out = out_buffer.create_writable_buffer(format_size);
+    snprintf(fmt_out, format_size + 1, "%g", value);
+    return ST::string(out_buffer, ST::assume_valid);
+}
+
+#ifdef ST_HAVE_INT64
+ST::string ST::string::from_int64(int64_t value, int base, bool upper_case)
+{
+    return _mini_format_numeric_s<int64_t>(base, upper_case, value);
+}
+
+ST::string ST::string::from_uint64(uint64_t value, int base, bool upper_case)
+{
+    return _mini_format_numeric_u<uint64_t>(base, upper_case, value);
+}
+#endif
 
 int ST::string::to_int(int base) const ST_NOEXCEPT
 {

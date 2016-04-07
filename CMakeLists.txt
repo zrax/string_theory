@@ -123,6 +123,7 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 set(ST_SOURCES
     src/st_assert.cpp
     src/st_charbuffer.cpp
+    src/st_format_priv.h
     src/st_string.cpp
     src/st_stringstream.cpp
 )
