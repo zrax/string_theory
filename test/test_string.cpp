@@ -403,10 +403,12 @@ TEST(string, from_float)
     EXPECT_EQ(ST_LITERAL("16384.5"), ST::string::from_double(16384.5));
     EXPECT_EQ(ST_LITERAL("0.0078"), ST::string::from_double(0.0078));
 
-    EXPECT_EQ(ST_LITERAL("inf"), ST::string::from_float(INFINITY));
-    EXPECT_EQ(ST_LITERAL("inf"), ST::string::from_double(INFINITY));
-    EXPECT_EQ(ST_LITERAL("nan"), ST::string::from_float(NAN));
-    EXPECT_EQ(ST_LITERAL("nan"), ST::string::from_double(NAN));
+    // Special values (Different CRTs have very different ways of representing
+    // infinity and NaN textually :( )
+    EXPECT_TRUE(ST::string::from_float(INFINITY).find("inf", ST::case_insensitive) >= 0);
+    EXPECT_TRUE(ST::string::from_double(INFINITY).find("inf", ST::case_insensitive) >= 0);
+    EXPECT_TRUE(ST::string::from_float(NAN).find("nan", ST::case_insensitive) >= 0);
+    EXPECT_TRUE(ST::string::from_double(NAN).find("nan", ST::case_insensitive) >= 0);
 }
 
 TEST(string, from_bool)

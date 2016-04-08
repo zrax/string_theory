@@ -781,9 +781,10 @@ TEST(format, floating_point)
     EXPECT_EQ(ST_LITERAL("xx1.6e+04xx"), ST::format("xx{.2}xx", 16384.0));
     EXPECT_EQ(ST_LITERAL("xx0.0078xx"), ST::format("xx{.2}xx", 1.0 / 128));
 
-    // Special values
-    EXPECT_EQ(ST_LITERAL("xxinfxx"), ST::format("xx{f}xx", INFINITY));
-    EXPECT_EQ(ST_LITERAL("xxnanxx"), ST::format("xx{f}xx", NAN));
+    // Special values (Different CRTs have very different ways of representing
+    // infinity and NaN textually :( )
+    EXPECT_TRUE(ST::format("xx{f}xx", INFINITY).find("inf", ST::case_insensitive) >= 2);
+    EXPECT_TRUE(ST::format("xx{f}xx", NAN).find("nan", ST::case_insensitive) >= 2);
 }
 
 TEST(format, booleans)
