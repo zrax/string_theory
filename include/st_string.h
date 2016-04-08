@@ -475,6 +475,24 @@ namespace ST
             return find_last(substr.c_str(), cs);
         }
 
+        bool contains(char ch, case_sensitivity_t cs = case_sensitive)
+            const ST_NOEXCEPT
+        {
+            return find(ch, cs) >= 0;
+        }
+
+        bool contains(const char *substr, case_sensitivity_t cs = case_sensitive)
+            const ST_NOEXCEPT
+        {
+            return find(substr, cs) >= 0;
+        }
+
+        bool contains(const string &substr, case_sensitivity_t cs = case_sensitive)
+            const ST_NOEXCEPT
+        {
+            return find(substr, cs) >= 0;
+        }
+
         string trim_left(const char *charset = ST_WHITESPACE) const;
         string trim_right(const char *charset = ST_WHITESPACE) const;
         string trim(const char *charset = ST_WHITESPACE) const;
