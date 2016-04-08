@@ -426,7 +426,7 @@ static void _format_char(const ST::format_spec &format,
     ST_FORMAT_TYPE(int_T) \
     { \
         if (format.m_digit_class == ST::digit_char) \
-            _format_char(format, output, value); \
+            _format_char(format, output, static_cast<int>(value)); \
         else \
             _format_numeric_s<int_T>(format, output, value); \
     } \
@@ -434,7 +434,7 @@ static void _format_char(const ST::format_spec &format,
     ST_FORMAT_TYPE(uint_T) \
     { \
         if (format.m_digit_class == ST::digit_char) \
-            _format_char(format, output, value); \
+            _format_char(format, output, static_cast<int>(value)); \
         else \
             _format_numeric_u<uint_T>(format, output, value); \
     }
