@@ -52,13 +52,13 @@ namespace _ST_PRIVATE
         FILE *m_stream;
     };
 
-    ST_EXPORT void printf(stdio_format_writer &data)
+    inline void printf(stdio_format_writer &data)
     {
         data.finalize();
     }
 
     template <typename type_T, typename... args_T>
-    ST_EXPORT void printf(stdio_format_writer &data, type_T value, args_T ...args)
+    void printf(stdio_format_writer &data, type_T value, args_T ...args)
     {
         ST::format_spec format = data.fetch_next_format();
         _ST_impl_format_data_handler(format, data, value);
@@ -69,7 +69,7 @@ namespace _ST_PRIVATE
 namespace ST
 {
     template <typename type_T, typename... args_T>
-    ST_EXPORT void printf(const char *fmt_str, type_T value, args_T ...args)
+    void printf(const char *fmt_str, type_T value, args_T ...args)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, stdout);
         ST::format_spec format = data.fetch_next_format();
@@ -78,8 +78,8 @@ namespace ST
     }
 
     template <typename type_T, typename... args_T>
-    ST_EXPORT void printf(FILE *out_file, const char *fmt_str,
-                          type_T value, args_T ...args)
+    void printf(FILE *out_file, const char *fmt_str,
+                type_T value, args_T ...args)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, out_file);
         ST::format_spec format = data.fetch_next_format();

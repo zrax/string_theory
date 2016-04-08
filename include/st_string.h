@@ -570,12 +570,12 @@ ST_EXPORT ST::string operator+(const ST::string &left, const ST::string &right);
 ST_EXPORT ST::string operator+(const ST::string &left, const char *right);
 ST_EXPORT ST::string operator+(const char *left, const ST::string &right);
 
-ST_EXPORT inline ST::string operator+(const ST::string &left, const wchar_t *right)
+inline ST::string operator+(const ST::string &left, const wchar_t *right)
 {
     return operator+(left, ST::string(right));
 }
 
-ST_EXPORT inline ST::string operator+(const wchar_t *left, const ST::string &right)
+inline ST::string operator+(const wchar_t *left, const ST::string &right)
 {
     return operator+(ST::string(left), right);
 }
