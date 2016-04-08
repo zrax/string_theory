@@ -756,29 +756,29 @@ TEST(format, floating_point)
     EXPECT_EQ(ST_LITERAL("xx16384.00xx"), ST::format("xx{.2f}xx", 16384.0));
     EXPECT_EQ(ST_LITERAL("xx0.01xx"), ST::format("xx{.2f}xx", 1.0 / 128));
 
-    // MSVC uses 3 digits for the exponent, whereas GCC uses two :/
-#ifdef _MSC_VER
-#   define EXTRA_DIGIT "0"
-#else
-#   define EXTRA_DIGIT ""
+#if defined(_MSC_VER) &&  (_MSC_VER < 1900)
+    // MSVC uses 3 digits for the exponent by default, up to VC 2013.
+    // VC 2015 produces output compatible with glibc (two digits) and no
+    // longer provides this function.
+    _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
     // Scientific notation (MSVC uses 3 digits for the exponent)
-    EXPECT_EQ(ST_LITERAL("xx3.14e+" EXTRA_DIGIT "00xx"), ST::format("xx{.2e}xx", 3.14159));
-    EXPECT_EQ(ST_LITERAL("xx3.141590e+" EXTRA_DIGIT "00xx"), ST::format("xx{.6e}xx", 3.14159));
-    EXPECT_EQ(ST_LITERAL("xx1.64e+" EXTRA_DIGIT "04xx"), ST::format("xx{.2e}xx", 16384.0));
-    EXPECT_EQ(ST_LITERAL("xx7.81e-" EXTRA_DIGIT "03xx"), ST::format("xx{.2e}xx", 1.0 / 128));
+    EXPECT_EQ(ST_LITERAL("xx3.14e+00xx"), ST::format("xx{.2e}xx", 3.14159));
+    EXPECT_EQ(ST_LITERAL("xx3.141590e+00xx"), ST::format("xx{.6e}xx", 3.14159));
+    EXPECT_EQ(ST_LITERAL("xx1.64e+04xx"), ST::format("xx{.2e}xx", 16384.0));
+    EXPECT_EQ(ST_LITERAL("xx7.81e-03xx"), ST::format("xx{.2e}xx", 1.0 / 128));
 
     // Scientific notation (upper-case E)
-    EXPECT_EQ(ST_LITERAL("xx3.14E+" EXTRA_DIGIT "00xx"), ST::format("xx{.2E}xx", 3.14159));
-    EXPECT_EQ(ST_LITERAL("xx3.141590E+" EXTRA_DIGIT "00xx"), ST::format("xx{.6E}xx", 3.14159));
-    EXPECT_EQ(ST_LITERAL("xx1.64E+" EXTRA_DIGIT "04xx"), ST::format("xx{.2E}xx", 16384.0));
-    EXPECT_EQ(ST_LITERAL("xx7.81E-" EXTRA_DIGIT "03xx"), ST::format("xx{.2E}xx", 1.0 / 128));
+    EXPECT_EQ(ST_LITERAL("xx3.14E+00xx"), ST::format("xx{.2E}xx", 3.14159));
+    EXPECT_EQ(ST_LITERAL("xx3.141590E+00xx"), ST::format("xx{.6E}xx", 3.14159));
+    EXPECT_EQ(ST_LITERAL("xx1.64E+04xx"), ST::format("xx{.2E}xx", 16384.0));
+    EXPECT_EQ(ST_LITERAL("xx7.81E-03xx"), ST::format("xx{.2E}xx", 1.0 / 128));
 
     // Automatic (based on input)
     EXPECT_EQ(ST_LITERAL("xx3.1xx"), ST::format("xx{.2}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx3.14159xx"), ST::format("xx{.6}xx", 3.14159));
-    EXPECT_EQ(ST_LITERAL("xx1.6e+" EXTRA_DIGIT "04xx"), ST::format("xx{.2}xx", 16384.0));
+    EXPECT_EQ(ST_LITERAL("xx1.6e+04xx"), ST::format("xx{.2}xx", 16384.0));
     EXPECT_EQ(ST_LITERAL("xx0.0078xx"), ST::format("xx{.2}xx", 1.0 / 128));
 
     // Special values
