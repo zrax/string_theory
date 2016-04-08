@@ -28,6 +28,10 @@
 
 #define BADCHAR_SUBSTITUTE (0xFFFDul)
 
+#ifdef _MSC_VER
+#   define snprintf _snprintf
+#endif
+
 static const char *_scan_next_format(const char *format_str)
 {
     ST_ASSERT(format_str, "Passed a null format string!");

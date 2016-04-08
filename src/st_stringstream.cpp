@@ -23,6 +23,10 @@
 #include <cstring>
 #include <cstdio>
 
+#ifdef _MSC_VER
+#   define snprintf _snprintf
+#endif
+
 #define EXPAND_SS_BUFFER(added_size)                                \
     char *bufp = is_heap() ? m_buffer : m_stack;                    \
                                                                     \

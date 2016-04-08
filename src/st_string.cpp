@@ -39,6 +39,7 @@ const ST::string ST::string::null;
 #ifdef _MSC_VER
 #   define stricmp  _stricmp
 #   define strnicmp _strnicmp
+#   define snprintf _snprintf
 #else
 #   define stricmp  strcasecmp
 #   define strnicmp strncasecmp

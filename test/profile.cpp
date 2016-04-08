@@ -37,6 +37,10 @@
 #   define M_PI (3.14159265358979)
 #endif
 
+#ifdef _MSC_VER
+#   define snprintf _snprintf
+#endif
+
 volatile const char *V;
 #define NO_OPTIMIZE(x) V = (x)
 
