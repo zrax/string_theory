@@ -25,6 +25,16 @@
 #include <wchar.h>
 #include <cmath>
 #include <limits>
+#include <iostream>
+
+namespace ST
+{
+    // Teach GTest how to print an ST::string
+    static void PrintTo(const ST::string &str, std::ostream *os)
+    {
+        *os << "ST::string{\"" << str.c_str() << "\"}";
+    }
+}
 
 static const char32_t test_data[] = {
     0x20,       0x7f,       /* Normal ASCII chars */

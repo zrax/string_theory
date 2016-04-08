@@ -24,6 +24,16 @@
 #include <gtest/gtest.h>
 #include <string>
 #include <limits>
+#include <iostream>
+
+namespace ST
+{
+    // Teach GTest how to print an ST::string
+    static void PrintTo(const ST::string &str, std::ostream *os)
+    {
+        *os << "ST::string{\"" << str.c_str() << "\"}";
+    }
+}
 
 TEST(format, escapes)
 {
