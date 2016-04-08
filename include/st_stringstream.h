@@ -124,4 +124,4 @@ namespace ST
     };
 }
 
-#endif
+#endif // _ST_STRINGSTREAM_H

@@ -133,11 +133,13 @@ if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS)
         include/st_formatter.h
         include/st_format.h
         include/st_stlformatter.h
+        include/st_stdio.h
     )
     set(ST_HEADERS_PUB ${ST_HEADERS_PUB}
         include/string_theory/formatter
         include/string_theory/format
         include/string_theory/stl_formatter
+        include/string_theory/stdio
     )
     set(ST_SOURCES ${ST_SOURCES}
         src/st_format.cpp

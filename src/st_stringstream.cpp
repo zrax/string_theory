@@ -117,6 +117,6 @@ ST::string_stream &ST::string_stream::operator<<(uint64_t num)
 ST::string_stream &ST::string_stream::operator<<(double num)
 {
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "%f", num);
+    snprintf(buffer, sizeof(buffer), "%g", num);
     return *this;
 }

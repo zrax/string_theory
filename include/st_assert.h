@@ -54,4 +54,4 @@ namespace _ST_PRIVATE
             _ST_PRIVATE::_assert_handler(#condition, __FILE__, __LINE__, message); \
     } while (0)
 
-#endif
+#endif // _ST_ASSERT_H

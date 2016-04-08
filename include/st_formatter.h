@@ -69,18 +69,38 @@ namespace ST
         bool m_numeric_pad;
     };
 
-    ST_EXPORT void format_string(const format_spec &format, string_stream &output,
+    class ST_EXPORT format_writer
+    {
+        ST_DISABLE_COPY(format_writer);
+
+    public:
+        format_writer(const char *format) : m_format_str(format) { }
+        virtual ~format_writer() { }
+
+        virtual format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) = 0;
+        virtual format_writer &append_char(char ch, size_t count = 1) = 0;
+
+        ST::format_spec fetch_next_format();
+        void finalize();
+
+    private:
+        const char *m_format_str;
+
+        char fetch_prefix();
+    };
+
+    ST_EXPORT void format_string(const format_spec &format, format_writer &output,
                                  const char *text, size_t size,
                                  alignment default_alignment);
 }
 
 #define ST_DECL_FORMAT_TYPE(type_T) \
     void _ST_impl_format_data_handler(const ST::format_spec &, \
-                                      ST::string_stream &, type_T)
+                                      ST::format_writer &, type_T)
 
 #define ST_FORMAT_TYPE(type_T) \
     void _ST_impl_format_data_handler(const ST::format_spec &format, \
-                                      ST::string_stream &output, type_T value)
+                                      ST::format_writer &output, type_T value)
 
 #define ST_FORMAT_FORWARD(fwd_value) \
     _ST_impl_format_data_handler(format, output, (fwd_value))

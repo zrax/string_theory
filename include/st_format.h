@@ -25,23 +25,48 @@
 
 namespace _ST_PRIVATE
 {
-    struct ST_EXPORT format_data_object
+    class ST_EXPORT string_format_writer : public ST::format_writer
     {
-        const char *m_format_str;
+    public:
+        string_format_writer(const char *format_str, bool is_utf8,
+                             ST::utf_validation_t validation)
+            : ST::format_writer(format_str), m_validation(validation),
+              m_is_utf8(is_utf8) { }
+
+        string_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
+        {
+            m_output.append(data, size);
+            return *this;
+        }
+
+        string_format_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
+        {
+            m_output.append_char(ch, count);
+            return *this;
+        }
+
+        ST::string to_string()
+        {
+            return m_output.to_string(m_is_utf8, m_validation);
+        }
+
+    private:
         ST::string_stream m_output;
         ST::utf_validation_t m_validation;
         bool m_is_utf8;
     };
 
-    ST_EXPORT ST::format_spec fetch_next_format(format_data_object &data);
-
-    ST_EXPORT ST::string format(format_data_object &data);
+    ST_EXPORT ST::string format(string_format_writer &data)
+    {
+        data.finalize();
+        return data.to_string();
+    }
 
     template <typename type_T, typename... args_T>
-    ST_EXPORT ST::string format(format_data_object &data, type_T value, args_T ...args)
+    ST_EXPORT ST::string format(string_format_writer &data, type_T value, args_T ...args)
     {
-        ST::format_spec format = fetch_next_format(data);
-        _ST_impl_format_data_handler(format, data.m_output, value);
+        ST::format_spec format = data.fetch_next_format();
+        _ST_impl_format_data_handler(format, data, value);
         return _ST_PRIVATE::format(data, args...);
     }
 }
@@ -51,12 +76,9 @@ namespace ST
     template <typename type_T, typename... args_T>
     ST_EXPORT string format(const char *fmt_str, type_T value, args_T ...args)
     {
-        _ST_PRIVATE::format_data_object data;
-        data.m_format_str = fmt_str;
-        data.m_is_utf8 = true;
-        data.m_validation = ST_DEFAULT_VALIDATION;
-        ST::format_spec format = _ST_PRIVATE::fetch_next_format(data);
-        _ST_impl_format_data_handler(format, data.m_output, value);
+        _ST_PRIVATE::string_format_writer data(fmt_str, true, ST_DEFAULT_VALIDATION);
+        ST::format_spec format = data.fetch_next_format();
+        _ST_impl_format_data_handler(format, data, value);
         return _ST_PRIVATE::format(data, args...);
     }
 
@@ -64,24 +86,18 @@ namespace ST
     ST_EXPORT string format(utf_validation_t validation, const char *fmt_str,
                             type_T value, args_T ...args)
     {
-        _ST_PRIVATE::format_data_object data;
-        data.m_format_str = fmt_str;
-        data.m_is_utf8 = true;
-        data.m_validation = validation;
-        ST::format_spec format = _ST_PRIVATE::fetch_next_format(data);
-        _ST_impl_format_data_handler(format, data.m_output, value);
+        _ST_PRIVATE::string_format_writer data(fmt_str, true, validation);
+        ST::format_spec format = data.fetch_next_format();
+        _ST_impl_format_data_handler(format, data, value);
         return _ST_PRIVATE::format(data, args...);
     }
 
     template <typename type_T, typename... args_T>
     ST_EXPORT string format_latin_1(const char *fmt_str, type_T value, args_T ...args)
     {
-        _ST_PRIVATE::format_data_object data;
-        data.m_format_str = fmt_str;
-        data.m_is_utf8 = false;
-        data.m_validation = assume_valid;
-        ST::format_spec format = _ST_PRIVATE::fetch_next_format(data);
-        _ST_impl_format_data_handler(format, data.m_output, value);
+        _ST_PRIVATE::string_format_writer data(fmt_str, false, assume_valid);
+        ST::format_spec format = data.fetch_next_format();
+        _ST_impl_format_data_handler(format, data, value);
         return _ST_PRIVATE::format(data, args...);
     }
 }

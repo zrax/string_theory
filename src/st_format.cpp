@@ -18,7 +18,7 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
-#include "st_format.h"
+#include "st_formatter.h"
 #include "st_format_priv.h"
 
 #include <cstdlib>
@@ -28,11 +28,11 @@
 
 #define BADCHAR_SUBSTITUTE (0xFFFDul)
 
-static const char *_scan_next_format(_ST_PRIVATE::format_data_object &data)
+static const char *_scan_next_format(const char *format_str)
 {
-    ST_ASSERT(data.m_format_str, "Passed a null format string!");
+    ST_ASSERT(format_str, "Passed a null format string!");
 
-    const char *ptr = data.m_format_str;
+    const char *ptr = format_str;
     while (*ptr) {
         if (*ptr == '{')
             return ptr;
@@ -42,31 +42,32 @@ static const char *_scan_next_format(_ST_PRIVATE::format_data_object &data)
     return ptr;
 }
 
-static void _fetch_prefix(_ST_PRIVATE::format_data_object &data)
+char ST::format_writer::fetch_prefix()
 {
     for ( ;; ) {
-        const char *next = _scan_next_format(data);
+        const char *next = _scan_next_format(m_format_str);
         if (*next && *(next + 1) == '{') {
             // Escaped '{'
-            data.m_output.append(data.m_format_str, 1 + next - data.m_format_str);
-            data.m_format_str = next + 2;
+            append(m_format_str, 1 + next - m_format_str);
+            m_format_str = next + 2;
             continue;
         }
 
-        if (next != data.m_format_str)
-            data.m_output.append(data.m_format_str, next - data.m_format_str);
-        data.m_format_str = next;
+        if (next != m_format_str)
+            append(m_format_str, next - m_format_str);
+        m_format_str = next;
         break;
     };
+
+    return *m_format_str;
 }
 
-ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &data)
+ST::format_spec ST::format_writer::fetch_next_format()
 {
-    _fetch_prefix(data);
-    ST_ASSERT(*data.m_format_str == '{', "Too many actual parameters for format string");
+    ST_ASSERT(fetch_prefix() == '{', "Too many actual parameters for format string");
 
     ST::format_spec spec;
-    const char *ptr = data.m_format_str;
+    const char *ptr = m_format_str;
     for ( ;; ) {
         ++ptr;
 
@@ -76,7 +77,7 @@ ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &
             abort();
         case '}':
             // Done with format spec
-            data.m_format_str = ptr + 1;
+            m_format_str = ptr + 1;
             return spec;
             break;
 
@@ -153,14 +154,13 @@ ST::format_spec _ST_PRIVATE::fetch_next_format(_ST_PRIVATE::format_data_object &
     }
 }
 
-ST::string _ST_PRIVATE::format(_ST_PRIVATE::format_data_object &data)
+void ST::format_writer::finalize()
 {
-    _fetch_prefix(data);
-    ST_ASSERT(*data.m_format_str == 0, "Not enough actual parameters for format string");
-    return data.m_output.to_string(data.m_is_utf8, data.m_validation);
+    ST_ASSERT(fetch_prefix() == 0,
+              "Not enough actual parameters for format string");
 }
 
-void ST::format_string(const ST::format_spec &format, ST::string_stream &output,
+void ST::format_string(const ST::format_spec &format, ST::format_writer &output,
                        const char *text, size_t size,
                        ST::alignment default_alignment)
 {
@@ -168,8 +168,8 @@ void ST::format_string(const ST::format_spec &format, ST::string_stream &output,
 
     if (format.m_minimum_length > static_cast<int>(size)) {
         ST::alignment align =
-                (format.m_alignment == ST::align_default)
-                ? default_alignment : format.m_alignment;
+            (format.m_alignment == ST::align_default)
+            ? default_alignment : format.m_alignment;
 
         if (align == ST::align_right) {
             output.append_char(pad, format.m_minimum_length - size);
@@ -217,7 +217,7 @@ static size_t _pad_size(const ST::format_spec &format, size_t size,
 }
 
 static void _format_numeric_prefix(const ST::format_spec &format,
-                                   ST::string_stream &output,
+                                   ST::format_writer &output,
                                    numeric_type ntype)
 {
     if (ntype == numeric_negative)
@@ -246,7 +246,7 @@ static void _format_numeric_prefix(const ST::format_spec &format,
 }
 
 static void _format_numeric_string(const ST::format_spec &format,
-                                   ST::string_stream &output,
+                                   ST::format_writer &output,
                                    const char *text, size_t size,
                                    numeric_type ntype)
 {
@@ -279,7 +279,7 @@ static void _format_numeric_string(const ST::format_spec &format,
 
 template <typename int_T>
 static void _format_numeric_s(const ST::format_spec &format,
-                              ST::string_stream &output, int_T value)
+                              ST::format_writer &output, int_T value)
 {
     ST_STATIC_ASSERT(std::is_signed<int_T>::value,
                      "Use _format_numeric_u for unsigned numerics");
@@ -331,7 +331,7 @@ static void _format_numeric_s(const ST::format_spec &format,
 
 template <typename uint_T>
 static void _format_numeric_u(const ST::format_spec &format,
-                              ST::string_stream &output, uint_T value)
+                              ST::format_writer &output, uint_T value)
 {
     ST_STATIC_ASSERT(std::is_unsigned<uint_T>::value,
                      "Use _format_numeric_s for signed numerics");
@@ -379,10 +379,10 @@ static void _format_numeric_u(const ST::format_spec &format,
 }
 
 static void _format_char(const ST::format_spec &format,
-                         ST::string_stream &output, int ch)
+                         ST::format_writer &output, int ch)
 {
     ST_ASSERT(format.m_minimum_length == 0 && format.m_pad == 0,
-             "Char formatting does not currently support padding");
+              "Char formatting does not currently support padding");
 
     // Don't need to nul-terminate this, since string_buffer's constructor fixes it
     char utf8[4];
