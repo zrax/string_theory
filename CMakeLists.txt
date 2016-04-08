@@ -152,7 +152,7 @@ set(ST_INSTALL_LIB_DIR "lib" CACHE PATH "Path to install shared libraries")
 set(ST_INSTALL_INCLUDE_DIR "include" CACHE PATH "Path to install headers")
 set(ST_INSTALL_CMAKE_DIR "${ST_INSTALL_LIB_DIR}/cmake" CACHE PATH "Path to install CMake files")
 
-foreach(path LIB INCLUDE CMAKE)
+foreach(path BIN LIB INCLUDE CMAKE)
     set(var ST_INSTALL_${path}_DIR)
     if(NOT IS_ABSOLUTE "${${var}}")
         set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
