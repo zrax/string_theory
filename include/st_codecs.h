@@ -18,48 +18,36 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
-#ifndef _ST_ASSERT_H
-#define _ST_ASSERT_H
+#ifndef _ST_CODECS_H
+#define _ST_CODECS_H
 
-#include "st_config.h"
+#include "st_string.h"
 
-#include <functional>
-#include <stdexcept>
+#include <cstddef>
 
 namespace ST
 {
-    typedef std::function<void (const char *condition_str,
-                                const char *filename, int line,
-                                const char *message)> assert_handler_t;
+    ST_EXPORT string hex_encode(const void *data, size_t size);
 
-    ST_EXPORT void set_assert_handler(assert_handler_t handler);
-
-    class ST_EXPORT unicode_error : public std::runtime_error
+    inline string hex_encode(const char_buffer &data)
     {
-    public:
-        explicit unicode_error(const char *message)
-            : std::runtime_error(message)
-        { }
-    };
+        return hex_encode(data.data(), data.size());
+    }
 
-    class ST_EXPORT codec_error : public std::runtime_error
+    ST_EXPORT char_buffer hex_decode(const string &hex);
+    ST_EXPORT ST_ssize_t hex_decode(const string &hex, void *output,
+                                    size_t output_size) ST_NOEXCEPT;
+
+    ST_EXPORT string base64_encode(const void *data, size_t size);
+
+    inline string base64_encode(const char_buffer &data)
     {
-    public:
-        explicit codec_error(const char *message)
-            : std::runtime_error(message)
-        { }
-    };
+        return base64_encode(data.data(), data.size());
+    }
+
+    ST_EXPORT char_buffer base64_decode(const string &base64);
+    ST_EXPORT ST_ssize_t base64_decode(const string &base64, void *output,
+                                       size_t output_size) ST_NOEXCEPT;
 }
 
-namespace _ST_PRIVATE
-{
-    ST_EXPORT extern ST::assert_handler_t _assert_handler;
-}
-
-#define ST_ASSERT(condition, message) \
-    do { \
-        if (!(condition) && _ST_PRIVATE::_assert_handler) \
-            _ST_PRIVATE::_assert_handler(#condition, __FILE__, __LINE__, message); \
-    } while (0)
-
-#endif // _ST_ASSERT_H
+#endif // _ST_CODECS_H

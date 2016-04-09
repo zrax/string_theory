@@ -26,6 +26,10 @@ add_executable(test_string test_string.cpp)
 target_link_libraries(test_string gtest gtest_main string_theory)
 add_test(NAME test_string COMMAND test_string)
 
+add_executable(test_codecs test_codecs.cpp)
+target_link_libraries(test_codecs gtest gtest_main string_theory)
+add_test(NAME test_codecs COMMAND test_codecs)
+
 if(ST_HAVE_FORMAT)
     add_executable(test_format test_format.cpp)
     target_link_libraries(test_format gtest gtest_main string_theory)

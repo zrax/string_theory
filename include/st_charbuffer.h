@@ -34,6 +34,7 @@ namespace _ST_PRIVATE
     ST_EXPORT void _zero_buffer(void *buffer, size_t size);
     ST_EXPORT void _fill_buffer(void *buffer, int ch, size_t count);
     ST_EXPORT void _copy_buffer(void *dest, const void *src, size_t size);
+    ST_EXPORT int _compare_buffer(const void *left, const void *right, size_t size);
 }
 
 namespace ST
@@ -140,6 +141,13 @@ namespace ST
             return *this;
         }
 #endif
+
+        bool operator==(const buffer<char_T> &other) const ST_NOEXCEPT
+        {
+            if (other.size() != size())
+                return false;
+            return _ST_PRIVATE::_compare_buffer(data(), other.data(), size()) == 0;
+        }
 
         const char_T *data() const ST_NOEXCEPT
         {

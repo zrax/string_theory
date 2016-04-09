@@ -107,6 +107,7 @@ include_directories("${PROJECT_BINARY_DIR}/include")
 set(ST_HEADERS_PRIV
     include/st_assert.h
     include/st_charbuffer.h
+    include/st_codecs.h
     include/st_string.h
     include/st_stringstream.h
     "${PROJECT_BINARY_DIR}/include/st_config.h"
@@ -114,6 +115,7 @@ set(ST_HEADERS_PRIV
 set(ST_HEADERS_PUB
     include/string_theory/assert
     include/string_theory/char_buffer
+    include/string_theory/codecs
     include/string_theory/exceptions
     include/string_theory/string
     include/string_theory/string_stream
@@ -123,6 +125,7 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 set(ST_SOURCES
     src/st_assert.cpp
     src/st_charbuffer.cpp
+    src/st_codecs.cpp
     src/st_format_priv.h
     src/st_string.cpp
     src/st_stringstream.cpp

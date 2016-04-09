@@ -22,6 +22,7 @@
 #define _ST_STLFORMATTER_H
 
 #include "st_formatter.h"
+
 #include <string>
 #include <complex>
 

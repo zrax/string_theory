@@ -21,7 +21,7 @@
 #ifndef _ST_FORMATTER_H
 #define _ST_FORMATTER_H
 
-#include "st_stringstream.h"
+#include "st_string.h"
 
 namespace ST
 {

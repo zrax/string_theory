@@ -41,3 +41,8 @@ void _ST_PRIVATE::_copy_buffer(void *dest, const void *src, size_t size)
 {
     memcpy(dest, src, size);
 }
+
+int _ST_PRIVATE::_compare_buffer(const void *left, const void *right, size_t size)
+{
+    return memcmp(left, right, size);
+}

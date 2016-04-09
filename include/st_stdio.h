@@ -22,6 +22,7 @@
 #define _ST_STDIO_H
 
 #include "st_formatter.h"
+
 #include <cstdio>
 
 namespace _ST_PRIVATE
