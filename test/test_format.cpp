@@ -783,8 +783,14 @@ TEST(format, floating_point)
 
     // Special values (Different CRTs have very different ways of representing
     // infinity and NaN textually :( )
-    EXPECT_TRUE(ST::format("xx{f}xx", INFINITY).find("inf", ST::case_insensitive) >= 2);
-    EXPECT_TRUE(ST::format("xx{f}xx", NAN).find("nan", ST::case_insensitive) >= 2);
+    EXPECT_TRUE(ST::format("xx{f}xx", std::numeric_limits<float>::infinity())
+                .find("inf", ST::case_insensitive) >= 2);
+    EXPECT_TRUE(ST::format("xx{f}xx", std::numeric_limits<double>::infinity())
+                .find("inf", ST::case_insensitive) >= 2);
+    EXPECT_TRUE(ST::format("xx{f}xx", std::numeric_limits<float>::quiet_NaN())
+                .find("nan", ST::case_insensitive) >= 2);
+    EXPECT_TRUE(ST::format("xx{f}xx", std::numeric_limits<double>::quiet_NaN())
+                .find("nan", ST::case_insensitive) >= 2);
 }
 
 TEST(format, booleans)
