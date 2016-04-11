@@ -341,6 +341,45 @@ namespace ST
             return str;
         }
 
+        static inline string from_utf8(const char_buffer &utf8,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_utf8(utf8.data(), utf8.size(), validation);
+            return str;
+        }
+
+        static inline string from_utf16(const utf16_buffer &utf16,
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_utf16(utf16.data(), utf16.size(), validation);
+            return str;
+        }
+
+        static inline string from_utf32(const utf32_buffer &utf32,
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_utf32(utf32.data(), utf32.size(), validation);
+            return str;
+        }
+
+        static inline string from_wchar(const wchar_buffer &wstr,
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_wchar(wstr.data(), wstr.size(), validation);
+            return str;
+        }
+
+        static inline string from_latin_1(const char_buffer &astr)
+        {
+            string str;
+            str._convert_from_latin_1(astr.data(), astr.size());
+            return str;
+        }
+
         const char *c_str(const char *substitute = "") const ST_NOEXCEPT
         {
             return is_empty() ? substitute : m_buffer.data();
