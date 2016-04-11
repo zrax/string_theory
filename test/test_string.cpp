@@ -27,14 +27,6 @@
 #include <limits>
 #include <iostream>
 
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#   define is_infinite(x)   (!_finite((x)))
-#   define is_nan(x)        _isnan((x))
-#else
-#   define is_infinite(x)   std::isinf((x))
-#   define is_nan(x)        std::isnan((x))
-#endif
-
 namespace ST
 {
     // Teach GTest how to print an ST::string
@@ -708,12 +700,6 @@ TEST(string, to_float)
     EXPECT_EQ(16.0, ST_LITERAL("1.6e1").to_double());
     EXPECT_EQ(16.0, ST_LITERAL("+1.6e1").to_double());
 
-    EXPECT_TRUE(is_infinite(ST_LITERAL("inf").to_float()));
-    EXPECT_TRUE(is_nan(ST_LITERAL("nan").to_float()));
-
-    EXPECT_TRUE(is_infinite(ST_LITERAL("inf").to_double()));
-    EXPECT_TRUE(is_nan(ST_LITERAL("nan").to_double()));
-
     // Empty string is treated as zero for compatibility with strtod
     EXPECT_EQ(0.0f, ST::string::null.to_float());
     EXPECT_EQ(0.0, ST::string::null.to_double());
@@ -786,38 +772,12 @@ TEST(string, to_float_check)
     EXPECT_TRUE(result.ok());
     EXPECT_TRUE(result.full_match());
 
-    (void) ST_LITERAL("INF").to_float(result);
-    EXPECT_TRUE(result.ok());
-    EXPECT_TRUE(result.full_match());
-    (void) ST_LITERAL("NAN").to_float(result);
-    EXPECT_TRUE(result.ok());
-    EXPECT_TRUE(result.full_match());
-    (void) ST_LITERAL("INF").to_double(result);
-    EXPECT_TRUE(result.ok());
-    EXPECT_TRUE(result.full_match());
-    (void) ST_LITERAL("NAN").to_double(result);
-    EXPECT_TRUE(result.ok());
-    EXPECT_TRUE(result.full_match());
-
     (void) ST_LITERAL("16xx").to_float(result);
-    EXPECT_TRUE(result.ok());
-    EXPECT_FALSE(result.full_match());
-    (void) ST_LITERAL("INFxx").to_float(result);
-    EXPECT_TRUE(result.ok());
-    EXPECT_FALSE(result.full_match());
-    (void) ST_LITERAL("NANxx").to_float(result);
     EXPECT_TRUE(result.ok());
     EXPECT_FALSE(result.full_match());
     (void) ST_LITERAL("16xx").to_double(result);
     EXPECT_TRUE(result.ok());
     EXPECT_FALSE(result.full_match());
-    (void) ST_LITERAL("INFxx").to_double(result);
-    EXPECT_TRUE(result.ok());
-    EXPECT_FALSE(result.full_match());
-    (void) ST_LITERAL("NANxx").to_double(result);
-    EXPECT_TRUE(result.ok());
-    EXPECT_FALSE(result.full_match());
-
     (void) ST_LITERAL("xx").to_float(result);
     EXPECT_FALSE(result.ok());
     EXPECT_FALSE(result.full_match());
