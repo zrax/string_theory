@@ -27,6 +27,14 @@
 #include <limits>
 #include <iostream>
 
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#   define is_infinite(x)   (!_finite((x)))
+#   define is_nan(x)        _isnan((x))
+#else
+#   define is_infinite(x)   std::isinf((x))
+#   define is_nan(x)        std::isnan((x))
+#endif
+
 namespace ST
 {
     // Teach GTest how to print an ST::string
@@ -104,7 +112,7 @@ TEST(string, utility)
 {
     // Special string null constant
     EXPECT_EQ(ST::string::null, ST_LITERAL(""));
-    EXPECT_EQ(ST::string::null, ST::string{});
+    EXPECT_EQ(ST::string::null, ST::string());
 
     EXPECT_EQ(0U, ST::string::null.size());
     EXPECT_TRUE(ST::string::null.is_empty());
@@ -405,10 +413,14 @@ TEST(string, from_float)
 
     // Special values (Different CRTs have very different ways of representing
     // infinity and NaN textually :( )
-    EXPECT_TRUE(ST::string::from_float(INFINITY).find("inf", ST::case_insensitive) >= 0);
-    EXPECT_TRUE(ST::string::from_double(INFINITY).find("inf", ST::case_insensitive) >= 0);
-    EXPECT_TRUE(ST::string::from_float(NAN).find("nan", ST::case_insensitive) >= 0);
-    EXPECT_TRUE(ST::string::from_double(NAN).find("nan", ST::case_insensitive) >= 0);
+    EXPECT_TRUE(ST::string::from_float(std::numeric_limits<float>::infinity())
+                .find("inf", ST::case_insensitive) >= 0);
+    EXPECT_TRUE(ST::string::from_double(std::numeric_limits<double>::infinity())
+                .find("inf", ST::case_insensitive) >= 0);
+    EXPECT_TRUE(ST::string::from_float(std::numeric_limits<float>::quiet_NaN())
+                .find("nan", ST::case_insensitive) >= 0);
+    EXPECT_TRUE(ST::string::from_double(std::numeric_limits<float>::quiet_NaN())
+                .find("nan", ST::case_insensitive) >= 0);
 }
 
 TEST(string, from_bool)
@@ -696,11 +708,11 @@ TEST(string, to_float)
     EXPECT_EQ(16.0, ST_LITERAL("1.6e1").to_double());
     EXPECT_EQ(16.0, ST_LITERAL("+1.6e1").to_double());
 
-    EXPECT_TRUE(std::isinf(ST_LITERAL("inf").to_float()));
-    EXPECT_TRUE(std::isnan(ST_LITERAL("nan").to_float()));
+    EXPECT_TRUE(is_infinite(ST_LITERAL("inf").to_float()));
+    EXPECT_TRUE(is_nan(ST_LITERAL("nan").to_float()));
 
-    EXPECT_TRUE(std::isinf(ST_LITERAL("inf").to_double()));
-    EXPECT_TRUE(std::isnan(ST_LITERAL("nan").to_double()));
+    EXPECT_TRUE(is_infinite(ST_LITERAL("inf").to_double()));
+    EXPECT_TRUE(is_nan(ST_LITERAL("nan").to_double()));
 
     // Empty string is treated as zero for compatibility with strtod
     EXPECT_EQ(0.0f, ST::string::null.to_float());
@@ -1198,8 +1210,8 @@ TEST(string, tokenize)
     EXPECT_EQ(expected1, input2.tokenize("\t\n-;"));
 
     // tokenize will return an empty vector if there are no tokens in the input
-    EXPECT_EQ(std::vector<ST::string>{}, ST_LITERAL("\t;\n;").tokenize("\t\n-;"));
-    EXPECT_EQ(std::vector<ST::string>{}, ST_LITERAL("").tokenize("\t\n-;"));
+    EXPECT_EQ(std::vector<ST::string>(), ST_LITERAL("\t;\n;").tokenize("\t\n-;"));
+    EXPECT_EQ(std::vector<ST::string>(), ST_LITERAL("").tokenize("\t\n-;"));
 }
 
 TEST(string, split)

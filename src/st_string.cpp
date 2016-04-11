@@ -40,6 +40,10 @@ const ST::string ST::string::null;
 #   define stricmp  _stricmp
 #   define strnicmp _strnicmp
 #   define snprintf _snprintf
+#   if _MSC_VER < 1800
+#       define strtoll  _strtoi64
+#       define strtoull _strtoui64
+#   endif
 #else
 #   define stricmp  strcasecmp
 #   define strnicmp strncasecmp
