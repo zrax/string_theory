@@ -49,7 +49,6 @@ namespace _ST_PRIVATE
         }
 
     private:
-        ST::string_stream m_output;
         FILE *m_stream;
     };
 

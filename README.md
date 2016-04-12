@@ -82,6 +82,27 @@ What String Theory is NOT
 - A library for working with theoretical physics.  Just in case you got this
   far and were still uncertain :).
 
+Platform Support
+----------------
+
+string_theory supports a variety of platforms and compilers.  As of April
+2016, string_theory is tested and working on:
+- GCC 5 (Arch Linux, x86_64 and ARMv7)
+- GCC 4.6 (Ubuntu 12.04)
+- GCC 4.4 (CentOS 6)
+- Clang 3.7 (Arch Linux)
+- AppleClang 6.0 (OSX Mavericks)
+- MSVC 2015
+- MSVC 2013
+- MSVC 2010
+- MinGW-w64 GCC 4.9 (*)
+
+NOTES:
+  - MSVC 2012 is not listed here due to an incompatibility with gtest and
+    MSVC 2012's pseudo-variadic template support
+  - MinGW-gcc works with some test case failures I haven't worked out yet.
+    The failures shouldn't affect actual code however.
+
 Contributing to String Theory
 -----------------------------
 
