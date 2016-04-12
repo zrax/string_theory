@@ -215,8 +215,8 @@ TEST(string, wchar)
     // UTF-8 and UTF-16 are already tested, so just make sure we test
     // wchar_t and L"" conversions
 
-    const wchar_t wtext[] = L"\x20\x7f\xff\u0100\uffff";
-    const char32_t unicode_text[] = { 0x20, 0x7f, 0xff, 0x100, 0xffff, 0 };
+    const wchar_t wtext[] = L"\x20\x7f\xff\u0100\ufffe";
+    const char32_t unicode_text[] = { 0x20, 0x7f, 0xff, 0x100, 0xfffe, 0 };
     static const size_t wtext_utf8_length = 9;
     ST::string from_wchar = ST::string::from_wchar(wtext);
     EXPECT_EQ(wtext_utf8_length, from_wchar.size());
