@@ -91,7 +91,7 @@ namespace ST
 
     ST_EXPORT void format_string(const format_spec &format, format_writer &output,
                                  const char *text, size_t size,
-                                 alignment default_alignment);
+                                 alignment default_alignment = align_left);
 }
 
 #define ST_DECL_FORMAT_TYPE(type_T) \
@@ -130,26 +130,26 @@ inline ST_FORMAT_TYPE(float)
 
 inline ST_FORMAT_TYPE(const char *)
 {
-    ST::format_string(format, output, value, ST::char_buffer::strlen(value), ST::align_left);
+    ST::format_string(format, output, value, ST::char_buffer::strlen(value));
 }
 
 inline ST_FORMAT_TYPE(const wchar_t *)
 {
     ST::char_buffer utf8 = ST::string::from_wchar(value).to_utf8();
-    ST::format_string(format, output, utf8.data(), utf8.size(), ST::align_left);
+    ST::format_string(format, output, utf8.data(), utf8.size());
 }
 
 inline ST_FORMAT_TYPE(const ST::string &)
 {
-    ST::format_string(format, output, value.c_str(), value.size(), ST::align_left);
+    ST::format_string(format, output, value.c_str(), value.size());
 }
 
 inline ST_FORMAT_TYPE(bool)
 {
     if (value)
-        ST::format_string(format, output, "true", 4, ST::align_left);
+        ST::format_string(format, output, "true", 4);
     else
-        ST::format_string(format, output, "false", 5, ST::align_left);
+        ST::format_string(format, output, "false", 5);
 }
 
 #endif // _ST_FORMATTER_H
