@@ -38,7 +38,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
     endif()
 
     if(APPLE AND (HAVE_STD_CXX11 OR HAVE_STD_CXX0X))
-        set(CMAKE_CXX_FLAGS "-stdlib=libc++")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     endif()
 endif()
 

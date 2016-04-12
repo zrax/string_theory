@@ -21,6 +21,7 @@
 #include "st_assert.h"
 
 #include <cstdio>
+#include <cstdlib>
 
 static void _default_assert_handler(const char *condition_str,
                                     const char *filename, int line,
