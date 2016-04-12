@@ -692,7 +692,7 @@ template <typename int_T>
 static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value)
 {
     typedef typename std::make_unsigned<int_T>::type uint_T;
-    uint_T abs = (value < 0) ? -(uint_T)value : value;
+    int_T abs = (value < 0) ? -value : value;
 
     size_t format_size = 0;
     int_T temp = abs;
@@ -709,7 +709,8 @@ static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value
 
     ST::char_buffer result;
     char *buffer = result.create_writable_buffer(format_size);
-    _format_numeric_impl<uint_T>(buffer + format_size, abs, radix, upper_case);
+    _format_numeric_impl<uint_T>(buffer + format_size,
+                                 static_cast<uint_T>(abs), radix, upper_case);
     buffer[format_size] = 0;
 
     if (value < 0)

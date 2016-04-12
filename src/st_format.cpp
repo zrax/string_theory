@@ -311,7 +311,7 @@ static void _format_numeric_s(const ST::format_spec &format,
     }
 
     typedef typename std::make_unsigned<int_T>::type uint_T;
-    uint_T abs = (value < 0) ? -(uint_T)value : value;
+    int_T abs = (value < 0) ? -value : value;
 
     size_t format_size = 0;
     int_T temp = abs;
@@ -328,7 +328,8 @@ static void _format_numeric_s(const ST::format_spec &format,
 
     char buffer[68];
     ST_ASSERT(format_size < sizeof(buffer), "Format length too long");
-    _format_numeric_impl<uint_T>(buffer + format_size, abs, radix, upper_case);
+    _format_numeric_impl<uint_T>(buffer + format_size,
+                                 static_cast<uint_T>(abs), radix, upper_case);
 
     _format_numeric_string(format, output, buffer, format_size, ntype);
 }
