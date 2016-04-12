@@ -763,7 +763,7 @@ TEST(format, floating_point)
     _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
-    // Scientific notation (MSVC uses 3 digits for the exponent)
+    // Scientific notation
     EXPECT_EQ(ST_LITERAL("xx3.14e+00xx"), ST::format("xx{.2e}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx3.141590e+00xx"), ST::format("xx{.6e}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx1.64e+04xx"), ST::format("xx{.2e}xx", 16384.0));

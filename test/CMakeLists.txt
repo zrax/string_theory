@@ -18,7 +18,24 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+# Why is this OFF by default?  It doesn't work with CMake's defaults, and
+# should really only be off if the project has specifically been set up to
+# use the static MSVC CRT
+set(gtest_force_shared_crt ON CACHE INTERNAL "Override gtest default")
+
+# Force other gtest settings to line up correclty -- we're compiling
+# string_theory, not gtest...
+set(gtest_build_samples OFF CACHE INTERNAL "Override gtest default")
+set(gtest_build_tests OFF CACHE INTERNAL "Override gtest default")
+set(gtest_disable_pthreads OFF CACHE INTERNAL "Override gtest default")
+if(ST_BUILD_STATIC)
+    set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Override gtest default")
+else()
+    set(BUILD_SHARED_LIBS ON  CACHE INTERNAL "Override gtest default")
+endif()
+
 add_subdirectory(gtest-1.7.0 EXCLUDE_FROM_ALL)
+
 include_directories(${GTEST_INCLUDE_DIR})
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
