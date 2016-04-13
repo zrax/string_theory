@@ -32,6 +32,9 @@
 #ifdef ST_PROFILE_HAVE_BOOST
 #   include <boost/format.hpp>
 #endif
+#ifdef ST_PROFILE_HAVE_QSTRING
+#   include <QString>
+#endif
 
 #ifndef M_PI
 #   define M_PI (3.14159265358979)
@@ -42,7 +45,7 @@
 #endif
 
 volatile const char *V;
-#define NO_OPTIMIZE(x) V = (x)
+#define NO_OPTIMIZE(x) V = reinterpret_cast<const char *>(x)
 
 static void _measure(const char *title, std::function<void()> fun)
 {
@@ -69,6 +72,13 @@ int main(int, char **)
         NO_OPTIMIZE(s.c_str());
     });
 
+#ifdef ST_PROFILE_HAVE_QSTRING
+    _measure("Empty QString", []() {
+        QString s;
+        NO_OPTIMIZE(s.data());
+    });
+#endif
+
     _measure("Short std::string", []() {
         std::string short_str("Short");
         NO_OPTIMIZE(short_str.c_str());
@@ -88,6 +98,18 @@ int main(int, char **)
         ST::string short_str = ST_LITERAL("Short");
         NO_OPTIMIZE(short_str.c_str());
     });
+
+#ifdef ST_PROFILE_HAVE_QSTRING
+    _measure("Short QString", []() {
+        QString short_str("Short");
+        NO_OPTIMIZE(short_str.data());
+    });
+
+    _measure("Short QString (literal)", []() {
+        QString short_str = QStringLiteral("Short");
+        NO_OPTIMIZE(short_str.data());
+    });
+#endif
 
     _measure("Long std::string", []() {
         std::string long_str("This is a long string.  Testing the excessively long long string.");
@@ -110,29 +132,77 @@ int main(int, char **)
         NO_OPTIMIZE(long_str.c_str());
     });
 
-    std::string _xc1("Short");
-    _measure("Copy short std::string", [&_xc1]() {
-        std::string copy = _xc1;
+#ifdef ST_PROFILE_HAVE_QSTRING
+    _measure("Long QString", []() {
+        QString long_str("This is a long string.  Testing the excessively long long string.");
+        NO_OPTIMIZE(long_str.data());
+    });
+
+    _measure("Long QString (literal)", []() {
+        QString long_str = QStringLiteral("This is a long string.  Testing the excessively long long string.");
+        NO_OPTIMIZE(long_str.data());
+    });
+#endif
+
+    std::string _ss1("Short");
+    _measure("Copy short std::string", [&_ss1]() {
+        std::string copy = _ss1;
         NO_OPTIMIZE(copy.c_str());
     });
 
-    ST::string _xc2("Short");
-    _measure("Copy short ST::string", [&_xc2]() {
-        ST::string copy = _xc2;
+    ST::string _st1("Short");
+    _measure("Copy short ST::string", [&_st1]() {
+        ST::string copy = _st1;
         NO_OPTIMIZE(copy.c_str());
     });
 
-    std::string _xc3("This is a long string.  Testing the excessively long long string.");
-    _measure("Copy long std::string", [&_xc3]() {
-        std::string copy = _xc3;
+#ifdef ST_PROFILE_HAVE_QSTRING
+    QString _qs1("Short");
+    _measure("Copy short QString", [&_qs1]() {
+        QString copy = _qs1;
+        NO_OPTIMIZE(copy.data());
+    });
+#endif
+
+    std::string _ss2("This is a long string.  Testing the excessively long long string.");
+    _measure("Copy long std::string", [&_ss2]() {
+        std::string copy = _ss2;
         NO_OPTIMIZE(copy.c_str());
     });
 
-    ST::string _xc4("This is a long string.  Testing the excessively long long string.");
-    _measure("Copy long ST::string", [&_xc4]() {
-        ST::string copy = _xc4;
+    ST::string _st2("This is a long string.  Testing the excessively long long string.");
+    _measure("Copy long ST::string", [&_st2]() {
+        ST::string copy = _st2;
         NO_OPTIMIZE(copy.c_str());
     });
+
+#ifdef ST_PROFILE_HAVE_QSTRING
+    QString _qs2("This is a long string.  Testing the excessively long long string.");
+    _measure("Copy long QString", [&_qs2]() {
+        QString copy = _qs2;
+        NO_OPTIMIZE(copy.data());
+    });
+#endif
+
+    std::string _ss3[] = {"Piece 1", "Piece 2", "Piece 3"};
+    _measure("std::string (+)", [&_ss3]() {
+        std::string result = _ss3[0] + _ss3[1] + _ss3[2];
+        NO_OPTIMIZE(result.c_str());
+    });
+
+    ST::string _st3[] = {"Piece 1", "Piece 2", "Piece 3"};
+    _measure("ST::string (+)", [&_st3]() {
+        ST::string result = _st3[0] + _st3[1] + _st3[2];
+        NO_OPTIMIZE(result.c_str());
+    });
+
+#ifdef ST_PROFILE_HAVE_QSTRING
+    QString _qs3[] = {"Piece 1", "Piece 2", "Piece 3"};
+    _measure("QString (+)", [&_qs3]() {
+        QString result = _qs3[0] + _qs3[1] + _qs3[2];
+        NO_OPTIMIZE(result.data());
+    });
+#endif
 
     _measure("static snprintf", []() {
         char buffer[256];
@@ -158,6 +228,14 @@ int main(int, char **)
         std::string foo = (boost::format("This %1% is %2$6.2f a %3% test %4%.")
                            % 42 % M_PI % "<Singin' in the rain>" % '?').str();
         NO_OPTIMIZE(foo.c_str());
+    });
+#endif
+
+#ifdef ST_PROFILE_HAVE_QSTRING
+    _measure("QString::arg", []() {
+        QString foo = QString("This %1 is %2 a %3 test %4.")
+                      .arg(42).arg(M_PI, 6, 'f', 2).arg("<Singin' in the rain>").arg('?');
+        NO_OPTIMIZE(foo.data());
     });
 #endif
 
