@@ -39,6 +39,10 @@ namespace _ST_PRIVATE
 
 namespace ST
 {
+    // For optimized construction of empty objects
+    struct ST_EXPORT null_t { };
+    ST_EXPORT extern const null_t null;
+
     template <typename char_T>
     class ST_EXPORT buffer
     {
@@ -75,6 +79,12 @@ namespace ST
 
     public:
         buffer() ST_NOEXCEPT
+            : m_size()
+        {
+            _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
+        }
+
+        buffer(const null_t &) ST_NOEXCEPT
             : m_size()
         {
             _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
@@ -117,6 +127,14 @@ namespace ST
                 delete[] m_ref;
         }
 
+        buffer<char_T> &operator=(const null_t &) ST_NOEXCEPT
+        {
+            _scope_deleter unref(this);
+            m_size = 0;
+            _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
+            return *this;
+        }
+
         buffer<char_T> &operator=(const buffer<char_T> &copy) ST_NOEXCEPT
         {
             _scope_deleter unref(this);
@@ -142,11 +160,26 @@ namespace ST
         }
 #endif
 
+        bool operator==(const null_t &) const ST_NOEXCEPT
+        {
+            return is_empty();
+        }
+
         bool operator==(const buffer<char_T> &other) const ST_NOEXCEPT
         {
             if (other.size() != size())
                 return false;
             return _ST_PRIVATE::_compare_buffer(data(), other.data(), size()) == 0;
+        }
+
+        bool operator!=(const null_t &) const ST_NOEXCEPT
+        {
+            return !is_empty();
+        }
+
+        bool operator!=(const buffer<char_T> &other) const ST_NOEXCEPT
+        {
+            return !operator==(other);
         }
 
         const char_T *data() const ST_NOEXCEPT
@@ -155,6 +188,7 @@ namespace ST
         }
 
         size_t size() const ST_NOEXCEPT { return m_size; }
+        bool is_empty() const ST_NOEXCEPT { return m_size == 0; }
 
         operator const char_T *() const ST_NOEXCEPT { return data(); }
 
@@ -186,6 +220,18 @@ namespace ST
     typedef buffer<wchar_t>     wchar_buffer;
     typedef buffer<char16_t>    utf16_buffer;
     typedef buffer<char32_t>    utf32_buffer;
-} // namespace ST
+
+    template <typename char_T>
+    bool operator==(const null_t &, const buffer<char_T> &right) ST_NOEXCEPT
+    {
+        return right.is_empty();
+    }
+
+    template <typename char_T>
+    bool operator!=(const null_t &, const buffer<char_T> &right) ST_NOEXCEPT
+    {
+        return !right.is_empty();
+    }
+}
 
 #endif // _ST_CHARBUFFER_H

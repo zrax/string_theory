@@ -103,11 +103,11 @@ TEST(string, helpers)
 TEST(string, utility)
 {
     // Special string null constant
-    EXPECT_EQ(ST::string::null, ST_LITERAL(""));
-    EXPECT_EQ(ST::string::null, ST::string());
+    EXPECT_EQ(ST::null, ST_LITERAL(""));
+    EXPECT_EQ(ST::null, ST::string());
 
-    EXPECT_EQ(0U, ST::string::null.size());
-    EXPECT_TRUE(ST::string::null.is_empty());
+    EXPECT_EQ(0U, ST::string().size());
+    EXPECT_TRUE(ST::string().is_empty());
 
     // Short and Long string length
     EXPECT_EQ(4U, ST_LITERAL("1234").size());
@@ -507,9 +507,9 @@ TEST(string, to_int)
 #endif
 
     // Empty string is treated as zero for compatibility with strtol
-    EXPECT_EQ(0, ST::string::null.to_int());
+    EXPECT_EQ(0, ST::string().to_int());
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(0, ST::string::null.to_int64());
+    EXPECT_EQ(0, ST::string().to_int64());
 #endif
 }
 
@@ -574,7 +574,7 @@ TEST(string, to_int_check)
     (void) ST_LITERAL("-FF").to_int(result);
     EXPECT_FALSE(result.ok());
     EXPECT_FALSE(result.full_match());
-    (void) ST::string::null.to_int(result);
+    (void) ST::string().to_int(result);
     EXPECT_FALSE(result.ok());
     EXPECT_TRUE(result.full_match());
 }
@@ -634,9 +634,9 @@ TEST(string, to_uint)
 #endif
 
     // Empty string is treated as zero for compatibility with strtoul
-    EXPECT_EQ(0U, ST::string::null.to_uint());
+    EXPECT_EQ(0U, ST::string().to_uint());
 #ifdef ST_HAVE_INT64
-    EXPECT_EQ(0U, ST::string::null.to_uint64());
+    EXPECT_EQ(0U, ST::string().to_uint64());
 #endif
 }
 
@@ -665,7 +665,7 @@ TEST(string, to_uint_check)
     (void) ST_LITERAL("FF").to_uint(result);
     EXPECT_FALSE(result.ok());
     EXPECT_FALSE(result.full_match());
-    (void) ST::string::null.to_uint(result);
+    (void) ST::string().to_uint(result);
     EXPECT_FALSE(result.ok());
     EXPECT_TRUE(result.full_match());
 }
@@ -701,8 +701,8 @@ TEST(string, to_float)
     EXPECT_EQ(16.0, ST_LITERAL("+1.6e1").to_double());
 
     // Empty string is treated as zero for compatibility with strtod
-    EXPECT_EQ(0.0f, ST::string::null.to_float());
-    EXPECT_EQ(0.0, ST::string::null.to_double());
+    EXPECT_EQ(0.0f, ST::string().to_float());
+    EXPECT_EQ(0.0, ST::string().to_double());
 }
 
 TEST(string, to_float_check)
@@ -785,10 +785,10 @@ TEST(string, to_float_check)
     EXPECT_FALSE(result.ok());
     EXPECT_FALSE(result.full_match());
 
-    (void) ST::string::null.to_float(result);
+    (void) ST::string().to_float(result);
     EXPECT_FALSE(result.ok());
     EXPECT_TRUE(result.full_match());
-    (void) ST::string::null.to_double(result);
+    (void) ST::string().to_double(result);
     EXPECT_FALSE(result.ok());
     EXPECT_TRUE(result.full_match());
 }
@@ -806,7 +806,7 @@ TEST(string, to_bool)
     EXPECT_TRUE(ST_LITERAL("1000").to_bool());
     EXPECT_TRUE(ST_LITERAL("0x1000").to_bool());
 
-    EXPECT_FALSE(ST::string::null.to_bool());
+    EXPECT_FALSE(ST::string().to_bool());
 }
 
 TEST(string, compare)
@@ -1247,7 +1247,7 @@ TEST(string, split)
 
     // split never provides an empty vector, even for empty input
     std::vector<ST::string> expected9;
-    expected9.push_back(ST::string::null);
+    expected9.push_back(ST::null);
     EXPECT_EQ(expected9, ST_LITERAL("").split("-"));
     EXPECT_EQ(expected9, ST_LITERAL("").split("-", 4));
 }
@@ -1309,7 +1309,7 @@ TEST(string, split_char)
 
     // split never provides an empty vector, even for empty input
     std::vector<ST::string> expected9;
-    expected9.push_back(ST::string::null);
+    expected9.push_back(ST::null);
     EXPECT_EQ(expected9, ST_LITERAL("").split('-'));
     EXPECT_EQ(expected9, ST_LITERAL("").split('-', 4));
 }

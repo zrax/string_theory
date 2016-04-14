@@ -27,7 +27,7 @@
 #include "st_stringstream.h"
 #include "st_format_priv.h"
 
-const ST::string ST::string::null;
+const ST::null_t ST::string::null;
 
 #if !defined(ST_WCHAR_BYTES) || ((ST_WCHAR_BYTES != 2) && (ST_WCHAR_BYTES != 4))
 #   error ST_WCHAR_SIZE must either be 2 (16-bit) or 4 (32-bit)
@@ -1377,7 +1377,7 @@ size_t ST::hash::operator()(const string &str) const ST_NOEXCEPT
     return hash;
 }
 
-ST::string operator+(const ST::string &left, const ST::string &right)
+ST::string ST::operator+(const ST::string &left, const ST::string &right)
 {
     ST::char_buffer cat;
     char *catp = cat.create_writable_buffer(left.size() + right.size());
@@ -1388,7 +1388,7 @@ ST::string operator+(const ST::string &left, const ST::string &right)
     return ST::string(cat, ST::assume_valid);
 }
 
-ST::string operator+(const ST::string &left, const char *right)
+ST::string ST::operator+(const ST::string &left, const char *right)
 {
     ST::char_buffer cat;
     size_t rsize = strlen(right);
@@ -1400,7 +1400,7 @@ ST::string operator+(const ST::string &left, const char *right)
     return cat;
 }
 
-ST::string operator+(const char *left, const ST::string &right)
+ST::string ST::operator+(const char *left, const ST::string &right)
 {
     ST::char_buffer cat;
     size_t lsize = strlen(left);

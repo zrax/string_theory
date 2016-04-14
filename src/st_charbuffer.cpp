@@ -27,6 +27,8 @@ ST_STATIC_ASSERT(ST_SHORT_STRING_LEN >= sizeof(void *),
 ST_STATIC_ASSERT(ST_STACK_STRING_LEN >= sizeof(void *),
                  "ST_STACK_STRING_LEN must be at least as large as a pointer")
 
+const ST::null_t ST::null;
+
 void _ST_PRIVATE::_zero_buffer(void *buffer, size_t size)
 {
     memset(buffer, 0, size);

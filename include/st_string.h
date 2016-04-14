@@ -84,7 +84,8 @@ namespace ST
     class ST_EXPORT string
     {
     public:
-        static const string null;
+        // Backwards compatibility.  Probably easier to just use ST::null
+        static const null_t null;
 
     private:
         char_buffer m_buffer;
@@ -101,6 +102,7 @@ namespace ST
 
     public:
         string() ST_NOEXCEPT { }
+        string(const null_t &) ST_NOEXCEPT { }
 
         string(const char *cstr, size_t size = ST_AUTO_SIZE,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
@@ -158,6 +160,8 @@ namespace ST
             _convert_from_wchar(init.data(), init.size(), validation);
         }
 
+        void set(const null_t &) ST_NOEXCEPT { m_buffer = null; }
+
         void set(const char *cstr, size_t size = ST_AUTO_SIZE,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -210,6 +214,12 @@ namespace ST
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_wchar(init.data(), init.size(), validation);
+        }
+
+        string &operator=(const null_t &)
+        {
+            m_buffer = null;
+            return *this;
         }
 
         string &operator=(const char *cstr)
@@ -398,7 +408,6 @@ namespace ST
         char_buffer to_latin_1(utf_validation_t validation = substitute_invalid) const;
 
         size_t size() const ST_NOEXCEPT { return m_buffer.size(); }
-
         bool is_empty() const ST_NOEXCEPT { return m_buffer.size() == 0; }
 
         static string from_int(int value, int base = 10, bool upper_case = false);
@@ -470,6 +479,11 @@ namespace ST
             return compare(other) < 0;
         }
 
+        bool operator==(const null_t &) const ST_NOEXCEPT
+        {
+            return is_empty();
+        }
+
         bool operator==(const string &other) const ST_NOEXCEPT
         {
             return compare(other) == 0;
@@ -478,6 +492,11 @@ namespace ST
         bool operator==(const char *other) const ST_NOEXCEPT
         {
             return compare(other) == 0;
+        }
+
+        bool operator!=(const null_t &) const ST_NOEXCEPT
+        {
+            return !is_empty();
         }
 
         bool operator!=(const string &other) const ST_NOEXCEPT
@@ -621,20 +640,30 @@ namespace ST
             return left.compare_i(right) == 0;
         }
     };
-}
 
-ST_EXPORT ST::string operator+(const ST::string &left, const ST::string &right);
-ST_EXPORT ST::string operator+(const ST::string &left, const char *right);
-ST_EXPORT ST::string operator+(const char *left, const ST::string &right);
+    ST_EXPORT string operator+(const string &left, const string &right);
+    ST_EXPORT string operator+(const string &left, const char *right);
+    ST_EXPORT string operator+(const char *left, const string &right);
 
-inline ST::string operator+(const ST::string &left, const wchar_t *right)
-{
-    return operator+(left, ST::string(right));
-}
+    inline string operator+(const string &left, const wchar_t *right)
+    {
+        return operator+(left, string::from_wchar(right));
+    }
 
-inline ST::string operator+(const wchar_t *left, const ST::string &right)
-{
-    return operator+(ST::string(left), right);
+    inline ST::string operator+(const wchar_t *left, const ST::string &right)
+    {
+        return operator+(string::from_wchar(left), right);
+    }
+
+    inline bool operator==(const null_t &, const string &right) ST_NOEXCEPT
+    {
+        return right.is_empty();
+    }
+
+    inline bool operator!=(const null_t &, const string &right) ST_NOEXCEPT
+    {
+        return !right.is_empty();
+    }
 }
 
 #define ST_LITERAL(str) \
