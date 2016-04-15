@@ -1,6 +1,8 @@
 String Theory
 =============
 
+![Coverity Status](https://scan.coverity.com/projects/8580/badge.svg)
+
 Introduction
 ------------
 
