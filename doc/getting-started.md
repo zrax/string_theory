@@ -1,8 +1,6 @@
-Getting Started with string_theory
-==================================
+# Getting Started with string_theory
 
-Building string_theory
-----------------------
+## Building string_theory
 
 string_theory uses the [CMake](http://cmake.org) build system.  To get started
 on a Unix-like system (Linux, Mac, MSYS, etc), you can just build string_theory
@@ -29,8 +27,7 @@ If you want to build string_theory as a static library, you can also add
 `-DST_BUILD_STATIC=ON` to the CMake command line (or set it in the GUI).
 
 
-Using string_theory in your project
------------------------------------
+## Using string_theory in your project
 
 If your project is built using CMake, it should be easy to add string_theory:
 
@@ -61,10 +58,9 @@ If you create a useful module for your favorite build system, you can also
 contribute the necessary files to string_theory via a Pull Request.
 
 
-Examples
---------
+## Examples
 
-**Basic ST::string features**
+### Basic ST::string features
 
 ~~~c++
 #include <string_theory/string>
@@ -95,7 +91,7 @@ int main(int argc, char *argv[])
 }
 ~~~
 
-**String formatting**
+### String formatting
 
 ~~~c++
 #include <string_theory/format>
@@ -119,7 +115,7 @@ int main(int argc, char *argv[])
 }
 ~~~
 
-**Codecs**
+### Codecs
 
 ~~~c++
 #include <string_theory/codecs>
@@ -155,6 +151,48 @@ int main(int argc, char *argv)
         return 2;
     }
     puts(result.c_str());
+
+    return 0;
+}
+~~~
+
+### Custom formatters
+
+~~~c++
+/* point3d.h */
+#include <string_theory/formatter>
+
+struct Point3D { double x, y, z; };
+
+inline ST_FORMAT_TYPE(const Point3D &)
+{
+    // This version will apply the specified floating point formatting rules
+    // to each of the rendered values x,y,z
+    output.append("Point3D{");
+    ST_FORMAT_FORWARD(value.x);
+    output.append(",");
+    ST_FORMAT_FORWARD(value.y);
+    output.append(",");
+    ST_FORMAT_FORWARD(value.z);
+    output.append("}");
+
+    // Could also format recursively.  This will instead treat the upper-level
+    // formatting rules as a single string formatter.  For example:
+    ST_FORMAT_FORWARD(ST::format("Point3D{{{},{},{}}", value.x, value.y, value.z));
+}
+~~~
+
+~~~c++
+// Note:  Include order is important here.  Custom formatters MUST be declared
+// before the format or stdio header is included!
+#include "point3d.h"
+#include <string_theory/stdio>
+
+int main(int argc, char *argv[])
+{
+    Point3D point{12.4, 42.0, -6.3};
+
+    ST::printf("It's located at {}\n", point);
 
     return 0;
 }
