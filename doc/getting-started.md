@@ -104,8 +104,9 @@ extern void log_line(const ST::string &line);
 
 ST::string status_line(const ST::string &filename, int file_num, int total_files)
 {
-    return ST::format("Processing file {>3}: {<40} - {3.1f}%", file_num,
-                      filename, double(file_num / total_files));
+    // "Processing file 004: Foobar.txt          - 12.5%"
+    return ST::format("Processing file {>03}: {<20} - {4.1f}%", file_num,
+                      filename, double(file_num) / double(total_files));
 }
 
 int main(int argc, char *argv[])
