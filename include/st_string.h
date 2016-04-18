@@ -568,10 +568,9 @@ namespace ST
             return substr(this->size() - size, size);
         }
 
-        bool starts_with(const ST::string &prefix, case_sensitivity_t cs = case_sensitive) const;
-        bool ends_with(const ST::string &suffix, case_sensitivity_t cs = case_sensitive) const;
-
+        bool starts_with(const string &prefix, case_sensitivity_t cs = case_sensitive) const;
         bool starts_with(const char *prefix, case_sensitivity_t cs = case_sensitive) const;
+        bool ends_with(const string &suffix, case_sensitivity_t cs = case_sensitive) const;
         bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const;
 
         string before_first(const char *sep, case_sensitivity_t cs = case_sensitive) const;

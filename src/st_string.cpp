@@ -1115,6 +1115,14 @@ bool ST::string::starts_with(const ST::string &prefix, case_sensitivity_t cs) co
     return compare_n(prefix, prefix.size(), cs) == 0;
 }
 
+bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const
+{
+    size_t count = strlen(prefix);
+    if (count > size())
+        return false;
+    return compare_n(prefix, count, cs) == 0;
+}
+
 bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) const
 {
     if (suffix.size() > size())
@@ -1123,14 +1131,6 @@ bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) cons
     size_t start = size() - suffix.size();
     return (cs == case_sensitive) ? strncmp(c_str() + start, suffix.c_str(), suffix.size()) == 0
                                   : strnicmp(c_str() + start, suffix.c_str(), suffix.size()) == 0;
-}
-
-bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const
-{
-    size_t count = strlen(prefix);
-    if (count > size())
-        return false;
-    return compare_n(prefix, count, cs) == 0;
 }
 
 bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const

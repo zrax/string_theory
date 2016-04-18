@@ -89,7 +89,7 @@ Default constructor for character buffers.  Creates an empty buffer.
 ------
 
 <a name="ctor_1"></a>
-### ST::buffer::buffer(const [null_t](#null_t) &)
+### ST::buffer::buffer(const [ST::null_t](#null_t) &)
 ~~~c++
 buffer(const null_t &) noexcept
 ~~~
@@ -103,7 +103,7 @@ empty constructor.
 ------
 
 <a name="ctor_2"></a>
-### ST::buffer::buffer(const buffer&lt;char_T&gt; &copy)
+### ST::buffer::buffer(const ST::buffer&lt;char_T&gt; &copy)
 ~~~c++
 buffer(const buffer<char_T> &copy)
 ~~~
@@ -115,7 +115,7 @@ Copy constructor.  Creates a new buffer with the same contents as `copy`.
 ------
 
 <a name="ctor_3"></a>
-### ST::buffer::buffer(buffer&lt;char_T&gt; &&move)
+### ST::buffer::buffer(ST::buffer&lt;char_T&gt; &&move)
 ~~~c++
 buffer(buffer<char_T> &&move)
 ~~~
@@ -212,7 +212,7 @@ be accessed, and should be the nul character (`'\0'`).
 ------
 
 <a name="operator_eq_1"></a>
-### ST::buffer&lt;char_T&gt; &ST::buffer::operator=(const [null_t](#null_t) &)
+### ST::buffer&lt;char_T&gt; &ST::buffer::operator=(const [ST::null_t](#null_t) &)
 ~~~c++
 buffer<char_T> &operator=(const null_t &) noexcept
 ~~~
@@ -228,31 +228,31 @@ buf = ST::char_buffer();
 ------
 
 <a name="operator_eq_2"></a>
-### ST::buffer&lt;char_T&gt; &ST::buffer::operator=(const buffer&lt;char_T&gt; &copy)
+### ST::buffer&lt;char_T&gt; &ST::buffer::operator=(const ST::buffer&lt;char_T&gt; &copy)
 ~~~c++
 buffer<char_T> &operator=(const buffer<char_T> &copy)
 ~~~
 
 Copy the contents of `copy` into the current buffer object.
 
-**See also** [buffer](#ctor_2)(const buffer&lt;char_T&gt; &copy)
+**See also** [buffer](#ctor_2)(const buffer&lt;char_T&gt; &)
 
 ------
 
 <a name="operator_eq_3"></a>
-### ST::buffer&lt;char_T&gt; &ST::buffer::operator=(buffer&lt;char_T&gt; &&move)
+### ST::buffer&lt;char_T&gt; &ST::buffer::operator=(ST::buffer&lt;char_T&gt; &&move)
 ~~~c++
 buffer<char_T> &operator=(buffer<char_T> &&move) noexcept
 ~~~
 
 Move the contents of `move` into the current buffer object.
 
-**See also** [buffer](#ctor_3)(buffer&lt;char_T&gt; &&move)
+**See also** [buffer](#ctor_3)(buffer&lt;char_T&gt; &&)
 
 ------
 
 <a name="operator_iseq_1"></a>
-### bool ST::buffer::operator==(const [null_t](#null_t) &) const
+### bool ST::buffer::operator==(const [ST::null_t](#null_t) &) const
 ~~~c++
 bool operator==(const null_t &) const noexcept
 ~~~
@@ -260,12 +260,12 @@ bool operator==(const null_t &) const noexcept
 Returns true if this buffer is empty.
 
 **See also** [is_empty](#is_empty)(),
-[operator==](#operator_iseq_3)(const null_t &, const buffer&lt;char_T&gt; &rhs)
+[operator==](#operator_iseq_3)(const null_t &, const buffer&lt;char_T&gt; &)
 
 ------
 
 <a name="operator_iseq_2"></a>
-### bool ST::buffer::operator==(const buffer&lt;char_T&gt; &other) const
+### bool ST::buffer::operator==(const ST::buffer&lt;char_T&gt; &other) const
 ~~~c++
 bool operator==(const buffer<char_T> &other) const noexcept
 ~~~
@@ -276,7 +276,7 @@ Returns true if the contents of this buffer are identical to the contents of
 ------
 
 <a name="operator_isneq_1"></a>
-### bool ST::buffer::operator!=(const [null_t](#null_t) &) const
+### bool ST::buffer::operator!=(const [ST::null_t](#null_t) &) const
 ~~~c++
 bool operator!=(const null_t &) const noexcept
 ~~~
@@ -284,12 +284,12 @@ bool operator!=(const null_t &) const noexcept
 Returns true if this buffer is not empty.
 
 **See also** [is_empty](#is_empty)(),
-[operator!=](#operator_isneq_3)(const null_t &, const buffer&lt;char_T&gt; &rhs)
+[operator!=](#operator_isneq_3)(const null_t &, const buffer&lt;char_T&gt; &)
 
 ------
 
 <a name="operator_isneq_2"></a>
-### bool ST::buffer::operator!=(const buffer&lt;char_T&gt; &other) const
+### bool ST::buffer::operator!=(const ST::buffer&lt;char_T&gt; &other) const
 ~~~c++
 bool operator!=(const buffer<char_T> &other) const noexcept
 ~~~
@@ -333,7 +333,7 @@ including the terminating nul (`'\0'`) character.
 ------
 
 <a name="strlen"></a>
-### size_t ST::buffer::strlen(const char_T \*buffer)
+### size_t ST::buffer::strlen(const char_T \*buffer) [static]
 ~~~c++
 static size_t strlen(const char_T *buffer)
 ~~~
@@ -348,7 +348,7 @@ fucntion `strlen()`, except that it works on arbitrary character types.
 ## Related Non-Member Documentation
 
 <a name="char_buffer"></a>
-### typedef char_buffer
+### typedef ST::char_buffer
 ~~~c++
 namespace ST
 {
@@ -359,7 +359,7 @@ namespace ST
 ------
 
 <a name="null_t"></a>
-### struct null_t
+### struct ST::null_t
 ~~~c++
 namespace ST
 {
@@ -386,7 +386,7 @@ void bar(const ST::string &s = ST::null);
 ------
 
 <a name="operator_iseq_3"></a>
-### bool operator==(const [null_t](#null_t) &, const buffer&lt;char_T&gt; &right)
+### bool operator==(const [ST::null_t](#null_t) &, const ST::buffer&lt;char_T&gt; &right)
 ~~~c++
 bool operator==(const null_t &, const buffer<char_T> &right) noexcept
 ~~~
@@ -398,7 +398,7 @@ Returns true if `right` is empty.
 ------
 
 <a name="operator_isneq_3"></a>
-### bool operator!=(const [null_t](#null_t) &, const buffer&lt;char_T&gt; &right)
+### bool operator!=(const [ST::null_t](#null_t) &, const ST::buffer&lt;char_T&gt; &right)
 ~~~c++
 bool operator!=(const null_t &, const buffer<char_T> &right) noexcept
 ~~~
@@ -410,7 +410,7 @@ Returns true if `right` is not empty.
 ------
 
 <a name="utf16_buffer"></a>
-### typedef utf16_buffer
+### typedef ST::utf16_buffer
 ~~~c++
 namespace ST
 {
@@ -421,7 +421,7 @@ namespace ST
 ------
 
 <a name="utf32_buffer"></a>
-### typedef utf32_buffer
+### typedef ST::utf32_buffer
 ~~~c++
 namespace ST
 {
@@ -432,7 +432,7 @@ namespace ST
 ------
 
 <a name="wchar_buffer"></a>
-### typedef wchar_buffer
+### typedef ST::wchar_buffer
 ~~~c++
 namespace ST
 {
