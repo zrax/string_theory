@@ -135,7 +135,7 @@ namespace ST
             return *this;
         }
 
-        buffer<char_T> &operator=(const buffer<char_T> &copy) ST_NOEXCEPT
+        buffer<char_T> &operator=(const buffer<char_T> &copy)
         {
             _scope_deleter unref(this);
             m_size = copy.m_size;

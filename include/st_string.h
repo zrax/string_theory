@@ -62,7 +62,7 @@ namespace ST
     ST_ENUM_CONSTANT(utf_validation_t, check_validity);
     ST_ENUM_CONSTANT(utf_validation_t, assert_validity);
 
-    class conversion_result
+    class ST_EXPORT conversion_result
     {
         enum
         {
@@ -120,7 +120,7 @@ namespace ST
             _convert_from_wchar(wstr, size, validation);
         }
 
-        string(const string &copy) ST_NOEXCEPT
+        string(const string &copy)
             : m_buffer(copy.m_buffer) { }
 
 #ifdef ST_HAVE_RVALUE_MOVE
@@ -178,7 +178,7 @@ namespace ST
             _convert_from_wchar(wstr, size, validation);
         }
 
-        void set(const string &copy) ST_NOEXCEPT
+        void set(const string &copy)
         {
             m_buffer = copy.m_buffer;
         }
@@ -216,7 +216,7 @@ namespace ST
             _convert_from_wchar(init.data(), init.size(), validation);
         }
 
-        string &operator=(const null_t &)
+        string &operator=(const null_t &) ST_NOEXCEPT
         {
             m_buffer = null;
             return *this;
@@ -234,7 +234,7 @@ namespace ST
             return *this;
         }
 
-        string &operator=(const string &copy) ST_NOEXCEPT
+        string &operator=(const string &copy)
         {
             m_buffer = copy.m_buffer;
             return *this;
