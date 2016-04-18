@@ -1309,6 +1309,31 @@ ST::string ST::string::to_lower() const
     return result;
 }
 
+std::vector<ST::string> ST::string::split(char split_char, size_t max_splits,
+                                          case_sensitivity_t cs) const
+{
+    ST_ASSERT(split_char && static_cast<unsigned int>(split_char) < 0x80,
+              "Split character should be in range '\\x01'-'\\x7f'");
+
+    std::vector<string> result;
+
+    const char *next = c_str();
+    const char *end = next + size();
+    while (max_splits) {
+        const char *sp = (cs == case_sensitive) ? strchr(next, split_char)
+                                                : _strichr(next, split_char);
+        if (!sp)
+            break;
+
+        result.push_back(string(next, sp - next, assume_valid));
+        next = sp + 1;
+        --max_splits;
+    }
+
+    result.push_back(string(next, end - next, assume_valid));
+    return result;
+}
+
 std::vector<ST::string> ST::string::split(const char *splitter, size_t max_splits,
                                           case_sensitivity_t cs) const
 {
@@ -1345,24 +1370,21 @@ std::vector<ST::string> ST::string::split(const char *splitter, size_t max_split
     return result;
 }
 
-std::vector<ST::string> ST::string::split(char split_char, size_t max_splits,
+std::vector<ST::string> ST::string::split(const string &splitter, size_t max_splits,
                                           case_sensitivity_t cs) const
 {
-    ST_ASSERT(split_char && static_cast<unsigned int>(split_char) < 0x80,
-              "Split character should be in range '\\x01'-'\\x7f'");
-
     std::vector<string> result;
 
     const char *next = c_str();
     const char *end = next + size();
     while (max_splits) {
-        const char *sp = (cs == case_sensitive) ? strchr(next, split_char)
-                                                : _strichr(next, split_char);
+        const char *sp = (cs == case_sensitive) ? strstr(next, splitter.c_str())
+                                                : _stristr(next, splitter.c_str());
         if (!sp)
             break;
 
         result.push_back(string(next, sp - next, assume_valid));
-        next = sp + 1;
+        next = sp + splitter.size();
         --max_splits;
     }
 
