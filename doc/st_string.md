@@ -119,7 +119,10 @@
 | string | [after_last](#after_last_1)(char sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [after_last](#after_last_2)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [after_last](#after_last_3)(const string &sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [replace](#replace)(const char *from, const char *to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
+| string | [replace](#replace_1)(const char *from, const char *to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
+| string | [replace](#replace_2)(const char *from, const string &to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
+| string | [replace](#replace_3)(const string &from, const char *to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
+| string | [replace](#replace_4)(const string &from, const string &to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
 | string | [to_upper](#to_upper)() const |
 | string | [to_lower](#to_lower)() const |
 | std::vector<string> | [split](#split_1)(const char *splitter, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const |

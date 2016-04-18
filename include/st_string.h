@@ -588,6 +588,27 @@ namespace ST
 
         string replace(const char *from, const char *to,
                        case_sensitivity_t cs = case_sensitive,
+                       utf_validation_t validation = ST_DEFAULT_VALIDATION) const
+        {
+            return replace(from ? from : string(), to ? to : string(), cs, validation);
+        }
+
+        string replace(const string &from, const char *to,
+                       case_sensitivity_t cs = case_sensitive,
+                       utf_validation_t validation = ST_DEFAULT_VALIDATION) const
+        {
+            return replace(from, to ? to : string(), cs, validation);
+        }
+
+        string replace(const char *from, const string &to,
+                       case_sensitivity_t cs = case_sensitive,
+                       utf_validation_t validation = ST_DEFAULT_VALIDATION) const
+        {
+            return replace(from ? from : string(), to, cs, validation);
+        }
+
+        string replace(const string &from, const string &to,
+                       case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const;
 
         string to_upper() const;

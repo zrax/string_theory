@@ -1252,29 +1252,25 @@ ST::string ST::string::after_last(const string &sep, case_sensitivity_t cs) cons
         return *this;
 }
 
-ST::string ST::string::replace(const char *from, const char *to,
+ST::string ST::string::replace(const string &from, const string &to,
                                case_sensitivity_t cs,
                                utf_validation_t validation) const
 {
-    if (is_empty() || !from || !from[0])
+    if (is_empty() || from.is_empty())
         return *this;
-
-    if (!to)
-        to = "";
 
     string_stream out;
     const char *pstart = c_str();
     const char *pnext;
-    size_t flen = strlen(from), tlen = strlen(to);
     for ( ;; ) {
-        pnext = (cs == case_sensitive) ? strstr(pstart, from)
-                                       : _stristr(pstart, from);
+        pnext = (cs == case_sensitive) ? strstr(pstart, from.c_str())
+                                       : _stristr(pstart, from.c_str());
         if (!pnext)
             break;
 
         out.append(pstart, pnext - pstart);
-        out.append(to, tlen);
-        pstart = pnext + flen;
+        out << to;
+        pstart = pnext + from.size();
     }
 
     if (*pstart)
