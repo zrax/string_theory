@@ -107,14 +107,18 @@
 | bool | [starts_with](#starts_with_2)(const char *prefix, case_sensitivity_t cs = case_sensitive) const |
 | bool | [ends_with](#ends_with_1)(const string &suffix, case_sensitivity_t cs = case_sensitive) const |
 | bool | [ends_with](#ends_with_2)(const char *suffix, case_sensitivity_t cs = case_sensitive) const |
-| string | [before_first](#before_first_1)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [before_first](#before_first_2)(char sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [after_first](#after_first_1)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [after_first](#after_first_2)(char sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [before_last](#before_last_1)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [before_last](#before_last_2)(char sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [after_last](#after_last_1)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [after_last](#after_last_2)(char sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [before_first](#before_first_1)(char sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [before_first](#before_first_2)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [before_first](#before_first_3)(const string &sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [after_first](#after_first_1)(char sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [after_first](#after_first_2)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [after_first](#after_first_3)(const string &sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [before_last](#before_last_1)(char sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [before_last](#before_last_2)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [before_last](#before_last_3)(const string &sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [after_last](#after_last_1)(char sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [after_last](#after_last_2)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [after_last](#after_last_3)(const string &sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [replace](#replace)(const char *from, const char *to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
 | string | [to_upper](#to_upper)() const |
 | string | [to_lower](#to_lower)() const |

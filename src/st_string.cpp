@@ -1144,15 +1144,6 @@ bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const
                                   : strnicmp(c_str() + start, suffix, count) == 0;
 }
 
-ST::string ST::string::before_first(const char *sep, case_sensitivity_t cs) const
-{
-    ST_ssize_t first = find(sep, cs);
-    if (first >= 0)
-        return left(first);
-    else
-        return *this;
-}
-
 ST::string ST::string::before_first(char sep, case_sensitivity_t cs) const
 {
     ST_ssize_t first = find(sep, cs);
@@ -1162,13 +1153,22 @@ ST::string ST::string::before_first(char sep, case_sensitivity_t cs) const
         return *this;
 }
 
-ST::string ST::string::after_first(const char *sep, case_sensitivity_t cs) const
+ST::string ST::string::before_first(const char *sep, case_sensitivity_t cs) const
 {
     ST_ssize_t first = find(sep, cs);
     if (first >= 0)
-        return substr(first + strlen(sep));
+        return left(first);
     else
-        return null;
+        return *this;
+}
+
+ST::string ST::string::before_first(const string &sep, case_sensitivity_t cs) const
+{
+    ST_ssize_t first = find(sep, cs);
+    if (first >= 0)
+        return left(first);
+    else
+        return *this;
 }
 
 ST::string ST::string::after_first(char sep, case_sensitivity_t cs) const
@@ -1180,11 +1180,20 @@ ST::string ST::string::after_first(char sep, case_sensitivity_t cs) const
         return null;
 }
 
-ST::string ST::string::before_last(const char *sep, case_sensitivity_t cs) const
+ST::string ST::string::after_first(const char *sep, case_sensitivity_t cs) const
 {
-    ST_ssize_t last = find_last(sep, cs);
-    if (last >= 0)
-        return left(last);
+    ST_ssize_t first = find(sep, cs);
+    if (first >= 0)
+        return substr(first + strlen(sep));
+    else
+        return null;
+}
+
+ST::string ST::string::after_first(const string &sep, case_sensitivity_t cs) const
+{
+    ST_ssize_t first = find(sep, cs);
+    if (first >= 0)
+        return substr(first + 1);
     else
         return null;
 }
@@ -1198,6 +1207,33 @@ ST::string ST::string::before_last(char sep, case_sensitivity_t cs) const
         return null;
 }
 
+ST::string ST::string::before_last(const char *sep, case_sensitivity_t cs) const
+{
+    ST_ssize_t last = find_last(sep, cs);
+    if (last >= 0)
+        return left(last);
+    else
+        return null;
+}
+
+ST::string ST::string::before_last(const string &sep, case_sensitivity_t cs) const
+{
+    ST_ssize_t last = find_last(sep, cs);
+    if (last >= 0)
+        return left(last);
+    else
+        return null;
+}
+
+ST::string ST::string::after_last(char sep, case_sensitivity_t cs) const
+{
+    ST_ssize_t last = find_last(sep, cs);
+    if (last >= 0)
+        return substr(last + 1);
+    else
+        return *this;
+}
+
 ST::string ST::string::after_last(const char *sep, case_sensitivity_t cs) const
 {
     ST_ssize_t last = find_last(sep, cs);
@@ -1207,7 +1243,7 @@ ST::string ST::string::after_last(const char *sep, case_sensitivity_t cs) const
         return *this;
 }
 
-ST::string ST::string::after_last(char sep, case_sensitivity_t cs) const
+ST::string ST::string::after_last(const string &sep, case_sensitivity_t cs) const
 {
     ST_ssize_t last = find_last(sep, cs);
     if (last >= 0)

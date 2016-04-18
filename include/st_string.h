@@ -573,14 +573,18 @@ namespace ST
         bool ends_with(const string &suffix, case_sensitivity_t cs = case_sensitive) const;
         bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const;
 
-        string before_first(const char *sep, case_sensitivity_t cs = case_sensitive) const;
         string before_first(char sep, case_sensitivity_t cs = case_sensitive) const;
-        string after_first(const char *sep, case_sensitivity_t cs = case_sensitive) const;
+        string before_first(const char *sep, case_sensitivity_t cs = case_sensitive) const;
+        string before_first(const string &sep, case_sensitivity_t cs = case_sensitive) const;
         string after_first(char sep, case_sensitivity_t cs = case_sensitive) const;
-        string before_last(const char *sep, case_sensitivity_t cs = case_sensitive) const;
+        string after_first(const char *sep, case_sensitivity_t cs = case_sensitive) const;
+        string after_first(const string &sep, case_sensitivity_t cs = case_sensitive) const;
         string before_last(char sep, case_sensitivity_t cs = case_sensitive) const;
-        string after_last(const char *sep, case_sensitivity_t cs = case_sensitive) const;
+        string before_last(const char *sep, case_sensitivity_t cs = case_sensitive) const;
+        string before_last(const string &sep, case_sensitivity_t cs = case_sensitive) const;
         string after_last(char sep, case_sensitivity_t cs = case_sensitive) const;
+        string after_last(const char *sep, case_sensitivity_t cs = case_sensitive) const;
+        string after_last(const string &sep, case_sensitivity_t cs = case_sensitive) const;
 
         string replace(const char *from, const char *to,
                        case_sensitivity_t cs = case_sensitive,
