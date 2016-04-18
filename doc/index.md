@@ -9,7 +9,7 @@
 
 ### Public Types
 - [ST::alignment](st_formatter.md#alignment)
-- [ST::buffer&lt;T&gt;](st_buffer.md)
+- [ST::buffer&lt;char_T&gt;](st_buffer.md)
 - [ST::case_sensitivity_t](st_string.md#case_sensitivity_t)
 - [ST::conversion_result](st_conversion_result.md)
 - [ST::digit_class](st_formatter.md#digit_class)

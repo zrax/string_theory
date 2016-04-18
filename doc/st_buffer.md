@@ -48,12 +48,12 @@
 
 ## Details
 
-The ST::buffer<char_T> class provides basic storage for a contiguous sequence
-of characters.  This is used internally by [ST::string](st_string.md), as well
-as a storage area for the various UTF conversion results.  It can also be used
-by itself as a way to store characters in various encodings; for example,
-[ST::wchar_buffer](#wchar_buffer) objects may provide convenient storage for
-Win32 APIs which use the wchar_t variants.
+The ST::buffer&lt;char_T&gt; class provides basic storage for a contiguous
+sequence of characters.  This is used internally by [ST::string](st_string.md),
+as well as a storage area for the various UTF conversion results.  It can also
+be used by itself as a way to store characters in various encodings; for
+example, [ST::wchar_buffer](#wchar_buffer) objects may provide convenient
+storage for Win32 APIs which use the wchar_t variants.
 
 Note that ST::buffer objects are meant to be used primarily as storage, not for
 string manipulation.  You should convert the buffer to an ST::string in order

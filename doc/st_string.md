@@ -28,8 +28,8 @@
 |    | [string](#ctor_9)(const utf32_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_10)(const wchar_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_1)(const null_t &) noexcept |
-| void | [set](#set_2)(const char *cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-| void | [set](#set_3)(const wchar_t *wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| void | [set](#set_2)(const char \*cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| void | [set](#set_3)(const wchar_t \*wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_4)(const string &copy) |
 | void | [set](#set_5)(string &&move) noexcept |
 | void | [set](#set_6)(const char_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
@@ -50,7 +50,7 @@
 | string & | [operator+=](#operator_pluseq_1)(const char *cstr) |
 | string & | [operator+=](#operator_pluseq_2)(const wchar_t *wstr) |
 | string & | [operator+=](#operator_pluseq_3)(const string &other) |
-| const char * | [c_str](#c_str)(const char *substitute = "") const noexcept |
+| const char * | [c_str](#c_str)(const char \*substitute = "") const noexcept |
 | char | [char_at](#char_at)(size_t position) const noexcept |
 | char_buffer | [to_utf8](#to_utf8)() const noexcept |
 | utf16_buffer | [to_utf16](#to_utf16)() const |
@@ -74,71 +74,71 @@
 | bool | [to_bool](#to_bool_1)() const noexcept |
 | bool | [to_bool](#to_bool_2)(conversion_result &result) const noexcept |
 | int | [compare](#compare_1)(const string &str, case_sensitivity_t cs = case_sensitive) const noexcept |
-| int | [compare](#compare_2)(const char *str, case_sensitivity_t cs = case_sensitive) const noexcept |
+| int | [compare](#compare_2)(const char \*str, case_sensitivity_t cs = case_sensitive) const noexcept |
 | int | [compare_n](#compare_n_1)(const string &str, size_t count, case_sensitivity_t cs = case_sensitive) const noexcept |
 | int | [compare_n](#compare_n_2)(const char *str, size_t count, case_sensitivity_t cs = case_sensitive) const noexcept |
 | int | [compare_i](#compare_i_1)(const string &str) const noexcept |
-| int | [compare_i](#compare_i_2)(const char *str) const noexcept |
+| int | [compare_i](#compare_i_2)(const char \*str) const noexcept |
 | int | [compare_ni](#compare_ni_1)(const string &str, size_t count) const noexcept |
-| int | [compare_ni](#compare_ni_2)(const char *str, size_t count) const noexcept |
+| int | [compare_ni](#compare_ni_2)(const char \*str, size_t count) const noexcept |
 | bool | [operator&lt;](#operator_less)(const string &other) const noexcept |
 | bool | [operator==](#operator_iseq_1)(const null_t &) const noexcept |
 | bool | [operator==](#operator_iseq_2)(const string &other) const noexcept |
-| bool | [operator==](#operator_iseq_3)(const char *other) const noexcept |
+| bool | [operator==](#operator_iseq_3)(const char \*other) const noexcept |
 | bool | [operator!=](#operator_isneq_1)(const null_t &) const noexcept |
 | bool | [operator!=](#operator_isneq_2)(const string &other) const noexcept |
-| bool | [operator!=](#operator_isneq_3)(const char *other) const noexcept |
+| bool | [operator!=](#operator_isneq_3)(const char \*other) const noexcept |
 | ST_ssize_t | [find](#find_1)(char ch, case_sensitivity_t cs = case_sensitive) const noexcept |
 | ST_ssize_t | [find](#find_2)(const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | ST_ssize_t | [find](#find_3)(const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | ST_ssize_t | [find_last](#find_last_1)(char ch, case_sensitivity_t cs = case_sensitive) const noexcept |
-| ST_ssize_t | [find_last](#find_last_2)(const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept |
+| ST_ssize_t | [find_last](#find_last_2)(const char \*substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | ST_ssize_t | [find_last](#find_last_3)(const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | bool | [contains](#contains_1)(char ch, case_sensitivity_t cs = case_sensitive) const noexcept |
-| bool | [contains](#contains_2)(const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept |
+| bool | [contains](#contains_2)(const char \*substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | bool | [contains](#contains_3)(const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept |
-| string | [trim_left](#trim_left)(const char *charset = ST_WHITESPACE) const |
-| string | [trim_right](#trim_right)(const char *charset = ST_WHITESPACE) const |
+| string | [trim_left](#trim_left)(const char \*charset = ST_WHITESPACE) const |
+| string | [trim_right](#trim_right)(const char \*charset = ST_WHITESPACE) const |
 | string | [trim](#trim)(const char *charset = ST_WHITESPACE) const |
 | string | [substr](#substr)(ST_ssize_t start, size_t size = ST_AUTO_SIZE) const |
 | string | [left](#left)(size_t size) const |
 | string | [right](#right)(size_t size) const |
 | bool | [starts_with](#starts_with_1)(const string &prefix, case_sensitivity_t cs = case_sensitive) const |
-| bool | [starts_with](#starts_with_2)(const char *prefix, case_sensitivity_t cs = case_sensitive) const |
+| bool | [starts_with](#starts_with_2)(const char \*prefix, case_sensitivity_t cs = case_sensitive) const |
 | bool | [ends_with](#ends_with_1)(const string &suffix, case_sensitivity_t cs = case_sensitive) const |
-| bool | [ends_with](#ends_with_2)(const char *suffix, case_sensitivity_t cs = case_sensitive) const |
+| bool | [ends_with](#ends_with_2)(const char \*suffix, case_sensitivity_t cs = case_sensitive) const |
 | string | [before_first](#before_first_1)(char sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [before_first](#before_first_2)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [before_first](#before_first_2)(const char \*sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [before_first](#before_first_3)(const string &sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [after_first](#after_first_1)(char sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [after_first](#after_first_2)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [after_first](#after_first_2)(const char \*sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [after_first](#after_first_3)(const string &sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [before_last](#before_last_1)(char sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [before_last](#before_last_2)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [before_last](#before_last_2)(const char \*sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [before_last](#before_last_3)(const string &sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [after_last](#after_last_1)(char sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [after_last](#after_last_2)(const char *sep, case_sensitivity_t cs = case_sensitive) const |
+| string | [after_last](#after_last_2)(const char \*sep, case_sensitivity_t cs = case_sensitive) const |
 | string | [after_last](#after_last_3)(const string &sep, case_sensitivity_t cs = case_sensitive) const |
-| string | [replace](#replace_1)(const char *from, const char *to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
-| string | [replace](#replace_2)(const string &from, const char *to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
-| string | [replace](#replace_3)(const char *from, const string &to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
+| string | [replace](#replace_1)(const char \*from, const char \*to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
+| string | [replace](#replace_2)(const string &from, const char \*to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
+| string | [replace](#replace_3)(const char \*from, const string &to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
 | string | [replace](#replace_4)(const string &from, const string &to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const |
 | string | [to_upper](#to_upper)() const |
 | string | [to_lower](#to_lower)() const |
-| std::vector<string> | [split](#split_1)(char split_char, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const |
-| std::vector<string> | [split](#split_2)(const char *splitter, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const |
-| std::vector<string> | [split](#split_3)(const string &splitter, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const |
-| std::vector<string> | [tokenize](#tokenize)(const char *delims = ST_WHITESPACE) const |
+| std::vector&lt;string&gt; | [split](#split_1)(char split_char, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const |
+| std::vector&lt;string&gt; | [split](#split_2)(const char \*splitter, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const |
+| std::vector&lt;string&gt; | [split](#split_3)(const string &splitter, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const |
+| std::vector&lt;string&gt; | [tokenize](#tokenize)(const char \*delims = ST_WHITESPACE) const |
 
 ## Static Public Members
 
 |    |   |
 |---:|---|
-| string | [from_utf8](#from_utf8_1)(const char *utf8, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-| string | [from_utf16](#from_utf16_1)(const char16_t *utf16, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-| string | [from_utf32](#from_utf32_1)(const char32_t *utf32, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-| string | [from_wchar](#from_wchar_1)(const wchar_t *wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-| string | [from_latin_1](#from_latin_1_1)(const char *astr, size_t size = ST_AUTO_SIZE) |
+| string | [from_utf8](#from_utf8_1)(const char \*utf8, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_utf16](#from_utf16_1)(const char16_t \*utf16, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_utf32](#from_utf32_1)(const char32_t \*utf32, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_wchar](#from_wchar_1)(const wchar_t \*wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_latin_1](#from_latin_1_1)(const char \*astr, size_t size = ST_AUTO_SIZE) |
 | string | [from_utf8](#from_utf8_2)(const char_buffer &utf8, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_utf16](#from_utf16_2)(const utf16_buffer &utf16, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_utf32](#from_utf32_2)(const utf32_buffer &utf32, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
@@ -162,16 +162,16 @@
 | struct | [less_i](#less_i) |
 | struct | [equal_i](#equal_i) |
 | string | [operator+](#operator_plus_1)(const string &left, const string &right) |
-| string | [operator+](#operator_plus_2)(const string &left, const char *right) |
-| string | [operator+](#operator_plus_3)(const char *left, const string &right) |
-| string | [operator+](#operator_plus_4)(const string &left, const wchar_t *right) |
-| string | [operator+](#operator_plus_5)(const wchar_t *left, const string &right) |
+| string | [operator+](#operator_plus_2)(const string &left, const char \*right) |
+| string | [operator+](#operator_plus_3)(const char \*left, const string &right) |
+| string | [operator+](#operator_plus_4)(const string &left, const wchar_t \*right) |
+| string | [operator+](#operator_plus_5)(const wchar_t \*left, const string &right) |
 | bool | [operator==](#operator_iseq_4)(const null_t &, const string &right) noexcept |
 | bool | [operator!=](#operator_isneq_4)(const null_t &, const string &right) noexcept |
-| string | [operator"" _st](#operator_st_1)(const char *str, size_t size) |
-| string | [operator"" _st](#operator_st_2)(const wchar_t *str, size_t size) |
-| string | [operator"" _st](#operator_st_3)(const char16_t *str, size_t size) |
-| string | [operator"" _st](#operator_st_4)(const char32_t *str, size_t size) |
+| string | [operator"" _st](#operator_st_1)(const char \*str, size_t size) |
+| string | [operator"" _st](#operator_st_2)(const wchar_t \*str, size_t size) |
+| string | [operator"" _st](#operator_st_3)(const char16_t \*str, size_t size) |
+| string | [operator"" _st](#operator_st_4)(const char32_t \*str, size_t size) |
 
 ## Macros
 
@@ -457,6 +457,150 @@ depending on your platform's wchar_t support.
 
 ------
 
+<a name="after_first_1"></a>
+### ST::string ST::string::after_first(char sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string after_first(char sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string after the first instance of `sep` found
+within the string.  If `sep` is not found in the string, an empty string
+is returned.
+
+------
+
+<a name="after_first_2"></a>
+### ST::string ST::string::after_first(const char \*sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string after_first(const char *sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string after the first instance of `sep` found
+within the string.  If `sep` is not found in the string, an empty string
+is returned.
+
+------
+
+<a name="after_first_3"></a>
+### ST::string ST::string::after_first(const ST::string &sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string after_first(const string &sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string after the first instance of `sep` found
+within the string.  If `sep` is not found in the string, an empty string
+is returned.
+
+------
+
+<a name="after_last_1"></a>
+### ST::string ST::string::after_last(char sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string after_last(char sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string after the last instance of `sep` found
+within the string.  If `sep` is not found in the string, the whole string
+is returned.
+
+------
+
+<a name="after_last_2"></a>
+### ST::string ST::string::after_last(const char \*sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string after_last(const char *sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string after the last instance of `sep` found
+within the string.  If `sep` is not found in the string, the whole string
+is returned.
+
+------
+
+<a name="after_last_3"></a>
+### ST::string ST::string::after_last(const string &sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string after_last(const string &sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string after the last instance of `sep` found
+within the string.  If `sep` is not found in the string, the whole string
+is returned.
+
+------
+
+<a name="before_first_1"></a>
+### ST::string ST::string::before_first(char sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string before_first(char sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string before the first instance of `sep` found
+within the string.  If `sep` is not found in the string, the whole string
+is returned.
+
+------
+
+<a name="before_first_2"></a>
+### ST::string ST::string::before_first(const char \*sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string before_first(const char *sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string before the first instance of `sep` found
+within the string.  If `sep` is not found in the string, the whole string
+is returned.
+
+------
+
+<a name="before_first_3"></a>
+### ST::string ST::string::before_first(const ST::string &sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string before_first(const string &sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string before the first instance of `sep` found
+within the string.  If `sep` is not found in the string, the whole string
+is returned.
+
+------
+
+<a name="before_last_1"></a>
+### ST::string ST::string::before_last(char sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string before_last(char sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string before the last instance of `sep` found
+within the string.  If `sep` is not found in the string, an empty string
+is returned.
+
+------
+
+<a name="before_last_2"></a>
+### ST::string ST::string::before_last(const char \*sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string before_last(const char *sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string before the last instance of `sep` found
+within the string.  If `sep` is not found in the string, an empty string
+is returned.
+
+------
+
+<a name="before_last_3"></a>
+### ST::string ST::string::before_last(const string &sep, [ST::case_sensitivity_t](#case_sensitivity_t) cs = case_sensitive) const
+~~~c++
+string before_last(const string &sep, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Returns the part of this string before the last instance of `sep` found
+within the string.  If `sep` is not found in the string, an empty string
+is returned.
+
+------
+
 <a name="c_str"></a>
 ### const char \*ST::string::c_str(const char \*substitute = "") const
 ~~~c++
@@ -607,6 +751,128 @@ Convenience comparison function.  Equivalent to
 
 ------
 
+<a name="contains_1"></a>
+### bool ST::string::contains(char ch, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+bool contains(char ch, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Returns `true` if `ch` is contained anywhere in this string.
+
+**See also** [find](#find_1)(char, case_sensitivity_t)
+
+------
+
+<a name="contains_2"></a>
+### bool ST::string::contains(const char \*substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+bool contains(const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Returns `true` if `substr` is contained anywhere in this string.
+
+**See also** [find](#find_2)(const char \*, case_sensitivity_t)
+
+------
+
+<a name="contains_3"></a>
+### bool ST::string::contains(const ST::string &substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+bool contains(const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Returns `true` if `substr` is contained anywhere in this string.
+
+**See also** [find](#find_3)(const string &, case_sensitivity_t)
+
+------
+
+<a name="ends_with_1"></a>
+### bool ST::string::ends_with(const ST::string &suffix, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+bool ends_with(const string &suffix, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Return `true` if this string ends with `suffix`.
+
+------
+
+<a name="ends_with_2"></a>
+### bool ST::string::ends_with(const char \*suffix, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Return `true` if this string ends with `suffix`.
+
+------
+
+<a name="find_1"></a>
+### ST_ssize_t ST::string::find(char ch, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find(char ch, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the first instance of `ch` within the string, and return its byte
+position.  If `ch` isn't found, this returns `-1`.
+
+------
+
+<a name="find_2"></a>
+### ST_ssize_t ST::string::find(const char \*substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find(const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the first instance of `substr` within the string, and return its byte
+position.  If `substr` isn't found, this returns `-1`.
+
+------
+
+<a name="find_3"></a>
+### ST_ssize_t ST::string::find(const ST::string &substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find(const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the first instance of `substr` within the string, and return its byte
+position.  If `substr` isn't found, this returns `-1`.
+
+------
+
+<a name="find_last_1"></a>
+### ST_ssize_t ST::string::find_last(char ch, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find_last(char ch, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the last instance of `ch` within the string, and return its byte
+position.  If `ch` isn't found, this returns `-1`.
+
+------
+
+<a name="find_last_2"></a>
+### ST_ssize_t ST::string::find_last(const char \*substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find_last(const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the last instance of `substr` within the string, and return its byte
+position.  If `substr` isn't found, this returns `-1`.
+
+------
+
+<a name="find_last_3"></a>
+### ST_ssize_t ST::string::find_last(const ST::string &substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find_last(const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the last instance of `substr` within the string, and return its byte
+position.  If `substr` isn't found, this returns `-1`.
+
+------
+
 <a name="is_empty"></a>
 ### bool ST::string::is_empty() const
 ~~~c++
@@ -618,6 +884,19 @@ for an empty string, the first character pointed to by [c_str](#c_str)() can
 be accessed, and should be the nul character (`'\0'`).
 
 **See also** [size](#size)()
+
+------
+
+<a name="left"></a>
+### ST::string ST::string::left(size_t size) const
+~~~c++
+string left(size_t size) const
+~~~
+
+Convenience function to extract a substring from the left side of the string.
+This is equivalent to [substr](#substr)(0, size).
+
+**See also** [substr](#substr)(ST_ssize_t, size_t)
 
 ------
 
@@ -875,6 +1154,63 @@ Convenience operator.  This is equivalent to checking
 
 ------
 
+<a name="replace_1"></a>
+### ST::string ST::string::replace(const char \*from, const char \*to, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) const
+~~~c++
+string replace(const char *from, const char *to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const
+~~~
+
+Return a string which has all instances of the string `from` replaced with
+the string in `to`.
+
+------
+
+<a name="replace_2"></a>
+### ST::string ST::string::replace(const string &from, const char \*to, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) const
+~~~c++
+string replace(const string &from, const char *to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const
+~~~
+
+Return a string which has all instances of the string `from` replaced with
+the string in `to`.
+
+------
+
+<a name="replace_3"></a>
+### ST::string ST::string::replace(const char \*from, const string &to, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) const
+~~~c++
+string replace(const char *from, const string &to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const
+~~~
+
+Return a string which has all instances of the string `from` replaced with
+the string in `to`.
+
+------
+
+<a name="replace_4"></a>
+### ST::string ST::string::replace(const ST::string &from, const ST::string &to, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) const
+~~~c++
+string replace(const string &from, const string &to, case_sensitivity_t cs = case_sensitive, utf_validation_t validation = ST_DEFAULT_VALIDATION) const
+~~~
+
+Return a string which has all instances of the string `from` replaced with
+the string in `to`.
+
+------
+
+<a name="right"></a>
+### ST::string ST::string::right(size_t size) const
+~~~c++
+string right(size_t size) const
+~~~
+
+Convenience function to extract a substring from the right side of the string.
+This is equivalent to [substr](#substr)(-size).
+
+**See also** [substr](#substr)(ST_ssize_t, size_t)
+
+------
+
 <a name="set_1"></a>
 ### void ST::string::set(const [ST::null_t](st_buffer.md#null_t) &)
 ~~~c++
@@ -1018,6 +1354,124 @@ Returns the size (in bytes) of the string data, not including the
 nul-terminator.
 
 **See also** [ST::buffer::size](st_buffer.md#size)()
+
+------
+
+<a name="split_1"></a>
+### std::vector&lt;ST::string&gt; ST::string::split(char split_char, size_t max_splits = [ST_AUTO_SIZE](#ST_AUTO_SIZE), [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+std::vector<string> split(char split_char, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Split the string into pieces separated by `split_char`.  If there are more than
+`max_splits` separators in the string, the extras will be preserved in the
+final element of the returned vector.  Specifically, the maximum size of the
+returned vector is `max_splits` + `1` elements.
+
+Note that adjacent separators are treated individually:  Two instances of
+`split_char` next to each other will result in an empty string in the result.
+If this string is empty, a vector with a single empty string element will be
+returned.
+
+**See also** [tokenize](#tokenize)(const char \*)
+
+------
+
+<a name="split_2"></a>
+### std::vector&lt;ST::string&gt; ST::string::split(const char \*splitter, size_t max_splits = [ST_AUTO_SIZE](#ST_AUTO_SIZE), [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+std::vector<string> split(const char *splitter, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Split the string into pieces separated by `splitter`.  If there are more than
+`max_splits` separators in the string, the extras will be preserved in the
+final element of the returned vector.  Specifically, the maximum size of the
+returned vector is `max_splits` + `1` elements.
+
+Note that adjacent separators are treated individually:  Two instances of
+`splitter` next to each other will result in an empty string in the result.
+If this string is empty, a vector with a single empty string element will be
+returned.
+
+**See also** [tokenize](#tokenize)(const char \*)
+
+------
+
+<a name="split_3"></a>
+### std::vector&lt;ST::string&gt; ST::string::split(const ST::string &splitter, size_t max_splits = [ST_AUTO_SIZE](#ST_AUTO_SIZE), [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+std::vector<string> split(const string &splitter, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Split the string into pieces separated by `splitter`.  If there are more than
+`max_splits` separators in the string, the extras will be preserved in the
+final element of the returned vector.  Specifically, the maximum size of the
+returned vector is `max_splits` + `1` elements.
+
+Note that adjacent separators are treated individually:  Two instances of
+`splitter` next to each other will result in an empty string in the result.
+If this string is empty, a vector with a single empty string element will be
+returned.
+
+**See also** [tokenize](#tokenize)(const char \*)
+
+------
+
+<a name="tokenize"></a>
+### std::vector&lt;ST::string&gt; ST::string::tokenize(const char \*delims = [ST_WHITESPACE](#ST_WHITESPACE)) const
+~~~c++
+std::vector<string> tokenize(const char *delims = ST_WHITESPACE) const
+~~~
+
+Split the string into pieces separated by any of the characters in `delims`.
+Any sequence of adjacent delimiters will be treated as a single separator,
+meaning that no elements of the returned vector will be empty.  If this
+string is empty, an empty vector will be returned.
+
+**See also** [split](#split)(char, size_t, case_sensitivity_t),
+[split](#split)(const char \*, size_t, case_sensitivity_t),
+[split](#split)(const string &, size_t, case_sensitivity_t)
+
+------
+
+<a name="starts_with_1"></a>
+### bool ST::string::starts_with(const ST::string &prefix, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+bool starts_with(const string &prefix, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Return `true` if this string starts with `prefix`.  Equivalent to
+[compare_n_1](#compare_n)(prefix, prefix.size(), cs) == `0`.
+
+**See also** [compare_n_1](#compare_n)(const string &, case_sensitivity_t)
+
+------
+
+<a name="starts_with_2"></a>
+### bool ST::string::starts_with(const char \*prefix, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+bool starts_with(const char *prefix, case_sensitivity_t cs = case_sensitive) const
+~~~
+
+Return `true` if this string starts with `prefix`.  Equivalent to
+[compare_n_2](#compare_n)(prefix, strlen(prefix), cs) == `0`.
+
+**See also** [compare_n_2](#compare_n)(const char \*, case_sensitivity_t)
+
+------
+
+<a name="substr"></a>
+### ST::string ST::string::substr(ST_ssize_t start, size_t size = [ST_AUTO_SIZE](#ST_AUTO_SIZE)) const
+~~~c++
+string substr(ST_ssize_t start, size_t size = ST_AUTO_SIZE) const
+~~~
+
+Return a string whose contents are a copy of at most `size` bytes from this
+string, starting at position `start`.  If `start` is less than `0`, then
+start is calculated from the end of the string.  If `start` + `size` is
+greater than the size of the string, then the data is copied up to the end
+of the string (and the returned substring will be shorter than the requested
+`size`).
 
 ------
 
@@ -1181,6 +1635,16 @@ of the Latin-1 range will be handled according to `validation`.
 
 ------
 
+<a name="to_lower"></a>
+### ST::string ST::string::to_lower() const
+~~~c++
+string to_lower() const
+~~~
+
+Returns a copy of this string with all ANSI letters converted to lower-case.
+
+------
+
 <a name="to_uint_1"></a>
 ### unsigned int ST::string::to_uint(int base = 0) const
 ~~~c++
@@ -1240,6 +1704,16 @@ be done.
 
 ------
 
+<a name="to_upper"></a>
+### ST::string ST::string::to_upper() const
+~~~c++
+string to_upper() const
+~~~
+
+Returns a copy of this string with all ANSI letters converted to upper-case.
+
+------
+
 <a name="to_utf8"></a>
 ### [ST::char_buffer](st_buffer.md) ST::string::to_utf8() const
 ~~~c++
@@ -1278,5 +1752,38 @@ wchar_buffer to_wchar() const
 
 Convert the string content to a wchar_t buffer.  The buffer is encoded either
 as UTF-16 or UTF-32 / UCS-4, depending on your platform's wchar_t support.
+
+------
+
+<a name="trim"></a>
+### ST::string ST::string::trim(const char \*charset = [ST_WHITESPACE](#ST_WHITESPACE)) const
+~~~c++
+string trim(const char *charset = ST_WHITESPACE) const
+~~~
+
+Return a string which has any characters found in `charset` removed from both
+the left and right sides of the string.
+
+------
+
+<a name="trim_left"></a>
+### ST::string ST::string::trim_left(const char \*charset = [ST_WHITESPACE](#ST_WHITESPACE)) const
+~~~c++
+string trim_left(const char *charset = ST_WHITESPACE) const
+~~~
+
+Return a string which has any characters found in `charset` removed from the
+left side of the string.
+
+------
+
+<a name="trim_right"></a>
+### ST::string ST::string::trim_right(const char \*charset = [ST_WHITESPACE](#ST_WHITESPACE)) const
+~~~c++
+string trim_right(const char *charset = ST_WHITESPACE) const
+~~~
+
+Return a string which has any characters found in `charset` removed from the
+right side of the string.
 
 ------
