@@ -83,10 +83,6 @@ namespace ST
 
     class ST_EXPORT string
     {
-    public:
-        // Backwards compatibility.  Probably easier to just use ST::null
-        static const null_t null;
-
     private:
         char_buffer m_buffer;
 
