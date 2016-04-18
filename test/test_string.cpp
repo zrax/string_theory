@@ -806,7 +806,54 @@ TEST(string, to_bool)
     EXPECT_TRUE(ST_LITERAL("1000").to_bool());
     EXPECT_TRUE(ST_LITERAL("0x1000").to_bool());
 
+    EXPECT_FALSE(ST_LITERAL("T").to_bool());
+    EXPECT_FALSE(ST_LITERAL("trueXX").to_bool());
+
     EXPECT_FALSE(ST::string().to_bool());
+}
+
+TEST(string, to_bool_check)
+{
+    ST::conversion_result result;
+    (void) ST_LITERAL("true").to_bool(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("TRUE").to_bool(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("false").to_bool(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("FALSE").to_bool(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+
+    (void) ST_LITERAL("0").to_bool(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("1").to_bool(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("-1").to_bool(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("1000").to_bool(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+    (void) ST_LITERAL("0x1000").to_bool(result);
+    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.full_match());
+
+    (void) ST_LITERAL("T").to_bool(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_FALSE(result.full_match());
+    (void) ST_LITERAL("trueXX").to_bool(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_FALSE(result.full_match());
+
+    (void) ST::string().to_bool(result);
+    EXPECT_FALSE(result.ok());
+    EXPECT_TRUE(result.full_match());
 }
 
 TEST(string, compare)

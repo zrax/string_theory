@@ -912,6 +912,20 @@ bool ST::string::to_bool() const ST_NOEXCEPT
     return to_int() != 0;
 }
 
+bool ST::string::to_bool(conversion_result &result) const ST_NOEXCEPT
+{
+    if (compare_i("true") == 0) {
+        result.m_flags = ST::conversion_result::result_ok
+                       | ST::conversion_result::result_full_match;
+        return true;
+    } else if (compare_i("false") == 0) {
+        result.m_flags = ST::conversion_result::result_ok
+                       | ST::conversion_result::result_full_match;
+        return false;
+    }
+    return to_int(result) != 0;
+}
+
 int ST::string::compare(const string &str, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     return (cs == case_sensitive) ? strcmp(c_str(), str.c_str())

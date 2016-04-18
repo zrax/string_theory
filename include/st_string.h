@@ -443,6 +443,7 @@ namespace ST
 #endif
 
         bool to_bool() const ST_NOEXCEPT;
+        bool to_bool(conversion_result &result) const ST_NOEXCEPT;
 
         int compare(const string &str, case_sensitivity_t cs = case_sensitive)
             const ST_NOEXCEPT;
