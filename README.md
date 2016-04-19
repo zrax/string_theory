@@ -15,6 +15,9 @@ In addition, if your compiler supports it, String Theory includes a powerful
 type-safe string formatter (`ST::format`), which can be extended with custom
 type formatters by end-user code.
 
+You can find the [full documentation](doc/index.md) here in the sources or
+online at https://github.com/zrax/string_theory/blob/master/doc/index.md.
+
 Why another string library?
 ---------------------------
 
@@ -112,7 +115,7 @@ and may be submitted as issues and/or pull requests on GitHub:
 http://github.com/zrax/string_theory.
 
 Some ideas for areas to contribute:
-- Fix bugs (See http://github.com/zrax/string_theory/issues)
-- Write documentation
+- Report and/or fix bugs (See http://github.com/zrax/string_theory/issues)
+- Write and/or fix documentation
 - Translate documentation to other languages
 - Write more unit tests

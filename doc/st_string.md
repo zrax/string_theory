@@ -142,8 +142,8 @@
 | string | [from_utf8](#from_utf8_2)(const char_buffer &utf8, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_utf16](#from_utf16_2)(const utf16_buffer &utf16, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_utf32](#from_utf32_2)(const utf32_buffer &utf32, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-| string | [from_utf8](#from_wchar_2)(const wchar_buffer &wstr, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-| string | [from_utf8](#from_latin_1_2)(const char_buffer &astr) |
+| string | [from_wchar](#from_wchar_2)(const wchar_buffer &wstr, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_latin_1](#from_latin_1_2)(const char_buffer &astr) |
 | string | [from_int](#from_int)(int value, int base = 10, bool upper_case = false) |
 | string | [from_uint](#from_uint)(unsigned int value, int base = 10, bool upper_case = false) |
 | string | [from_float](#from_float)(float value, char format='g') |
@@ -177,7 +177,6 @@
 
 |   |
 |---|
-| [ST_AUTO_SIZE](#ST_AUTO_SIZE) |
 | [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION) |
 | [ST_LITERAL](#ST_LITERAL)(str) |
 | [ST_WHITESPACE](#ST_WHITESPACE) |
@@ -338,13 +337,13 @@ constructor.
 ------
 
 <a name="ctor_2"></a>
-### ST::string::string(const char \*cstr, size_t size = [ST_SIZE_AUTO](#ST_SIZE_AUTO), [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+### ST::string::string(const char \*cstr, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
 ~~~c++
 string(const char *cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
 ~~~
 
 Construct a string from the first `size` bytes of the string pointed to by
-`cstr`.  if `size` is `ST_SIZE_AUTO`, the length of the input will be
+`cstr`.  If `size` is `ST_AUTO_SIZE`, the length of the input will be
 determined with [ST::char_buffer::strlen](st_buffer.md#strlen)().  The data
 pointed to by `cstr` is expected to be encoded as UTF-8.
 
@@ -353,13 +352,13 @@ pointed to by `cstr` is expected to be encoded as UTF-8.
 ------
 
 <a name="ctor_3"></a>
-### ST::string::string(const wchar_t \*cstr, size_t size = [ST_SIZE_AUTO](#ST_SIZE_AUTO), [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+### ST::string::string(const wchar_t \*cstr, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
 ~~~c++
 string(const wchar_t *wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
 ~~~
 
-Construct a string from the first `size` bytes of the string pointed to by
-`wstr`.  if `size` is `ST_SIZE_AUTO`, the length of the input will be
+Construct a string from the first `size` wide characters of the string pointed
+to by `wstr`.  If `size` is `ST_AUTO_SIZE`, the length of the input will be
 determined with [ST::wchar_buffer::strlen](st_buffer.md#strlen)().  The data
 pointed to by `wstr` is expected to be encoded as either UTF-16 or UTF-32,
 depending on your platform's wchar_t support.
@@ -807,6 +806,17 @@ Return `true` if this string ends with `suffix`.
 
 ------
 
+<a name="fill"></a>
+### ST::string ST::string::fill(size_t count, char c) [static]
+~~~c++
+static string fill(size_t count, char c)
+~~~
+
+Create a string which is pre-populated with `count` copies of the character
+in `c`.
+
+------
+
 <a name="find_1"></a>
 ### ST_ssize_t ST::string::find(char ch, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
 ~~~c++
@@ -870,6 +880,196 @@ ST_ssize_t find_last(const string &substr, case_sensitivity_t cs = case_sensitiv
 
 Find the last instance of `substr` within the string, and return its byte
 position.  If `substr` isn't found, this returns `-1`.
+
+------
+
+<a name="from_bool"></a>
+### ST::string ST::string::from_bool(bool value) [static]
+~~~c++
+static string from_bool(bool value)
+~~~
+
+Creates the string literal `"true"` or `"false"`, depending on `value`.
+
+------
+
+<a name="from_double"></a>
+### ST::string ST::string::from_double(double value, char format = 'g') [static]
+~~~c++
+static string from_double(double value, char format = 'g')
+~~~
+
+Create a string representation of the floating-point number in `value`.
+The format character has the same meaning as printf's floating point formats,
+and should be one of `'e'`, `'f'` or `'g'`.
+
+------
+
+<a name="from_float"></a>
+### ST::string ST::string::from_float(float value, char format = 'g') [static]
+~~~c++
+static string from_float(float value, char format = 'g')
+~~~
+
+Create a string representation of the floating-point number in `value`.
+The format character has the same meaning as printf's floating point formats,
+and should be one of `'e'`, `'f'` or `'g'`.
+
+------
+
+<a name="from_int"></a>
+### ST::string ST::string::from_int(int value, int base = 10, bool upper_case = false) [static]
+~~~c++
+static string from_int(int value, int base = 10, bool upper_case = false)
+~~~
+
+Create a string representation of the integer in `value`.
+
+------
+
+<a name="from_int64"></a>
+### ST::string ST::string::from_int64(int64_t value, int base = 10, bool upper_case = false) [static]
+~~~c++
+static string from_int64(int64_t value, int base = 10, bool upper_case = false)
+~~~
+
+Create a string representation of the integer in `value`.
+
+------
+
+<a name="from_latin_1_1"></a>
+### ST::string ST::string::from_latin_1(const char \*astr, size_t size = ST_AUTO_SIZE) [static]
+~~~c++
+static string from_latin_1(const char *astr, size_t size = ST_AUTO_SIZE)
+~~~
+
+Construct a string from the first `size` bytes of the Latin-1 / ISO-8859-1
+string data in `astr`.  If `size` is `ST_AUTO_SIZE`, the length of the input
+will be determined with [ST::char_buffer::strlen](st_buffer.md#strlen)().
+
+------
+
+<a name="from_latin_1_2"></a>
+### ST::string ST::string::from_latin_1(const [ST::char_buffer](st_buffer.md) &astr) [static]
+~~~c++
+static string from_latin_1(const char_buffer &astr)
+~~~
+
+Construct a string from the Latin-1 / ISO-8859-1 string data in `astr`.
+
+------
+
+<a name="from_uint"></a>
+### ST::string ST::string::from_uint(unsigned int value, int base = 10, bool upper_case = false) [static]
+~~~c++
+static string from_int(unsigned int value, int base = 10, bool upper_case = false)
+~~~
+
+Create a string representation of the unsigned integer in `value`.
+
+------
+
+<a name="from_uint64"></a>
+### ST::string ST::string::from_uint64(uint64_t value, int base = 10, bool upper_case = false) [static]
+~~~c++
+static string from_uint64(uint64_t value, int base = 10, bool upper_case = false)
+~~~
+
+Create a string representation of the unsigned integer in `value`.
+
+------
+
+<a name="from_utf8_1"></a>
+### ST::string ST::string::from_utf8(const char \*utf8, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_utf8(const char *utf8, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the first `size` bytes of the UTF-8 string data in
+`utf8`.  If `size` is `ST_AUTO_SIZE`, the length of the input will be
+determined with [ST::char_buffer::strlen](st_buffer.md#strlen)().
+
+------
+
+<a name="from_utf8_2"></a>
+### ST::string ST::string::from_utf8(const [ST::char_buffer](st_buffer.md) &utf8, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_utf8(const char_buffer &utf8, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the UTF-8 string data in `utf8`.
+
+------
+
+<a name="from_utf16_1"></a>
+### ST::string ST::string::from_utf16(const char16_t \*utf16, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_utf16(const char16_t *utf16, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the first `size` characters of the UTF-16 string data
+in `utf16`.  If `size` is `ST_AUTO_SIZE`, the length of the input will be
+determined with [ST::utf16_buffer::strlen](st_buffer.md#strlen)().
+
+------
+
+<a name="from_utf16_2"></a>
+### ST::string ST::string::from_utf16(const [ST::utf16_buffer](st_buffer.md) &utf16, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_utf16(const utf16_buffer &utf8, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the UTF-16 string data in `utf16`.
+
+------
+
+<a name="from_utf32_1"></a>
+### ST::string ST::string::from_utf32(const char32_t \*utf32, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_utf32(const char32_t *utf32, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the first `size` characters of the UTF-32 string data
+in `utf32`.  If `size` is `ST_AUTO_SIZE`, the length of the input will be
+determined with [ST::utf32_buffer::strlen](st_buffer.md#strlen)().
+
+------
+
+<a name="from_utf32_2"></a>
+### ST::string ST::string::from_utf32(const [ST::utf32_buffer](st_buffer.md) &utf32, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_utf32(const utf32_buffer &utf8, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the UTF-32 string data in `utf32`.
+
+------
+
+<a name="from_wchar_1"></a>
+### ST::string ST::string::from_wchar(const wchar_t \*wstr, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_wchar(const wchar_t *wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the first `size` wide characters of the wide string
+data in `wstr`.  If `size` is `ST_AUTO_SIZE`, the length of the input will be
+determined with [ST::wchar_buffer::strlen](st_buffer.md#strlen)().
+
+Note that the data is expected to be either UTF-16 or UTF-32 encoded,
+depending on your platform's wchar_t support.
+
+------
+
+<a name="from_wchar_2"></a>
+### ST::string ST::string::from_wchar(const [ST::wchar_buffer](st_buffer.md) &wstr, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_wchar(const wchar_buffer &wstr, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the wide character string data in `wstr`.
+
+Note that the data is expected to be either UTF-16 or UTF-32 encoded,
+depending on your platform's wchar_t support.
 
 ------
 
@@ -1074,7 +1274,7 @@ containers.  For more control over string comparisons, see the
 [compare](#compare_1)() functions.
 
 **See also** [compare](#compare_1)(const string &, case_sensitivity_t),
-[compare](#compare_2)(const char \*, case_sensitivity_t)
+[compare](#compare_2)(const char \*, case_sensitivity_t), struct [less_i](#less_i)
 
 ------
 
@@ -1225,13 +1425,13 @@ Shortcut set() overload to reset the string to the empty string.
 ------
 
 <a name="set_2"></a>
-### void ST::string::set(const char \*cstr, size_t size = [ST_SIZE_AUTO](#ST_SIZE_AUTO), [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+### void ST::string::set(const char \*cstr, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
 ~~~c++
 void set(const char *cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
 ~~~
 
 Set the string content to the first `size` bytes of the string pointed to by
-`cstr`.  if `size` is `ST_SIZE_AUTO`, the length of the input will be
+`cstr`.  If `size` is `ST_AUTO_SIZE`, the length of the input will be
 determined with [ST::char_buffer::strlen](st_buffer.md#strlen)().  The data
 pointed to by `cstr` is expected to be encoded as UTF-8.
 
@@ -1240,16 +1440,16 @@ pointed to by `cstr` is expected to be encoded as UTF-8.
 ------
 
 <a name="set_3"></a>
-### void ST::string::set(const wchar_t \*cstr, size_t size = [ST_SIZE_AUTO](#ST_SIZE_AUTO), [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+### void ST::string::set(const wchar_t \*cstr, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
 ~~~c++
 void set(const wchar_t *wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
 ~~~
 
-Set the string content from the first `size` bytes of the string pointed to by
-`wstr`.  if `size` is `ST_SIZE_AUTO`, the length of the input will be
-determined with [ST::wchar_buffer::strlen](st_buffer.md#strlen)().  The data
-pointed to by `wstr` is expected to be encoded as either UTF-16 or UTF-32,
-depending on your platform's wchar_t support.
+Set the string content from the first `size` wide characters of the string
+pointed to by `wstr`.  If `size` is `ST_AUTO_SIZE`, the length of the input
+will be determined with [ST::wchar_buffer::strlen](st_buffer.md#strlen)().
+The data pointed to by `wstr` is expected to be encoded as either UTF-16 or
+UTF-32, depending on your platform's wchar_t support.
 
 **See also** [from_wchar](#from_wchar_1)(const wchar_t \*, size_t, utf_validation_t)
 
@@ -1358,15 +1558,16 @@ nul-terminator.
 ------
 
 <a name="split_1"></a>
-### std::vector&lt;ST::string&gt; ST::string::split(char split_char, size_t max_splits = [ST_AUTO_SIZE](#ST_AUTO_SIZE), [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+### std::vector&lt;ST::string&gt; ST::string::split(char split_char, size_t max_splits = ST_AUTO_SIZE, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
 ~~~c++
 std::vector<string> split(char split_char, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const
 ~~~
 
-Split the string into pieces separated by `split_char`.  If there are more than
-`max_splits` separators in the string, the extras will be preserved in the
-final element of the returned vector.  Specifically, the maximum size of the
-returned vector is `max_splits` + `1` elements.
+Split the string into pieces separated by `split_char`.  If `max_splits` is not
+`ST_AUTO_SIZE` and there are more than `max_splits` separators in the string,
+the extras will be preserved in the final element of the returned vector.
+Specifically, the maximum size of the returned vector is `max_splits` + `1`
+elements.
 
 Note that adjacent separators are treated individually:  Two instances of
 `split_char` next to each other will result in an empty string in the result.
@@ -1378,15 +1579,16 @@ returned.
 ------
 
 <a name="split_2"></a>
-### std::vector&lt;ST::string&gt; ST::string::split(const char \*splitter, size_t max_splits = [ST_AUTO_SIZE](#ST_AUTO_SIZE), [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+### std::vector&lt;ST::string&gt; ST::string::split(const char \*splitter, size_t max_splits = ST_AUTO_SIZE, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
 ~~~c++
 std::vector<string> split(const char *splitter, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const
 ~~~
 
-Split the string into pieces separated by `splitter`.  If there are more than
-`max_splits` separators in the string, the extras will be preserved in the
-final element of the returned vector.  Specifically, the maximum size of the
-returned vector is `max_splits` + `1` elements.
+Split the string into pieces separated by `splitter`.  If `max_splits` is not
+`ST_AUTO_SIZE` and there are more than `max_splits` separators in the string,
+the extras will be preserved in the final element of the returned vector.
+Specifically, the maximum size of the returned vector is `max_splits` + `1`
+elements.
 
 Note that adjacent separators are treated individually:  Two instances of
 `splitter` next to each other will result in an empty string in the result.
@@ -1398,15 +1600,16 @@ returned.
 ------
 
 <a name="split_3"></a>
-### std::vector&lt;ST::string&gt; ST::string::split(const ST::string &splitter, size_t max_splits = [ST_AUTO_SIZE](#ST_AUTO_SIZE), [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+### std::vector&lt;ST::string&gt; ST::string::split(const ST::string &splitter, size_t max_splits = ST_AUTO_SIZE, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
 ~~~c++
 std::vector<string> split(const string &splitter, size_t max_splits = ST_AUTO_SIZE, case_sensitivity_t cs = case_sensitive) const
 ~~~
 
-Split the string into pieces separated by `splitter`.  If there are more than
-`max_splits` separators in the string, the extras will be preserved in the
-final element of the returned vector.  Specifically, the maximum size of the
-returned vector is `max_splits` + `1` elements.
+Split the string into pieces separated by `splitter`.  If `max_splits` is not
+`ST_AUTO_SIZE` and there are more than `max_splits` separators in the string,
+the extras will be preserved in the final element of the returned vector.
+Specifically, the maximum size of the returned vector is `max_splits` + `1`
+elements.
 
 Note that adjacent separators are treated individually:  Two instances of
 `splitter` next to each other will result in an empty string in the result.
@@ -1461,17 +1664,16 @@ Return `true` if this string starts with `prefix`.  Equivalent to
 ------
 
 <a name="substr"></a>
-### ST::string ST::string::substr(ST_ssize_t start, size_t size = [ST_AUTO_SIZE](#ST_AUTO_SIZE)) const
+### ST::string ST::string::substr(ST_ssize_t start, size_t size = ST_AUTO_SIZE) const
 ~~~c++
 string substr(ST_ssize_t start, size_t size = ST_AUTO_SIZE) const
 ~~~
 
 Return a string whose contents are a copy of at most `size` bytes from this
-string, starting at position `start`.  If `start` is less than `0`, then
-start is calculated from the end of the string.  If `start` + `size` is
-greater than the size of the string, then the data is copied up to the end
-of the string (and the returned substring will be shorter than the requested
-`size`).
+string, starting at position `start`.  If `size` is `ST_AUTO_SIZE` or `start` +
+`size` is greather than the size of the string, this will return the remainder
+of the string from the starting position. If `start` is negative, then the
+starting position is relative to the end of the string.
 
 ------
 
@@ -1787,3 +1989,269 @@ Return a string which has any characters found in `charset` removed from the
 right side of the string.
 
 ------
+
+
+## Related Non-Member Documentation
+
+<a name="equal_i"></a>
+### struct equal_i
+~~~c++
+struct equal_i
+{
+    bool operator()(const string &left, const string &right) const noexcept
+};
+~~~
+
+Functor object which returns true for case-insensitive string comparisons
+where the `left` string is equal to the `right` string.  This is designed
+for STL-style containers which need case-insensitive ordering.
+
+**See also** struct [hash_i](#hash_i), struct [less_i](#less_i),
+struct [equal_i](#equal_i), [operator==](#operator_iseq_2)()
+
+------
+
+<a name="hash"></a>
+### struct hash
+~~~c++
+struct hash
+{
+    size_t operator()(const string &str) const noexcept;
+
+protected:
+      virtual unsigned char fetch_char(const string &str, size_t index);
+};
+~~~
+
+Functor object which returns a reasonable hash for the provided string.  This
+is designed for STL-style containers which use hashing for indexes, e.g.
+`std::unordered_map`.
+
+**See also** struct [hash_i](#hash_i), struct [less](#less)
+
+------
+
+<a name="hash_i"></a>
+### struct hash_i
+~~~c++
+struct hash_i : public hash
+{
+protected:
+      unsigned char fetch_char(const string &str, size_t index) override;
+};
+~~~
+
+Functor object which returns a reasonable case-insensitive hash for the
+provided string.  This is designed for STL-style containers which use hashing
+for indexes, e.g. `std::unordered_map`.
+
+**See also** struct [hash](#hash), struct [less_i](#less_i),
+struct [equal_i](#equal_i)
+
+------
+
+<a name="less_i"></a>
+### struct less_i
+~~~c++
+struct less_i
+{
+    bool operator()(const string &left, const string &right) const noexcept
+};
+~~~
+
+Functor object which returns true for case-insensitive string comparisons
+where the `left` string is less than the `right` string.  This is designed
+for STL-style containers which need case-insensitive ordering.
+
+**See also** struct [hash_i](#hash_i), struct [less_i](#less_i),
+struct [equal_i](#equal_i), [operator&lt;](#operator_less)()
+
+------
+
+<a name="operator_plus_1"></a>
+### ST::string ST::operator+(const ST::string &left, const ST::string &right)
+~~~c++
+string operator+(const string &left, const string &right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+**See also** [operator+=](#operator_pluseq_3)(const string &)
+
+------
+
+<a name="operator_plus_2"></a>
+### ST::string ST::operator+(const ST::string &left, const char \*right)
+~~~c++
+string operator+(const string &left, const char *right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+**See also** [operator+=](#operator_pluseq_1)(const char \*)
+
+------
+
+<a name="operator_plus_3"></a>
+### ST::string ST::operator+(const char \*left, const ST::string &right)
+~~~c++
+string operator+(const char *left, const string &right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+**See also** [operator+=](#operator_pluseq_1)(const char \*)
+
+------
+
+<a name="operator_plus_4"></a>
+### ST::string ST::operator+(const ST::string &left, const wchar_t \*right)
+~~~c++
+string operator+(const string &left, const wchar_t *right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+**See also** [operator+=](#operator_pluseq_2)(const wchar_t \*)
+
+------
+
+<a name="operator_plus_5"></a>
+### ST::string ST::operator+(const wchar_t \*left, const ST::string &right)
+~~~c++
+string operator+(const wchar_t *left, const string &right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+**See also** [operator+=](#operator_pluseq_2)(const wchar_t \*)
+
+------
+
+<a name="operator_iseq_4"></a>
+### bool ST::operator==(const [ST::null_t](st_buffer.md#null_t) &, const ST::string &right)
+~~~c++
+bool operator==(const null_t &, const string &right) noexcept
+~~~
+
+Return true if `right` is empty.
+
+**See also** [is_empty](#is_empty)()
+
+------
+
+<a name="operator_isneq_4"></a>
+### bool ST::operator!=(const [ST::null_t](st_buffer.md#null_t) &, const ST::string &right)
+~~~c++
+bool operator!=(const null_t &, const string &right) noexcept
+~~~
+
+Return true if `right` is not empty.
+
+**See also** [is_empty](#is_empty)()
+
+------
+
+<a name="operator_st_1"></a>
+### ST::string operator"" _st(const char \*str, size_t size)
+~~~c++
+ST::string operator"" _st(const char *str, size_t size)
+~~~
+
+User-defined literal operator to convert string literals to ST::string
+objects efficiently.  The string literal should be encoded as UTF-8.
+
+Because this operator assumes UTF-8 data, it is as efficient as using
+[ST_LITERAL](#ST_LITERAL)() to construct the string.
+
+**See also** [ST_LITERAL](#ST_LITERAL)(str),
+[from_utf8](#from_utf8_1)(const char \*, size_t, utf_validation_t)
+
+------
+
+<a name="operator_st_2"></a>
+### ST::string operator"" _st(const wchar_t \*str, size_t size)
+~~~c++
+ST::string operator"" _st(const wchar_t *str, size_t size)
+~~~
+
+User-defined literal operator to convert string literals to ST::string
+objects efficiently.  The string literal should be encoded as either UTF-16
+or UTF-32, depending on your platform's wchar_t support.
+
+**See also** [from_wchar](#from_wchar_1)(const wchar_t \*, size_t, utf_validation_t)
+
+------
+
+<a name="operator_st_3"></a>
+### ST::string operator"" _st(const char16_t \*str, size_t size)
+~~~c++
+ST::string operator"" _st(const char16_t *str, size_t size)
+~~~
+
+User-defined literal operator to convert string literals to ST::string
+objects efficiently.  The string literal should be encoded as UTF-16.
+
+**See also** [from_utf16](#from_utf16_1)(const char16_t \*, size_t, utf_validation_t)
+
+------
+
+<a name="operator_st_4"></a>
+### ST::string operator"" _st(const char32_t \*str, size_t size)
+~~~c++
+ST::string operator"" _st(const char32_t *str, size_t size)
+~~~
+
+User-defined literal operator to convert string literals to ST::string
+objects efficiently.  The string literal should be encoded as UTF-32.
+
+**See also** [from_utf32](#from_utf32_1)(const char32_t \*, size_t, utf_validation_t)
+
+------
+
+
+## Macro Documentation
+
+<a name="ST_DEFAULT_VALIDATION"></a>
+### ST_DEFAULT_VALIDATION
+~~~c++
+#ifndef ST_DEFAULT_VALIDATION
+#   define ST_DEFAULT_VALIDATION ST::check_validity
+#endif
+~~~
+
+The default checking type for methods which do validity checking.  It is
+possible to override the default by defining an alternate ST_DEFAULT_VALIDATION
+before including `<string_theory/string>`, however it is generally recommended
+to leave the default and explicitly set other values in method calls that need
+different behavior.
+
+**See also** enum [utf_validation_t](#utf_validation_t)
+
+------
+
+<a name="ST_LITERAL"></a>
+### ST_LITERAL(str)
+~~~c++
+#define ST_LITERAL(str)  ...
+~~~
+
+Generate an ST::string from static UTF-8 data in an efficient manner.  This
+bypasses the normal constructor size and validity checks to construct the
+string object directly (at compile time), making it much faster than the
+[string](#ctor_2)() or [from_utf8](#from_utf8_1)() constructors.
+
+**See also** [operator"" _st](#operator_st_1)(const char \*str, size_t size)
+
+------
+
+<a name="ST_WHITESPACE"></a>
+### ST_WHITESPACE
+~~~c++
+#define ST_WHITESPACE " \t\r\n"
+~~~
+
+A default set of whitespace characters, useful for trimming and tokenizing
+strings.
+
+**See also** [trim](#trim)(const char \*), [tokenize](#tokenize)(const char \*)

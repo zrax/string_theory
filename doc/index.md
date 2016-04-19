@@ -3,6 +3,7 @@
 ## Getting Started
 - [Building string_theory](getting-started.md#building-string_theory)
 - [Using string_theory in your project](getting-started.md#using-string_theory-in-your-project)
+- [Format string reference](format-strings.md)
 - [Examples](getting-started.md#examples)
 
 ## API Reference
