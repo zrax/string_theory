@@ -30,9 +30,10 @@ namespace ST
         ST_DISABLE_COPY(string_stream)
 
     public:
-        string_stream() : m_alloc(ST_STACK_STRING_LEN), m_size() { }
+        string_stream() ST_NOEXCEPT
+            : m_alloc(ST_STACK_STRING_LEN), m_size() { }
 
-        ~string_stream()
+        ~string_stream() ST_NOEXCEPT
         {
             if (is_heap())
                 delete[] m_buffer;
@@ -107,7 +108,19 @@ namespace ST
                 return string::from_latin_1(raw_buffer(), size());
         }
 
-        void truncate() { m_size = 0; }
+        void truncate(size_t size = 0) ST_NOEXCEPT
+        {
+            if (size < m_size)
+                m_size = size;
+        }
+
+        void erase(size_t count) ST_NOEXCEPT
+        {
+            if (count < m_size)
+                m_size -= count;
+            else
+                m_size = 0;
+        }
 
     private:
         union

@@ -27,8 +27,6 @@
 #include "st_stringstream.h"
 #include "st_format_priv.h"
 
-const ST::null_t ST::string::null;
-
 #if !defined(ST_WCHAR_BYTES) || ((ST_WCHAR_BYTES != 2) && (ST_WCHAR_BYTES != 4))
 #   error ST_WCHAR_SIZE must either be 2 (16-bit) or 4 (32-bit)
 #endif
