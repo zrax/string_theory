@@ -1,7 +1,10 @@
 String Theory
 =============
 
-![Coverity Status](https://scan.coverity.com/projects/8580/badge.svg)
+<a href="https://scan.coverity.com/projects/zrax-string_theory">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/8580/badge.svg"/>
+</a>
 
 Introduction
 ------------
