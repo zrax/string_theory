@@ -86,60 +86,60 @@ ST::format_spec ST::format_writer::fetch_next_format()
             break;
 
         case '<':
-            spec.m_alignment = ST::align_left;
+            spec.alignment = ST::align_left;
             break;
         case '>':
-            spec.m_alignment = ST::align_right;
+            spec.alignment = ST::align_right;
             break;
         case '_':
-            spec.m_pad = *(ptr + 1);
-            spec.m_numeric_pad = false;
-            ST_ASSERT(spec.m_pad, "Unterminated format specifier");
+            spec.pad = *(ptr + 1);
+            spec.numeric_pad = false;
+            ST_ASSERT(spec.pad, "Unterminated format specifier");
             ++ptr;
             break;
         case '0':
             // For easier porting from %08X-style printf strings
-            spec.m_pad = '0';
-            spec.m_numeric_pad = true;
+            spec.pad = '0';
+            spec.numeric_pad = true;
             break;
         case '#':
-            spec.m_class_prefix = true;
+            spec.class_prefix = true;
             break;
         case 'x':
-            spec.m_digit_class = ST::digit_hex;
+            spec.digit_class = ST::digit_hex;
             break;
         case 'X':
-            spec.m_digit_class = ST::digit_hex_upper;
+            spec.digit_class = ST::digit_hex_upper;
             break;
         case '+':
-            spec.m_always_signed = true;
+            spec.always_signed = true;
             break;
         case 'd':
-            spec.m_digit_class = ST::digit_dec;
+            spec.digit_class = ST::digit_dec;
             break;
         case 'o':
-            spec.m_digit_class = ST::digit_oct;
+            spec.digit_class = ST::digit_oct;
             break;
         case 'b':
-            spec.m_digit_class = ST::digit_bin;
+            spec.digit_class = ST::digit_bin;
             break;
         case 'c':
-            spec.m_digit_class = ST::digit_char;
+            spec.digit_class = ST::digit_char;
             break;
         case 'f':
-            spec.m_float_class = ST::float_fixed;
+            spec.float_class = ST::float_fixed;
             break;
         case 'e':
-            spec.m_float_class = ST::float_exp;
+            spec.float_class = ST::float_exp;
             break;
         case 'E':
-            spec.m_float_class = ST::float_exp_upper;
+            spec.float_class = ST::float_exp_upper;
             break;
         case '1': case '2': case '3': case '4': case '5':
         case '6': case '7': case '8': case '9':
         {
             char *end = ST_NULLPTR;
-            spec.m_minimum_length = static_cast<int>(strtol(ptr, &end, 10));
+            spec.minimum_length = static_cast<int>(strtol(ptr, &end, 10));
             ptr = end - 1;
             break;
         }
@@ -147,7 +147,7 @@ ST::format_spec ST::format_writer::fetch_next_format()
         {
             ST_ASSERT(*(ptr + 1), "Unterminated format specifier");
             char *end = ST_NULLPTR;
-            spec.m_precision = static_cast<int>(strtol(ptr + 1, &end, 10));
+            spec.precision = static_cast<int>(strtol(ptr + 1, &end, 10));
             ptr = end - 1;
             break;
         }
@@ -166,21 +166,21 @@ void ST::format_writer::finalize()
 
 void ST::format_string(const ST::format_spec &format, ST::format_writer &output,
                        const char *text, size_t size,
-                       ST::alignment default_alignment)
+                       ST::alignment_t default_alignment)
 {
-    char pad = format.m_pad ? format.m_pad : ' ';
+    char pad = format.pad ? format.pad : ' ';
 
-    if (format.m_minimum_length > static_cast<int>(size)) {
-        ST::alignment align =
-            (format.m_alignment == ST::align_default)
-            ? default_alignment : format.m_alignment;
+    if (format.minimum_length > static_cast<int>(size)) {
+        ST::alignment_t align =
+            (format.alignment == ST::align_default)
+            ? default_alignment : format.alignment;
 
         if (align == ST::align_right) {
-            output.append_char(pad, format.m_minimum_length - size);
+            output.append_char(pad, format.minimum_length - size);
             output.append(text, size);
         } else {
             output.append(text, size);
-            output.append_char(pad, format.m_minimum_length - size);
+            output.append_char(pad, format.minimum_length - size);
         }
     } else {
         output.append(text, size);
@@ -197,13 +197,13 @@ enum numeric_type
 static size_t _pad_size(const ST::format_spec &format, size_t size,
                         numeric_type ntype)
 {
-    ST_ssize_t pad_size = format.m_minimum_length - size;
+    ST_ssize_t pad_size = format.minimum_length - size;
 
-    if (ntype == numeric_negative || format.m_always_signed)
+    if (ntype == numeric_negative || format.always_signed)
         --pad_size;
 
-    if (ntype != numeric_zero && format.m_class_prefix) {
-        switch (format.m_digit_class) {
+    if (ntype != numeric_zero && format.class_prefix) {
+        switch (format.digit_class) {
         case ST::digit_hex:
         case ST::digit_hex_upper:
         case ST::digit_bin:
@@ -226,11 +226,11 @@ static void _format_numeric_prefix(const ST::format_spec &format,
 {
     if (ntype == numeric_negative)
         output.append_char('-');
-    else if (format.m_always_signed)
+    else if (format.always_signed)
         output.append_char('+');
 
-    if (ntype != numeric_zero && format.m_class_prefix) {
-        switch (format.m_digit_class) {
+    if (ntype != numeric_zero && format.class_prefix) {
+        switch (format.digit_class) {
         case ST::digit_hex:
             output.append("0x", 2);
             break;
@@ -254,20 +254,20 @@ static void _format_numeric_string(const ST::format_spec &format,
                                    const char *text, size_t size,
                                    numeric_type ntype)
 {
-    char pad = format.m_pad ? format.m_pad : ' ';
+    char pad = format.pad ? format.pad : ' ';
 
     size_t pad_size = _pad_size(format, size, ntype);
 
-    if (format.m_numeric_pad) {
+    if (format.numeric_pad) {
         _format_numeric_prefix(format, output, ntype);
 
         // numeric padding is always right-aligned
         output.append_char(pad, pad_size);
         output.append(text, size);
     } else {
-        ST::alignment align =
-            (format.m_alignment == ST::align_default)
-            ? ST::align_right : format.m_alignment;
+        ST::alignment_t align =
+            (format.alignment == ST::align_default)
+            ? ST::align_right : format.alignment;
 
         if (align == ST::align_right) {
             output.append_char(pad, pad_size);
@@ -290,7 +290,7 @@ static void _format_numeric_s(const ST::format_spec &format,
 
     int radix = 10;
     bool upper_case = false;
-    switch (format.m_digit_class) {
+    switch (format.digit_class) {
     case ST::digit_hex_upper:
         upper_case = true;
         /* fall through */
@@ -343,7 +343,7 @@ static void _format_numeric_u(const ST::format_spec &format,
 
     int radix = 10;
     bool upper_case = false;
-    switch (format.m_digit_class) {
+    switch (format.digit_class) {
     case ST::digit_hex_upper:
         upper_case = true;
         /* fall through */
@@ -386,7 +386,7 @@ static void _format_numeric_u(const ST::format_spec &format,
 static void _format_char(const ST::format_spec &format,
                          ST::format_writer &output, int ch)
 {
-    ST_ASSERT(format.m_minimum_length == 0 && format.m_pad == 0,
+    ST_ASSERT(format.minimum_length == 0 && format.pad == 0,
               "Char formatting does not currently support padding");
 
     // Don't need to nul-terminate this, since string_buffer's constructor fixes it
@@ -426,7 +426,7 @@ static void _format_char(const ST::format_spec &format,
 #define _ST_FORMAT_INT_TYPE(int_T, uint_T) \
     ST_FORMAT_TYPE(int_T) \
     { \
-        if (format.m_digit_class == ST::digit_char) \
+        if (format.digit_class == ST::digit_char) \
             _format_char(format, output, static_cast<int>(value)); \
         else \
             _format_numeric_s<int_T>(format, output, value); \
@@ -434,7 +434,7 @@ static void _format_char(const ST::format_spec &format,
     \
     ST_FORMAT_TYPE(uint_T) \
     { \
-        if (format.m_digit_class == ST::digit_char) \
+        if (format.digit_class == ST::digit_char) \
             _format_char(format, output, static_cast<int>(value)); \
         else \
             _format_numeric_u<uint_T>(format, output, value); \
@@ -451,7 +451,7 @@ _ST_FORMAT_INT_TYPE(int64_t, uint64_t)
 
 ST_FORMAT_TYPE(double)
 {
-    char pad = format.m_pad ? format.m_pad : ' ';
+    char pad = format.pad ? format.pad : ' ';
 
     // Cheating a bit here -- just pass it along to cstdio
     char format_buffer[32];
@@ -459,12 +459,12 @@ ST_FORMAT_TYPE(double)
 
     format_buffer[end++] = '%';
 
-    if (format.m_always_signed)
+    if (format.always_signed)
         format_buffer[end++] = '+';
 
-    if (format.m_precision >= 0) {
+    if (format.precision >= 0) {
         int count = snprintf(format_buffer + end, sizeof(format_buffer) - end,
-                             ".%d", format.m_precision);
+                             ".%d", format.precision);
 
         // Ensure one more space (excluding \0) is available for the format specifier
         ST_ASSERT(count > 0 && count + end + 2 < sizeof(format_buffer),
@@ -473,9 +473,9 @@ ST_FORMAT_TYPE(double)
     }
 
     format_buffer[end++] =
-        (format.m_float_class == ST::float_exp) ? 'e' :
-        (format.m_float_class == ST::float_exp_upper) ? 'E' :
-        (format.m_float_class == ST::float_fixed) ? 'f' : 'g';
+        (format.float_class == ST::float_exp) ? 'e' :
+        (format.float_class == ST::float_exp_upper) ? 'E' :
+        (format.float_class == ST::float_fixed) ? 'f' : 'g';
     format_buffer[end] = 0;
 
     int format_size = snprintf(ST_NULLPTR, 0, format_buffer, value);
@@ -483,14 +483,14 @@ ST_FORMAT_TYPE(double)
     ST::char_buffer out_buffer;
     char *fmt_out;
 
-    if (format.m_minimum_length > format_size) {
-        fmt_out = out_buffer.create_writable_buffer(format.m_minimum_length);
-        memset(fmt_out, pad, format.m_minimum_length);
-        if (format.m_alignment == ST::align_left) {
+    if (format.minimum_length > format_size) {
+        fmt_out = out_buffer.create_writable_buffer(format.minimum_length);
+        memset(fmt_out, pad, format.minimum_length);
+        if (format.alignment == ST::align_left) {
             snprintf(fmt_out, format_size + 1, format_buffer, value);
             fmt_out[format_size] = pad;  // snprintf overwrites this
         } else {
-            snprintf(fmt_out + (format.m_minimum_length - format_size), format_size + 1,
+            snprintf(fmt_out + (format.minimum_length - format_size), format_size + 1,
                      format_buffer, value);
         }
     } else {
@@ -503,7 +503,7 @@ ST_FORMAT_TYPE(double)
 
 ST_FORMAT_TYPE(char)
 {
-    if (format.m_digit_class == ST::digit_char || format.m_digit_class == ST::digit_default)
+    if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
         _format_char(format, output, value);
     else
         _format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
@@ -511,7 +511,7 @@ ST_FORMAT_TYPE(char)
 
 ST_FORMAT_TYPE(wchar_t)
 {
-    if (format.m_digit_class == ST::digit_char || format.m_digit_class == ST::digit_default)
+    if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
         _format_char(format, output, value);
     else
         _format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));

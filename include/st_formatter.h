@@ -25,14 +25,17 @@
 
 namespace ST
 {
-    enum alignment
+    ST_STRONG_ENUM(alignment_t)
     {
         align_default,
         align_left,
         align_right
     };
+    ST_ENUM_CONSTANT(alignment_t, align_default);
+    ST_ENUM_CONSTANT(alignment_t, align_left);
+    ST_ENUM_CONSTANT(alignment_t, align_right);
 
-    enum digit_class
+    ST_STRONG_ENUM(digit_class_t)
     {
         digit_default,
         digit_dec,
@@ -42,31 +45,42 @@ namespace ST
         digit_bin,
         digit_char
     };
+    ST_ENUM_CONSTANT(digit_class_t, digit_default);
+    ST_ENUM_CONSTANT(digit_class_t, digit_dec);
+    ST_ENUM_CONSTANT(digit_class_t, digit_hex);
+    ST_ENUM_CONSTANT(digit_class_t, digit_hex_upper);
+    ST_ENUM_CONSTANT(digit_class_t, digit_oct);
+    ST_ENUM_CONSTANT(digit_class_t, digit_bin);
+    ST_ENUM_CONSTANT(digit_class_t, digit_char);
 
-    enum float_class
+    ST_STRONG_ENUM(float_class_t)
     {
         float_default,
         float_fixed,
         float_exp,
         float_exp_upper
     };
+    ST_ENUM_CONSTANT(float_class_t, float_default);
+    ST_ENUM_CONSTANT(float_class_t, float_fixed);
+    ST_ENUM_CONSTANT(float_class_t, float_exp);
+    ST_ENUM_CONSTANT(float_class_t, float_exp_upper);
 
     struct ST_EXPORT format_spec
     {
         format_spec()
-            : m_minimum_length(), m_precision(-1), m_alignment(),
-              m_digit_class(), m_float_class(), m_pad(), m_always_signed(),
-              m_class_prefix(), m_numeric_pad() { }
+            : minimum_length(), precision(-1), alignment(),
+              digit_class(), float_class(), pad(), always_signed(),
+              class_prefix(), numeric_pad() { }
 
-        int m_minimum_length;
-        int m_precision;
-        alignment m_alignment;
-        digit_class m_digit_class;
-        float_class m_float_class;
-        char m_pad;
-        bool m_always_signed;
-        bool m_class_prefix;
-        bool m_numeric_pad;
+        int minimum_length;
+        int precision;
+        alignment_t alignment;
+        digit_class_t digit_class;
+        float_class_t float_class;
+        char pad;
+        bool always_signed;
+        bool class_prefix;
+        bool numeric_pad;
     };
 
     class ST_EXPORT format_writer
@@ -91,7 +105,7 @@ namespace ST
 
     ST_EXPORT void format_string(const format_spec &format, format_writer &output,
                                  const char *text, size_t size,
-                                 alignment default_alignment = align_left);
+                                 alignment_t default_alignment = align_left);
 }
 
 #define ST_DECL_FORMAT_TYPE(type_T) \
