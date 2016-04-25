@@ -32,7 +32,8 @@ namespace ST
                                 const char *filename, int line,
                                 const char *message)> assert_handler_t;
 
-    ST_EXPORT void set_assert_handler(assert_handler_t handler);
+    ST_EXPORT void set_assert_handler(assert_handler_t handler) ST_NOEXCEPT;
+    ST_EXPORT void set_default_assert_handler() ST_NOEXCEPT;
 
     class ST_EXPORT unicode_error : public std::runtime_error
     {
