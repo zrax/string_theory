@@ -340,7 +340,7 @@ static size_t strlen(const char_T *buffer)
 
 Returns the number of characters up to but not including the first
 nul-terminator pointed to by `buffer`.  This is equivalent to the C standard
-fucntion `strlen()`, except that it works on arbitrary character types.
+function `strlen()`, except that it works on arbitrary character types.
 
 ------
 

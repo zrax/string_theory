@@ -67,7 +67,7 @@ namespace ST
 
     struct ST_EXPORT format_spec
     {
-        format_spec()
+        format_spec() ST_NOEXCEPT
             : minimum_length(), precision(-1), alignment(),
               digit_class(), float_class(), pad(), always_signed(),
               class_prefix(), numeric_pad() { }
