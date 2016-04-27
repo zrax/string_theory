@@ -40,7 +40,10 @@ namespace _ST_PRIVATE
 namespace ST
 {
     // For optimized construction of empty objects
-    struct ST_EXPORT null_t { };
+    struct ST_EXPORT null_t
+    {
+        null_t() { }
+    };
     ST_EXPORT extern const null_t null;
 
     template <typename char_T>
