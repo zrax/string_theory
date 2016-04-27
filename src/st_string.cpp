@@ -23,6 +23,7 @@
 #include <cstring>
 #include <cctype>
 #include <cstdlib>
+#include <cstdio>
 #include "st_assert.h"
 #include "st_stringstream.h"
 #include "st_format_priv.h"
