@@ -64,17 +64,17 @@ function(add_gtest _test_name)
         else()
             add_custom_command(TARGET ${_test_name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_BINARY_DIR}/string_theory.dll"
+                "${PROJECT_BINARY_DIR}/libstring_theory.dll"
                 $<TARGET_FILE_DIR:${_test_name}>
             )
             add_custom_command(TARGET ${_test_name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/gtest.dll"
+                "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/libgtest.dll"
                 $<TARGET_FILE_DIR:${_test_name}>
             )
             add_custom_command(TARGET ${_test_name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/gtest_main.dll"
+                "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/libgtest_main.dll"
                 $<TARGET_FILE_DIR:${_test_name}>
             )
         endif()
