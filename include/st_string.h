@@ -39,8 +39,8 @@
 
 namespace ST
 {
-    int _lower_char(int ch);
-    int _upper_char(int ch);
+    int ST_EXPORT _lower_char(int ch);
+    int ST_EXPORT _upper_char(int ch);
 
     ST_STRONG_ENUM(case_sensitivity_t)
     {

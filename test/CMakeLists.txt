@@ -39,18 +39,35 @@ add_subdirectory(gtest-1.7.0 EXCLUDE_FROM_ALL)
 include_directories(${GTEST_INCLUDE_DIR})
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-add_executable(test_string test_string.cpp)
-target_link_libraries(test_string gtest gtest_main string_theory)
-add_test(NAME test_string COMMAND test_string)
+function(add_gtest _test_name)
+    add_executable(${_test_name} "${_test_name}.cpp")
+    target_link_libraries(${_test_name} gtest gtest_main string_theory)
+    add_test(NAME ${_test_name} COMMAND ${_test_name})
 
-add_executable(test_codecs test_codecs.cpp)
-target_link_libraries(test_codecs gtest gtest_main string_theory)
-add_test(NAME test_codecs COMMAND test_codecs)
+    if(WIN32 AND NOT ST_BUILD_STATIC)
+        add_custom_command(TARGET ${_test_name} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${PROJECT_BINARY_DIR}/$<CONFIGURATION>/string_theory.dll"
+            $<TARGET_FILE_DIR:${_test_name}>
+        )
+        add_custom_command(TARGET ${_test_name} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/$<CONFIGURATION>/gtest.dll"
+            $<TARGET_FILE_DIR:${_test_name}>
+        )
+        add_custom_command(TARGET ${_test_name} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/$<CONFIGURATION>/gtest_main.dll"
+            $<TARGET_FILE_DIR:${_test_name}>
+        )
+    endif()
+endfunction()
+
+add_gtest(test_string)
+add_gtest(test_codecs)
 
 if(ST_HAVE_FORMAT)
-    add_executable(test_format test_format.cpp)
-    target_link_libraries(test_format gtest gtest_main string_theory)
-    add_test(NAME test_format COMMAND test_format)
+    add_gtest(test_format)
 
     option(ST_BUILD_PROFILE_TEST "Build string profile test application" OFF)
     if(ST_BUILD_PROFILE_TEST)

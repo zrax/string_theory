@@ -44,7 +44,7 @@ namespace ST
     {
         null_t() { }
     };
-    ST_EXPORT extern const null_t null;
+    static const null_t null;
 
     template <typename char_T>
     class ST_EXPORT buffer

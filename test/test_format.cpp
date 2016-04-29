@@ -20,6 +20,7 @@
 
 #include "st_stlformatter.h"
 #include "st_format.h"
+#include "st_assert.h"
 
 #include <gtest/gtest.h>
 #include <string>
@@ -43,6 +44,12 @@ TEST(format, escapes)
     EXPECT_EQ(ST_LITERAL("{xxx{{yyy{"), ST::format("{{{}{{{{{}{{", "xxx", "yyy"));
 }
 
+void custom_assert_handler(const char *, const char *, int, const char *)
+{
+    fprintf(stderr, "Custom Assert Handler");
+    abort();
+}
+
 TEST(format, errors)
 {
     EXPECT_DEATH(ST::format("{}", 1, 2), "Too many actual parameters for format string");
@@ -51,6 +58,12 @@ TEST(format, errors)
     EXPECT_DEATH(ST::format("{.", 1), "Unterminated format specifier");
     EXPECT_DEATH(ST::format("{_", 1), "Unterminated format specifier");
     EXPECT_DEATH(ST::format(ST_NULLPTR, 1), "Passed a null format string");
+
+    // Test custom assert handler
+    ST::set_assert_handler(&custom_assert_handler);
+    EXPECT_DEATH(ST::format("{", 1), "Custom Assert Handler");
+    ST::set_default_assert_handler();
+    EXPECT_DEATH(ST::format("{", 1), "Unterminated format specifier");
 }
 
 TEST(format, strings)
