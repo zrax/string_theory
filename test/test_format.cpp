@@ -44,26 +44,31 @@ TEST(format, escapes)
     EXPECT_EQ(ST_LITERAL("{xxx{{yyy{"), ST::format("{{{}{{{{{}{{", "xxx", "yyy"));
 }
 
-void custom_assert_handler(const char *, const char *, int, const char *)
+void clean_assert(const char *, const char *, int, const char *message)
 {
-    fprintf(stderr, "Custom Assert Handler");
-    abort();
+    fputs(message, stderr);
+    fputs("\n", stderr);
+    exit(0);
 }
 
 TEST(format, errors)
 {
-    EXPECT_DEATH(ST::format("{}", 1, 2), "Too many actual parameters for format string");
-    EXPECT_DEATH(ST::format("{} {}", 1), "Not enough actual parameters for format string");
-    EXPECT_DEATH(ST::format("{", 1), "Unterminated format specifier");
-    EXPECT_DEATH(ST::format("{.", 1), "Unterminated format specifier");
-    EXPECT_DEATH(ST::format("{_", 1), "Unterminated format specifier");
-    EXPECT_DEATH(ST::format(ST_NULLPTR, 1), "Passed a null format string");
+    ST::set_assert_handler(&clean_assert);
 
-    // Test custom assert handler
-    ST::set_assert_handler(&custom_assert_handler);
-    EXPECT_DEATH(ST::format("{", 1), "Custom Assert Handler");
+    EXPECT_EXIT(ST::format("{}", 1, 2), ::testing::ExitedWithCode(0),
+                "Too many actual parameters for format string");
+    EXPECT_EXIT(ST::format("{} {}", 1), ::testing::ExitedWithCode(0),
+                "Not enough actual parameters for format string");
+    EXPECT_EXIT(ST::format("{", 1), ::testing::ExitedWithCode(0),
+                "Unterminated format specifier");
+    EXPECT_EXIT(ST::format("{.", 1), ::testing::ExitedWithCode(0),
+                "Unterminated format specifier");
+    EXPECT_EXIT(ST::format("{_", 1), ::testing::ExitedWithCode(0),
+                "Unterminated format specifier");
+    EXPECT_EXIT(ST::format(ST_NULLPTR, 1), ::testing::ExitedWithCode(0),
+                "Passed a null format string");
+
     ST::set_default_assert_handler();
-    EXPECT_DEATH(ST::format("{", 1), "Unterminated format specifier");
 }
 
 TEST(format, strings)

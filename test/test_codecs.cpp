@@ -178,10 +178,19 @@ TEST(codecs, hex_decode_buffer)
     EXPECT_EQ(cbuf(data_17), ST::char_buffer(buffer, sizeof(data_17)));
 }
 
+void clean_assert(const char *, const char *, int, const char *message)
+{
+    fputs(message, stderr);
+    fputs("\n", stderr);
+    exit(0);
+}
+
 TEST(codecs, hex_codec_errors)
 {
-    EXPECT_DEATH(ST::hex_encode(ST_NULLPTR, 0),
-                 "null data pointer passed to hex_encode");
+    ST::set_assert_handler(&clean_assert);
+    EXPECT_EXIT(ST::hex_encode(ST_NULLPTR, 0), ::testing::ExitedWithCode(0),
+                "null data pointer passed to hex_encode");
+    ST::set_default_assert_handler();
 
     EXPECT_THROW(ST::hex_decode(ST_LITERAL("1")), ST::codec_error);
     EXPECT_THROW(ST::hex_decode(ST_LITERAL("xF")), ST::codec_error);
@@ -292,8 +301,10 @@ TEST(codecs, base64_decode_buffer)
 
 TEST(codecs, base64_codec_errors)
 {
-    EXPECT_DEATH(ST::base64_encode(ST_NULLPTR, 0),
-                 "null data pointer passed to base64_encode");
+    ST::set_assert_handler(&clean_assert);
+    EXPECT_EXIT(ST::base64_encode(ST_NULLPTR, 0), ::testing::ExitedWithCode(0),
+                "null data pointer passed to base64_encode");
+    ST::set_default_assert_handler();
 
     EXPECT_THROW(ST::base64_decode(ST_LITERAL("A")), ST::codec_error);
     EXPECT_THROW(ST::base64_decode(ST_LITERAL("AB")), ST::codec_error);
