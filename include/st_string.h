@@ -71,10 +71,10 @@ namespace ST
         };
 
     public:
-        explicit conversion_result() : m_flags() { }
+        explicit conversion_result() ST_NOEXCEPT : m_flags() { }
 
-        bool ok() const { return (m_flags & result_ok) != 0; }
-        bool full_match() const { return (m_flags & result_full_match) != 0; }
+        bool ok() const ST_NOEXCEPT { return (m_flags & result_ok) != 0; }
+        bool full_match() const ST_NOEXCEPT { return (m_flags & result_full_match) != 0; }
 
     private:
         int m_flags;

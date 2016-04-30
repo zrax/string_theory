@@ -1994,7 +1994,7 @@ right side of the string.
 ## Related Non-Member Documentation
 
 <a name="equal_i"></a>
-### struct equal_i
+### struct ST::equal_i
 ~~~c++
 struct equal_i
 {
@@ -2012,7 +2012,7 @@ struct [equal_i](#equal_i), [operator==](#operator_iseq_2)()
 ------
 
 <a name="hash"></a>
-### struct hash
+### struct ST::hash
 ~~~c++
 struct hash
 {
@@ -2032,7 +2032,7 @@ is designed for STL-style containers which use hashing for indexes, e.g.
 ------
 
 <a name="hash_i"></a>
-### struct hash_i
+### struct ST::hash_i
 ~~~c++
 struct hash_i : public hash
 {
@@ -2051,7 +2051,7 @@ struct [equal_i](#equal_i)
 ------
 
 <a name="less_i"></a>
-### struct less_i
+### struct ST::less_i
 ~~~c++
 struct less_i
 {
