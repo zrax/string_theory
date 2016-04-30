@@ -156,7 +156,7 @@ int main(int argc, char *argv)
 }
 ~~~
 
-### Custom formatters
+### Custom formatter
 
 ~~~c++
 /* point3d.h */
@@ -164,10 +164,10 @@ int main(int argc, char *argv)
 
 struct Point3D { double x, y, z; };
 
+// This version will apply the specified floating point formatting rules
+// to each of the rendered values x,y,z
 inline ST_FORMAT_TYPE(const Point3D &)
 {
-    // This version will apply the specified floating point formatting rules
-    // to each of the rendered values x,y,z
     output.append("Point3D{");
     ST_FORMAT_FORWARD(value.x);
     output.append(",");
@@ -175,10 +175,13 @@ inline ST_FORMAT_TYPE(const Point3D &)
     output.append(",");
     ST_FORMAT_FORWARD(value.z);
     output.append("}");
+}
 
-    // Could also format recursively.  This will instead treat the upper-level
-    // formatting rules as a single string formatter.  For example:
-    ST_FORMAT_FORWARD(ST::format("Point3D{{{},{},{}}", value.x, value.y, value.z));
+// Could also format recursively.  This will instead treat the upper-level
+// formatting rules as a single string formatter.  For example:
+inline ST_FORMAT_TYPE(const Point3D &)
+{
+    ST_FORMAT_FORWARD(ST::format("Point3D{{{.2f},{.2f},{.2f}}", value.x, value.y, value.z));
 }
 ~~~
 
@@ -193,6 +196,65 @@ int main(int argc, char *argv[])
     Point3D point{12.4, 42.0, -6.3};
 
     ST::printf("It's located at {}\n", point);
+
+    return 0;
+}
+~~~
+
+### Custom format writer
+
+~~~c++
+#include <string_theory/formatter>
+#include "my_logger.h"
+
+class my_log_writer : public ST::format_writer
+{
+public:
+    my_log_writer(const char *format_str, my_logger *logger)
+        : ST::format_writer(format_str), m_logger(logger) { }
+
+    my_log_writer &append(const char *data, size_t size = ST_AUTO_SIZE) override
+    {
+        if (size == ST_AUTO_SIZE)
+            size = ST::char_buffer::strlen(data);
+        m_logger->write_log(data, size);
+        return *this;
+    }
+
+    my_log_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
+    {
+        ST::string buffer = ST::string::fill(count, ch);
+        m_logger->write_log(buffer.c_str(), count);
+        return *this;
+    }
+};
+
+inline void _impl_log_format(my_log_writer &data)
+{
+    data.finalize();
+}
+
+template <typename type_T, typename... args_T>
+void _impl_log_format(my_log_writer &data, type_T value, args_T ...args)
+{
+    ST::format_spec format = data.fetch_next_format();
+    ST_INVOKE_FORMATTER(format, data, value);
+    _impl_log_format(data, args...);
+}
+
+template <typename type_T, typename... args_T>
+void log_format(my_logger *logger, const char *fmt_str, type_T value, args_T ...args)
+{
+    my_log_writer data(fmt_str, logger);
+    ST::format_spec format = data.fetch_next_format();
+    ST_INVOKE_FORMATTER(format, data, value);
+    _impl_log_format(data, args...);
+}
+
+int main(int argc, char *argv[])
+{
+    my_logger *logger = get_logger();
+    log_format(logger, "Running {}\n", argv[0]);
 
     return 0;
 }

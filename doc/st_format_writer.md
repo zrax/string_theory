@@ -29,6 +29,10 @@ will also need to call [fetch_next_format](#fetch_next_format)() and
 [finalize](#finalize)() when appropriate to advance through the format
 specifier and pass the data off to the formatters.
 
+For an example of subclassing `format_writer` to implement a custom format
+backend, see the [custom format writer](getting-started.md#custom-format-writer)
+example on the Getting Started guide.
+
 
 ## Member Documentation
 
