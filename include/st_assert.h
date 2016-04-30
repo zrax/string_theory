@@ -38,7 +38,7 @@ namespace ST
     class ST_EXPORT unicode_error : public std::runtime_error
     {
     public:
-        explicit unicode_error(const char *message)
+        explicit unicode_error(const char *message) ST_NOEXCEPT
             : std::runtime_error(message)
         { }
     };
@@ -46,7 +46,7 @@ namespace ST
     class ST_EXPORT codec_error : public std::runtime_error
     {
     public:
-        explicit codec_error(const char *message)
+        explicit codec_error(const char *message) ST_NOEXCEPT
             : std::runtime_error(message)
         { }
     };

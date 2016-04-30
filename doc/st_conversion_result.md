@@ -25,7 +25,7 @@ functions, in the variants that can report their result.
 <a name="ctor_0"></a>
 ### ST::conversion_result::conversion_result()
 ~~~c++
-conversion_result() noexcept
+explicit conversion_result() noexcept
 ~~~
 
 Default constructor.  This will construct a result that has neither the "ok"

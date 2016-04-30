@@ -30,7 +30,7 @@ namespace _ST_PRIVATE
     {
     public:
         string_format_writer(const char *format_str, bool is_utf8,
-                             ST::utf_validation_t validation)
+                             ST::utf_validation_t validation) ST_NOEXCEPT
             : ST::format_writer(format_str), m_validation(validation),
               m_is_utf8(is_utf8) { }
 
