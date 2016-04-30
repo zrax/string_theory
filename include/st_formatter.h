@@ -88,8 +88,8 @@ namespace ST
         ST_DISABLE_COPY(format_writer);
 
     public:
-        format_writer(const char *format) : m_format_str(format) { }
-        virtual ~format_writer() { }
+        format_writer(const char *format) ST_NOEXCEPT : m_format_str(format) { }
+        virtual ~format_writer() ST_NOEXCEPT { }
 
         virtual format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) = 0;
         virtual format_writer &append_char(char ch, size_t count = 1) = 0;
@@ -118,6 +118,8 @@ namespace ST
 
 #define ST_FORMAT_FORWARD(fwd_value) \
     _ST_impl_format_data_handler(format, output, (fwd_value))
+
+#define ST_INVOKE_FORMATTER _ST_impl_format_data_handler
 
 ST_EXPORT ST_DECL_FORMAT_TYPE(char);
 ST_EXPORT ST_DECL_FORMAT_TYPE(wchar_t);

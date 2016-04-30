@@ -30,7 +30,7 @@ namespace _ST_PRIVATE
     class ST_EXPORT stdio_format_writer : public ST::format_writer
     {
     public:
-        stdio_format_writer(const char *format_str, FILE *stream)
+        stdio_format_writer(const char *format_str, FILE *stream) ST_NOEXCEPT
             : ST::format_writer(format_str), m_stream(stream) { }
 
         stdio_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
@@ -61,7 +61,7 @@ namespace _ST_PRIVATE
     void printf(stdio_format_writer &data, type_T value, args_T ...args)
     {
         ST::format_spec format = data.fetch_next_format();
-        _ST_impl_format_data_handler(format, data, value);
+        ST_INVOKE_FORMATTER(format, data, value);
         _ST_PRIVATE::printf(data, args...);
     }
 }
@@ -73,7 +73,7 @@ namespace ST
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, stdout);
         ST::format_spec format = data.fetch_next_format();
-        _ST_impl_format_data_handler(format, data, value);
+        ST_INVOKE_FORMATTER(format, data, value);
         _ST_PRIVATE::printf(data, args...);
     }
 
@@ -83,7 +83,7 @@ namespace ST
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, out_file);
         ST::format_spec format = data.fetch_next_format();
-        _ST_impl_format_data_handler(format, data, value);
+        ST_INVOKE_FORMATTER(format, data, value);
         _ST_PRIVATE::printf(data, args...);
     }
 }

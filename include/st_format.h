@@ -67,7 +67,7 @@ namespace _ST_PRIVATE
     ST::string format(string_format_writer &data, type_T value, args_T ...args)
     {
         ST::format_spec format = data.fetch_next_format();
-        _ST_impl_format_data_handler(format, data, value);
+        ST_INVOKE_FORMATTER(format, data, value);
         return _ST_PRIVATE::format(data, args...);
     }
 }
@@ -79,7 +79,7 @@ namespace ST
     {
         _ST_PRIVATE::string_format_writer data(fmt_str, true, ST_DEFAULT_VALIDATION);
         ST::format_spec format = data.fetch_next_format();
-        _ST_impl_format_data_handler(format, data, value);
+        ST_INVOKE_FORMATTER(format, data, value);
         return _ST_PRIVATE::format(data, args...);
     }
 
@@ -89,7 +89,7 @@ namespace ST
     {
         _ST_PRIVATE::string_format_writer data(fmt_str, true, validation);
         ST::format_spec format = data.fetch_next_format();
-        _ST_impl_format_data_handler(format, data, value);
+        ST_INVOKE_FORMATTER(format, data, value);
         return _ST_PRIVATE::format(data, args...);
     }
 
@@ -98,7 +98,7 @@ namespace ST
     {
         _ST_PRIVATE::string_format_writer data(fmt_str, false, assume_valid);
         ST::format_spec format = data.fetch_next_format();
-        _ST_impl_format_data_handler(format, data, value);
+        ST_INVOKE_FORMATTER(format, data, value);
         return _ST_PRIVATE::format(data, args...);
     }
 }

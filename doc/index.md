@@ -41,3 +41,5 @@
 - [ST::set_default_assert_handler](st_assert.md#set_default_assert_handler)
 - [ST_DECL_FORMAT_TYPE](st_formatter.md#ST_DECL_FORMAT_TYPE)
 - [ST_FORMAT_TYPE](st_formatter.md#ST_FORMAT_TYPE)
+- [ST_FORMAT_FORWARD](st_formatter.md#ST_FORMAT_FORWARD)
+- [ST_INVOKE_FORMATTER](st_formatter.md#ST_INVOKE_FORMATTER)
