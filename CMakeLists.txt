@@ -165,8 +165,11 @@ endforeach()
 add_library(string_theory ${ST_LIB_TYPE}
             ${ST_HEADERS_PRIV} ${ST_SOURCES})
 
+# Note:  Using <major>.0 so the library name doens't change between minor
+# releases.  ABI incompatible changes are only allowed between major version
+# updates, starting with the 1.0 release.
 set_target_properties(string_theory PROPERTIES
-    VERSION ${ST_VERSION}
+    VERSION ${ST_MAJOR_VERSION}.0
     SOVERSION ${ST_MAJOR_VERSION}
 )
 
