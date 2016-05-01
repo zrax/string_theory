@@ -92,6 +92,11 @@ TEST(format, strings)
     EXPECT_EQ(ST_LITERAL("xxTEST}}xx"), ST::format("xx{6_}}xx", "TEST"));
     EXPECT_EQ(ST_LITERAL("xxTEST{{xx"), ST::format("xx{_{6}xx", "TEST"));
     EXPECT_EQ(ST_LITERAL("xxTEST{{xx"), ST::format("xx{6_{}xx", "TEST"));
+
+    // Specifying precision on string formatting should truncate the string
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", "TESTXX"));
+    EXPECT_EQ(ST_LITERAL("xxTEST  xx"), ST::format("xx{6.4}xx", "TESTXX"));
+    EXPECT_EQ(ST_LITERAL("xxTESTXXxx"), ST::format("xx{4.6}xx", "TESTXX"));
 }
 
 TEST(format, string_classes)
@@ -102,6 +107,12 @@ TEST(format, string_classes)
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", ST_LITERAL("TEST")));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", std::string("TEST")));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", std::wstring(L"TEST")));
+
+    // Specifying precision on string formatting should truncate the string
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", L"TESTXX"));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", ST_LITERAL("TESTXX")));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::string("TESTXX")));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::wstring(L"TESTXX")));
 }
 
 TEST(format, chars)
@@ -140,6 +151,9 @@ TEST(format, decimal)
     EXPECT_EQ(ST_LITERAL("xx   +1234xx"), ST::format("xx{+8}xx", 1234));
     EXPECT_EQ(ST_LITERAL("xx-1234   xx"), ST::format("xx{<8}xx", -1234));
     EXPECT_EQ(ST_LITERAL("xx+1234   xx"), ST::format("xx{<+8}xx", 1234));
+
+    // Ensure precision isn't used for numeric formatting
+    EXPECT_EQ(ST_LITERAL("xx1234xx"), ST::format("xx{.2}xx", 1234));
 
     // Numeric padding
     EXPECT_EQ(ST_LITERAL("xx001234xx"), ST::format("xx{06}xx", 1234));

@@ -173,6 +173,9 @@ void ST::format_string(const ST::format_spec &format, ST::format_writer &output,
 {
     char pad = format.pad ? format.pad : ' ';
 
+    if (format.precision >= 0 && size > static_cast<size_t>(format.precision))
+        size = static_cast<size_t>(format.precision);
+
     if (format.minimum_length > static_cast<int>(size)) {
         ST::alignment_t align =
             (format.alignment == ST::align_default)
