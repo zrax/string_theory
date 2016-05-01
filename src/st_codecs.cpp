@@ -55,6 +55,8 @@ ST_STATIC_ASSERT(sizeof(_b64_values) / sizeof(int) == 0x80, "Missing base64 valu
 ST::string ST::hex_encode(const void *data, size_t size)
 {
     ST_ASSERT(data, "null data pointer passed to hex_encode");
+    if (!data)
+        return ST::null;
 
     size_t encoded_size = size * 2;
     ST::char_buffer buffer;
@@ -129,6 +131,8 @@ static size_t _base64_encode_size(size_t size)
 ST::string ST::base64_encode(const void *data, size_t size)
 {
     ST_ASSERT(data, "null data pointer passed to base64_encode");
+    if (!data)
+        return ST::null;
 
     ST::char_buffer buffer;
     char *output = buffer.create_writable_buffer(_base64_encode_size(size));

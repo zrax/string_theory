@@ -36,6 +36,8 @@
 static const char *_scan_next_format(const char *format_str)
 {
     ST_ASSERT(format_str, "Passed a null format string!");
+    if (!format_str)
+        return "";
 
     const char *ptr = format_str;
     while (*ptr) {

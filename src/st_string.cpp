@@ -1339,6 +1339,8 @@ std::vector<ST::string> ST::string::split(const char *splitter, size_t max_split
     ST_ASSERT(splitter, "ST::string::split called with null splitter");
 
     std::vector<string> result;
+    if (!splitter)
+        return result;
 
     // Performance improvement when splitter is "safe"
     utf_validation_t validation = assume_valid;

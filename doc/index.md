@@ -10,6 +10,7 @@
 
 ### Public Types
 - [ST::alignment_t](st_format_spec.md#alignment_t)
+- [ST::assert_handler_t](st_assert.md#assert_handler_t)
 - [ST::buffer&lt;char_T&gt;](st_buffer.md#stbufferchar_t)
 - [ST::case_sensitivity_t](st_string.md#case_sensitivity_t)
 - [ST::conversion_result](st_conversion_result.md#stconversion_result)
