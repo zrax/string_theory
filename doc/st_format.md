@@ -9,9 +9,9 @@
 
 |    |   |
 |---:|---|
-| template &lt;typename type_T, typename... args_T&gt; string | [format](#format_1)(const char \*fmt_str, type_T value, args_T ...args) |
-| template &lt;typename type_T, typename... args_T&gt; string | [format](#format_2)(utf_validation_t validation, const char \*fmt_str, type_T value, args_T ...args) |
-| template &lt;typename type_T, typename... args_T&gt; string | [format_latin_1](#format_latin_1)(const char \*fmt_str, type_T value, args_T ...args) |
+| template &lt;typename type_T, typename... args_T&gt; string | [ST::format](#format_1)(const char \*fmt_str, type_T value, args_T ...args) |
+| template &lt;typename type_T, typename... args_T&gt; string | [ST::format](#format_2)(utf_validation_t validation, const char \*fmt_str, type_T value, args_T ...args) |
+| template &lt;typename type_T, typename... args_T&gt; string | [ST::format_latin_1](#format_latin_1)(const char \*fmt_str, type_T value, args_T ...args) |
 
 
 ## Function Documentation

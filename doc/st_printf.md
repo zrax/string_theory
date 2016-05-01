@@ -9,8 +9,8 @@
 
 |    |   |
 |---:|---|
-| template &lt;typename type_T, typename... args_T&gt; void | [printf](#printf_1)(const char \*fmt_str, type_T value, args_T ...args) |
-| template &lt;typename type_T, typename... args_T&gt; void | [printf](#printf_1)(FILE \*out_file, const char \*fmt_str, type_T value, args_T ...args) |
+| template &lt;typename type_T, typename... args_T&gt; void | [ST::printf](#printf_1)(const char \*fmt_str, type_T value, args_T ...args) |
+| template &lt;typename type_T, typename... args_T&gt; void | [ST::printf](#printf_1)(FILE \*out_file, const char \*fmt_str, type_T value, args_T ...args) |
 
 
 ## Function Documentation

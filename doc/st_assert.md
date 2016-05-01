@@ -9,14 +9,14 @@
 
 |    |   |
 |---:|---|
-| typedef | [assert_handler_t](#assert_handler_t) |
+| typedef | [ST::assert_handler_t](#assert_handler_t) |
 
 ## Public Functions
 
 |    |   |
 |---:|---|
-| void | [set_assert_handler](#set_assert_handler)(assert_handler_t handler) noexcept |
-| void | [set_default_assert_handler](#set_default_assert_handler)() noexcept |
+| void | [ST::set_assert_handler](#set_assert_handler)(assert_handler_t handler) noexcept |
+| void | [ST::set_default_assert_handler](#set_default_assert_handler)() noexcept |
 
 
 ## Type Documentation
