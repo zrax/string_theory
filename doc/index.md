@@ -32,11 +32,11 @@
 ### Functions and macros
 - [ST::base64_decode](st_base64.md#base64_decode)
 - [ST::base64_encode](st_base64.md#base64_encode)
-- [ST::format](st_format.md)
+- [ST::format](st_format.md#stformat)
 - [ST::format_string](st_formatter.md#format_string)
 - [ST::hex_decode](st_hex.md#hex_decode)
 - [ST::hex_encode](st_hex.md#hex_encode)
-- [ST::printf](st_printf.md)
+- [ST::printf](st_printf.md#stprintf)
 - [ST::set_assert_handler](st_assert.md#set_assert_handler)
 - [ST::set_default_assert_handler](st_assert.md#set_default_assert_handler)
 - [ST_DECL_FORMAT_TYPE](st_formatter.md#ST_DECL_FORMAT_TYPE)

@@ -107,7 +107,7 @@ string_theory supports a variety of platforms and compilers.  As of April
 
 NOTES:
   - MSVC 2012 is not listed here due to an incompatibility with gtest and
-    MSVC 2012's pseudo-variadic template support
+    MSVC 2012's pseudo-variadic template support.
 
 Contributing to String Theory
 -----------------------------
@@ -119,6 +119,6 @@ http://github.com/zrax/string_theory.
 
 Some ideas for areas to contribute:
 - Report and/or fix bugs (See http://github.com/zrax/string_theory/issues)
-- Write and/or fix documentation
+- Write and/or fix [documentation](doc/index.md)
 - Translate documentation to other languages
 - Write more unit tests
