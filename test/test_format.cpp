@@ -97,6 +97,7 @@ TEST(format, strings)
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", "TESTXX"));
     EXPECT_EQ(ST_LITERAL("xxTEST  xx"), ST::format("xx{6.4}xx", "TESTXX"));
     EXPECT_EQ(ST_LITERAL("xxTESTXXxx"), ST::format("xx{4.6}xx", "TESTXX"));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{4.6}xx", "TEST"));
 }
 
 TEST(format, string_classes)
