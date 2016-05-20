@@ -39,6 +39,8 @@
 #cmakedefine ST_HAVE_TYPE_TRAITS
 #cmakedefine ST_HAVE_CONSTEXPR
 #cmakedefine ST_INT64_IS_LONG
+#cmakedefine ST_HAVE_CXX17_FILESYSTEM
+#cmakedefine ST_HAVE_EXPERIMENTAL_FILESYSTEM
 #cmakedefine01 ST_BUILD_SHARED
 #cmakedefine ST_NO_STL_STRINGS
 
@@ -88,6 +90,10 @@
 #else
 #   define ST_STRONG_ENUM(name) enum name
 #   define ST_ENUM_CONSTANT(type, name)
+#endif
+
+#if defined(ST_HAVE_CXX17_FILESYSTEM) || defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+#   define ST_HAVE_FILESYSTEM
 #endif
 
 #define ST_WCHAR_BYTES          (@ST_WCHAR_BYTES@)

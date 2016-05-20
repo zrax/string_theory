@@ -70,11 +70,20 @@ try_compile(ST_HAVE_TYPE_TRAITS "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_type_traits.cpp")
 try_compile(ST_HAVE_CONSTEXPR "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_constexpr.cpp")
+
 try_compile(ST_INT64_IS_NOT_LONG "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_int64_is_long.cpp")
-
 if(NOT ST_INT64_IS_NOT_LONG)
     set(ST_INT64_IS_LONG TRUE)
+endif()
+
+try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
+            "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp")
+if(NOT ST_HAVE_CXX17_FILESYSTEM)
+    try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
+                "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
+                COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
+                LINK_LIBRARIES stdc++fs)
 endif()
 
 include(CheckTypeSize)
@@ -169,6 +178,10 @@ endforeach()
 
 add_library(string_theory ${ST_LIB_TYPE}
             ${ST_HEADERS_PRIV} ${ST_SOURCES})
+
+if(ST_HAVE_EXPERIMENTAL_FILESYSTEM AND CMAKE_COMPILER_IS_GNUCXX)
+    target_link_libraries(string_theory stdc++fs)
+endif()
 
 # Note:  Using <major>.0 so the library name doens't change between minor
 # releases.  ABI incompatible changes are only allowed between major version

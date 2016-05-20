@@ -26,6 +26,13 @@
 
 #if !defined(ST_NO_STL_STRINGS)
 #   include <string>
+#   if defined(ST_HAVE_CXX17_FILESYSTEM)
+#       include <filesystem>
+        namespace ST { namespace _filesystem = std::filesystem; }
+#   elif defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+#       include <experimental/filesystem>
+        namespace ST { namespace _filesystem = std::experimental::filesystem; }
+#   endif
 #endif
 
 #ifdef ST_HAVE_INT64
@@ -172,6 +179,14 @@ namespace ST
         {
             _convert_from_wchar(init.c_str(), init.size(), validation);
         }
+
+#ifdef ST_HAVE_FILESYSTEM
+        string(const ST::_filesystem::path &path)
+        {
+            set(path);
+        }
+#endif
+
 #endif // !defined(ST_NO_STL_STRINGS)
 
         void set(const null_t &) ST_NOEXCEPT { m_buffer = null; }
@@ -242,6 +257,15 @@ namespace ST
         {
             _convert_from_wchar(init.c_str(), init.size(), validation);
         }
+
+#ifdef ST_HAVE_FILESYSTEM
+        void set(const ST::_filesystem::path &path)
+        {
+            std::string path_utf8 = path.u8string();
+            set(path_utf8.c_str(), path_utf8.size(), ST::assume_valid);
+        }
+#endif
+
 #endif // !defined(ST_NO_STL_STRINGS)
 
         string &operator=(const null_t &) ST_NOEXCEPT
@@ -320,6 +344,15 @@ namespace ST
             set(init);
             return *this;
         }
+
+#ifdef ST_HAVE_FILESYSTEM
+        string &operator=(const ST::_filesystem::path &path)
+        {
+            set(path);
+            return *this;
+        }
+#endif
+
 #endif // !defined(ST_NO_STL_STRINGS)
 
         string &operator+=(const char *cstr);
@@ -448,6 +481,16 @@ namespace ST
             str._convert_from_wchar(wstr.c_str(), wstr.size(), validation);
             return str;
         }
+
+#if defined(ST_HAVE_FILESYSTEM)
+        static inline string from_path(const ST::_filesystem::path &path)
+        {
+            string str;
+            str.set(path);
+            return str;
+        }
+#endif
+
 #endif // !defined(ST_NO_STL_STRINGS)
 
         const char *c_str(const char *substitute = "") const ST_NOEXCEPT
@@ -483,6 +526,14 @@ namespace ST
             ST::wchar_buffer wdata = to_wchar();
             return std::wstring(wdata.data(), wdata.size());
         }
+
+#ifdef ST_HAVE_FILESYSTEM
+        ST::_filesystem::path to_path() const
+        {
+            return ST::_filesystem::u8path(c_str(), c_str() + size());
+        }
+#endif
+
 #endif // !defined(ST_NO_STL_STRINGS)
 
         size_t size() const ST_NOEXCEPT { return m_buffer.size(); }

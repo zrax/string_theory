@@ -187,6 +187,14 @@ ST_FORMAT_TYPE(const std::complex<value_T> &)
     output.append_char('i');
 }
 
+#ifdef ST_HAVE_FILESYSTEM
+inline ST_FORMAT_TYPE(const ST::_filesystem::path &)
+{
+    std::string u8path = value.u8string();
+    ST::format_string(format, output, u8path.c_str(), u8path.size());
+}
+#endif
+
 #endif // !defined(ST_NO_STL_STRINGS)
 
 inline ST_FORMAT_TYPE(bool)
