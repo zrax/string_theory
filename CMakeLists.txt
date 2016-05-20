@@ -104,6 +104,8 @@ else()
     add_definitions(-DST_BUILD_EXPORTS)
 endif()
 
+option(ST_NO_STL_STRINGS "Disable std::string and std::filesystem::path support" OFF)
+
 configure_file("${PROJECT_SOURCE_DIR}/include/st_config.h.in"
                "${PROJECT_BINARY_DIR}/include/st_config.h")
 include_directories("${PROJECT_BINARY_DIR}/include")
@@ -139,7 +141,6 @@ if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS)
     set(ST_HEADERS_PRIV ${ST_HEADERS_PRIV}
         include/st_formatter.h
         include/st_format.h
-        include/st_stlformatter.h
         include/st_stdio.h
     )
     set(ST_HEADERS_PUB ${ST_HEADERS_PUB}

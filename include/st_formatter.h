@@ -23,6 +23,11 @@
 
 #include "st_string.h"
 
+#if !defined(ST_NO_STL_STRINGS)
+#   include <string>
+#   include <complex>
+#endif
+
 namespace ST
 {
     ST_STRONG_ENUM(alignment_t)
@@ -159,6 +164,30 @@ inline ST_FORMAT_TYPE(const ST::string &)
 {
     ST::format_string(format, output, value.c_str(), value.size());
 }
+
+#if !defined(ST_NO_STL_STRINGS)
+
+inline ST_FORMAT_TYPE(const std::string &)
+{
+    ST::format_string(format, output, value.c_str(), value.size());
+}
+
+inline ST_FORMAT_TYPE(const std::wstring &)
+{
+    ST::char_buffer utf8 = ST::string::from_wchar(value.c_str(), value.size()).to_utf8();
+    ST::format_string(format, output, utf8.data(), utf8.size());
+}
+
+template <typename value_T>
+ST_FORMAT_TYPE(const std::complex<value_T> &)
+{
+    ST_FORMAT_FORWARD(value.real());
+    output.append_char('+');
+    ST_FORMAT_FORWARD(value.imag());
+    output.append_char('i');
+}
+
+#endif // !defined(ST_NO_STL_STRINGS)
 
 inline ST_FORMAT_TYPE(bool)
 {

@@ -1,1 +1,2 @@
-#include "st_stlformatter.h"
+// Included for backwards compatibility with 1.0
+#include "st_formatter.h"

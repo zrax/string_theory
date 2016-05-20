@@ -40,6 +40,7 @@
 #cmakedefine ST_HAVE_CONSTEXPR
 #cmakedefine ST_INT64_IS_LONG
 #cmakedefine01 ST_BUILD_SHARED
+#cmakedefine ST_NO_STL_STRINGS
 
 #ifdef ST_HAVE_NOEXCEPT
 #   define ST_NOEXCEPT noexcept

@@ -24,6 +24,10 @@
 #include <vector>
 #include "st_charbuffer.h"
 
+#if !defined(ST_NO_STL_STRINGS)
+#   include <string>
+#endif
+
 #ifdef ST_HAVE_INT64
 #   include <cstdint>
 #endif
@@ -156,6 +160,20 @@ namespace ST
             _convert_from_wchar(init.data(), init.size(), validation);
         }
 
+#if !defined(ST_NO_STL_STRINGS)
+        string(const std::string &init,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_utf8(init.c_str(), init.size(), validation);
+        }
+
+        string(const std::wstring &init,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_wchar(init.c_str(), init.size(), validation);
+        }
+#endif // !defined(ST_NO_STL_STRINGS)
+
         void set(const null_t &) ST_NOEXCEPT { m_buffer = null; }
 
         void set(const char *cstr, size_t size = ST_AUTO_SIZE,
@@ -211,6 +229,20 @@ namespace ST
         {
             _convert_from_wchar(init.data(), init.size(), validation);
         }
+
+#if !defined(ST_NO_STL_STRINGS)
+        void set(const std::string &init,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_utf8(init.c_str(), init.size(), validation);
+        }
+
+        void set(const std::wstring &init,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_wchar(init.c_str(), init.size(), validation);
+        }
+#endif // !defined(ST_NO_STL_STRINGS)
 
         string &operator=(const null_t &) ST_NOEXCEPT
         {
@@ -275,6 +307,20 @@ namespace ST
             set(init);
             return *this;
         }
+
+#if !defined(ST_NO_STL_STRINGS)
+        string &operator=(const std::string &init)
+        {
+            set(init);
+            return *this;
+        }
+
+        string &operator=(const std::wstring &init)
+        {
+            set(init);
+            return *this;
+        }
+#endif // !defined(ST_NO_STL_STRINGS)
 
         string &operator+=(const char *cstr);
         string &operator+=(const wchar_t *wstr);
@@ -386,6 +432,24 @@ namespace ST
             return str;
         }
 
+#if !defined(ST_NO_STL_STRINGS)
+        static inline string from_std_string(const std::string &sstr,
+                                             utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_utf8(sstr.c_str(), sstr.size(), validation);
+            return str;
+        }
+
+        static inline string from_std_wstring(const std::wstring &wstr,
+                                              utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_wchar(wstr.c_str(), wstr.size(), validation);
+            return str;
+        }
+#endif // !defined(ST_NO_STL_STRINGS)
+
         const char *c_str(const char *substitute = "") const ST_NOEXCEPT
         {
             return is_empty() ? substitute : m_buffer.data();
@@ -402,6 +466,24 @@ namespace ST
         utf32_buffer to_utf32() const;
         wchar_buffer to_wchar() const;
         char_buffer to_latin_1(utf_validation_t validation = substitute_invalid) const;
+
+#if !defined(ST_NO_STL_STRINGS)
+        std::string to_std_string(bool utf8 = true,
+                                  utf_validation_t validation = substitute_invalid) const
+        {
+            if (utf8)
+                return std::string(c_str(), size());
+
+            ST::char_buffer latin1 = to_latin_1(validation);
+            return std::string(latin1.data(), latin1.size());
+        }
+
+        std::wstring to_std_wstring()
+        {
+            ST::wchar_buffer wdata = to_wchar();
+            return std::wstring(wdata.data(), wdata.size());
+        }
+#endif // !defined(ST_NO_STL_STRINGS)
 
         size_t size() const ST_NOEXCEPT { return m_buffer.size(); }
         bool is_empty() const ST_NOEXCEPT { return m_buffer.size() == 0; }
