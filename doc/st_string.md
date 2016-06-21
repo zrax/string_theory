@@ -27,6 +27,9 @@
 |    | [string](#ctor_8)(const utf16_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_9)(const utf32_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_10)(const wchar_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+|    | [string](#ctor_11)(const std::string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+|    | [string](#ctor_12)(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+|    | [string](#ctor_13)(const std::filesystem::path &init) |
 | void | [set](#set_1)(const null_t &) noexcept |
 | void | [set](#set_2)(const char \*cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_3)(const wchar_t \*wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
@@ -37,6 +40,9 @@
 | void | [set](#set_8)(const utf16_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_9)(const utf32_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_10)(const wchar_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| void | [set](#set_11)(const std::string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| void | [set](#set_12)(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| void | [set](#set_13)(const std::filesystem::path &init) |
 | string & | [operator=](#operator_eq_1)(const null_t &) noexcept |
 | string & | [operator=](#operator_eq_2)(const char *cstr) |
 | string & | [operator=](#operator_eq_3)(const wchar_t *wstr) |
@@ -47,6 +53,9 @@
 | string & | [operator=](#operator_eq_8)(const utf16_buffer &init) |
 | string & | [operator=](#operator_eq_9)(const utf32_buffer &init) |
 | string & | [operator=](#operator_eq_10)(const wchar_buffer &init) |
+| string & | [operator=](#operator_eq_11)(const std::string &init) |
+| string & | [operator=](#operator_eq_12)(const std::wstring &init) |
+| string & | [operator=](#operator_eq_13)(const std::filesystem::path &init) |
 | string & | [operator+=](#operator_pluseq_1)(const char *cstr) |
 | string & | [operator+=](#operator_pluseq_2)(const wchar_t *wstr) |
 | string & | [operator+=](#operator_pluseq_3)(const string &other) |
@@ -57,6 +66,9 @@
 | utf32_buffer | [to_utf32](#to_utf32)() const |
 | wchar_buffer | [to_wchar](#to_wchar)() const |
 | char_buffer | [to_latin_1](#to_latin_1)(utf_validation_t validation = substitute_invalid) const |
+| std::string | [to_std_string](#to_std_string)(bool utf8 = true, utf_validation_t validation = substitute_invalid) const |
+| std::wstring | [to_std_wstring](#to_std_wstring)(bool utf8 = true, utf_validation_t validation = substitute_invalid) const |
+| std::filesystem::path | [to_path](#to_path)() const |
 | size_t | [size](#size)() const noexcept |
 | bool | [is_empty](#is_empty)() const noexcept |
 | int | [to_int](#to_int_1)(int base = 0) const noexcept |
@@ -144,6 +156,9 @@
 | string | [from_utf32](#from_utf32_2)(const utf32_buffer &utf32, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_wchar](#from_wchar_2)(const wchar_buffer &wstr, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_latin_1](#from_latin_1_2)(const char_buffer &astr) |
+| string | [from_std_string](#from_std_string)(const std::string &sstr, validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_std_wstring](#from_std_wstring)(const std::wstring &wstr, validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_path](#from_path)(const std::filesystem::path &path) |
 | string | [from_int](#from_int)(int value, int base = 10, bool upper_case = false) |
 | string | [from_uint](#from_uint)(unsigned int value, int base = 10, bool upper_case = false) |
 | string | [from_float](#from_float)(float value, char format='g') |
@@ -453,6 +468,39 @@ provided in `init` is expected to be encoded as either UTF-16 or UTF-32,
 depending on your platform's wchar_t support.
 
 **See also** [from_wchar](#from_wchar_2)(const wchar_buffer &, utf_validation_t)
+
+------
+
+<a name="ctor_11"></a>
+### ST::string::string(const std::string &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+string(const std::string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the the contents of `init`.  The string data is
+expected to be encoded as UTF-8.
+
+------
+
+<a name="ctor_12"></a>
+### ST::string::string(const std::wstring &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+string(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the the contents of `init`.  The string data
+in `init` is expected to be encoded as either UTF-16 or UTF-32, depending
+on your platform's wchar_t support.
+
+------
+
+<a name="ctor_13"></a>
+### ST::string::string(const std::filesystem::path &init)
+~~~c++
+string(const std::filesystem::path &init)
+~~~
+
+Construct a string from the the filesystem path in `init`.
 
 ------
 
@@ -959,6 +1007,39 @@ Construct a string from the Latin-1 / ISO-8859-1 string data in `astr`.
 
 ------
 
+<a name="from_std_string"></a>
+### ST::string ST::string::from_std_string(const std::string &sstr, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_std_string(const std::string &sstr, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from a std::string.  The string is expected to be encoded
+as UTF-8.
+
+------
+
+<a name="from_std_wstring"></a>
+### ST::string ST::string::from_std_wstring(const std::string &wstr, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_std_wstring(const std::wstring &wstr, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from a std::wstring.  The string is expected to be encoded
+as either UTF-16 or UTF-32 / UCS-4 depending on your platform's wchar_t
+support.
+
+------
+
+<a name="from_path"></a>
+### ST::string ST::string::from_path(const std::filesystem::path &path) [static]
+~~~c++
+static string from_path(const std::filesystem::path &path)
+~~~
+
+Construct a string from a filesystem path, using the system's default encoding.
+
+------
+
 <a name="from_uint"></a>
 ### ST::string ST::string::from_uint(unsigned int value, int base = 10, bool upper_case = false) [static]
 ~~~c++
@@ -1225,6 +1306,39 @@ The data provided in `init` is expected to be encoded as either UTF-16 or
 UTF-32, depending on your platform's wchar_t support.
 
 **See also** [set](#set_10)(const wchar_buffer &, utf_validation_t)
+
+------
+
+<a name="operator_eq_11"></a>
+### ST::string &ST::string::operator=(const std::string &init)
+~~~c++
+string &operator=(const std::string &init)
+~~~
+
+Set the string content from the string in `init`.  The string data is
+expected to be encoded as UTF-8.
+
+------
+
+<a name="operator_eq_12"></a>
+### ST::string &ST::string::operator=(const std::wstring &init)
+~~~c++
+string &operator=(const std::wstring &init)
+~~~
+
+Set the string content from the wide string in `init`. The string data is
+expected to be encoded as either UTF-16 or UTF-32, depending on your
+platform's wchar_t support.
+
+------
+
+<a name="operator_eq_13"></a>
+### ST::string &ST::string::operator=(const std::filesystem::path &init)
+~~~c++
+string &operator=(const std::filesystem::path &init)
+~~~
+
+Set the string content from the filesystem path in `init`.
 
 ------
 
@@ -1507,7 +1621,7 @@ expected to be encoded as UTF-8.
 ------
 
 <a name="set_8"></a>
-### void ST::string::set(const [ST::utf16_buffer](st_buffer.md) &&init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+### void ST::string::set(const [ST::utf16_buffer](st_buffer.md) &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
 ~~~c++
 void set(const utf16_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
 ~~~
@@ -1519,7 +1633,7 @@ Set the string content from the UTF-16 data provided in `init`.
 ------
 
 <a name="set_9"></a>
-### void ST::string::set(const [ST::utf32_buffer](st_buffer.md) &&init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+### void ST::string::set(const [ST::utf32_buffer](st_buffer.md) &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
 ~~~c++
 void set(const utf32_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
 ~~~
@@ -1531,7 +1645,7 @@ Set the string content from the UTF-32 / UCS-4 data provided in `init`.
 ------
 
 <a name="set_10"></a>
-### void ST::string::set(const [ST::wchar_buffer](st_buffer.md) &&init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+### void ST::string::set(const [ST::wchar_buffer](st_buffer.md) &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
 ~~~c++
 void set(const wchar_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
 ~~~
@@ -1541,6 +1655,41 @@ The data provided in `init` is expected to be encoded as either UTF-16 or
 UTF-32, depending on your platform's wchar_t support.
 
 **See also** [from_wchar](#from_wchar_2)(const wchar_buffer &, utf_validation_t)
+
+------
+
+<a name="set_11"></a>
+### void ST::string::set(const std::string &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+void set(const std::string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Set the string content from the string provided in `init`.  The string is
+expected to be encoded as UTF-8.
+
+**See also** [from_wchar](#from_wchar_2)(const wchar_buffer &, utf_validation_t)
+
+------
+
+<a name="set_12"></a>
+### void ST::string::set(const std::wstring &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+void set(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Set the string content from the wide string data provided in `init`.
+The string is expected to be encoded as either UTF-16 or UTF-32, depending
+on your platform's wchar_t support.
+
+------
+
+<a name="set_13"></a>
+### void ST::string::set(const std::filesystem::path &init)
+~~~c++
+void set(const std::filesystem::path &init)
+~~~
+
+Set the string content from the filesystem path in `init`.
 
 ------
 
@@ -1844,6 +1993,42 @@ string to_lower() const
 ~~~
 
 Returns a copy of this string with all ANSI letters converted to lower-case.
+
+------
+
+<a name="to_std_string"></a>
+### std::string ST::string::to_std_string(bool utf8 = true, [ST::utf_validation_t](#utf_validation_t) validation = ST::substitute_invalid) const
+~~~c++
+std::string to_std_string(bool utf8 = true, utf_validation_t validation = substitute_invalid) const
+~~~
+
+Convert the string content to a std::string.  If `utf8` is true, the data will
+be converted as UTF-8; otherwise, it will be converted as Latin-1.
+
+**See also** [to_utf8](to_utf8)(), [to_latin_1](to_latin_1)(utf_validation_t)
+
+------
+
+<a name="to_std_wstring"></a>
+### std::wstring ST::string::to_std_wstring() const
+~~~c++
+std::wstring to_std_wstring() const
+~~~
+
+Convert the string content to a std::wstring.  The string will be encoded
+as either UTF-16 or UTF-32 / UCS-4 depending on your platform's wchar_t
+support.
+
+------
+
+<a name="to_path"></a>
+### std::filesystem::path ST::string::to_path() const
+~~~c++
+std::filesystem::path to_path() const
+~~~
+
+Convert the string to a filesystem path using the system's default path
+encoding.
 
 ------
 
