@@ -178,6 +178,9 @@ endforeach()
 
 add_library(string_theory ${ST_LIB_TYPE}
             ${ST_HEADERS_PRIV} ${ST_SOURCES})
+if(WIN32)
+    set_target_properties(string_theory PROPERTIES DEBUG_POSTFIX "d")
+endif()
 
 if(ST_HAVE_EXPERIMENTAL_FILESYSTEM AND CMAKE_COMPILER_IS_GNUCXX)
     target_link_libraries(string_theory stdc++fs)
