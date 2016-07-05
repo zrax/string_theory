@@ -80,10 +80,13 @@ endif()
 try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp")
 if(NOT ST_HAVE_CXX17_FILESYSTEM)
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        set(ST_CXXFS_LIBS stdc++fs)
+    endif()
     try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
                 "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
                 COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
-                LINK_LIBRARIES stdc++fs)
+                LINK_LIBRARIES ${ST_CXXFS_LIBS})
 endif()
 
 include(CheckTypeSize)
@@ -182,8 +185,8 @@ if(WIN32)
     set_target_properties(string_theory PROPERTIES DEBUG_POSTFIX "d")
 endif()
 
-if(ST_HAVE_EXPERIMENTAL_FILESYSTEM AND CMAKE_COMPILER_IS_GNUCXX)
-    target_link_libraries(string_theory stdc++fs)
+if(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+    target_link_libraries(string_theory ${ST_CXXFS_LIBS})
 endif()
 
 # Note:  Using <major>.0 so the library name doens't change between minor
