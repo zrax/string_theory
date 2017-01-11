@@ -27,6 +27,12 @@
 #include <type_traits>
 #include "st_assert.h"
 
+/* DO NOT REMOVE THESE LINES.  Classes declared only in these headers won't
+* get properly dllexported unless the compiler sees their declarations in at
+* least one source file. */
+#include "st_format.h"
+#include "st_stdio.h"
+
 #define BADCHAR_SUBSTITUTE (0xFFFDul)
 
 #ifdef _MSC_VER

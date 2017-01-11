@@ -1480,3 +1480,12 @@ ST::string ST::operator+(const char *left, const ST::string &right)
 
     return cat;
 }
+
+/* Ensure these get instantiated by the library */
+namespace ST
+{
+    template ST_EXPORT class buffer<char>;
+    template ST_EXPORT class buffer<wchar_t>;
+    template ST_EXPORT class buffer<char16_t>;
+    template ST_EXPORT class buffer<char32_t>;
+}
