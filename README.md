@@ -93,23 +93,22 @@ What String Theory is NOT
 Platform Support
 ----------------
 
-string_theory supports a variety of platforms and compilers.  As of April
-2016, string_theory is tested and working on:
-- GCC 5 (Arch Linux x86_64 and ARMv7, Ubuntu 16.04)
+string_theory supports a variety of platforms and compilers.  As of January
+2017, string_theory is tested and working on:
+- GCC 6 (Arch Linux x86_64 and ARMv7)
+- GCC 5 (Ubuntu 16.04 x86_64)
 - GCC 4.6 (Ubuntu 12.04 i686)
-- GCC 4.4 (CentOS 6)
-- Clang 3.8 (Ubuntu 16.04)
-- Clang 3.7 (Arch Linux)
+- GCC 4.4 (CentOS 6 x86_64)
+- Clang 3.9 (Arch Linux x86_64 and ARMv7)
+- Clang 3.8 (Ubuntu 16.04 x86_64)
 - Clang 3.0 (Ubuntu 12.04 i686)
+- AppleClang 8.0 (OSX El Capitan)
 - AppleClang 6.0 (OSX Mavericks)
 - MSVC 2015 (x86_64 and x86)
 - MSVC 2013 (x86_64 and x86)
+- MSVC 2012 (x86_64 and x86)
 - MSVC 2010 (x86_64 and x86)
 - MinGW-w64 GCC 5 (x86_64 and i686)
-
-NOTES:
-  - MSVC 2012 is not listed here due to an incompatibility with gtest and
-    MSVC 2012's pseudo-variadic template support.
 
 Contributing to String Theory
 -----------------------------
