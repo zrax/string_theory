@@ -22,7 +22,7 @@ cmake_minimum_required(VERSION 2.8)
 project(string_theory)
 
 set(ST_MAJOR_VERSION 1)
-set(ST_MINOR_VERSION 1)
+set(ST_MINOR_VERSION 2)
 set(ST_VERSION ${ST_MAJOR_VERSION}.${ST_MINOR_VERSION})
 
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
@@ -208,7 +208,6 @@ install(FILES ${ST_HEADERS_PRIV} ${ST_HEADERS_PUB}
 
 export(TARGETS string_theory
        FILE "${PROJECT_BINARY_DIR}/string_theory-targets.cmake")
-export(PACKAGE string_theory)
 
 file(RELATIVE_PATH REL_INCLUDE_DIR "${ST_INSTALL_CMAKE_DIR}/string_theory"
      "${ST_INSTALL_INCLUDE_DIR}")
