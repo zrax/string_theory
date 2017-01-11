@@ -64,6 +64,10 @@ function(add_gtest _test_name)
     endif()
 endfunction()
 
+if (MSVC AND MSVC_VERSION EQUAL 1700)
+  add_definitions(/D _VARIADIC_MAX=10)
+endif()
+
 add_gtest(test_string)
 add_gtest(test_codecs)
 
