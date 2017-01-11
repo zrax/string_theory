@@ -46,39 +46,21 @@ function(add_gtest _test_name)
     add_test(NAME ${_test_name} COMMAND ${_test_name})
 
     if(WIN32 AND NOT ST_BUILD_STATIC)
-        if(MSVC)
-            add_custom_command(TARGET ${_test_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_BINARY_DIR}/$<CONFIGURATION>/string_theory.dll"
-                $<TARGET_FILE_DIR:${_test_name}>
-            )
-            add_custom_command(TARGET ${_test_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/$<CONFIGURATION>/gtest.dll"
-                $<TARGET_FILE_DIR:${_test_name}>
-            )
-            add_custom_command(TARGET ${_test_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/$<CONFIGURATION>/gtest_main.dll"
-                $<TARGET_FILE_DIR:${_test_name}>
-            )
-        else()
-            add_custom_command(TARGET ${_test_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_BINARY_DIR}/libstring_theory.dll"
-                $<TARGET_FILE_DIR:${_test_name}>
-            )
-            add_custom_command(TARGET ${_test_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/libgtest.dll"
-                $<TARGET_FILE_DIR:${_test_name}>
-            )
-            add_custom_command(TARGET ${_test_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_BINARY_DIR}/test/gtest-1.7.0/libgtest_main.dll"
-                $<TARGET_FILE_DIR:${_test_name}>
-            )
-        endif()
+        add_custom_command(TARGET ${_test_name} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:string_theory>"
+            "$<TARGET_FILE_DIR:${_test_name}>"
+        )
+        add_custom_command(TARGET ${_test_name} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:gtest>"
+            "$<TARGET_FILE_DIR:${_test_name}>"
+        )
+        add_custom_command(TARGET ${_test_name} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:gtest_main>"
+            "$<TARGET_FILE_DIR:${_test_name}>"
+        )
     endif()
 endfunction()
 
