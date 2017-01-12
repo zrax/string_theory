@@ -85,11 +85,13 @@ if(ST_HAVE_FORMAT)
         find_package(Qt5Core)
         if(Qt5Core_FOUND)
             add_definitions(-DST_PROFILE_HAVE_QSTRING)
-            if(WIN32 AND POLICY CMP0020)
-                # Don't require explicit link to qtmain.lib
-                cmake_policy(SET CMP0020 NEW)
-            else()
-                message(FATAL_ERROR "string_profile test requires CMake 2.8.11 or newer on Windows")
+            if(WIN32)
+                if(POLICY CMP0020)
+                    # Don't require explicit link to qtmain.lib
+                    cmake_policy(SET CMP0020 NEW)
+                else()
+                    message(FATAL_ERROR "string_profile test requires CMake 2.8.11 or newer on Windows")
+                endif()
             endif()
         endif()
 
