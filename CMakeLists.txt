@@ -18,8 +18,13 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(string_theory)
+
+if(POLICY CMP0054)
+    # Don't dereference quoted names in if() statements
+    cmake_policy(SET CMP0054 NEW)
+endif()
 
 set(ST_MAJOR_VERSION 1)
 set(ST_MINOR_VERSION 2)
