@@ -46,3 +46,12 @@ int _ST_PRIVATE::_compare_buffer(const void *left, const void *right, size_t siz
 {
     return memcmp(left, right, size);
 }
+
+/* Ensure these get instantiated by the library */
+namespace ST
+{
+    template ST_EXPORT class buffer<char>;
+    template ST_EXPORT class buffer<wchar_t>;
+    template ST_EXPORT class buffer<char16_t>;
+    template ST_EXPORT class buffer<char32_t>;
+}

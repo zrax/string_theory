@@ -92,7 +92,6 @@ ST::format_spec ST::format_writer::fetch_next_format()
             // Done with format spec
             m_format_str = ptr + 1;
             return spec;
-            break;
 
         case '<':
             spec.alignment = ST::align_left;
