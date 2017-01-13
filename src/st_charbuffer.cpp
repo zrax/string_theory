@@ -47,6 +47,11 @@ int _ST_PRIVATE::_compare_buffer(const void *left, const void *right, size_t siz
     return memcmp(left, right, size);
 }
 
+ST_BUFFER_ALLOCATOR(char)
+ST_BUFFER_ALLOCATOR(char16_t)
+ST_BUFFER_ALLOCATOR(char32_t)
+ST_BUFFER_ALLOCATOR(wchar_t)
+
 /* Ensure these get instantiated by the library */
 namespace ST
 {

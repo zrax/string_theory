@@ -35,7 +35,42 @@ namespace _ST_PRIVATE
     ST_EXPORT void _fill_buffer(void *buffer, int ch, size_t count);
     ST_EXPORT void _copy_buffer(void *dest, const void *src, size_t size);
     ST_EXPORT int _compare_buffer(const void *left, const void *right, size_t size);
+
+    // Avoid operator new and operator delete in header files
+    template <typename char_T>
+    ST_EXPORT char_T *_alloc_buffer(size_t)
+    {
+        return char_T::_missing_ST_BUFFER_ALLOCATOR_for_type();
+    }
+
+    template <typename char_T>
+    ST_EXPORT void _delete_buffer(char_T *)
+    {
+        return char_T::_missing_ST_BUFFER_ALLOCATOR_for_type();
+    }
 }
+
+#define ST_DECL_BUFFER_ALLOCATOR(char_T) \
+    namespace _ST_PRIVATE \
+    { \
+        template <> ST_EXPORT char_T *_alloc_buffer<char_T>(size_t size); \
+        template <> ST_EXPORT void _delete_buffer(char_T *buffer); \
+    }
+
+#define ST_BUFFER_ALLOCATOR(char_T) \
+    template <> ST_EXPORT char_T *_ST_PRIVATE::_alloc_buffer<char_T>(size_t size) \
+    { \
+        return new char_T[size]; \
+    } \
+    template <> ST_EXPORT void _ST_PRIVATE::_delete_buffer(char_T *buffer) \
+    { \
+        delete[] buffer; \
+    }
+
+ST_DECL_BUFFER_ALLOCATOR(char)
+ST_DECL_BUFFER_ALLOCATOR(char16_t)
+ST_DECL_BUFFER_ALLOCATOR(char32_t)
+ST_DECL_BUFFER_ALLOCATOR(wchar_t)
 
 namespace ST
 {
@@ -76,7 +111,7 @@ namespace ST
 
             ~_scope_deleter()
             {
-                delete[] m_buffer;
+                _ST_PRIVATE::_delete_buffer(m_buffer);
             }
         };
 
@@ -98,7 +133,7 @@ namespace ST
         {
             _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
             if (is_reffed()) {
-                m_ref = new char_T[m_size + 1];
+                m_ref = _ST_PRIVATE::_alloc_buffer<char_T>(m_size + 1);
                 _ST_PRIVATE::_copy_buffer(m_ref, copy.m_ref, m_size * sizeof(char_T));
                 m_ref[m_size] = 0;
             } else {
@@ -119,7 +154,9 @@ namespace ST
             : m_size(size)
         {
             _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
-            char_T *buffer = is_reffed() ? (m_ref = new char_T[m_size + 1]) : m_data;
+            char_T *buffer = is_reffed()
+                        ? (m_ref = _ST_PRIVATE::_alloc_buffer<char_T>(m_size + 1))
+                        : m_data;
             _ST_PRIVATE::_copy_buffer(buffer, data, m_size * sizeof(char_T));
             buffer[m_size] = 0;
         }
@@ -127,7 +164,7 @@ namespace ST
         ~buffer<char_T>() ST_NOEXCEPT
         {
             if (is_reffed())
-                delete[] m_ref;
+                _ST_PRIVATE::_delete_buffer(m_ref);
         }
 
         buffer<char_T> &operator=(const null_t &) ST_NOEXCEPT
@@ -143,7 +180,7 @@ namespace ST
             _scope_deleter unref(this);
             m_size = copy.m_size;
             if (is_reffed()) {
-                m_ref = new char_T[m_size + 1];
+                m_ref = _ST_PRIVATE::_alloc_buffer<char_T>(m_size + 1);
                 _ST_PRIVATE::_copy_buffer(m_ref, copy.m_ref, m_size * sizeof(char_T));
                 m_ref[m_size] = 0;
             } else {
@@ -198,11 +235,11 @@ namespace ST
         char_T *create_writable_buffer(size_t size)
         {
             if (is_reffed())
-                delete[] m_ref;
+                _ST_PRIVATE::_delete_buffer(m_ref);
 
             m_size = size;
             if (is_reffed())
-                return m_ref = new char_T[m_size + 1];
+                return m_ref = _ST_PRIVATE::_alloc_buffer<char_T>(m_size + 1);
             else
                 return m_data;
         }

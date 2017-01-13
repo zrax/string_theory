@@ -36,7 +36,7 @@ namespace ST
         ~string_stream() ST_NOEXCEPT
         {
             if (is_heap())
-                delete[] m_buffer;
+                _ST_PRIVATE::_delete_buffer(m_buffer);
         }
 
 #ifdef ST_HAVE_RVALUE_MOVE

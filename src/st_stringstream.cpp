@@ -36,10 +36,10 @@
             big_size *= 2;                                          \
         } while (m_size + added_size > big_size);                   \
                                                                     \
-        char *bigger = new char[big_size];                          \
+        char *bigger = _ST_PRIVATE::_alloc_buffer<char>(big_size);  \
         _ST_PRIVATE::_copy_buffer(bigger, raw_buffer(), m_alloc);   \
         if (is_heap())                                              \
-            delete[] m_buffer;                                      \
+            _ST_PRIVATE::_delete_buffer(m_buffer);                  \
         m_buffer = bufp = bigger;                                   \
         m_alloc = big_size;                                         \
     }
