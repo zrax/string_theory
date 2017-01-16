@@ -23,8 +23,9 @@
 #include <cstring>
 #include <cstdio>
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 #   define snprintf _snprintf
+#   pragma warning(disable: 4996)
 #endif
 
 #define EXPAND_SS_BUFFER(added_size)                                \

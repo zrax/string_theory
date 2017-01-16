@@ -26,6 +26,11 @@
 #include <functional>
 #include <stdexcept>
 
+#ifdef _MSC_VER
+#   pragma warning(push)
+#   pragma warning(disable: 4275)
+#endif
+
 namespace ST
 {
     typedef std::function<void (const char *condition_str,
@@ -62,5 +67,9 @@ namespace _ST_PRIVATE
         if (!(condition) && _ST_PRIVATE::_assert_handler) \
             _ST_PRIVATE::_assert_handler(#condition, __FILE__, __LINE__, message); \
     } while (0)
+
+#ifdef _MSC_VER
+#   pragma warning(pop)
+#endif
 
 #endif // _ST_ASSERT_H

@@ -25,8 +25,9 @@
 #include <cstring>
 #include <iostream>
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 #   define snprintf _snprintf
+#   pragma warning(disable: 4996)
 #endif
 
 namespace ST

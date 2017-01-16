@@ -39,10 +39,13 @@
 #ifdef _MSC_VER
 #   define stricmp  _stricmp
 #   define strnicmp _strnicmp
-#   define snprintf _snprintf
 #   if _MSC_VER < 1800
 #       define strtoll  _strtoi64
 #       define strtoull _strtoui64
+#   endif
+#   if _MSC_VER < 1900
+#       define snprintf _snprintf
+#       pragma warning(disable: 4996)
 #   endif
 #else
 #   define stricmp  strcasecmp
@@ -549,11 +552,11 @@ ST::utf16_buffer ST::string::to_utf16() const
             bigch  = (*sp++ & 0x0F) << 12;
             bigch |= (*sp++ & 0x3F) << 6;
             bigch |= (*sp++ & 0x3F);
-            *dp++ = bigch;
+            *dp++ = static_cast<char16_t>(bigch);
         } else if ((*sp & 0xE0) == 0xC0) {
             bigch  = (*sp++ & 0x1F) << 6;
             bigch |= (*sp++ & 0x3F);
-            *dp++ = bigch;
+            *dp++ = static_cast<char16_t>(bigch);
         } else {
             *dp++ = *sp++;
         }

@@ -27,6 +27,10 @@
 #include <limits>
 #include <iostream>
 
+#ifdef _MSC_VER
+#   pragma warning(disable: 4996)
+#endif
+
 namespace ST
 {
     // Teach GTest how to print an ST::string

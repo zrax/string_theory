@@ -35,8 +35,9 @@
 
 #define BADCHAR_SUBSTITUTE (0xFFFDul)
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 #   define snprintf _snprintf
+#   pragma warning(disable: 4996)
 #endif
 
 static const char *_scan_next_format(const char *format_str)
