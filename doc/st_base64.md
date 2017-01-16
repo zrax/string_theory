@@ -63,6 +63,7 @@ namespace ST
 ~~~
 
 Encode the first `size` bytes of `data` to a Base64 string representation.
+If `size` is `0`, data may be NULL; otherwise, `data` must be non-NULL.
 
 ------
 

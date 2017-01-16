@@ -64,7 +64,8 @@ namespace ST
 ~~~
 
 Encode the first `size` bytes of `data` to a lower-case hexadecimal string
-representation.
+representation.  If `size` is `0`, data may be NULL; otherwise, `data` must
+be non-NULL.
 
 ------
 

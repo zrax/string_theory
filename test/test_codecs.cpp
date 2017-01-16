@@ -87,6 +87,7 @@ static const unsigned char data_17[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x0
 TEST(codecs, hex_encode)
 {
     EXPECT_EQ(ST::null, ST::hex_encode(data_empty, 0));
+    EXPECT_EQ(ST::null, ST::hex_encode(ST_NULLPTR, 0));
     EXPECT_EQ(ST_LITERAL("000102030405060708090A0B0C0D0E0F10F0FF"),
               ST::hex_encode(data_hex_ranges, sizeof(data_hex_ranges)));
 
@@ -189,7 +190,7 @@ void clean_assert(const char *, const char *, int, const char *message)
 TEST(codecs, hex_codec_errors)
 {
     ST::set_assert_handler(&clean_assert);
-    EXPECT_EXIT(ST::hex_encode(ST_NULLPTR, 0), ::testing::ExitedWithCode(0),
+    EXPECT_EXIT(ST::hex_encode(ST_NULLPTR, 1), ::testing::ExitedWithCode(0),
                 "null data pointer passed to hex_encode");
     ST::set_default_assert_handler();
 
@@ -213,6 +214,7 @@ TEST(codecs, hex_codec_errors)
 TEST(codecs, base64_encode)
 {
     EXPECT_EQ(ST::null, ST::base64_encode(data_empty, 0));
+    EXPECT_EQ(ST::null, ST::base64_encode(ST_NULLPTR, 0));
     EXPECT_EQ(ST_LITERAL("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"),
               ST::base64_encode(data_base64_ranges, sizeof(data_base64_ranges)));
 
@@ -303,7 +305,7 @@ TEST(codecs, base64_decode_buffer)
 TEST(codecs, base64_codec_errors)
 {
     ST::set_assert_handler(&clean_assert);
-    EXPECT_EXIT(ST::base64_encode(ST_NULLPTR, 0), ::testing::ExitedWithCode(0),
+    EXPECT_EXIT(ST::base64_encode(ST_NULLPTR, 1), ::testing::ExitedWithCode(0),
                 "null data pointer passed to base64_encode");
     ST::set_default_assert_handler();
 
