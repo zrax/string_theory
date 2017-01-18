@@ -55,8 +55,8 @@ static void _measure(const char *title, std::function<void()> fun)
         fun();
 
     auto dur = std::chrono::high_resolution_clock::now() - clk;
-    puts(ST::format("{32}: {6.2f} ms", title,
-         std::chrono::duration<double, std::milli>(dur).count()).c_str());
+    ST::printf("{32}: {6.2f} ms\n", title,
+         std::chrono::duration<double, std::milli>(dur).count());
 }
 
 int main(int, char **)
@@ -240,11 +240,12 @@ int main(int, char **)
     });
 #endif
 
-#ifdef WIN32
-    FILE *devnull = fopen("nul", "w");
+#ifdef _WIN32
+#   define DEVNULL "nul"
 #else
-    FILE *devnull = fopen("/dev/null", "w");
+#   define DEVNULL "/dev/null"
 #endif
+    FILE *devnull = fopen(DEVNULL, "w");
     if (devnull) {
         _measure("printf", [devnull]() {
             fprintf(devnull, "This %d is %6.2f a %s test %c.", 42, M_PI,
@@ -257,6 +258,9 @@ int main(int, char **)
         });
 
         fclose(devnull);
+    } else {
+        ST::printf("{32}: Couldn't open file " DEVNULL "\n", "printf");
+        ST::printf("{32}: Couldn't open file " DEVNULL "\n", "ST::printf");
     }
 
     _measure("std::stringstream (~format)", []() {
