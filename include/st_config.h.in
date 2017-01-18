@@ -113,7 +113,7 @@
     typedef ssize_t ST_ssize_t;
 #endif
 
-#if ST_BUILD_SHARED && defined(WIN32)
+#if ST_BUILD_SHARED && defined(_WIN32)
 #   ifdef ST_BUILD_EXPORTS
 #       define ST_EXPORT __declspec(dllexport)
 #   else

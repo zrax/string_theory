@@ -28,6 +28,7 @@
 #include <cmath>
 
 #include "st_format.h"
+#include "st_stdio.h"
 
 #ifdef ST_PROFILE_HAVE_BOOST
 #   include <boost/format.hpp>
@@ -238,6 +239,25 @@ int main(int, char **)
         NO_OPTIMIZE(foo.data());
     });
 #endif
+
+#ifdef WIN32
+    FILE *devnull = fopen("nul", "w");
+#else
+    FILE *devnull = fopen("/dev/null", "w");
+#endif
+    if (devnull) {
+        _measure("printf", [devnull]() {
+            fprintf(devnull, "This %d is %6.2f a %s test %c.", 42, M_PI,
+                             "<Singin' in the rain>", '?');
+        });
+
+        _measure("ST::printf", [devnull]() {
+            ST::printf(devnull, "This {} is {6.2f} a {} test {}.", 42, M_PI,
+                                "<Singin' in the rain>", '?');
+        });
+
+        fclose(devnull);
+    }
 
     _measure("std::stringstream (~format)", []() {
         std::stringstream ss;
