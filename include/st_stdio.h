@@ -86,6 +86,21 @@ namespace ST
         ST_INVOKE_FORMATTER(format, data, value);
         _ST_PRIVATE::printf(data, args...);
     }
+
+    /* Unlike ST::format, it is common to use printf without any formatting.
+     * Even though it's probably better to skip the format altogether (e.g.
+     * by using puts/fputs directly), it's also still legal to use printf. */
+    void printf(const char *fmt_str)
+    {
+        _ST_PRIVATE::stdio_format_writer data(fmt_str, stdout);
+        _ST_PRIVATE::printf(data);
+    }
+
+    void printf(FILE *out_file, const char *fmt_str)
+    {
+        _ST_PRIVATE::stdio_format_writer data(fmt_str, out_file);
+        _ST_PRIVATE::printf(data);
+    }
 }
 
 #endif // _ST_STDIO_H
