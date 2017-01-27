@@ -90,13 +90,13 @@ namespace ST
     /* Unlike ST::format, it is common to use printf without any formatting.
      * Even though it's probably better to skip the format altogether (e.g.
      * by using puts/fputs directly), it's also still legal to use printf. */
-    void printf(const char *fmt_str)
+    inline void printf(const char *fmt_str)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, stdout);
         _ST_PRIVATE::printf(data);
     }
 
-    void printf(FILE *out_file, const char *fmt_str)
+    inline void printf(FILE *out_file, const char *fmt_str)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, out_file);
         _ST_PRIVATE::printf(data);
