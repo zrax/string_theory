@@ -88,17 +88,17 @@ TEST(codecs, hex_encode)
 {
     EXPECT_EQ(ST::null, ST::hex_encode(data_empty, 0));
     EXPECT_EQ(ST::null, ST::hex_encode(ST_NULLPTR, 0));
-    EXPECT_EQ(ST_LITERAL("000102030405060708090A0B0C0D0E0F10F0FF"),
+    EXPECT_EQ(ST_LITERAL("000102030405060708090a0b0c0d0e0f10f0ff"),
               ST::hex_encode(data_hex_ranges, sizeof(data_hex_ranges)));
 
     EXPECT_EQ(ST_LITERAL("01"), ST::hex_encode(data_1, sizeof(data_1)));
     EXPECT_EQ(ST_LITERAL("0102"), ST::hex_encode(data_2, sizeof(data_2)));
     EXPECT_EQ(ST_LITERAL("010203"), ST::hex_encode(data_3, sizeof(data_3)));
-    EXPECT_EQ(ST_LITERAL("0102030405060708090A0B0C0D0E0F"),
+    EXPECT_EQ(ST_LITERAL("0102030405060708090a0b0c0d0e0f"),
               ST::hex_encode(data_15, sizeof(data_15)));
-    EXPECT_EQ(ST_LITERAL("0102030405060708090A0B0C0D0E0F10"),
+    EXPECT_EQ(ST_LITERAL("0102030405060708090a0b0c0d0e0f10"),
               ST::hex_encode(data_16, sizeof(data_16)));
-    EXPECT_EQ(ST_LITERAL("0102030405060708090A0B0C0D0E0F1011"),
+    EXPECT_EQ(ST_LITERAL("0102030405060708090a0b0c0d0e0f1011"),
               ST::hex_encode(data_17, sizeof(data_17)));
 }
 

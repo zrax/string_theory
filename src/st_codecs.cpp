@@ -22,7 +22,7 @@
 
 #include "st_assert.h"
 
-static const char _hex_chars[] = "0123456789ABCDEF";
+static const char _hex_chars[] = "0123456789abcdef";
 ST_STATIC_ASSERT(sizeof(_hex_chars) - 1 == 16, "Missing hex characters");
 
 static const int _hex_values[] = {
