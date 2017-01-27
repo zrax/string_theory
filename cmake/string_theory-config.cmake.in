@@ -18,11 +18,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-get_filename_component(STRING_THEORY_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-set(STRING_THEORY_INCLUDE_DIRS "@ST_CONF_INCLUDE_DIRS@")
+include("${CMAKE_CURRENT_LIST_DIR}/string_theory-targets.cmake")
 
-if(NOT TARGET string_theory AND NOT string_theory_BINARY_DIR)
-    include("${STRING_THEORY_CMAKE_DIR}/string_theory-targets.cmake")
-endif()
-
+get_target_property(STRING_THEORY_INCLUDE_DIRS string_theory
+                    INTERFACE_INCLUDE_DIRECTORIES)
 set(STRING_THEORY_LIBRARIES string_theory)

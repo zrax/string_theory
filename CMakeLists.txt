@@ -143,7 +143,6 @@ set(ST_HEADERS_PUB
     include/string_theory/string
     include/string_theory/string_stream
 )
-include_directories("${PROJECT_SOURCE_DIR}/include")
 
 set(ST_SOURCES
     src/st_assert.cpp
@@ -177,13 +176,6 @@ set(ST_INSTALL_LIB_DIR "lib" CACHE PATH "Path to install shared libraries")
 set(ST_INSTALL_INCLUDE_DIR "include" CACHE PATH "Path to install headers")
 set(ST_INSTALL_CMAKE_DIR "${ST_INSTALL_LIB_DIR}/cmake" CACHE PATH "Path to install CMake files")
 
-foreach(path BIN LIB INCLUDE CMAKE)
-    set(var ST_INSTALL_${path}_DIR)
-    if(NOT IS_ABSOLUTE "${${var}}")
-        set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
-    endif()
-endforeach()
-
 add_library(string_theory ${ST_LIB_TYPE}
             ${ST_HEADERS_PRIV} ${ST_SOURCES})
 if(WIN32)
@@ -202,6 +194,10 @@ set_target_properties(string_theory PROPERTIES
     SOVERSION ${ST_MAJOR_VERSION}
 )
 
+target_include_directories(string_theory PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+
 install(TARGETS string_theory
         EXPORT string_theory-targets
         RUNTIME DESTINATION "${ST_INSTALL_BIN_DIR}" COMPONENT shlib
@@ -214,19 +210,13 @@ install(FILES ${ST_HEADERS_PRIV} ${ST_HEADERS_PUB}
 export(TARGETS string_theory
        FILE "${PROJECT_BINARY_DIR}/string_theory-targets.cmake")
 
-file(RELATIVE_PATH REL_INCLUDE_DIR "${ST_INSTALL_CMAKE_DIR}/string_theory"
-     "${ST_INSTALL_INCLUDE_DIR}")
-set(ST_CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
 configure_file(cmake/string_theory-config.cmake.in
                "${PROJECT_BINARY_DIR}/string_theory-config.cmake" @ONLY)
-set(ST_CONF_INCLUDE_DIRS "\${STRING_THEORY_CMAKE_DIR}/${REL_INCLUDE_DIR}")
-configure_file(cmake/string_theory-config.cmake.in
-               "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/string_theory-config.cmake" @ONLY)
 configure_file(cmake/string_theory-config-version.cmake.in
                "${PROJECT_BINARY_DIR}/string_theory-config-version.cmake" @ONLY)
 
 install(FILES
-        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/string_theory-config.cmake"
+        "${PROJECT_BINARY_DIR}/string_theory-config.cmake"
         "${PROJECT_BINARY_DIR}/string_theory-config-version.cmake"
         DESTINATION "${ST_INSTALL_CMAKE_DIR}/string_theory" COMPONENT devel)
 install(EXPORT string_theory-targets
