@@ -218,13 +218,13 @@ void ST::string::set(const char_buffer &init, utf_validation_t validation)
 {
     switch (validation) {
     case assert_validity:
+        _assert_utf8_buffer(init);
         m_buffer = init;
-        _assert_utf8_buffer(m_buffer);
         break;
 
     case check_validity:
+        _check_utf8_buffer(init);
         m_buffer = init;
-        _check_utf8_buffer(m_buffer);
         break;
 
     case substitute_invalid:
@@ -243,22 +243,23 @@ void ST::string::set(const char_buffer &init, utf_validation_t validation)
 #ifdef ST_HAVE_RVALUE_MOVE
 void ST::string::set(char_buffer &&init, utf_validation_t validation)
 {
-    m_buffer = std::move(init);
-
     switch (validation) {
     case assert_validity:
-        _assert_utf8_buffer(m_buffer);
+        _assert_utf8_buffer(init);
+        m_buffer = std::move(init);
         break;
 
     case check_validity:
-        _check_utf8_buffer(m_buffer);
+        _check_utf8_buffer(init);
+        m_buffer = std::move(init);
         break;
 
     case substitute_invalid:
-        m_buffer = _cleanup_utf8_buffer(m_buffer);
+        m_buffer = _cleanup_utf8_buffer(init);
         break;
 
     case assume_valid:
+        m_buffer = std::move(init);
         break;
 
     default:
