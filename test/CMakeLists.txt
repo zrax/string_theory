@@ -94,3 +94,5 @@ if(ST_HAVE_FORMAT)
         endif()
     endif()
 endif()
+
+add_gtest(test_regress)
