@@ -20,6 +20,13 @@
 
 include("${CMAKE_CURRENT_LIST_DIR}/string_theory-targets.cmake")
 
+# Ensure the various release types are marked compatible with release builds
+# of string_theory
+set_target_properties(string_theory PROPERTIES
+                      MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
+set_target_properties(string_theory PROPERTIES
+                      MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE)
+
 get_target_property(STRING_THEORY_INCLUDE_DIRS string_theory
                     INTERFACE_INCLUDE_DIRECTORIES)
 set(STRING_THEORY_LIBRARIES string_theory)
