@@ -25,6 +25,7 @@
 #include <cstring>
 #include <iostream>
 
+#ifdef ST_HAVE_RVALUE_MOVE
 TEST(regress, github_5)
 {
     static const char latin1_data[] = "F\xfcr Elise";
@@ -41,3 +42,4 @@ TEST(regress, github_5)
 
     EXPECT_STREQ(utf8_data, s.c_str());
 }
+#endif
