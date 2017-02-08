@@ -30,6 +30,8 @@ set(ST_MAJOR_VERSION 1)
 set(ST_MINOR_VERSION 6)
 set(ST_VERSION ${ST_MAJOR_VERSION}.${ST_MINOR_VERSION})
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
     set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
 
@@ -48,6 +50,12 @@ if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
 
     if(APPLE AND (HAVE_STD_CXX11 OR HAVE_STD_CXX0X))
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    endif()
+
+    option(ST_BUILD_TEST_COVERAGE "Enable code coverage in string_theory and tests" OFF)
+    if(ST_BUILD_TEST_COVERAGE)
+        include(CodeCoverage)
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage")
     endif()
 endif()
 

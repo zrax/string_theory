@@ -96,3 +96,9 @@ if(ST_HAVE_FORMAT)
 endif()
 
 add_gtest(test_regress)
+
+if(ST_BUILD_TEST_COVERAGE)
+    setup_target_for_coverage(test_coverage
+            "${CMAKE_COMMAND} --build \"${CMAKE_BINARY_DIR}\" --target test"
+            coverage)
+endif()
