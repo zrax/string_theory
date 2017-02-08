@@ -290,23 +290,118 @@ TEST(string, concatenation)
     ST::string input1 = "xxxx";
     ST::string input2 = "yyy";
 
-    ST::string expected_long = "xxxxxxxxxxyyyyyyyyy";
+    ST::string expected_med = "xxxxxxxxxxyyyyyyyyy";
     ST::string input3 = "xxxxxxxxxx";
     ST::string input4 = "yyyyyyyyy";
 
+    ST::string expected_long = "xxxxxxxxxxxxxxxyyyyyyyyyyyyyyyy";
+    ST::string expected_long2 = "yyyyyyyyyyyyyyyyxxxxxxxxxxxxxxx";
+    ST::string input5 = "xxxxxxxxxxxxxxx";
+    ST::string input6 = "yyyyyyyyyyyyyyyy";
+
     // ST::string + ST::string
     EXPECT_EQ(expected_short, input1 + input2);
-    EXPECT_EQ(expected_long, input3 + input4);
+    EXPECT_EQ(expected_med, input3 + input4);
+    EXPECT_EQ(expected_long, input5 + input6);
+    EXPECT_EQ(expected_long2, input6 + input5);
     EXPECT_EQ(input1, input1 + ST::string());
     EXPECT_EQ(input1, ST::string() + input1);
+    EXPECT_EQ(input6, input6 + ST::string());
+    EXPECT_EQ(input6, ST::string() + input6);
 
     // ST::string + const char*
     EXPECT_EQ(expected_short, input1 + input2.c_str());
     EXPECT_EQ(expected_short, input1.c_str() + input2);
-    EXPECT_EQ(expected_long, input3 + input4.c_str());
-    EXPECT_EQ(expected_long, input3.c_str() + input4);
+    EXPECT_EQ(expected_med, input3 + input4.c_str());
+    EXPECT_EQ(expected_med, input3.c_str() + input4);
+    EXPECT_EQ(expected_long, input5 + input6.c_str());
+    EXPECT_EQ(expected_long, input5.c_str() + input6);
+    EXPECT_EQ(expected_long2, input6 + input5.c_str());
+    EXPECT_EQ(expected_long2, input6.c_str() + input5);
     EXPECT_EQ(input1, input1 + "");
     EXPECT_EQ(input1, "" + input1);
+    EXPECT_EQ(input6, input6 + "");
+    EXPECT_EQ(input6, "" + input6);
+}
+
+TEST(string, char_concatenation)
+{
+    // If this changes, this test may need to be updated to match
+    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+
+    ST::string input1 = "xxxx";
+    ST::string input2 = "xxxxxxxxxxxxxxx";
+    ST::string input3 = "xxxxxxxxxxxxxxxx";
+
+    // ST::string + char
+    EXPECT_EQ(ST_LITERAL("xxxxy"), input1 + 'y');
+    EXPECT_EQ(ST_LITERAL("xxxxxxxxxxxxxxxy"), input2 + 'y');
+    EXPECT_EQ(ST_LITERAL("xxxxxxxxxxxxxxxxy"), input3 + 'y');
+    EXPECT_EQ(ST_LITERAL("yxxxx"), 'y' + input1);
+    EXPECT_EQ(ST_LITERAL("yxxxxxxxxxxxxxxx"), 'y' + input2);
+    EXPECT_EQ(ST_LITERAL("yxxxxxxxxxxxxxxxx"), 'y' + input3);
+
+    EXPECT_EQ(ST::string(L"xxxx\u00ff"), input1 + char(0xff));
+    EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxx\u00ff"), input2 + char(0xff));
+    EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxxx\u00ff"), input3 + char(0xff));
+    EXPECT_EQ(ST::string(L"\u00ffxxxx"), char(0xff) + input1);
+    EXPECT_EQ(ST::string(L"\u00ffxxxxxxxxxxxxxxx"), char(0xff) + input2);
+    EXPECT_EQ(ST::string(L"\u00ffxxxxxxxxxxxxxxxx"), char(0xff) + input3);
+
+    // ST::string + char16_t
+    EXPECT_EQ(ST::string(L"xxxx\u00ff"), input1 + char16_t(0xff));
+    EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxx\u00ff"), input2 + char16_t(0xff));
+    EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxxx\u00ff"), input3 + char16_t(0xff));
+    EXPECT_EQ(ST::string(L"\u00ffxxxx"), char16_t(0xff) + input1);
+    EXPECT_EQ(ST::string(L"\u00ffxxxxxxxxxxxxxxx"), char16_t(0xff) + input2);
+    EXPECT_EQ(ST::string(L"\u00ffxxxxxxxxxxxxxxxx"), char16_t(0xff) + input3);
+
+    EXPECT_EQ(ST::string(L"xxxx\u0100"), input1 + char16_t(0x100));
+    EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxx\u0100"), input2 + char16_t(0x100));
+    EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxxx\u0100"), input3 + char16_t(0x100));
+    EXPECT_EQ(ST::string(L"\u0100xxxx"), char16_t(0x100) + input1);
+    EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxx"), char16_t(0x100) + input2);
+    EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxxx"), char16_t(0x100) + input3);
+
+    const char32_t expect_wide1[] = { 0x78, 0x78, 0x78, 0x78, 0x10FFFF, 0 };
+    const char32_t expect_wide2[] = {
+        0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78,
+        0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78,
+        0x10FFFF, 0
+    };
+    const char32_t expect_wide3[] = {
+        0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78,
+        0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78,
+        0x10FFFF, 0
+    };
+
+    const char32_t expect_wide4[] = { 0x10FFFF, 0x78, 0x78, 0x78, 0x78, 0 };
+    const char32_t expect_wide5[] = {
+        0x10FFFF,
+        0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78,
+        0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0
+    };
+    const char32_t expect_wide6[] = {
+        0x10FFFF,
+        0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78,
+        0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0
+    };
+
+    // ST::string + char32_t
+    EXPECT_EQ(ST::string::from_utf32(expect_wide1), input1 + char32_t(0x10ffff));
+    EXPECT_EQ(ST::string::from_utf32(expect_wide2), input2 + char32_t(0x10ffff));
+    EXPECT_EQ(ST::string::from_utf32(expect_wide3), input3 + char32_t(0x10ffff));
+    EXPECT_EQ(ST::string::from_utf32(expect_wide4), char32_t(0x10ffff) + input1);
+    EXPECT_EQ(ST::string::from_utf32(expect_wide5), char32_t(0x10ffff) + input2);
+    EXPECT_EQ(ST::string::from_utf32(expect_wide6), char32_t(0x10ffff) + input3);
+
+    // UTF-16 and UTF-32 are already tested, so just check the conversion from wchar_t
+    EXPECT_EQ(ST::string(L"xxxx\u0100"), input1 + wchar_t(0x100));
+    EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxx\u0100"), input2 + wchar_t(0x100));
+    EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxxx\u0100"), input3 + wchar_t(0x100));
+    EXPECT_EQ(ST::string(L"\u0100xxxx"), wchar_t(0x100) + input1);
+    EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxx"), wchar_t(0x100) + input2);
+    EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxxx"), wchar_t(0x100) + input3);
 }
 
 TEST(string, from_int)

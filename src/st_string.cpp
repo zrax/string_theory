@@ -286,6 +286,30 @@ ST::string &ST::string::operator+=(const ST::string &other)
     return *this;
 }
 
+ST::string &ST::string::operator+=(char ch)
+{
+    set(*this + ch);
+    return *this;
+}
+
+ST::string &ST::string::operator+=(char16_t ch)
+{
+    set(*this + ch);
+    return *this;
+}
+
+ST::string &ST::string::operator+=(char32_t ch)
+{
+    set(*this + ch);
+    return *this;
+}
+
+ST::string &ST::string::operator+=(wchar_t ch)
+{
+    set(*this + ch);
+    return *this;
+}
+
 void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                                      utf_validation_t validation)
 {
@@ -1483,4 +1507,141 @@ ST::string ST::operator+(const char *left, const ST::string &right)
     catp[cat.size()] = 0;
 
     return cat;
+}
+
+ST::string ST::operator+(const ST::string &left, char right)
+{
+    char32_t uchar = static_cast<unsigned char>(right);
+    return operator+(left, uchar);
+}
+
+ST::string ST::operator+(const ST::string &left, char16_t right)
+{
+    char32_t uchar = right;
+    return operator+(left, uchar);
+}
+
+ST::string ST::operator+(const ST::string &left, char32_t right)
+{
+    size_t newsize = left.size();
+    if (right > 0x10FFFF) {
+        // Out-of-range code point always gets replaced
+        newsize += 3;
+    } else if (right > 0xFFFF) {
+        newsize += 4;
+    } else if (right > 0x7FF) {
+        newsize += 3;
+    } else if (right > 0x7F) {
+        newsize += 2;
+    } else {
+        newsize += 1;
+    }
+
+    ST::char_buffer cat;
+    char *catp = cat.create_writable_buffer(newsize);
+    _ST_PRIVATE::_copy_buffer(catp, left.c_str(), left.size());
+    catp += left.size();
+
+    if (right > 0x10FFFF) {
+        ST_ASSERT(false, "Unicode character out of range");
+        *catp++ = 0xE0 | ((BADCHAR_SUBSTITUTE >> 12) & 0x0F);
+        *catp++ = 0x80 | ((BADCHAR_SUBSTITUTE >>  6) & 0x3F);
+        *catp++ = 0x80 | ((BADCHAR_SUBSTITUTE      ) & 0x3F);
+    } else if (right > 0xFFFF) {
+        *catp++ = 0xF0 | ((right >> 18) & 0x07);
+        *catp++ = 0x80 | ((right >> 12) & 0x3F);
+        *catp++ = 0x80 | ((right >>  6) & 0x3F);
+        *catp++ = 0x80 | ((right      ) & 0x3F);
+    } else if (right > 0x7FF) {
+        *catp++ = 0xE0 | ((right >> 12) & 0x0F);
+        *catp++ = 0x80 | ((right >>  6) & 0x3F);
+        *catp++ = 0x80 | ((right      ) & 0x3F);
+    } else if (right > 0x7F) {
+        *catp++ = 0xC0 | ((right >>  6) & 0x1F);
+        *catp++ = 0x80 | ((right      ) & 0x3F);
+    } else {
+        *catp++ = static_cast<char>(right);
+    }
+
+    *catp = 0;
+    return cat;
+}
+
+ST::string ST::operator+(const ST::string &left, wchar_t right)
+{
+#if ST_WCHAR_BYTES == 2
+    char32_t uchar = static_cast<unsigned short>(right);
+#else
+    char32_t uchar = static_cast<unsigned int>(right);
+#endif
+    return operator+(left, uchar);
+}
+
+
+ST::string ST::operator+(char left, const ST::string &right)
+{
+    char32_t uchar = static_cast<unsigned char>(left);
+    return operator+(uchar, right);
+}
+
+ST::string ST::operator+(char16_t left, const ST::string &right)
+{
+    char32_t uchar = left;
+    return operator+(uchar, right);
+}
+
+ST::string ST::operator+(char32_t left, const ST::string &right)
+{
+    size_t newsize = right.size();
+    if (left > 0x10FFFF) {
+        // Out-of-range code point always gets replaced
+        newsize += 3;
+    } else if (left > 0xFFFF) {
+        newsize += 4;
+    } else if (left > 0x7FF) {
+        newsize += 3;
+    } else if (left > 0x7F) {
+        newsize += 2;
+    } else {
+        newsize += 1;
+    }
+
+    ST::char_buffer cat;
+    char *catp = cat.create_writable_buffer(newsize);
+
+    if (left > 0x10FFFF) {
+        ST_ASSERT(false, "Unicode character out of range");
+        *catp++ = 0xE0 | ((BADCHAR_SUBSTITUTE >> 12) & 0x0F);
+        *catp++ = 0x80 | ((BADCHAR_SUBSTITUTE >>  6) & 0x3F);
+        *catp++ = 0x80 | ((BADCHAR_SUBSTITUTE      ) & 0x3F);
+    } else if (left > 0xFFFF) {
+        *catp++ = 0xF0 | ((left >> 18) & 0x07);
+        *catp++ = 0x80 | ((left >> 12) & 0x3F);
+        *catp++ = 0x80 | ((left >>  6) & 0x3F);
+        *catp++ = 0x80 | ((left      ) & 0x3F);
+    } else if (left > 0x7FF) {
+        *catp++ = 0xE0 | ((left >> 12) & 0x0F);
+        *catp++ = 0x80 | ((left >>  6) & 0x3F);
+        *catp++ = 0x80 | ((left      ) & 0x3F);
+    } else if (left > 0x7F) {
+        *catp++ = 0xC0 | ((left >>  6) & 0x1F);
+        *catp++ = 0x80 | ((left      ) & 0x3F);
+    } else {
+        *catp++ = static_cast<char>(left);
+    }
+
+    _ST_PRIVATE::_copy_buffer(catp, right.c_str(), right.size());
+    catp[right.size()] = 0;
+
+    return cat;
+}
+
+ST::string ST::operator+(wchar_t left, const ST::string &right)
+{
+#if ST_WCHAR_BYTES == 2
+    char32_t uchar = static_cast<unsigned short>(left);
+#else
+    char32_t uchar = static_cast<unsigned int>(left);
+#endif
+    return operator+(uchar, right);
 }

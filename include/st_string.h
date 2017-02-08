@@ -360,6 +360,11 @@ namespace ST
 
         string &operator+=(const string &other);
 
+        string &operator+=(char ch);
+        string &operator+=(char16_t ch);
+        string &operator+=(char32_t ch);
+        string &operator+=(wchar_t ch);
+
         static inline string from_literal(const char *literal, size_t size)
         {
             string str;
@@ -801,6 +806,15 @@ namespace ST
     ST_EXPORT string operator+(const string &left, const string &right);
     ST_EXPORT string operator+(const string &left, const char *right);
     ST_EXPORT string operator+(const char *left, const string &right);
+
+    ST_EXPORT string operator+(const string &left, char right);
+    ST_EXPORT string operator+(const string &left, char16_t right);
+    ST_EXPORT string operator+(const string &left, char32_t right);
+    ST_EXPORT string operator+(const string &left, wchar_t right);
+    ST_EXPORT string operator+(char left, const string &right);
+    ST_EXPORT string operator+(char16_t left, const string &right);
+    ST_EXPORT string operator+(char32_t left, const string &right);
+    ST_EXPORT string operator+(wchar_t left, const string &right);
 
     inline string operator+(const string &left, const wchar_t *right)
     {
