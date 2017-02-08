@@ -1004,67 +1004,67 @@ static const char *_strichr(const char *haystack, int ch)
     return ST_NULLPTR;
 }
 
-ST_ssize_t ST::string::find(char ch, case_sensitivity_t cs) const ST_NOEXCEPT
+ST_ssize_t ST::string::find(size_t start, char ch, case_sensitivity_t cs)
+    const ST_NOEXCEPT
+{
+    if (start >= size())
+        return -1;
+
+    const char *cp = (cs == case_sensitive) ? strchr(c_str() + start, ch)
+                                            : _strichr(c_str() + start, ch);
+    return cp ? (cp - c_str()) : -1;
+}
+
+ST_ssize_t ST::string::find(size_t start, const char *substr, case_sensitivity_t cs)
+    const ST_NOEXCEPT
+{
+    if (!substr || !substr[0] || start >= size())
+        return -1;
+
+    const char *cp = (cs == case_sensitive) ? strstr(c_str() + start, substr)
+                                            : _stristr(c_str() + start, substr);
+    return cp ? (cp - c_str()) : -1;
+}
+
+ST_ssize_t ST::string::find_last(size_t max, char ch, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     if (is_empty())
         return -1;
 
-    const char *cp = (cs == case_sensitive) ? strchr(c_str(), ch)
-                                            : _strichr(c_str(), ch);
-    return cp ? (cp - c_str()) : -1;
+    const char *endp = c_str() + (max > size() ? size() : max);
+
+    const char *start = c_str();
+    const char *found = nullptr;
+    for ( ;; ) {
+        const char *cp = (cs == case_sensitive) ? strchr(start, ch)
+                                                : _strichr(start, ch);
+        if (!cp || cp >= endp)
+            break;
+        found = cp;
+        start = cp + 1;
+    }
+    return found ? (found - c_str()) : -1;
 }
 
-ST_ssize_t ST::string::find(const char *substr, case_sensitivity_t cs)
+ST_ssize_t ST::string::find_last(size_t max, const char *substr, case_sensitivity_t cs)
     const ST_NOEXCEPT
 {
-    if (!substr || !substr[0])
+    if (!substr || !substr[0] || is_empty())
         return -1;
 
-    const char *cp = (cs == case_sensitive) ? strstr(c_str(), substr)
-                                            : _stristr(c_str(), substr);
-    return cp ? (cp - c_str()) : -1;
-}
+    const char *endp = c_str() + (max > size() ? size() : max);
 
-ST_ssize_t ST::string::find_last(char ch, case_sensitivity_t cs) const ST_NOEXCEPT
-{
-    if (is_empty())
-        return -1;
-
-    if (cs == case_sensitive) {
-        const char *cp = strrchr(c_str(), ch);
-        return cp ? (cp - c_str()) : -1;
-    } else {
-        const char *cp = c_str() + size();
-        while (--cp >= c_str()) {
-            if (ST::_lower_char(ch) == ST::_lower_char(*cp))
-                return cp - c_str();
-        }
-        return -1;
+    const char *start = c_str();
+    const char *found = nullptr;
+    for ( ;; ) {
+        const char *cp = (cs == case_sensitive) ? strstr(start, substr)
+                                                : _stristr(start, substr);
+        if (!cp || cp >= endp)
+            break;
+        found = cp;
+        start = cp + 1;
     }
-}
-
-ST_ssize_t ST::string::find_last(const char *substr, case_sensitivity_t cs)
-    const ST_NOEXCEPT
-{
-    if (!substr || !substr[0])
-        return -1;
-
-    size_t sublen = strlen(substr);
-    const char *cp = c_str() + size() - sublen;
-    if (cs == case_sensitive) {
-        while (cp >= c_str()) {
-            if (strncmp(cp, substr, sublen) == 0)
-                return cp - c_str();
-            --cp;
-        }
-    } else {
-        while (cp >= c_str()) {
-            if (strnicmp(cp, substr, sublen) == 0)
-                return cp - c_str();
-            --cp;
-        }
-    }
-    return -1;
+    return found ? (found - c_str()) : -1;
 }
 
 ST::string ST::string::trim_left(const char *charset) const

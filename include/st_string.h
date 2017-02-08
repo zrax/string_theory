@@ -645,27 +645,63 @@ namespace ST
         }
 
         ST_ssize_t find(char ch, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const ST_NOEXCEPT
+        {
+            return find(0, ch, cs);
+        }
 
         ST_ssize_t find(const char *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const ST_NOEXCEPT
+        {
+            return find(0, substr, cs);
+        }
 
         ST_ssize_t find(const string &substr, case_sensitivity_t cs = case_sensitive)
             const ST_NOEXCEPT
         {
-            return find(substr.c_str(), cs);
+            return find(0, substr.c_str(), cs);
+        }
+
+        ST_ssize_t find(size_t start, char ch, case_sensitivity_t cs = case_sensitive)
+            const ST_NOEXCEPT;
+
+        ST_ssize_t find(size_t start, const char *substr, case_sensitivity_t cs = case_sensitive)
+            const ST_NOEXCEPT;
+
+        ST_ssize_t find(size_t start, const string &substr, case_sensitivity_t cs = case_sensitive)
+            const ST_NOEXCEPT
+        {
+            return find(start, substr.c_str(), cs);
         }
 
         ST_ssize_t find_last(char ch, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const ST_NOEXCEPT
+        {
+            return find_last(ST_AUTO_SIZE, ch, cs);
+        }
 
         ST_ssize_t find_last(const char *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const ST_NOEXCEPT
+        {
+            return find_last(ST_AUTO_SIZE, substr, cs);
+        }
 
         ST_ssize_t find_last(const string &substr, case_sensitivity_t cs = case_sensitive)
             const ST_NOEXCEPT
         {
-            return find_last(substr.c_str(), cs);
+            return find_last(ST_AUTO_SIZE, substr.c_str(), cs);
+        }
+
+        ST_ssize_t find_last(size_t max, char ch, case_sensitivity_t cs = case_sensitive)
+            const ST_NOEXCEPT;
+
+        ST_ssize_t find_last(size_t max, const char *substr, case_sensitivity_t cs = case_sensitive)
+            const ST_NOEXCEPT;
+
+        ST_ssize_t find_last(size_t max, const string &substr, case_sensitivity_t cs = case_sensitive)
+            const ST_NOEXCEPT
+        {
+            return find_last(max, substr.c_str(), cs);
         }
 
         bool contains(char ch, case_sensitivity_t cs = case_sensitive)

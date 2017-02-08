@@ -1043,6 +1043,24 @@ TEST(string, find_char)
     // Empty string
     EXPECT_EQ(-1, ST::string().find('A', ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find('A', ST::case_insensitive));
+
+    // Starting position, case senstive
+    EXPECT_EQ( 4, ST_LITERAL("AaaaAaaa").find(1, 'A', ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("AaaaAaaa").find(4, 'A', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("AaaaAaaa").find(5, 'A', ST::case_sensitive));
+    EXPECT_EQ( 7, ST_LITERAL("AaaaAaaA").find(5, 'A', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("AaaaAaaa").find(7, 'A', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("AaaaAaaA").find(8, 'A', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("AaaaAaaA").find(100, 'A', ST::case_sensitive));
+
+    // Starting position, case insenstive
+    EXPECT_EQ( 4, ST_LITERAL("abbbabbb").find(1, 'A', ST::case_insensitive));
+    EXPECT_EQ( 4, ST_LITERAL("abbbabbb").find(4, 'A', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abbbabbb").find(5, 'A', ST::case_insensitive));
+    EXPECT_EQ( 7, ST_LITERAL("abbbabba").find(5, 'A', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abbbabbb").find(7, 'A', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abbbabba").find(8, 'A', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abbbabba").find(100, 'A', ST::case_insensitive));
 }
 
 TEST(string, find_last_char)
@@ -1075,6 +1093,24 @@ TEST(string, find_last_char)
     // Empty string
     EXPECT_EQ(-1, ST::string().find_last('A', ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find_last('A', ST::case_insensitive));
+
+    // End position, case senstive
+    EXPECT_EQ( 0, ST_LITERAL("AaaaAaaa").find_last(4, 'A', ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("AaaaAaaa").find_last(5, 'A', ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("AaaaAaaA").find_last(7, 'A', ST::case_sensitive));
+    EXPECT_EQ( 7, ST_LITERAL("AaaaAaaA").find_last(8, 'A', ST::case_sensitive));
+    EXPECT_EQ( 7, ST_LITERAL("AaaaAaaA").find_last(100, 'A', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("aaaaAaaA").find_last(4, 'A', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("AaaaAaaA").find_last(0, 'A', ST::case_sensitive));
+
+    // End position, case insenstive
+    EXPECT_EQ( 0, ST_LITERAL("abbbabbb").find_last(4, 'A', ST::case_insensitive));
+    EXPECT_EQ( 4, ST_LITERAL("abbbabbb").find_last(5, 'A', ST::case_insensitive));
+    EXPECT_EQ( 4, ST_LITERAL("abbbabba").find_last(7, 'A', ST::case_insensitive));
+    EXPECT_EQ( 7, ST_LITERAL("abbbabba").find_last(8, 'A', ST::case_insensitive));
+    EXPECT_EQ( 7, ST_LITERAL("abbbabba").find_last(100, 'A', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("bbbbabba").find_last(4, 'A', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abbbabba").find_last(0, 'A', ST::case_insensitive));
 }
 
 TEST(string, find)
@@ -1102,6 +1138,10 @@ TEST(string, find)
     // Unavailable string
     EXPECT_EQ(-1, ST_LITERAL("xxxx").find("ABCD", ST::case_sensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxx").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxABC").find("ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxABC").find("ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxABCxxxx").find("ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxABCxxxx").find("ABCD", ST::case_insensitive));
 
     // Empty string
     EXPECT_EQ(-1, ST::string().find("AAAA", ST::case_sensitive));
@@ -1124,6 +1164,22 @@ TEST(string, find)
     haystack = ST_LITERAL("xxxx") + ST::string::from_utf32(test_data) + ST_LITERAL("xxxx");
     EXPECT_EQ(4, haystack.find(utf8_test_data, ST::case_sensitive));
     EXPECT_EQ(4, haystack.find(utf8_test_data, ST::case_insensitive));
+
+    // Starting position, case senstive
+    EXPECT_EQ(-1, ST_LITERAL("ABCDabcd").find(1, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("abcdABCDABCDabcd").find(1, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("abcdABCDABCDabcd").find(4, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 8, ST_LITERAL("abcdABCDABCDabcd").find(5, "ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdABCDabcd").find(5, "ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdABCDabcd").find(100, "ABCD", ST::case_sensitive));
+
+    // Starting position, case insenstive
+    EXPECT_EQ(-1, ST_LITERAL("abcdxxxx").find(1, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 4, ST_LITERAL("xxxxabcdabcdxxxx").find(1, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 4, ST_LITERAL("xxxxabcdabcdxxxx").find(4, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 8, ST_LITERAL("xxxxabcdabcdxxxx").find(5, "ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find(5, "ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find(100, "ABCD", ST::case_insensitive));
 }
 
 TEST(string, find_last)
@@ -1151,6 +1207,10 @@ TEST(string, find_last)
     // Unavailable string
     EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last("ABCD", ST::case_sensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last("ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxABC").find_last("ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxABC").find_last("ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxABCxxxx").find_last("ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxABCxxxx").find_last("ABCD", ST::case_insensitive));
 
     // Empty string
     EXPECT_EQ(-1, ST::string().find_last("AAAA", ST::case_sensitive));
@@ -1173,6 +1233,22 @@ TEST(string, find_last)
     haystack = ST_LITERAL("xxxx") + ST::string::from_utf32(test_data) + ST_LITERAL("xxxx");
     EXPECT_EQ(4, haystack.find_last(utf8_test_data, ST::case_sensitive));
     EXPECT_EQ(4, haystack.find_last(utf8_test_data, ST::case_insensitive));
+
+    // Starting position, case senstive
+    EXPECT_EQ(-1, ST_LITERAL("abcdABCD").find_last(4, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("abcdABCDABCDabcd").find_last(5, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("abcdABCDABCDabcd").find_last(8, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 8, ST_LITERAL("abcdABCDABCDabcd").find_last(9, "ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdABCDabcd").find_last(4, "ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("ABCDabcd").find_last(0, "ABCD", ST::case_sensitive));
+
+    // Starting position, case insenstive
+    EXPECT_EQ(-1, ST_LITERAL("xxxxabcd").find_last(4, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 4, ST_LITERAL("xxxxabcdabcdxxxx").find_last(5, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 4, ST_LITERAL("xxxxabcdabcdxxxx").find_last(8, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 8, ST_LITERAL("xxxxabcdabcdxxxx").find_last(9, "ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find_last(4, "ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdxxxx").find_last(0, "ABCD", ST::case_insensitive));
 }
 
 TEST(string, trim)
