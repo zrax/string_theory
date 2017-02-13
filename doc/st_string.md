@@ -59,6 +59,10 @@
 | string & | [operator+=](#operator_pluseq_1)(const char *cstr) |
 | string & | [operator+=](#operator_pluseq_2)(const wchar_t *wstr) |
 | string & | [operator+=](#operator_pluseq_3)(const string &other) |
+| string & | [operator+=](#operator_pluseq_4)(char ch) |
+| string & | [operator+=](#operator_pluseq_5)(char16_t ch) |
+| string & | [operator+=](#operator_pluseq_6)(char32_t ch) |
+| string & | [operator+=](#operator_pluseq_7)(wchar_t ch) |
 | const char * | [c_str](#c_str)(const char \*substitute = "") const noexcept |
 | char | [char_at](#char_at)(size_t position) const noexcept |
 | char_buffer | [to_utf8](#to_utf8)() const noexcept |
@@ -103,9 +107,15 @@
 | ST_ssize_t | [find](#find_1)(char ch, case_sensitivity_t cs = case_sensitive) const noexcept |
 | ST_ssize_t | [find](#find_2)(const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | ST_ssize_t | [find](#find_3)(const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept |
+| ST_ssize_t | [find](#find_4)(size_t start, char ch, case_sensitivity_t cs = case_sensitive) const noexcept |
+| ST_ssize_t | [find](#find_5)(size_t start, const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept |
+| ST_ssize_t | [find](#find_6)(size_t start, const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | ST_ssize_t | [find_last](#find_last_1)(char ch, case_sensitivity_t cs = case_sensitive) const noexcept |
 | ST_ssize_t | [find_last](#find_last_2)(const char \*substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | ST_ssize_t | [find_last](#find_last_3)(const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept |
+| ST_ssize_t | [find_last](#find_last_4)(size_t max, char ch, case_sensitivity_t cs = case_sensitive) const noexcept |
+| ST_ssize_t | [find_last](#find_last_5)(size_t max, const char \*substr, case_sensitivity_t cs = case_sensitive) const noexcept |
+| ST_ssize_t | [find_last](#find_last_6)(size_t max, const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | bool | [contains](#contains_1)(char ch, case_sensitivity_t cs = case_sensitive) const noexcept |
 | bool | [contains](#contains_2)(const char \*substr, case_sensitivity_t cs = case_sensitive) const noexcept |
 | bool | [contains](#contains_3)(const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept |
@@ -181,6 +191,14 @@
 | string | [operator+](#operator_plus_3)(const char \*left, const string &right) |
 | string | [operator+](#operator_plus_4)(const string &left, const wchar_t \*right) |
 | string | [operator+](#operator_plus_5)(const wchar_t \*left, const string &right) |
+| string | [operator+](#operator_plus_6)(const string &left, char right) |
+| string | [operator+](#operator_plus_7)(const string &left, char16_t right) |
+| string | [operator+](#operator_plus_8)(const string &left, char32_t right) |
+| string | [operator+](#operator_plus_9)(const string &left, wchar_t right) |
+| string | [operator+](#operator_plus_10)(char left, const string &right) |
+| string | [operator+](#operator_plus_11)(char16_t left, const string &right) |
+| string | [operator+](#operator_plus_12)(char32_t left, const string &right) |
+| string | [operator+](#operator_plus_13)(wchar_t left, const string &right) |
 | bool | [operator==](#operator_iseq_4)(const null_t &, const string &right) noexcept |
 | bool | [operator!=](#operator_isneq_4)(const null_t &, const string &right) noexcept |
 | string | [operator"" _st](#operator_st_1)(const char \*str, size_t size) |
@@ -898,6 +916,39 @@ position.  If `substr` isn't found, this returns `-1`.
 
 ------
 
+<a name="find_4"></a>
+### ST_ssize_t ST::string::find(size_t start, char ch, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find(size_t start, char ch, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the first instance of `ch` within the string, starting from `start`,
+and return its byte position.  If `ch` isn't found, this returns `-1`.
+
+------
+
+<a name="find_5"></a>
+### ST_ssize_t ST::string::find(size_t start, const char \*substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find(size_t start, const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the first instance of `substr` within the string, starting from `start`,
+and return its byte position.  If `substr` isn't found, this returns `-1`.
+
+------
+
+<a name="find_6"></a>
+### ST_ssize_t ST::string::find(size_t start, const ST::string &substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find(size_t start, const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the first instance of `substr` within the string, starting from `start,
+and return its byte position.  If `substr` isn't found, this returns `-1`.
+
+------
+
 <a name="find_last_1"></a>
 ### ST_ssize_t ST::string::find_last(char ch, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
 ~~~c++
@@ -928,6 +979,39 @@ ST_ssize_t find_last(const string &substr, case_sensitivity_t cs = case_sensitiv
 
 Find the last instance of `substr` within the string, and return its byte
 position.  If `substr` isn't found, this returns `-1`.
+
+------
+
+<a name="find_last_4"></a>
+### ST_ssize_t ST::string::find_last(size_t max, char ch, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find_last(size_t max, char ch, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the last instance of `ch` within the first `max` bytes of the string,
+and return its byte position.  If `ch` isn't found, this returns `-1`.
+
+------
+
+<a name="find_last_5"></a>
+### ST_ssize_t ST::string::find_last(size_t max, const char \*substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find_last(size_t max, const char *substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the last instance of `substr` within the first `max` bytes of the string,
+and return its byte position.  If `substr` isn't found, this returns `-1`.
+
+------
+
+<a name="find_last_6"></a>
+### ST_ssize_t ST::string::find_last(size_t max, const ST::string &substr, [ST::case_sensitivity_t](#case_sensitivity_t) cs = ST::case_sensitive) const
+~~~c++
+ST_ssize_t find_last(size_t max, const string &substr, case_sensitivity_t cs = case_sensitive) const noexcept
+~~~
+
+Find the last instance of `substr` within the first `max` bytes of the string,
+and return its byte position.  If `substr` isn't found, this returns `-1`.
 
 ------
 
@@ -1374,6 +1458,46 @@ string &operator+=(const string &other)
 ~~~
 
 Append the contents of `other` to the end of this string.
+
+------
+
+<a name="operator_pluseq_4"></a>
+### ST::string &ST::string::operator+=(char ch)
+~~~c++
+string &operator+=(char ch)
+~~~
+
+Append the character `ch` to the end of this string.
+
+------
+
+<a name="operator_pluseq_5"></a>
+### ST::string &ST::string::operator+=(char16_t ch)
+~~~c++
+string &operator+=(char16_t ch)
+~~~
+
+Append the unicode character `ch` to the end of this string.
+
+------
+
+<a name="operator_pluseq_6"></a>
+### ST::string &ST::string::operator+=(char32_t ch)
+~~~c++
+string &operator+=(char32_t ch)
+~~~
+
+Append the unicode character `ch` to the end of this string.
+
+------
+
+<a name="operator_pluseq_7"></a>
+### ST::string &ST::string::operator+=(wchar_t ch)
+~~~c++
+string &operator+=(wchar_t ch)
+~~~
+
+Append the wide character `ch` to the end of this string.
 
 ------
 
@@ -2310,6 +2434,86 @@ string operator+(const wchar_t *left, const string &right)
 Returns a string which is the concatenation of `left` and `right`.
 
 **See also** [operator+=](#operator_pluseq_2)(const wchar_t \*)
+
+------
+
+<a name="operator_plus_6"></a>
+### ST::string ST::operator+(const ST::string &left, char right)
+~~~c++
+string operator+(const string &left, char right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+------
+
+<a name="operator_plus_7"></a>
+### ST::string ST::operator+(const ST::string &left, char16_t right)
+~~~c++
+string operator+(const string &left, char16_t right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+------
+
+<a name="operator_plus_8"></a>
+### ST::string ST::operator+(const ST::string &left, char32_t right)
+~~~c++
+string operator+(const string &left, char32_t right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+------
+
+<a name="operator_plus_9"></a>
+### ST::string ST::operator+(const ST::string &left, wchar_t right)
+~~~c++
+string operator+(const string &left, wchar_t right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+------
+
+<a name="operator_plus_10"></a>
+### ST::string ST::operator+(char left, const ST::string &right)
+~~~c++
+string operator+(char left, const string &right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+------
+
+<a name="operator_plus_11"></a>
+### ST::string ST::operator+(char16_t left, const ST::string &right)
+~~~c++
+string operator+(char16_t left, const string &right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+------
+
+<a name="operator_plus_12"></a>
+### ST::string ST::operator+(char32_t left, const ST::string &right)
+~~~c++
+string operator+(char32_t left, const string &right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+------
+
+<a name="operator_plus_13"></a>
+### ST::string ST::operator+(wchar_t left, const ST::string &right)
+~~~c++
+string operator+(wchar_t left, const string &right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
 
 ------
 

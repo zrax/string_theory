@@ -843,15 +843,6 @@ namespace ST
     ST_EXPORT string operator+(const string &left, const char *right);
     ST_EXPORT string operator+(const char *left, const string &right);
 
-    ST_EXPORT string operator+(const string &left, char right);
-    ST_EXPORT string operator+(const string &left, char16_t right);
-    ST_EXPORT string operator+(const string &left, char32_t right);
-    ST_EXPORT string operator+(const string &left, wchar_t right);
-    ST_EXPORT string operator+(char left, const string &right);
-    ST_EXPORT string operator+(char16_t left, const string &right);
-    ST_EXPORT string operator+(char32_t left, const string &right);
-    ST_EXPORT string operator+(wchar_t left, const string &right);
-
     inline string operator+(const string &left, const wchar_t *right)
     {
         return operator+(left, string::from_wchar(right));
@@ -861,6 +852,15 @@ namespace ST
     {
         return operator+(string::from_wchar(left), right);
     }
+
+    ST_EXPORT string operator+(const string &left, char right);
+    ST_EXPORT string operator+(const string &left, char16_t right);
+    ST_EXPORT string operator+(const string &left, char32_t right);
+    ST_EXPORT string operator+(const string &left, wchar_t right);
+    ST_EXPORT string operator+(char left, const string &right);
+    ST_EXPORT string operator+(char16_t left, const string &right);
+    ST_EXPORT string operator+(char32_t left, const string &right);
+    ST_EXPORT string operator+(wchar_t left, const string &right);
 
     inline bool operator==(const null_t &, const string &right) ST_NOEXCEPT
     {
