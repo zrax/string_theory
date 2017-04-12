@@ -26,6 +26,21 @@
 
 #if !defined(ST_NO_STL_STRINGS)
 #   include <string>
+#   if defined(ST_HAVE_CXX17_STRING_VIEW)
+#       include <string_view>
+        namespace ST
+        {
+            using _std_string_view = std::string_view;
+            using _std_wstring_view = std::wstring_view;
+        }
+#   elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
+#       include <experimental/string_view>
+        namespace ST
+        {
+            using _std_string_view = std::experimental::string_view;
+            using _std_wstring_view = std::experimental::wstring_view;
+        }
+#   endif
 #   if defined(ST_HAVE_CXX17_FILESYSTEM)
 #       include <filesystem>
         namespace ST { namespace _filesystem = std::filesystem; }
@@ -180,6 +195,20 @@ namespace ST
             _convert_from_wchar(init.c_str(), init.size(), validation);
         }
 
+#ifdef ST_HAVE_STD_STRING_VIEW
+        string(const ST::_std_string_view &view,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            set(view, validation);
+        }
+
+        string(const ST::_std_wstring_view &view,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            set(view, validation);
+        }
+#endif
+
 #ifdef ST_HAVE_FILESYSTEM
         string(const ST::_filesystem::path &path)
         {
@@ -258,11 +287,25 @@ namespace ST
             _convert_from_wchar(init.c_str(), init.size(), validation);
         }
 
+#ifdef ST_HAVE_STD_STRING_VIEW
+        void set(const ST::_std_string_view &view,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_utf8(view.data(), view.size(), validation);
+        }
+
+        void set(const ST::_std_wstring_view &view,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_wchar(view.data(), view.size(), validation);
+        }
+#endif
+
 #ifdef ST_HAVE_FILESYSTEM
         void set(const ST::_filesystem::path &path)
         {
             std::string path_utf8 = path.u8string();
-            set(path_utf8.c_str(), path_utf8.size(), ST::assume_valid);
+            _convert_from_utf8(path_utf8.c_str(), path_utf8.size(), ST::assume_valid);
         }
 #endif
 
@@ -344,6 +387,20 @@ namespace ST
             set(init);
             return *this;
         }
+
+#ifdef ST_HAVE_STD_STRING_VIEW
+        string &operator=(const ST::_std_string_view &view)
+        {
+            set(view);
+            return *this;
+        }
+
+        string &operator=(const ST::_std_wstring_view &view)
+        {
+            set(view);
+            return *this;
+        }
+#endif
 
 #ifdef ST_HAVE_FILESYSTEM
         string &operator=(const ST::_filesystem::path &path)
@@ -472,7 +529,7 @@ namespace ST
 
 #if !defined(ST_NO_STL_STRINGS)
         static inline string from_std_string(const std::string &sstr,
-                                             utf_validation_t validation = ST_DEFAULT_VALIDATION)
+                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
             str._convert_from_utf8(sstr.c_str(), sstr.size(), validation);
@@ -480,12 +537,30 @@ namespace ST
         }
 
         static inline string from_std_wstring(const std::wstring &wstr,
-                                              utf_validation_t validation = ST_DEFAULT_VALIDATION)
+                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
             str._convert_from_wchar(wstr.c_str(), wstr.size(), validation);
             return str;
         }
+
+#if defined(ST_HAVE_STD_STRING_VIEW)
+        static inline string from_std_string(const ST::_std_string_view &view,
+                                             utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_utf8(view.data(), view.size(), validation);
+            return str;
+        }
+
+        static inline string from_std_wstring(const ST::_std_wstring_view &view,
+                                              utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_wchar(view.data(), view.size(), validation);
+            return str;
+        }
+#endif
 
 #if defined(ST_HAVE_FILESYSTEM)
         static inline string from_path(const ST::_filesystem::path &path)
@@ -526,7 +601,7 @@ namespace ST
             return std::string(latin1.data(), latin1.size());
         }
 
-        std::wstring to_std_wstring()
+        std::wstring to_std_wstring() const
         {
             ST::wchar_buffer wdata = to_wchar();
             return std::wstring(wdata.data(), wdata.size());

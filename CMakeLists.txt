@@ -36,10 +36,15 @@ if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
     set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
 
     include(CheckCXXCompilerFlag)
+    check_cxx_compiler_flag("-std=c++17" HAVE_STD_CXX17)
     check_cxx_compiler_flag("-std=c++14" HAVE_STD_CXX14)
     check_cxx_compiler_flag("-std=c++11" HAVE_STD_CXX11)
     check_cxx_compiler_flag("-std=c++0x" HAVE_STD_CXX0X)
-    if(HAVE_STD_CXX14)
+    if(HAVE_STD_CXX17)
+        set(HAVE_STD_CXX14 1)
+        set(HAVE_STD_CXX11 1)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+    elseif(HAVE_STD_CXX14)
         set(HAVE_STD_CXX11 1)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
     elseif(HAVE_STD_CXX11)
@@ -88,6 +93,14 @@ try_compile(ST_INT64_IS_NOT_LONG "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_int64_is_long.cpp")
 if(NOT ST_INT64_IS_NOT_LONG)
     set(ST_INT64_IS_LONG TRUE)
+endif()
+
+try_compile(ST_HAVE_CXX17_STRING_VIEW "${PROJECT_BINARY_DIR}"
+    "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp")
+if(NOT ST_HAVE_CXX17_STRING_VIEW)
+    try_compile(ST_HAVE_EXPERIMENTAL_STRING_VIEW "${PROJECT_BINARY_DIR}"
+        "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp"
+        COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_STRING_VIEW")
 endif()
 
 try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
