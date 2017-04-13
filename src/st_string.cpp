@@ -280,6 +280,18 @@ ST::string &ST::string::operator+=(const wchar_t *wstr)
     return *this;
 }
 
+ST::string &ST::string::operator+=(const char16_t *cstr)
+{
+    set(*this + cstr);
+    return *this;
+}
+
+ST::string &ST::string::operator+=(const char32_t *cstr)
+{
+    set(*this + cstr);
+    return *this;
+}
+
 ST::string &ST::string::operator+=(const ST::string &other)
 {
     set(*this + other);

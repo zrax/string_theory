@@ -142,6 +142,24 @@ namespace ST
             _convert_from_wchar(wstr, size, validation);
         }
 
+#ifdef ST_HAVE_CHAR_TYPES
+        string(const char16_t *cstr, size_t size = ST_AUTO_SIZE,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            if (size == ST_AUTO_SIZE)
+                size = ST::utf16_buffer::strlen(cstr);
+            _convert_from_utf16(cstr, size, validation);
+        }
+
+        string(const char32_t *cstr, size_t size = ST_AUTO_SIZE,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            if (size == ST_AUTO_SIZE)
+                size = ST::utf32_buffer::strlen(cstr);
+            _convert_from_utf32(cstr, size, validation);
+        }
+#endif
+
         string(const string &copy)
             : m_buffer(copy.m_buffer) { }
 
@@ -236,6 +254,24 @@ namespace ST
             _convert_from_wchar(wstr, size, validation);
         }
 
+#ifdef ST_HAVE_CHAR_TYPES
+        void set(const char16_t *cstr, size_t size = ST_AUTO_SIZE,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            if (size == ST_AUTO_SIZE)
+                size = ST::utf16_buffer::strlen(cstr);
+            _convert_from_utf16(cstr, size, validation);
+        }
+
+        void set(const char32_t *cstr, size_t size = ST_AUTO_SIZE,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            if (size == ST_AUTO_SIZE)
+                size = ST::utf32_buffer::strlen(cstr);
+            _convert_from_utf32(cstr, size, validation);
+        }
+#endif
+
         void set(const string &copy)
         {
             m_buffer = copy.m_buffer;
@@ -329,6 +365,20 @@ namespace ST
             return *this;
         }
 
+#ifdef ST_HAVE_CHAR_TYPES
+        string &operator=(const char16_t *cstr)
+        {
+            set(cstr);
+            return *this;
+        }
+
+        string &operator=(const char32_t *cstr)
+        {
+            set(cstr);
+            return *this;
+        }
+#endif
+
         string &operator=(const string &copy)
         {
             m_buffer = copy.m_buffer;
@@ -415,12 +465,20 @@ namespace ST
         string &operator+=(const char *cstr);
         string &operator+=(const wchar_t *wstr);
 
+#ifdef ST_HAVE_CHAR_TYPES
+        string &operator+=(const char16_t *cstr);
+        string &operator+=(const char32_t *cstr);
+#endif
+
         string &operator+=(const string &other);
 
         string &operator+=(char ch);
+        string &operator+=(wchar_t ch);
+
+#ifdef ST_HAVE_CHAR_TYPES
         string &operator+=(char16_t ch);
         string &operator+=(char32_t ch);
-        string &operator+=(wchar_t ch);
+#endif
 
         static inline string from_literal(const char *literal, size_t size)
         {
@@ -923,19 +981,48 @@ namespace ST
         return operator+(left, string::from_wchar(right));
     }
 
-    inline ST::string operator+(const wchar_t *left, const ST::string &right)
+    inline ST::string operator+(const wchar_t *left, const string &right)
     {
         return operator+(string::from_wchar(left), right);
     }
 
+#ifdef ST_HAVE_CHAR_TYPES
+    inline string operator+(const string &left, const char16_t *right)
+    {
+        return operator+(left, string::from_utf16(right));
+    }
+
+    inline string operator+(const char16_t *left, const string &right)
+    {
+        return operator+(string::from_utf16(left), right);
+    }
+
+    inline string operator+(const string &left, const char32_t *right)
+    {
+        return operator+(left, string::from_utf32(right));
+    }
+
+    inline string operator+(const char32_t *left, const string &right)
+    {
+        return operator+(string::from_utf32(left), right);
+    }
+#endif
+
     ST_EXPORT string operator+(const string &left, char right);
+    ST_EXPORT string operator+(const string &left, wchar_t right);
+
+#ifdef ST_HAVE_CHAR_TYPES
     ST_EXPORT string operator+(const string &left, char16_t right);
     ST_EXPORT string operator+(const string &left, char32_t right);
-    ST_EXPORT string operator+(const string &left, wchar_t right);
+#endif
+
     ST_EXPORT string operator+(char left, const string &right);
+    ST_EXPORT string operator+(wchar_t left, const string &right);
+
+#ifdef ST_HAVE_CHAR_TYPES
     ST_EXPORT string operator+(char16_t left, const string &right);
     ST_EXPORT string operator+(char32_t left, const string &right);
-    ST_EXPORT string operator+(wchar_t left, const string &right);
+#endif
 
     inline bool operator==(const null_t &, const string &right) ST_NOEXCEPT
     {
