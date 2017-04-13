@@ -76,6 +76,8 @@ try_compile(ST_HAVE_RVALUE_MOVE "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_rvalue_move.cpp")
 try_compile(ST_HAVE_CHAR_TYPES "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_char_types.cpp")
+try_compile(ST_HAVE_STD_USTRING_TYPES "${PROJECT_BINARY_DIR}"
+            "${PROJECT_SOURCE_DIR}/cmake/check_string_types.cpp")
 try_compile(ST_HAVE_USER_LITERALS "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_user_literals.cpp")
 try_compile(ST_HAVE_INT64 "${PROJECT_BINARY_DIR}"

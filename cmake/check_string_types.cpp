@@ -18,16 +18,11 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
-#ifdef TRY_EXPERIMENTAL_FILESYSTEM
-#   include <experimental/filesystem>
-    namespace ST { namespace _filesystem = std::experimental::filesystem; }
-#else
-#   include <filesystem>
-    namespace ST { namespace _filesystem = std::filesystem; }
-#endif
+#include <string>
 
-int main(int argc, char *argv[])
+int main(int, char **)
 {
-    ST::_filesystem::path p(argv[0]);
+    std::u16string foo = u"abc";
+    std::u32string bar = U"xyz";
     return 0;
 }
