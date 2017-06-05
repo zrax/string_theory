@@ -280,6 +280,7 @@ ST::string &ST::string::operator+=(const wchar_t *wstr)
     return *this;
 }
 
+#ifdef ST_HAVE_CHAR_TYPES
 ST::string &ST::string::operator+=(const char16_t *cstr)
 {
     set(*this + cstr);
@@ -291,6 +292,7 @@ ST::string &ST::string::operator+=(const char32_t *cstr)
     set(*this + cstr);
     return *this;
 }
+#endif
 
 ST::string &ST::string::operator+=(const ST::string &other)
 {
@@ -304,6 +306,7 @@ ST::string &ST::string::operator+=(char ch)
     return *this;
 }
 
+#ifdef ST_HAVE_CHAR_TYPES
 ST::string &ST::string::operator+=(char16_t ch)
 {
     set(*this + ch);
@@ -315,6 +318,7 @@ ST::string &ST::string::operator+=(char32_t ch)
     set(*this + ch);
     return *this;
 }
+#endif
 
 ST::string &ST::string::operator+=(wchar_t ch)
 {
@@ -1521,19 +1525,7 @@ ST::string ST::operator+(const char *left, const ST::string &right)
     return cat;
 }
 
-ST::string ST::operator+(const ST::string &left, char right)
-{
-    char32_t uchar = static_cast<unsigned char>(right);
-    return operator+(left, uchar);
-}
-
-ST::string ST::operator+(const ST::string &left, char16_t right)
-{
-    char32_t uchar = right;
-    return operator+(left, uchar);
-}
-
-ST::string ST::operator+(const ST::string &left, char32_t right)
+static ST::string _append(const ST::string &left, char32_t right)
 {
     size_t newsize = left.size();
     if (right > 0x10FFFF) {
@@ -1579,6 +1571,25 @@ ST::string ST::operator+(const ST::string &left, char32_t right)
     return cat;
 }
 
+ST::string ST::operator+(const ST::string &left, char right)
+{
+    char32_t uchar = static_cast<unsigned char>(right);
+    return _append(left, uchar);
+}
+
+#ifdef ST_HAVE_CHAR_TYPES
+ST::string ST::operator+(const ST::string &left, char16_t right)
+{
+    char32_t uchar = right;
+    return _append(left, uchar);
+}
+
+ST::string ST::operator+(const ST::string &left, char32_t right)
+{
+    return _append(left, right);
+}
+#endif
+
 ST::string ST::operator+(const ST::string &left, wchar_t right)
 {
 #if ST_WCHAR_BYTES == 2
@@ -1586,23 +1597,10 @@ ST::string ST::operator+(const ST::string &left, wchar_t right)
 #else
     char32_t uchar = static_cast<unsigned int>(right);
 #endif
-    return operator+(left, uchar);
+    return _append(left, uchar);
 }
 
-
-ST::string ST::operator+(char left, const ST::string &right)
-{
-    char32_t uchar = static_cast<unsigned char>(left);
-    return operator+(uchar, right);
-}
-
-ST::string ST::operator+(char16_t left, const ST::string &right)
-{
-    char32_t uchar = left;
-    return operator+(uchar, right);
-}
-
-ST::string ST::operator+(char32_t left, const ST::string &right)
+static ST::string _prepend(char32_t left, const ST::string &right)
 {
     size_t newsize = right.size();
     if (left > 0x10FFFF) {
@@ -1648,6 +1646,25 @@ ST::string ST::operator+(char32_t left, const ST::string &right)
     return cat;
 }
 
+ST::string ST::operator+(char left, const ST::string &right)
+{
+    char32_t uchar = static_cast<unsigned char>(left);
+    return _prepend(uchar, right);
+}
+
+#ifdef ST_HAVE_CHAR_TYPES
+ST::string ST::operator+(char16_t left, const ST::string &right)
+{
+    char32_t uchar = left;
+    return _prepend(uchar, right);
+}
+
+ST::string ST::operator+(char32_t left, const ST::string &right)
+{
+    return _prepend(left, right);
+}
+#endif
+
 ST::string ST::operator+(wchar_t left, const ST::string &right)
 {
 #if ST_WCHAR_BYTES == 2
@@ -1655,5 +1672,5 @@ ST::string ST::operator+(wchar_t left, const ST::string &right)
 #else
     char32_t uchar = static_cast<unsigned int>(left);
 #endif
-    return operator+(uchar, right);
+    return _prepend(uchar, right);
 }

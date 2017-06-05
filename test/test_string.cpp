@@ -348,6 +348,7 @@ TEST(string, char_concatenation)
     EXPECT_EQ(ST::string(L"\u00ffxxxxxxxxxxxxxxx"), char(0xff) + input2);
     EXPECT_EQ(ST::string(L"\u00ffxxxxxxxxxxxxxxxx"), char(0xff) + input3);
 
+#ifdef ST_HAVE_CHAR_TYPES
     // ST::string + char16_t
     EXPECT_EQ(ST::string(L"xxxx\u00ff"), input1 + char16_t(0xff));
     EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxx\u00ff"), input2 + char16_t(0xff));
@@ -362,6 +363,7 @@ TEST(string, char_concatenation)
     EXPECT_EQ(ST::string(L"\u0100xxxx"), char16_t(0x100) + input1);
     EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxx"), char16_t(0x100) + input2);
     EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxxx"), char16_t(0x100) + input3);
+#endif
 
     const char32_t expect_wide1[] = { 0x78, 0x78, 0x78, 0x78, 0x10FFFF, 0 };
     const char32_t expect_wide2[] = {
@@ -387,6 +389,7 @@ TEST(string, char_concatenation)
         0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0
     };
 
+#ifdef ST_HAVE_CHAR_TYPES
     // ST::string + char32_t
     EXPECT_EQ(ST::string::from_utf32(expect_wide1), input1 + char32_t(0x10ffff));
     EXPECT_EQ(ST::string::from_utf32(expect_wide2), input2 + char32_t(0x10ffff));
@@ -394,6 +397,7 @@ TEST(string, char_concatenation)
     EXPECT_EQ(ST::string::from_utf32(expect_wide4), char32_t(0x10ffff) + input1);
     EXPECT_EQ(ST::string::from_utf32(expect_wide5), char32_t(0x10ffff) + input2);
     EXPECT_EQ(ST::string::from_utf32(expect_wide6), char32_t(0x10ffff) + input3);
+#endif
 
     // UTF-16 and UTF-32 are already tested, so just check the conversion from wchar_t
     EXPECT_EQ(ST::string(L"xxxx\u0100"), input1 + wchar_t(0x100));
