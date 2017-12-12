@@ -25,6 +25,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <cwchar>
 #include <stdexcept>
 #ifdef ST_HAVE_RVALUE_MOVE
 #  include <utility>    // For std::move

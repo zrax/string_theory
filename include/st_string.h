@@ -137,7 +137,7 @@ namespace ST
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = ST::char_buffer::strlen(cstr);
+                size = strlen(cstr);
             _convert_from_utf8(cstr, size, validation);
         }
 
@@ -145,7 +145,7 @@ namespace ST
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = ST::wchar_buffer::strlen(wstr);
+                size = wcslen(wstr);
             _convert_from_wchar(wstr, size, validation);
         }
 
@@ -275,7 +275,7 @@ namespace ST
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = ST::char_buffer::strlen(cstr);
+                size = strlen(cstr);
             _convert_from_utf8(cstr, size, validation);
         }
 
@@ -283,7 +283,7 @@ namespace ST
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = ST::wchar_buffer::strlen(wstr);
+                size = wcslen(wstr);
             _convert_from_wchar(wstr, size, validation);
         }
 
@@ -577,7 +577,7 @@ namespace ST
                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = ST::char_buffer::strlen(utf8);
+                size = strlen(utf8);
 
             string str;
             str._convert_from_utf8(utf8, size, validation);
@@ -613,7 +613,7 @@ namespace ST
                                         utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = ST::wchar_buffer::strlen(wstr);
+                size = wcslen(wstr);
 
             string str;
             str._convert_from_wchar(wstr, size, validation);
@@ -624,7 +624,7 @@ namespace ST
                                           size_t size = ST_AUTO_SIZE)
         {
             if (size == ST_AUTO_SIZE)
-                size = ST::char_buffer::strlen(astr);
+                size = strlen(astr);
 
             string str;
             str._convert_from_latin_1(astr, size);
