@@ -67,10 +67,20 @@
 #   define ST_NULLPTR 0
 #endif
 
+#define _ST_MACRO_JOIN(l, r)  l ## r
+#define ST_MACRO_JOIN(l, r)   _ST_MACRO_JOIN(l, r)
+
 #ifdef ST_HAVE_STATIC_ASSERT
 #   define ST_STATIC_ASSERT(x, msg) static_assert((x), msg);
 #else
-#   define ST_STATIC_ASSERT(x, msg)
+namespace _ST_PRIVATE
+{
+    template<bool> struct static_assertion;
+    template<> struct static_assertion<true> {};
+}
+#   define ST_STATIC_ASSERT(x, msg) \
+        enum { ST_MACRO_JOIN(_ST_static_assertion_, __LINE__) = \
+                sizeof(_ST_PRIVATE::static_assertion<static_cast<bool>(x)>) };
 #endif
 
 #ifndef ST_HAVE_CHAR_TYPES
