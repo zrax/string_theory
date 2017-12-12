@@ -20,7 +20,6 @@
 
 #include "st_string.h"
 
-#include <cstring>
 #include <cctype>
 #include <cstdlib>
 #include <cstdio>
@@ -1143,7 +1142,7 @@ ST::string ST::string::substr(ST_ssize_t start, size_t count) const
 
     string sub;
     sub.m_buffer.allocate(count);
-    _ST_PRIVATE::_copy_buffer(sub.m_buffer.data(), c_str() + start, count);
+    memcpy(sub.m_buffer.data(), c_str() + start, count);
 
     return sub;
 }
@@ -1489,8 +1488,8 @@ ST::string ST::operator+(const ST::string &left, const ST::string &right)
 {
     ST::char_buffer cat;
     cat.allocate(left.size() + right.size());
-    _ST_PRIVATE::_copy_buffer(&cat[0], left.c_str(), left.size());
-    _ST_PRIVATE::_copy_buffer(&cat[left.size()], right.c_str(), right.size());
+    memcpy(&cat[0], left.c_str(), left.size());
+    memcpy(&cat[left.size()], right.c_str(), right.size());
 
     return ST::string(cat, ST::assume_valid);
 }
@@ -1514,7 +1513,7 @@ static ST::string _append(const ST::string &left, char32_t right)
     ST::char_buffer cat;
     cat.allocate(newsize);
     char *catp = cat.data();
-    _ST_PRIVATE::_copy_buffer(catp, left.c_str(), left.size());
+    memcpy(catp, left.c_str(), left.size());
     catp += left.size();
 
     if (right > 0x10FFFF) {
@@ -1611,7 +1610,7 @@ static ST::string _prepend(char32_t left, const ST::string &right)
         *catp++ = static_cast<char>(left);
     }
 
-    _ST_PRIVATE::_copy_buffer(catp, right.c_str(), right.size());
+    memcpy(catp, right.c_str(), right.size());
     return ST::string(cat, ST::assume_valid);
 }
 

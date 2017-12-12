@@ -24,20 +24,11 @@
 #include "st_config.h"
 
 #include <cstddef>
+#include <cstring>
 #include <stdexcept>
 #ifdef ST_HAVE_RVALUE_MOVE
 #  include <utility>    // For std::move
 #endif
-
-namespace _ST_PRIVATE
-{
-    // Avoid including <cstring> in this header...
-    ST_EXPORT void _zero_buffer(void *buffer, size_t size) ST_NOEXCEPT;
-    ST_EXPORT void _fill_buffer(void *buffer, int ch, size_t count) ST_NOEXCEPT;
-    ST_EXPORT void _copy_buffer(void *dest, const void *src, size_t size) ST_NOEXCEPT;
-    ST_EXPORT int _compare_buffer(const void *left, const void *right, size_t size)
-        ST_NOEXCEPT;
-}
 
 namespace ST
 {
@@ -83,13 +74,13 @@ namespace ST
         buffer() ST_NOEXCEPT
             : m_chars(m_data), m_size()
         {
-            _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
+            memset(m_data, 0, sizeof(m_data));
         }
 
         buffer(const null_t &) ST_NOEXCEPT
             : m_chars(m_data), m_size()
         {
-            _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
+            memset(m_data, 0, sizeof(m_data));
         }
 
         buffer(const buffer<char_T> &copy)
@@ -97,10 +88,10 @@ namespace ST
         {
             if (is_reffed()) {
                 m_chars = new char_T[m_size + 1];
-                _ST_PRIVATE::_copy_buffer(m_chars, copy.m_chars, m_size * sizeof(char_T));
+                memcpy(m_chars, copy.m_chars, m_size * sizeof(char_T));
                 m_chars[m_size] = 0;
             } else {
-                _ST_PRIVATE::_copy_buffer(m_data, copy.m_data, sizeof(m_data));
+                memcpy(m_data, copy.m_data, sizeof(m_data));
                 m_chars = m_data;
             }
         }
@@ -110,7 +101,7 @@ namespace ST
             : m_size(move.m_size)
         {
             m_chars = is_reffed() ? move.m_chars : m_data;
-            _ST_PRIVATE::_copy_buffer(m_data, move.m_data, sizeof(m_data));
+            memcpy(m_data, move.m_data, sizeof(m_data));
             move.m_size = 0;
         }
 #endif
@@ -118,9 +109,9 @@ namespace ST
         buffer(const char_T *data, size_t size)
             : m_size(size)
         {
-            _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
+            memset(m_data, 0, sizeof(m_data));
             m_chars = is_reffed() ? new char_T[m_size + 1] : m_data;
-            _ST_PRIVATE::_copy_buffer(m_chars, data, m_size * sizeof(char_T));
+            memmove(m_chars, data, m_size * sizeof(char_T));
             m_chars[m_size] = 0;
         }
 
@@ -135,7 +126,7 @@ namespace ST
             _scope_deleter unref(this);
             m_chars = m_data;
             m_size = 0;
-            _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
+            memset(m_data, 0, sizeof(m_data));
             return *this;
         }
 
@@ -145,10 +136,10 @@ namespace ST
             m_size = copy.m_size;
             if (is_reffed()) {
                 m_chars = new char_T[m_size + 1];
-                _ST_PRIVATE::_copy_buffer(m_chars, copy.m_chars, m_size * sizeof(char_T));
+                memcpy(m_chars, copy.m_chars, m_size * sizeof(char_T));
                 m_chars[m_size] = 0;
             } else {
-                _ST_PRIVATE::_copy_buffer(m_data, copy.m_data, sizeof(m_data));
+                memcpy(m_data, copy.m_data, sizeof(m_data));
                 m_chars = m_data;
             }
             return *this;
@@ -160,7 +151,7 @@ namespace ST
             _scope_deleter unref(this);
             m_size = move.m_size;
             m_chars = is_reffed() ? move.m_chars : m_data;
-            _ST_PRIVATE::_copy_buffer(m_data, move.m_data, sizeof(m_data));
+            memcpy(m_data, move.m_data, sizeof(m_data));
             move.m_size = 0;
             return *this;
         }
@@ -175,7 +166,7 @@ namespace ST
         {
             if (other.size() != size())
                 return false;
-            return _ST_PRIVATE::_compare_buffer(data(), other.data(), size()) == 0;
+            return memcmp(data(), other.data(), size()) == 0;
         }
 
         bool operator!=(const null_t &) const ST_NOEXCEPT
@@ -223,7 +214,7 @@ namespace ST
             if (is_reffed())
                 delete[] m_chars;
             else
-                _ST_PRIVATE::_zero_buffer(m_data, sizeof(m_data));
+                memset(m_data, 0, sizeof(m_data));
 
             m_size = size;
             m_chars = is_reffed() ? new char_T[m_size + 1] : m_data;
@@ -233,7 +224,7 @@ namespace ST
         void allocate(size_t size, int fill)
         {
             allocate(size);
-            _ST_PRIVATE::_fill_buffer(m_chars, fill, size);
+            memset(m_chars, fill, size);
         }
 
         static inline size_t strlen(const char_T *buffer)

@@ -22,8 +22,6 @@
 #include "st_assert.h"
 
 #include <gtest/gtest.h>
-#include <cstring>
-#include <iostream>
 
 #ifdef ST_HAVE_RVALUE_MOVE
 TEST(regress, github_5)

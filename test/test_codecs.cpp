@@ -22,7 +22,6 @@
 #include "st_assert.h"
 
 #include <gtest/gtest.h>
-#include <cstring>
 #include <iostream>
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900)

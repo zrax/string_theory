@@ -22,8 +22,6 @@
 #include "st_format_priv.h"
 
 #include <cstdlib>
-#include <cstring>
-#include <cstdio>
 #include <type_traits>
 #include "st_assert.h"
 
@@ -496,7 +494,7 @@ ST_FORMAT_TYPE(double)
 
     if (format.minimum_length > format_size) {
         out_buffer.allocate(format.minimum_length);
-        _ST_PRIVATE::_fill_buffer(out_buffer.data(), pad, format.minimum_length);
+        memset(out_buffer.data(), pad, format.minimum_length);
         if (format.alignment == ST::align_left) {
             snprintf(out_buffer.data(), format_size + 1, format_buffer, value);
             out_buffer[format_size] = pad;  // snprintf overwrites this

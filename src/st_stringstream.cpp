@@ -20,7 +20,6 @@
 
 #include "st_stringstream.h"
 
-#include <cstring>
 #include <cstdio>
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
@@ -38,7 +37,7 @@
         } while (m_size + added_size > big_size);                   \
                                                                     \
         char *bigger = new char[big_size];                          \
-        _ST_PRIVATE::_copy_buffer(bigger, raw_buffer(), m_alloc);   \
+        memcpy(bigger, raw_buffer(), m_alloc);                      \
         if (is_heap())                                              \
             delete[] m_buffer;                                      \
         m_buffer = bufp = bigger;                                   \
@@ -55,7 +54,7 @@ ST::string_stream &ST::string_stream::append(const char *data, size_t size)
 
     EXPAND_SS_BUFFER(size)
 
-    _ST_PRIVATE::_copy_buffer(bufp + m_size, data, size);
+    memmove(bufp + m_size, data, size);
     m_size += size;
     return *this;
 }
@@ -70,7 +69,7 @@ ST::string_stream &ST::string_stream::append_char(char ch, size_t count)
     if (count == 1)
         *(bufp + m_size) = ch;
     else
-        _ST_PRIVATE::_fill_buffer(bufp + m_size, ch, count);
+        memset(bufp + m_size, ch, count);
     m_size += count;
     return *this;
 }
