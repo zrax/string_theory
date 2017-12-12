@@ -52,12 +52,12 @@
 #   define strnicmp strncasecmp
 #endif
 
-int ST::_lower_char(int ch)
+int _ST_PRIVATE::_lower_char(int ch) ST_NOEXCEPT
 {
     return tolower(ch);
 }
 
-int ST::_upper_char(int ch)
+int _ST_PRIVATE::_upper_char(int ch) ST_NOEXCEPT
 {
     return toupper(ch);
 }
@@ -1013,7 +1013,7 @@ static const char *_strichr(const char *haystack, int ch)
 {
     const char *cp = haystack;
     while (*cp) {
-        if (ST::_lower_char(ch) == ST::_lower_char(*cp))
+        if (_ST_PRIVATE::_lower_char(ch) == _ST_PRIVATE::_lower_char(*cp))
             return cp;
         ++cp;
     }
@@ -1331,7 +1331,7 @@ ST::string ST::string::to_upper() const
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
-        *dp++ = ST::_upper_char(*sp++);
+        *dp++ = _ST_PRIVATE::_upper_char(*sp++);
     dupe[size()] = 0;
 
     return result;
@@ -1346,7 +1346,7 @@ ST::string ST::string::to_lower() const
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
-        *dp++ = ST::_lower_char(*sp++);
+        *dp++ = _ST_PRIVATE::_lower_char(*sp++);
     dupe[size()] = 0;
 
     return result;

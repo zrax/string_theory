@@ -31,10 +31,11 @@
 namespace _ST_PRIVATE
 {
     // Avoid including <cstring> in this header...
-    ST_EXPORT void _zero_buffer(void *buffer, size_t size);
-    ST_EXPORT void _fill_buffer(void *buffer, int ch, size_t count);
-    ST_EXPORT void _copy_buffer(void *dest, const void *src, size_t size);
-    ST_EXPORT int _compare_buffer(const void *left, const void *right, size_t size);
+    ST_EXPORT void _zero_buffer(void *buffer, size_t size) ST_NOEXCEPT;
+    ST_EXPORT void _fill_buffer(void *buffer, int ch, size_t count) ST_NOEXCEPT;
+    ST_EXPORT void _copy_buffer(void *dest, const void *src, size_t size) ST_NOEXCEPT;
+    ST_EXPORT int _compare_buffer(const void *left, const void *right, size_t size)
+        ST_NOEXCEPT;
 }
 
 namespace ST

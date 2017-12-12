@@ -27,22 +27,23 @@ ST_STATIC_ASSERT(ST_SHORT_STRING_LEN >= sizeof(void *),
 ST_STATIC_ASSERT(ST_STACK_STRING_LEN >= sizeof(void *),
                  "ST_STACK_STRING_LEN must be at least as large as a pointer")
 
-void _ST_PRIVATE::_zero_buffer(void *buffer, size_t size)
+void _ST_PRIVATE::_zero_buffer(void *buffer, size_t size) ST_NOEXCEPT
 {
     memset(buffer, 0, size);
 }
 
-void _ST_PRIVATE::_fill_buffer(void *buffer, int ch, size_t count)
+void _ST_PRIVATE::_fill_buffer(void *buffer, int ch, size_t count) ST_NOEXCEPT
 {
     memset(buffer, ch, count);
 }
 
-void _ST_PRIVATE::_copy_buffer(void *dest, const void *src, size_t size)
+void _ST_PRIVATE::_copy_buffer(void *dest, const void *src, size_t size) ST_NOEXCEPT
 {
     memcpy(dest, src, size);
 }
 
 int _ST_PRIVATE::_compare_buffer(const void *left, const void *right, size_t size)
+    ST_NOEXCEPT
 {
     return memcmp(left, right, size);
 }
