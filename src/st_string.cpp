@@ -1460,8 +1460,7 @@ std::vector<ST::string> ST::string::tokenize(const char *delims) const
 ST::string ST::string::fill(size_t count, char c)
 {
     char_buffer result;
-    result.allocate(count);
-    _ST_PRIVATE::_fill_buffer(result.data(), c, count);
+    result.allocate(count, c);
     return result;
 }
 
