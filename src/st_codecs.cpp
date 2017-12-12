@@ -63,7 +63,8 @@ ST::string ST::hex_encode(const void *data, size_t size)
 
     size_t encoded_size = size * 2;
     ST::char_buffer buffer;
-    char *output = buffer.create_writable_buffer(encoded_size);
+    buffer.allocate(encoded_size);
+    char *output = buffer.data();
     const unsigned char *sp = static_cast<const unsigned char *>(data);
     while (size) {
         unsigned char byte = *sp++;
@@ -72,7 +73,6 @@ ST::string ST::hex_encode(const void *data, size_t size)
         --size;
     }
 
-    *output = 0;
     return ST::string(buffer, ST::assume_valid);
 }
 
@@ -83,14 +83,13 @@ ST::char_buffer ST::hex_decode(const ST::string &hex)
 
     size_t decode_size = hex.size() / 2;
     ST::char_buffer result;
-    char *outp = result.create_writable_buffer(decode_size);
-    ST_ssize_t written = hex_decode(hex, outp, decode_size);
+    result.allocate(decode_size);
+    ST_ssize_t written = hex_decode(hex, result.data(), decode_size);
     if (written < 0)
         throw codec_error("Invalid character in hex input");
 
     ST_ASSERT(static_cast<size_t>(written) == decode_size,
               "Conversion didn't match expected length");
-    outp[decode_size] = 0;
     return result;
 }
 
@@ -141,7 +140,8 @@ ST::string ST::base64_encode(const void *data, size_t size)
         return ST::null;
 
     ST::char_buffer buffer;
-    char *output = buffer.create_writable_buffer(_base64_encode_size(size));
+    buffer.allocate(_base64_encode_size(size));
+    char *output = buffer.data();
 
     const unsigned char *sp = static_cast<const unsigned char *>(data);
     while (size > 2) {
@@ -174,7 +174,6 @@ ST::string ST::base64_encode(const void *data, size_t size)
         break;
     }
 
-    *output = 0;
     return ST::string(buffer, ST::assume_valid);
 }
 
@@ -199,13 +198,12 @@ ST::char_buffer ST::base64_decode(const ST::string &base64)
         throw codec_error("Invalid base64 input length");
 
     ST::char_buffer result;
-    char *outp = result.create_writable_buffer(decode_size);
-    ST_ssize_t written = base64_decode(base64, outp, decode_size);
+    result.allocate(decode_size);
+    ST_ssize_t written = base64_decode(base64, result.data(), decode_size);
     if (written < 0)
         throw codec_error("Invalid character in base64 input");
 
     ST_ASSERT(written == decode_size, "Conversion didn't match expected length");
-    outp[decode_size] = 0;
     return result;
 }
 

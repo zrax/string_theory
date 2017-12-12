@@ -24,6 +24,7 @@
 #include "st_config.h"
 
 #include <cstddef>
+#include <stdexcept>
 #ifdef ST_HAVE_RVALUE_MOVE
 #  include <utility>    // For std::move
 #endif
@@ -186,6 +187,11 @@ namespace ST
             return !operator==(other);
         }
 
+        char_T *data() ST_NOEXCEPT
+        {
+            return is_reffed() ? m_ref : m_data;
+        }
+
         const char_T *data() const ST_NOEXCEPT
         {
             return is_reffed() ? m_ref : m_data;
@@ -194,18 +200,47 @@ namespace ST
         size_t size() const ST_NOEXCEPT { return m_size; }
         bool empty() const ST_NOEXCEPT { return m_size == 0; }
 
-        operator const char_T *() const ST_NOEXCEPT { return data(); }
+        char_T &at(size_t index)
+        {
+            if (index >= size())
+                throw std::out_of_range("Character index out of range");
+            return data()[index];
+        }
 
-        char_T *create_writable_buffer(size_t size)
+        char_T at(size_t index) const
+        {
+            if (index >= size())
+                throw std::out_of_range("Character index out of range");
+            return data()[index];
+        }
+
+        char_T &operator[](size_t index) ST_NOEXCEPT
+        {
+            return data()[index];
+        }
+
+        char_T operator[](size_t index) const ST_NOEXCEPT
+        {
+            return data()[index];
+        }
+
+        void allocate(size_t size)
         {
             if (is_reffed())
                 delete[] m_ref;
 
             m_size = size;
             if (is_reffed())
-                return m_ref = new char_T[m_size + 1];
-            else
-                return m_data;
+                m_ref = new char_T[m_size + 1];
+            operator[](m_size) = 0;
+        }
+
+        void allocate(size_t size, char_T fill)
+        {
+            allocate(size);
+            char_T *buffer = data();
+            for (size_t i = 0; i < size; ++i)
+                buffer[i] = fill;
         }
 
         static inline size_t strlen(const char_T *buffer)

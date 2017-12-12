@@ -1118,8 +1118,16 @@ namespace ST
     };
 
     ST_EXPORT string operator+(const string &left, const string &right);
-    ST_EXPORT string operator+(const string &left, const char *right);
-    ST_EXPORT string operator+(const char *left, const string &right);
+
+    inline string operator+(const string &left, const char *right)
+    {
+        return operator+(left, string::from_utf8(right));
+    }
+
+    inline string operator+(const char *left, const string &right)
+    {
+        return operator+(string::from_utf8(left), right);
+    }
 
     inline string operator+(const string &left, const wchar_t *right)
     {

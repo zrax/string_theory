@@ -493,21 +493,20 @@ ST_FORMAT_TYPE(double)
     int format_size = snprintf(ST_NULLPTR, 0, format_buffer, value);
     ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
     ST::char_buffer out_buffer;
-    char *fmt_out;
 
     if (format.minimum_length > format_size) {
-        fmt_out = out_buffer.create_writable_buffer(format.minimum_length);
-        memset(fmt_out, pad, format.minimum_length);
+        out_buffer.allocate(format.minimum_length);
+        _ST_PRIVATE::_fill_buffer(out_buffer.data(), pad, format.minimum_length);
         if (format.alignment == ST::align_left) {
-            snprintf(fmt_out, format_size + 1, format_buffer, value);
-            fmt_out[format_size] = pad;  // snprintf overwrites this
+            snprintf(out_buffer.data(), format_size + 1, format_buffer, value);
+            out_buffer[format_size] = pad;  // snprintf overwrites this
         } else {
-            snprintf(fmt_out + (format.minimum_length - format_size), format_size + 1,
+            snprintf(&out_buffer[format.minimum_length - format_size], format_size + 1,
                      format_buffer, value);
         }
     } else {
-        fmt_out = out_buffer.create_writable_buffer(format_size);
-        snprintf(fmt_out, format_size + 1, format_buffer, value);
+        out_buffer.allocate(format_size);
+        snprintf(out_buffer.data(), format_size + 1, format_buffer, value);
     }
 
     output.append(out_buffer.data(), out_buffer.size());

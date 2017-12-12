@@ -355,7 +355,8 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
     }
 
     // Perform the actual conversion
-    char *utf8 = m_buffer.create_writable_buffer(convlen);
+    m_buffer.allocate(convlen);
+    char *utf8 = m_buffer.data();
     char *dp = utf8;
     sp = utf16;
     while (sp < ep) {
@@ -438,7 +439,6 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
         }
         ++sp;
     }
-    utf8[convlen] = 0;
 }
 
 void ST::string::_convert_from_utf32(const char32_t *utf32, size_t size,
@@ -471,7 +471,8 @@ void ST::string::_convert_from_utf32(const char32_t *utf32, size_t size,
     }
 
     // Perform the actual conversion
-    char *utf8 = m_buffer.create_writable_buffer(convlen);
+    m_buffer.allocate(convlen);
+    char *utf8 = m_buffer.data();
     char *dp = utf8;
     sp = utf32;
     while (sp < ep) {
@@ -500,7 +501,6 @@ void ST::string::_convert_from_utf32(const char32_t *utf32, size_t size,
         }
         ++sp;
     }
-    utf8[convlen] = 0;
 }
 
 void ST::string::_convert_from_wchar(const wchar_t *wstr, size_t size,
@@ -533,7 +533,8 @@ void ST::string::_convert_from_latin_1(const char *astr, size_t size)
     }
 
     // Perform the actual conversion
-    char *utf8 = m_buffer.create_writable_buffer(convlen);
+    m_buffer.allocate(convlen);
+    char *utf8 = m_buffer.data();
     char *dp = utf8;
     sp = astr;
     while (sp < ep) {
@@ -545,7 +546,6 @@ void ST::string::_convert_from_latin_1(const char *astr, size_t size)
         }
         ++sp;
     }
-    utf8[convlen] = 0;
 }
 
 ST::utf16_buffer ST::string::to_utf16() const
@@ -575,7 +575,8 @@ ST::utf16_buffer ST::string::to_utf16() const
     }
 
     // Perform the actual conversion
-    char16_t *utf16 = result.create_writable_buffer(convlen);
+    result.allocate(convlen);
+    char16_t *utf16 = result.data();
     char16_t *dp = utf16;
     sp = utf8;
     while (sp < ep) {
@@ -602,7 +603,6 @@ ST::utf16_buffer ST::string::to_utf16() const
             *dp++ = *sp++;
         }
     }
-    utf16[convlen] = 0;
 
     return result;
 }
@@ -631,7 +631,8 @@ ST::utf32_buffer ST::string::to_utf32() const
     }
 
     // Perform the actual conversion
-    char32_t *utf32 = result.create_writable_buffer(convlen);
+    result.allocate(convlen);
+    char32_t *utf32 = result.data();
     char32_t *dp = utf32;
     sp = utf8;
     while (sp < ep) {
@@ -653,7 +654,6 @@ ST::utf32_buffer ST::string::to_utf32() const
         }
         *dp++ = bigch;
     }
-    utf32[convlen] = 0;
 
     return result;
 }
@@ -693,7 +693,8 @@ ST::char_buffer ST::string::to_latin_1(utf_validation_t validation) const
     }
 
     // Perform the actual conversion
-    char *astr = result.create_writable_buffer(convlen);
+    result.allocate(convlen);
+    char *astr = result.data();
     char *dp = astr;
     sp = utf8;
     while (sp < ep) {
@@ -727,7 +728,6 @@ ST::char_buffer ST::string::to_latin_1(utf_validation_t validation) const
         }
         *dp++ = static_cast<char>(bigch);
     }
-    astr[convlen] = 0;
 
     return result;
 }
@@ -752,13 +752,12 @@ static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value
         ++format_size;
 
     ST::char_buffer result;
-    char *buffer = result.create_writable_buffer(format_size);
-    _format_numeric_impl<uint_T>(buffer + format_size,
+    result.allocate(format_size);
+    _format_numeric_impl<uint_T>(&result[format_size],
                                  static_cast<uint_T>(abs), radix, upper_case);
-    buffer[format_size] = 0;
 
     if (value < 0)
-        buffer[0] = '-';
+        result[0] = '-';
 
     return ST::string(result, ST::assume_valid);
 }
@@ -777,9 +776,8 @@ static ST::string _mini_format_numeric_u(int radix, bool upper_case, uint_T valu
         format_size = 1;
 
     ST::char_buffer result;
-    char *buffer = result.create_writable_buffer(format_size);
-    _format_numeric_impl<uint_T>(buffer + format_size, value, radix, upper_case);
-    buffer[format_size] = 0;
+    result.allocate(format_size);
+    _format_numeric_impl<uint_T>(&result[format_size], value, radix, upper_case);
 
     return ST::string(result, ST::assume_valid);
 }
@@ -812,8 +810,8 @@ ST::string ST::string::from_double(double value, char format)
     ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
 
     ST::char_buffer out_buffer;
-    char *fmt_out = out_buffer.create_writable_buffer(format_size);
-    snprintf(fmt_out, format_size + 1, format_spec, value);
+    out_buffer.allocate(format_size);
+    snprintf(out_buffer.data(), format_size + 1, format_spec, value);
     return ST::string(out_buffer, ST::assume_valid);
 }
 
@@ -1144,9 +1142,8 @@ ST::string ST::string::substr(ST_ssize_t start, size_t count) const
         return *this;
 
     string sub;
-    char *sub_data = sub.m_buffer.create_writable_buffer(count);
-    _ST_PRIVATE::_copy_buffer(sub_data, c_str() + start, count);
-    sub_data[count] = 0;
+    sub.m_buffer.allocate(count);
+    _ST_PRIVATE::_copy_buffer(sub.m_buffer.data(), c_str() + start, count);
 
     return sub;
 }
@@ -1326,13 +1323,13 @@ ST::string ST::string::to_upper() const
 {
     // TODO: Make this unicode aware
     string result;
-    char *dupe = result.m_buffer.create_writable_buffer(size());
+    result.m_buffer.allocate(size());
+    char *dupe = result.m_buffer.data();
     const char *sp = c_str();
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
         *dp++ = _ST_PRIVATE::_upper_char(*sp++);
-    dupe[size()] = 0;
 
     return result;
 }
@@ -1341,13 +1338,13 @@ ST::string ST::string::to_lower() const
 {
     // TODO: Make this unicode aware
     string result;
-    char *dupe = result.m_buffer.create_writable_buffer(size());
+    result.m_buffer.allocate(size());
+    char *dupe = result.m_buffer.data();
     const char *sp = c_str();
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
         *dp++ = _ST_PRIVATE::_lower_char(*sp++);
-    dupe[size()] = 0;
 
     return result;
 }
@@ -1463,9 +1460,8 @@ std::vector<ST::string> ST::string::tokenize(const char *delims) const
 ST::string ST::string::fill(size_t count, char c)
 {
     char_buffer result;
-    char *data = result.create_writable_buffer(count);
-    _ST_PRIVATE::_fill_buffer(data, c, count);
-    data[count] = 0;
+    result.allocate(count);
+    _ST_PRIVATE::_fill_buffer(result.data(), c, count);
     return result;
 }
 
@@ -1493,36 +1489,11 @@ size_t ST::hash::operator()(const string &str) const ST_NOEXCEPT
 ST::string ST::operator+(const ST::string &left, const ST::string &right)
 {
     ST::char_buffer cat;
-    char *catp = cat.create_writable_buffer(left.size() + right.size());
-    _ST_PRIVATE::_copy_buffer(catp, left.c_str(), left.size());
-    _ST_PRIVATE::_copy_buffer(catp + left.size(), right.c_str(), right.size());
-    catp[cat.size()] = 0;
+    cat.allocate(left.size() + right.size());
+    _ST_PRIVATE::_copy_buffer(&cat[0], left.c_str(), left.size());
+    _ST_PRIVATE::_copy_buffer(&cat[left.size()], right.c_str(), right.size());
 
     return ST::string(cat, ST::assume_valid);
-}
-
-ST::string ST::operator+(const ST::string &left, const char *right)
-{
-    ST::char_buffer cat;
-    size_t rsize = strlen(right);
-    char *catp = cat.create_writable_buffer(left.size() + rsize);
-    _ST_PRIVATE::_copy_buffer(catp, left.c_str(), left.size());
-    _ST_PRIVATE::_copy_buffer(catp + left.size(), right, rsize);
-    catp[cat.size()] = 0;
-
-    return cat;
-}
-
-ST::string ST::operator+(const char *left, const ST::string &right)
-{
-    ST::char_buffer cat;
-    size_t lsize = strlen(left);
-    char *catp = cat.create_writable_buffer(lsize + right.size());
-    _ST_PRIVATE::_copy_buffer(catp, left, lsize);
-    _ST_PRIVATE::_copy_buffer(catp + lsize, right.c_str(), right.size());
-    catp[cat.size()] = 0;
-
-    return cat;
 }
 
 static ST::string _append(const ST::string &left, char32_t right)
@@ -1542,7 +1513,8 @@ static ST::string _append(const ST::string &left, char32_t right)
     }
 
     ST::char_buffer cat;
-    char *catp = cat.create_writable_buffer(newsize);
+    cat.allocate(newsize);
+    char *catp = cat.data();
     _ST_PRIVATE::_copy_buffer(catp, left.c_str(), left.size());
     catp += left.size();
 
@@ -1567,8 +1539,7 @@ static ST::string _append(const ST::string &left, char32_t right)
         *catp++ = static_cast<char>(right);
     }
 
-    *catp = 0;
-    return cat;
+    return ST::string(cat, ST::assume_valid);
 }
 
 ST::string ST::operator+(const ST::string &left, char right)
@@ -1617,7 +1588,8 @@ static ST::string _prepend(char32_t left, const ST::string &right)
     }
 
     ST::char_buffer cat;
-    char *catp = cat.create_writable_buffer(newsize);
+    cat.allocate(newsize);
+    char *catp = cat.data();
 
     if (left > 0x10FFFF) {
         ST_ASSERT(false, "Unicode character out of range");
@@ -1641,9 +1613,7 @@ static ST::string _prepend(char32_t left, const ST::string &right)
     }
 
     _ST_PRIVATE::_copy_buffer(catp, right.c_str(), right.size());
-    catp[right.size()] = 0;
-
-    return cat;
+    return ST::string(cat, ST::assume_valid);
 }
 
 ST::string ST::operator+(char left, const ST::string &right)
