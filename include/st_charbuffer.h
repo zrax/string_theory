@@ -166,7 +166,7 @@ namespace ST
 
         bool operator==(const null_t &) const ST_NOEXCEPT
         {
-            return is_empty();
+            return empty();
         }
 
         bool operator==(const buffer<char_T> &other) const ST_NOEXCEPT
@@ -178,7 +178,7 @@ namespace ST
 
         bool operator!=(const null_t &) const ST_NOEXCEPT
         {
-            return !is_empty();
+            return !empty();
         }
 
         bool operator!=(const buffer<char_T> &other) const ST_NOEXCEPT
@@ -192,7 +192,7 @@ namespace ST
         }
 
         size_t size() const ST_NOEXCEPT { return m_size; }
-        bool is_empty() const ST_NOEXCEPT { return m_size == 0; }
+        bool empty() const ST_NOEXCEPT { return m_size == 0; }
 
         operator const char_T *() const ST_NOEXCEPT { return data(); }
 
@@ -228,13 +228,13 @@ namespace ST
     template <typename char_T>
     bool operator==(const null_t &, const buffer<char_T> &right) ST_NOEXCEPT
     {
-        return right.is_empty();
+        return right.empty();
     }
 
     template <typename char_T>
     bool operator!=(const null_t &, const buffer<char_T> &right) ST_NOEXCEPT
     {
-        return !right.is_empty();
+        return !right.empty();
     }
 }
 

@@ -764,10 +764,10 @@ namespace ST
 
         const char *c_str(const char *substitute = "") const ST_NOEXCEPT
         {
-            return is_empty() ? substitute : m_buffer.data();
+            return empty() ? substitute : m_buffer.data();
         }
 
-        char char_at(size_t position) const ST_NOEXCEPT
+        char at(size_t position) const ST_NOEXCEPT
         {
             return c_str()[position];
         }
@@ -820,7 +820,7 @@ namespace ST
 #endif // !defined(ST_NO_STL_STRINGS)
 
         size_t size() const ST_NOEXCEPT { return m_buffer.size(); }
-        bool is_empty() const ST_NOEXCEPT { return m_buffer.size() == 0; }
+        bool empty() const ST_NOEXCEPT { return m_buffer.size() == 0; }
 
         static string from_int(int value, int base = 10, bool upper_case = false);
         static string from_uint(unsigned int value, int base = 10, bool upper_case = false);
@@ -894,7 +894,7 @@ namespace ST
 
         bool operator==(const null_t &) const ST_NOEXCEPT
         {
-            return is_empty();
+            return empty();
         }
 
         bool operator==(const string &other) const ST_NOEXCEPT
@@ -909,7 +909,7 @@ namespace ST
 
         bool operator!=(const null_t &) const ST_NOEXCEPT
         {
-            return !is_empty();
+            return !empty();
         }
 
         bool operator!=(const string &other) const ST_NOEXCEPT
@@ -1085,7 +1085,7 @@ namespace ST
         virtual unsigned char fetch_char(const string &str, size_t index)
             const ST_NOEXCEPT
         {
-            return static_cast<unsigned char>(str.char_at(index));
+            return static_cast<unsigned char>(str.at(index));
         }
     };
 
@@ -1095,7 +1095,7 @@ namespace ST
         unsigned char fetch_char(const string &str, size_t index)
             const ST_NOEXCEPT ST_OVERRIDE
         {
-            return static_cast<unsigned char>(_ST_PRIVATE::_lower_char(str.char_at(index)));
+            return static_cast<unsigned char>(_ST_PRIVATE::_lower_char(str.at(index)));
         }
     };
 
@@ -1171,12 +1171,12 @@ namespace ST
 
     inline bool operator==(const null_t &, const string &right) ST_NOEXCEPT
     {
-        return right.is_empty();
+        return right.empty();
     }
 
     inline bool operator!=(const null_t &, const string &right) ST_NOEXCEPT
     {
-        return !right.is_empty();
+        return !right.empty();
     }
 }
 

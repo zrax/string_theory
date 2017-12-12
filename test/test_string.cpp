@@ -111,7 +111,7 @@ TEST(string, utility)
     EXPECT_EQ(ST::null, ST::string());
 
     EXPECT_EQ(0U, ST::string().size());
-    EXPECT_TRUE(ST::string().is_empty());
+    EXPECT_TRUE(ST::string().empty());
 
     // Short and Long string length
     EXPECT_EQ(4U, ST_LITERAL("1234").size());

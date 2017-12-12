@@ -551,7 +551,7 @@ void ST::string::_convert_from_latin_1(const char *astr, size_t size)
 ST::utf16_buffer ST::string::to_utf16() const
 {
     utf16_buffer result;
-    if (is_empty())
+    if (empty())
         return result;
 
     // Calculate the UTF-16 size
@@ -610,7 +610,7 @@ ST::utf16_buffer ST::string::to_utf16() const
 ST::utf32_buffer ST::string::to_utf32() const
 {
     utf32_buffer result;
-    if (is_empty())
+    if (empty())
         return result;
 
     // Calculate the UTF-32 size
@@ -672,7 +672,7 @@ ST::wchar_buffer ST::string::to_wchar() const
 ST::char_buffer ST::string::to_latin_1(utf_validation_t validation) const
 {
     char_buffer result;
-    if (is_empty())
+    if (empty())
         return result;
 
     // Calculate the ASCII size
@@ -836,7 +836,7 @@ int ST::string::to_int(int base) const ST_NOEXCEPT
 
 int ST::string::to_int(ST::conversion_result &result, int base) const ST_NOEXCEPT
 {
-    if (is_empty()) {
+    if (empty()) {
         result.m_flags = ST::conversion_result::result_full_match;
         return 0;
     }
@@ -859,7 +859,7 @@ unsigned int ST::string::to_uint(int base) const ST_NOEXCEPT
 unsigned int ST::string::to_uint(ST::conversion_result &result, int base)
     const ST_NOEXCEPT
 {
-    if (is_empty()) {
+    if (empty()) {
         result.m_flags = ST::conversion_result::result_full_match;
         return 0;
     }
@@ -893,7 +893,7 @@ double ST::string::to_double() const ST_NOEXCEPT
 
 double ST::string::to_double(ST::conversion_result &result) const ST_NOEXCEPT
 {
-    if (is_empty()) {
+    if (empty()) {
         result.m_flags = ST::conversion_result::result_full_match;
         return 0;
     }
@@ -1044,7 +1044,7 @@ ST_ssize_t ST::string::find(size_t start, const char *substr, case_sensitivity_t
 
 ST_ssize_t ST::string::find_last(size_t max, char ch, case_sensitivity_t cs) const ST_NOEXCEPT
 {
-    if (is_empty())
+    if (empty())
         return -1;
 
     const char *endp = c_str() + (max > size() ? size() : max);
@@ -1065,7 +1065,7 @@ ST_ssize_t ST::string::find_last(size_t max, char ch, case_sensitivity_t cs) con
 ST_ssize_t ST::string::find_last(size_t max, const char *substr, case_sensitivity_t cs)
     const ST_NOEXCEPT
 {
-    if (!substr || !substr[0] || is_empty())
+    if (!substr || !substr[0] || empty())
         return -1;
 
     const char *endp = c_str() + (max > size() ? size() : max);
@@ -1085,7 +1085,7 @@ ST_ssize_t ST::string::find_last(size_t max, const char *substr, case_sensitivit
 
 ST::string ST::string::trim_left(const char *charset) const
 {
-    if (is_empty())
+    if (empty())
         return null;
 
     const char *cp = c_str();
@@ -1097,7 +1097,7 @@ ST::string ST::string::trim_left(const char *charset) const
 
 ST::string ST::string::trim_right(const char *charset) const
 {
-    if (is_empty())
+    if (empty())
         return null;
 
     const char *cp = c_str() + size();
@@ -1109,7 +1109,7 @@ ST::string ST::string::trim_right(const char *charset) const
 
 ST::string ST::string::trim(const char *charset) const
 {
-    if (is_empty())
+    if (empty())
         return null;
 
     const char *lp = c_str();
@@ -1299,7 +1299,7 @@ ST::string ST::string::replace(const string &from, const string &to,
                                case_sensitivity_t cs,
                                utf_validation_t validation) const
 {
-    if (is_empty() || from.is_empty())
+    if (empty() || from.empty())
         return *this;
 
     string_stream out;
