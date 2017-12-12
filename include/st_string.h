@@ -772,6 +772,9 @@ namespace ST
             return c_str()[position];
         }
 
+        ST_DEPRECATED("replaced with at() in string_theory 2.0")
+        char char_at(size_t position) const ST_NOEXCEPT { return at(position); }
+
         char_buffer to_utf8() const ST_NOEXCEPT { return m_buffer; }
 
         utf16_buffer to_utf16() const;
@@ -821,6 +824,9 @@ namespace ST
 
         size_t size() const ST_NOEXCEPT { return m_buffer.size(); }
         bool empty() const ST_NOEXCEPT { return m_buffer.size() == 0; }
+
+        ST_DEPRECATED("replaced with empty() in string_theory 2.0")
+        bool is_empty() const ST_NOEXCEPT { return empty(); }
 
         static string from_int(int value, int base = 10, bool upper_case = false);
         static string from_uint(unsigned int value, int base = 10, bool upper_case = false);

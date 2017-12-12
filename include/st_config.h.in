@@ -39,6 +39,7 @@
 #cmakedefine ST_HAVE_VARARG_TEMPLATE
 #cmakedefine ST_HAVE_TYPE_TRAITS
 #cmakedefine ST_HAVE_CONSTEXPR
+#cmakedefine ST_HAVE_DEPRECATED_ATTR
 #cmakedefine ST_INT64_IS_LONG
 #if __cplusplus > 201402L
 #cmakedefine ST_HAVE_CXX17_STRING_VIEW
@@ -105,6 +106,16 @@ namespace _ST_PRIVATE
 #else
 #   define ST_STRONG_ENUM(name) enum name
 #   define ST_ENUM_CONSTANT(type, name)
+#endif
+
+#if defined(_MSC_VER)
+#   define ST_DEPRECATED(message) __declspec(deprecated(message))
+#elif defined(__GNUC__)
+#   define ST_DEPRECATED(message) __attribute__((deprecated(message)))
+#elif defined(ST_HAVE_DEPRECATED_ATTR)
+#   define ST_DEPRECATED(message) [[deprecated(message)]]
+#else
+#   define ST_DEPRECATED(message)
 #endif
 
 #if defined(ST_HAVE_CXX17_STRING_VIEW) || defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
