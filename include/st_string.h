@@ -1177,6 +1177,17 @@ namespace ST
     }
 }
 
+namespace std
+{
+    template<> struct hash<ST::string>
+    {
+         inline size_t operator()(const ST::string &str) const ST_NOEXCEPT
+         {
+             return ST::hash()(str);
+         }
+    };
+}
+
 #define ST_LITERAL(str) \
     ST::string::from_literal("" str "", sizeof(str) - 1)
 
