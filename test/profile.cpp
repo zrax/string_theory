@@ -36,6 +36,9 @@
 #ifdef ST_PROFILE_HAVE_QSTRING
 #   include <QString>
 #endif
+#ifdef ST_PROFILE_HAVE_GLIBMM
+#   include <glibmm/ustring.h>
+#endif
 
 #ifndef M_PI
 #   define M_PI (3.14159265358979)
@@ -80,6 +83,13 @@ int main(int, char **)
     });
 #endif
 
+#ifdef ST_PROFILE_HAVE_GLIBMM
+    _measure("Empty Glib::ustring", []() {
+        Glib::ustring s;
+        NO_OPTIMIZE(s.c_str());
+    });
+#endif
+
     _measure("Short std::string", []() {
         std::string short_str("Short");
         NO_OPTIMIZE(short_str.c_str());
@@ -109,6 +119,13 @@ int main(int, char **)
     _measure("Short QString (literal)", []() {
         QString short_str = QStringLiteral("Short");
         NO_OPTIMIZE(short_str.data());
+    });
+#endif
+
+#ifdef ST_PROFILE_HAVE_GLIBMM
+    _measure("Short Glib::ustring", []() {
+        Glib::ustring short_str("Short");
+        NO_OPTIMIZE(short_str.c_str());
     });
 #endif
 
@@ -145,6 +162,13 @@ int main(int, char **)
     });
 #endif
 
+#ifdef ST_PROFILE_HAVE_GLIBMM
+    _measure("Long Glib::ustring", []() {
+        Glib::ustring long_str("This is a long string.  Testing the excessively long long string.");
+        NO_OPTIMIZE(long_str.c_str());
+    });
+#endif
+
     std::string _ss1("Short");
     _measure("Copy short std::string", [&_ss1]() {
         std::string copy = _ss1;
@@ -162,6 +186,14 @@ int main(int, char **)
     _measure("Copy short QString", [&_qs1]() {
         QString copy = _qs1;
         NO_OPTIMIZE(copy.data());
+    });
+#endif
+
+#ifdef ST_PROFILE_HAVE_GLIBMM
+    Glib::ustring _gs1("Short");
+    _measure("Copy short Glib::ustring", [&_gs1]() {
+        Glib::ustring copy = _gs1;
+        NO_OPTIMIZE(copy.c_str());
     });
 #endif
 
@@ -185,6 +217,14 @@ int main(int, char **)
     });
 #endif
 
+#ifdef ST_PROFILE_HAVE_GLIBMM
+    Glib::ustring _gs2("This is a long string.  Testing the excessively long long string.");
+    _measure("Copy long Glib::ustring", [&_gs2]() {
+        Glib::ustring copy = _gs2;
+        NO_OPTIMIZE(copy.c_str());
+    });
+#endif
+
     std::string _ss3[] = {"Piece 1", "Piece 2", "Piece 3"};
     _measure("std::string (+)", [&_ss3]() {
         std::string result = _ss3[0] + _ss3[1] + _ss3[2];
@@ -205,22 +245,34 @@ int main(int, char **)
     });
 #endif
 
+#ifdef ST_PROFILE_HAVE_GLIBMM
+    Glib::ustring _gs3[] = {"Piece 1", "Piece 2", "Piece 3"};
+    _measure("Glib::ustring (+)", [&_gs3]() {
+        Glib::ustring result = _gs3[0] + _gs3[1] + _gs3[2];
+        NO_OPTIMIZE(result.c_str());
+    });
+#endif
+
     _measure("static snprintf", []() {
         char buffer[256];
-        snprintf(buffer, 256, "This %d is %6.2f a %s test %c.", 42, M_PI, "<Singin' in the rain>", '?');
+        snprintf(buffer, 256, "This %d is %6.2f a %s test %c.", 42, M_PI,
+                 "<Singin' in the rain>", '?');
         NO_OPTIMIZE(buffer);
     });
 
     _measure("dynamic snprintf", []() {
-        int len = snprintf(nullptr, 0, "This %d is %6.2f a %s test %c.", 42, M_PI, "<Singin' in the rain>", '?');
+        int len = snprintf(nullptr, 0, "This %d is %6.2f a %s test %c.", 42,
+                           M_PI, "<Singin' in the rain>", '?');
         char *buffer = new char[len + 1];
-        snprintf(buffer, len, "This %d is %6.2f a %s test %c.", 42, M_PI, "<Singin' in the rain>", '?');
+        snprintf(buffer, len, "This %d is %6.2f a %s test %c.", 42,
+                 M_PI, "<Singin' in the rain>", '?');
         NO_OPTIMIZE(buffer);
         delete[] buffer;
     });
 
     _measure("ST::format", []() {
-        ST::string foo = ST::format("This {} is {6.2f} a {} test {}.", 42, M_PI, "<Singin' in the rain>", '?');
+        ST::string foo = ST::format("This {} is {6.2f} a {} test {}.", 42, M_PI,
+                                    "<Singin' in the rain>", '?');
         NO_OPTIMIZE(foo.c_str());
     });
 
@@ -237,6 +289,14 @@ int main(int, char **)
         QString foo = QString("This %1 is %2 a %3 test %4.")
                       .arg(42).arg(M_PI, 6, 'f', 2).arg("<Singin' in the rain>").arg('?');
         NO_OPTIMIZE(foo.data());
+    });
+#endif
+
+#ifdef ST_PROFILE_HAVE_GLIBMM
+    _measure("Glib::ustring::compose", []() {
+        Glib::ustring foo = Glib::ustring::compose("This %1 is %2 a %3 test %4.",
+                                42, M_PI, "<Singin' in the rain>", '?');
+        NO_OPTIMIZE(foo.c_str());
     });
 #endif
 
