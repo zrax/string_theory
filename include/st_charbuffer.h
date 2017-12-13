@@ -31,6 +31,10 @@
 #  include <utility>    // For std::move
 #endif
 
+#if !defined(ST_NO_STL_STRINGS)
+#   include <string>
+#endif
+
 namespace ST
 {
     // For optimized construction of empty objects
@@ -248,6 +252,13 @@ namespace ST
                 ;
             return length;
         }
+
+#ifndef ST_NO_STL_STRINGS
+        std::basic_string<char_T> to_std_string() const
+        {
+            return std::basic_string<char_T>(data(), size());
+        }
+#endif
     };
 
     typedef buffer<char>        char_buffer;

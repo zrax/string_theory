@@ -25,7 +25,6 @@
 #include "st_charbuffer.h"
 
 #if !defined(ST_NO_STL_STRINGS)
-#   include <string>
 #   if defined(ST_HAVE_CXX17_STRING_VIEW)
 #       include <string_view>
         namespace ST
@@ -783,27 +782,23 @@ namespace ST
             if (utf8)
                 return std::string(c_str(), size());
 
-            ST::char_buffer latin1 = to_latin_1(validation);
-            return std::string(latin1.data(), latin1.size());
+            return to_latin_1(validation).to_std_string();
         }
 
         std::wstring to_std_wstring() const
         {
-            ST::wchar_buffer wdata = to_wchar();
-            return std::wstring(wdata.data(), wdata.size());
+            return to_wchar().to_std_string();
         }
 
 #ifdef ST_HAVE_STD_USTRING_TYPES
         std::u16string to_std_u16string() const
         {
-            ST::utf16_buffer udata = to_utf16();
-            return std::u16string(udata.data(), udata.size());
+            return to_utf16().to_std_string();
         }
 
         std::u32string to_std_u32string() const
         {
-            ST::utf32_buffer udata = to_utf32();
-            return std::u32string(udata.data(), udata.size());
+            return to_utf32().to_std_string();
         }
 #endif
 
