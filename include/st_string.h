@@ -735,7 +735,12 @@ namespace ST
 
 #endif // !defined(ST_NO_STL_STRINGS)
 
-        const char *c_str(const char *substitute = "") const ST_NOEXCEPT
+        const char *c_str() const ST_NOEXCEPT
+        {
+            return m_buffer.data();
+        }
+
+        const char *c_str(const char *substitute) const ST_NOEXCEPT
         {
             return empty() ? substitute : m_buffer.data();
         }
