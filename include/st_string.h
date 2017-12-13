@@ -1077,23 +1077,11 @@ namespace ST
     struct ST_EXPORT hash
     {
         size_t operator()(const string &str) const ST_NOEXCEPT;
-
-    protected:
-        virtual unsigned char fetch_char(const string &str, size_t index)
-            const ST_NOEXCEPT
-        {
-            return static_cast<unsigned char>(str.char_at(index));
-        }
     };
 
-    struct ST_EXPORT hash_i : public hash
+    struct ST_EXPORT hash_i
     {
-    protected:
-        unsigned char fetch_char(const string &str, size_t index)
-            const ST_NOEXCEPT ST_OVERRIDE
-        {
-            return static_cast<unsigned char>(_lower_char(str.char_at(index)));
-        }
+        size_t operator()(const string &str) const ST_NOEXCEPT;
     };
 
     struct ST_EXPORT less_i
