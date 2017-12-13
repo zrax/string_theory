@@ -25,25 +25,6 @@
 #include "st_charbuffer.h"
 
 #if !defined(ST_NO_STL_STRINGS)
-#   if defined(ST_HAVE_CXX17_STRING_VIEW)
-#       include <string_view>
-        namespace ST
-        {
-            using _std_string_view = std::string_view;
-            using _std_wstring_view = std::wstring_view;
-            using _std_u16string_view = std::u16string_view;
-            using _std_u32string_view = std::u32string_view;
-        }
-#   elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
-#       include <experimental/string_view>
-        namespace ST
-        {
-            using _std_string_view = std::experimental::string_view;
-            using _std_wstring_view = std::experimental::wstring_view;
-            using _std_u16string_view = std::experimental::u16string_view;
-            using _std_u32string_view = std::experimental::u32string_view;
-        }
-#   endif
 #   if defined(ST_HAVE_CXX17_FILESYSTEM)
 #       include <filesystem>
         namespace ST { namespace _filesystem = std::filesystem; }
@@ -63,7 +44,6 @@
 #   define ST_DEFAULT_VALIDATION ST::check_validity
 #endif
 
-#define ST_AUTO_SIZE    (static_cast<size_t>(-1))
 #define ST_WHITESPACE   " \t\r\n"
 
 namespace ST
@@ -806,6 +786,18 @@ namespace ST
         ST::_filesystem::path to_path() const
         {
             return ST::_filesystem::u8path(c_str(), c_str() + size());
+        }
+#endif
+
+#ifdef ST_HAVE_STD_STRING_VIEW
+        ST::_std_string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE)
+        {
+            return m_buffer.view(start, length);
+        }
+
+        operator ST::_std_string_view() const
+        {
+            return (ST::_std_string_view)m_buffer;
         }
 #endif
 

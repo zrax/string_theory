@@ -33,7 +33,32 @@
 
 #if !defined(ST_NO_STL_STRINGS)
 #   include <string>
+#   if defined(ST_HAVE_CXX17_STRING_VIEW)
+#       include <string_view>
+        namespace ST
+        {
+            template <typename char_T>
+            using _std_basic_string_view = std::basic_string_view<char_T>;
+            using _std_string_view = std::string_view;
+            using _std_wstring_view = std::wstring_view;
+            using _std_u16string_view = std::u16string_view;
+            using _std_u32string_view = std::u32string_view;
+        }
+#   elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
+#       include <experimental/string_view>
+        namespace ST
+        {
+            template <typename char_T>
+            using _std_basic_string_view = std::experimental::basic_string_view<char_T>;
+            using _std_string_view = std::experimental::string_view;
+            using _std_wstring_view = std::experimental::wstring_view;
+            using _std_u16string_view = std::experimental::u16string_view;
+            using _std_u32string_view = std::experimental::u32string_view;
+        }
+#   endif
 #endif
+
+#define ST_AUTO_SIZE    (static_cast<size_t>(-1))
 
 namespace ST
 {
@@ -258,7 +283,23 @@ namespace ST
         {
             return std::basic_string<char_T>(data(), size());
         }
+
+#ifdef ST_HAVE_STD_STRING_VIEW
+        ST::_std_basic_string_view<char_T> view(size_t start = 0,
+                                                size_t length = ST_AUTO_SIZE)
+        {
+            if (length == ST_AUTO_SIZE)
+                length = size() - start;
+            return ST::_std_basic_string_view<char_T>(data() + start, length);
+        }
+
+        operator ST::_std_basic_string_view<char_T>() const
+        {
+            return ST::_std_basic_string_view<char_T>(data(), size());
+        }
 #endif
+
+#endif  /* ST_NO_STL_STRINGS */
     };
 
     typedef buffer<char>        char_buffer;
