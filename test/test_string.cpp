@@ -1151,9 +1151,9 @@ TEST(string, find)
     EXPECT_EQ(-1, ST::string().find("AAAA", ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find("AAAA", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxx").find("", ST::case_sensitive));
-    EXPECT_EQ(-1, ST_LITERAL("xxxx").find(nullptr, ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find((const char *)ST_NULLPTR, ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find("", ST::case_sensitive));
-    EXPECT_EQ(-1, ST::string().find(nullptr, ST::case_sensitive));
+    EXPECT_EQ(-1, ST::string().find((const char *)ST_NULLPTR, ST::case_sensitive));
 
     // Unicode substring
     ST::string haystack;
@@ -1220,9 +1220,9 @@ TEST(string, find_last)
     EXPECT_EQ(-1, ST::string().find_last("AAAA", ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find_last("AAAA", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last("", ST::case_sensitive));
-    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last(nullptr, ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last((const char *)ST_NULLPTR, ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find_last("", ST::case_sensitive));
-    EXPECT_EQ(-1, ST::string().find_last(nullptr, ST::case_sensitive));
+    EXPECT_EQ(-1, ST::string().find_last((const char *)ST_NULLPTR, ST::case_sensitive));
 
     // Unicode substring
     ST::string haystack;

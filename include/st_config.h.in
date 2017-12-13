@@ -111,7 +111,11 @@ namespace _ST_PRIVATE
 #if defined(_MSC_VER)
 #   define ST_DEPRECATED(message) __declspec(deprecated(message))
 #elif defined(__GNUC__)
-#   define ST_DEPRECATED(message) __attribute__((deprecated(message)))
+#   if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR > 4))
+#       define ST_DEPRECATED(message) __attribute__((deprecated(message)))
+#   else
+#       define ST_DEPRECATED(message) __attribute__((deprecated))
+#   endif
 #elif defined(ST_HAVE_DEPRECATED_ATTR)
 #   define ST_DEPRECATED(message) [[deprecated(message)]]
 #else
