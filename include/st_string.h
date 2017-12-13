@@ -22,6 +22,7 @@
 #define _ST_STRING_H
 
 #include <vector>
+#include <functional>
 #include "st_charbuffer.h"
 
 #if !defined(ST_NO_STL_STRINGS)
@@ -1035,7 +1036,8 @@ namespace ST
 
 namespace std
 {
-    template<> struct hash<ST::string>
+    template <>
+    struct hash<ST::string>
     {
          inline size_t operator()(const ST::string &str) const ST_NOEXCEPT
          {

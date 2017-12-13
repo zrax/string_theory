@@ -1050,7 +1050,7 @@ ST_ssize_t ST::string::find_last(size_t max, char ch, case_sensitivity_t cs) con
     const char *endp = c_str() + (max > size() ? size() : max);
 
     const char *start = c_str();
-    const char *found = nullptr;
+    const char *found = ST_NULLPTR;
     for ( ;; ) {
         const char *cp = (cs == case_sensitive) ? strchr(start, ch)
                                                 : _strichr(start, ch);
@@ -1071,7 +1071,7 @@ ST_ssize_t ST::string::find_last(size_t max, const char *substr, case_sensitivit
     const char *endp = c_str() + (max > size() ? size() : max);
 
     const char *start = c_str();
-    const char *found = nullptr;
+    const char *found = ST_NULLPTR;
     for ( ;; ) {
         const char *cp = (cs == case_sensitive) ? strstr(start, substr)
                                                 : _stristr(start, substr);
