@@ -67,12 +67,6 @@
 #define ST_AUTO_SIZE    (static_cast<size_t>(-1))
 #define ST_WHITESPACE   " \t\r\n"
 
-namespace _ST_PRIVATE
-{
-    int ST_EXPORT _lower_char(int ch) ST_NOEXCEPT;
-    int ST_EXPORT _upper_char(int ch) ST_NOEXCEPT;
-}
-
 namespace ST
 {
     ST_STRONG_ENUM(case_sensitivity_t)
@@ -1086,23 +1080,11 @@ namespace ST
     struct ST_EXPORT hash
     {
         size_t operator()(const string &str) const ST_NOEXCEPT;
-
-    protected:
-        virtual unsigned char fetch_char(const string &str, size_t index)
-            const ST_NOEXCEPT
-        {
-            return static_cast<unsigned char>(str.at(index));
-        }
     };
 
-    struct ST_EXPORT hash_i : public hash
+    struct ST_EXPORT hash_i
     {
-    protected:
-        unsigned char fetch_char(const string &str, size_t index)
-            const ST_NOEXCEPT ST_OVERRIDE
-        {
-            return static_cast<unsigned char>(_ST_PRIVATE::_lower_char(str.at(index)));
-        }
+        size_t operator()(const string &str) const ST_NOEXCEPT;
     };
 
     struct ST_EXPORT less_i

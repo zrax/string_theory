@@ -51,16 +51,6 @@
 #   define strnicmp strncasecmp
 #endif
 
-int _ST_PRIVATE::_lower_char(int ch) ST_NOEXCEPT
-{
-    return tolower(ch);
-}
-
-int _ST_PRIVATE::_upper_char(int ch) ST_NOEXCEPT
-{
-    return toupper(ch);
-}
-
 #define BADCHAR_SUBSTITUTE          0xFFFDul
 #define BADCHAR_SUBSTITUTE_UTF8     "\xEF\xBF\xBD"
 
@@ -1010,7 +1000,7 @@ static const char *_strichr(const char *haystack, int ch)
 {
     const char *cp = haystack;
     while (*cp) {
-        if (_ST_PRIVATE::_lower_char(ch) == _ST_PRIVATE::_lower_char(*cp))
+        if (tolower(ch) == tolower(*cp))
             return cp;
         ++cp;
     }
@@ -1328,7 +1318,7 @@ ST::string ST::string::to_upper() const
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
-        *dp++ = _ST_PRIVATE::_upper_char(*sp++);
+        *dp++ = toupper(*sp++);
 
     return result;
 }
@@ -1343,7 +1333,7 @@ ST::string ST::string::to_lower() const
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
-        *dp++ = _ST_PRIVATE::_lower_char(*sp++);
+        *dp++ = tolower(*sp++);
 
     return result;
 }
@@ -1479,6 +1469,27 @@ size_t ST::hash::operator()(const string &str) const ST_NOEXCEPT
     const char *ep = cp + str.size();
     while (cp < ep) {
         hash ^= static_cast<size_t>(*cp++);
+        hash *= FNV_PRIME;
+    }
+    return hash;
+}
+
+size_t ST::hash_i::operator()(const string &str) const ST_NOEXCEPT
+{
+    /* FNV-1a hash.  See http://isthe.com/chongo/tech/comp/fnv/ for details */
+#if ST_SIZET_BYTES == 4
+#   define FNV_OFFSET_BASIS 0x811c9dc5UL
+#   define FNV_PRIME        0x01000193UL
+#elif ST_SIZET_BYTES == 8
+#   define FNV_OFFSET_BASIS 0xcbf29ce484222325ULL
+#   define FNV_PRIME        0x00000100000001b3ULL
+#endif
+
+    size_t hash = FNV_OFFSET_BASIS;
+    const char *cp = str.c_str();
+    const char *ep = cp + str.size();
+    while (cp < ep) {
+        hash ^= static_cast<size_t>(tolower(*cp++));
         hash *= FNV_PRIME;
     }
     return hash;
