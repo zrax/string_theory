@@ -20,6 +20,8 @@
 |    | [string](#ctor_1)(const null_t &) noexcept |
 |    | [string](#ctor_2)(const char \*cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_3)(const wchar_t \*wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+|    | [string](#ctor_14)(const char16_t \*cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+|    | [string](#ctor_15)(const char32_t \*cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFUALT_VALIDATION) |
 |    | [string](#ctor_4)(const string &copy) |
 |    | [string](#ctor_5)(string &&move) noexcept |
 |    | [string](#ctor_6)(const char_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
@@ -29,10 +31,14 @@
 |    | [string](#ctor_10)(const wchar_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_11)(const std::string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_12)(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+|    | [string](#ctor_16)(const std::u16string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+|    | [string](#ctor_17)(const std::u32string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_13)(const std::filesystem::path &init) |
 | void | [set](#set_1)(const null_t &) noexcept |
 | void | [set](#set_2)(const char \*cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_3)(const wchar_t \*wstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| void | [set](#set_14)(const char16_t \*cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| void | [set](#set_15)(const char32_t \*cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_4)(const string &copy) |
 | void | [set](#set_5)(string &&move) noexcept |
 | void | [set](#set_6)(const char_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
@@ -42,10 +48,14 @@
 | void | [set](#set_10)(const wchar_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_11)(const std::string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_12)(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| void | [set](#set_16)(const std::u16string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
+| void | [set](#set_17)(const std::u32string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_13)(const std::filesystem::path &init) |
 | string & | [operator=](#operator_eq_1)(const null_t &) noexcept |
-| string & | [operator=](#operator_eq_2)(const char *cstr) |
-| string & | [operator=](#operator_eq_3)(const wchar_t *wstr) |
+| string & | [operator=](#operator_eq_2)(const char \*cstr) |
+| string & | [operator=](#operator_eq_3)(const wchar_t \*wstr) |
+| string & | [operator=](#operator_eq_14)(const char16_t \*cstr) |
+| string & | [operator=](#operator_eq_15)(const char32_t \*cstr) |
 | string & | [operator=](#operator_eq_4)(const string &copy) |
 | string & | [operator=](#operator_eq_5)(string &&move) noexcept |
 | string & | [operator=](#operator_eq_6)(const char_buffer &init) |
@@ -55,15 +65,20 @@
 | string & | [operator=](#operator_eq_10)(const wchar_buffer &init) |
 | string & | [operator=](#operator_eq_11)(const std::string &init) |
 | string & | [operator=](#operator_eq_12)(const std::wstring &init) |
+| string & | [operator=](#operator_eq_16)(const std::u16string &init) |
+| string & | [operator=](#operator_eq_17)(const std::u32string &init) |
 | string & | [operator=](#operator_eq_13)(const std::filesystem::path &init) |
-| string & | [operator+=](#operator_pluseq_1)(const char *cstr) |
-| string & | [operator+=](#operator_pluseq_2)(const wchar_t *wstr) |
+| string & | [operator+=](#operator_pluseq_1)(const char \*cstr) |
+| string & | [operator+=](#operator_pluseq_2)(const wchar_t \*wstr) |
+| string & | [operator+=](#operator_pluseq_8)(const char16_t \*cstr) |
+| string & | [operator+=](#operator_pluseq_9)(const char32_t \*cstr) |
 | string & | [operator+=](#operator_pluseq_3)(const string &other) |
 | string & | [operator+=](#operator_pluseq_4)(char ch) |
+| string & | [operator+=](#operator_pluseq_7)(wchar_t ch) |
 | string & | [operator+=](#operator_pluseq_5)(char16_t ch) |
 | string & | [operator+=](#operator_pluseq_6)(char32_t ch) |
-| string & | [operator+=](#operator_pluseq_7)(wchar_t ch) |
-| const char * | [c_str](#c_str)(const char \*substitute = "") const noexcept |
+| const char \* | [c_str](#c_str_1)() const noexcept |
+| const char \* | [c_str](#c_str_2)(const char \*substitute) const noexcept |
 | char | [char_at](#char_at)(size_t position) const noexcept |
 | char_buffer | [to_utf8](#to_utf8)() const noexcept |
 | utf16_buffer | [to_utf16](#to_utf16)() const |
@@ -71,7 +86,9 @@
 | wchar_buffer | [to_wchar](#to_wchar)() const |
 | char_buffer | [to_latin_1](#to_latin_1)(utf_validation_t validation = substitute_invalid) const |
 | std::string | [to_std_string](#to_std_string)(bool utf8 = true, utf_validation_t validation = substitute_invalid) const |
-| std::wstring | [to_std_wstring](#to_std_wstring)(bool utf8 = true, utf_validation_t validation = substitute_invalid) const |
+| std::wstring | [to_std_wstring](#to_std_wstring)() const |
+| std::u16string | [to_std_u16string](#to_std_u16string)() const |
+| std::u32string | [to_std_u32string](#to_std_u32string)() const |
 | std::filesystem::path | [to_path](#to_path)() const |
 | size_t | [size](#size)() const noexcept |
 | bool | [is_empty](#is_empty)() const noexcept |
@@ -167,6 +184,9 @@
 | string | [from_wchar](#from_wchar_2)(const wchar_buffer &wstr, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_latin_1](#from_latin_1_2)(const char_buffer &astr) |
 | string | [from_std_string](#from_std_string_1)(const std::string &sstr, validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_std_string](#from_std_string_2)(const std::wstring &wstr, validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_std_string](#from_std_string_3)(const std::u16string &ustr, validation_t validation = ST_DEFAULT_VALIDATION) |
+| string | [from_std_string](#from_std_string_4)(const std::u32string &ustr, validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_std_wstring](#from_std_wstring_1)(const std::wstring &wstr, validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_path](#from_path)(const std::filesystem::path &path) |
 | string | [from_int](#from_int)(int value, int base = 10, bool upper_case = false) |
@@ -191,6 +211,10 @@
 | string | [operator+](#operator_plus_3)(const char \*left, const string &right) |
 | string | [operator+](#operator_plus_4)(const string &left, const wchar_t \*right) |
 | string | [operator+](#operator_plus_5)(const wchar_t \*left, const string &right) |
+| string | [operator+](#operator_plus_14)(const string &left, const char16_t \*right) |
+| string | [operator+](#operator_plus_15)(const char16_t \*left, const string &right) |
+| string | [operator+](#operator_plus_16)(const string &left, const char32_t \*right) |
+| string | [operator+](#operator_plus_17)(const char32_t \*left, const string &right) |
 | string | [operator+](#operator_plus_6)(const string &left, char right) |
 | string | [operator+](#operator_plus_7)(const string &left, char16_t right) |
 | string | [operator+](#operator_plus_8)(const string &left, char32_t right) |
@@ -231,7 +255,7 @@ objects are immutable.  All operations which manipulate the string data
 (including `operator=` and `operator+=`) will create a new string buffer with
 a copy of the necessary data.  This means that all ST::string members are
 re-entrant.  Furthermore, the buffers returned by [to_utf8](#to_utf8)() and
-[c_str](#c_str)() are accessors to ST::string's internal storage, meaning
+[c_str](#c_str_1)() are accessors to ST::string's internal storage, meaning
 they do not have to be stored externally in order to remain valid.
 
 ### Faster string Literals
@@ -400,6 +424,36 @@ depending on your platform's wchar_t support.
 
 ------
 
+<a name="ctor_14"></a>
+### ST::string::string(const char16_t \*cstr, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+string(const char16_t *cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the first `size` characters of the string pointed to
+by `cstr`.  If `size` is `ST_AUTO_SIZE`, the length of the input will be
+determined with [ST::utf16_buffer::strlen](st_buffer.md#strlen)().  The data
+pointed to by `cstr` is expected to be encoded as UTF-16.
+
+**See also** [from_utf16](#from_utf16_1)(const char16_t \*, size_t, utf_validation_t)
+
+------
+
+<a name="ctor_15"></a>
+### ST::string::string(const char32_t \*cstr, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+string(const char32_t *cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the first `size` characters of the string pointed to
+by `cstr`.  If `size` is `ST_AUTO_SIZE`, the length of the input will be
+determined with [ST::utf32_buffer::strlen](st_buffer.md#strlen)().  The data
+pointed to by `cstr` is expected to be encoded as UTF-32.
+
+**See also** [from_utf32](#from_utf32_1)(const char32_t \*, size_t, utf_validation_t)
+
+------
+
 <a name="ctor_4"></a>
 ### ST::string::string(const ST::string &copy)
 ~~~c++
@@ -509,6 +563,28 @@ string(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDA
 Construct a string from the contents of `init`.  The string data
 in `init` is expected to be encoded as either UTF-16 or UTF-32, depending
 on your platform's wchar_t support.
+
+------
+
+<a name="ctor_16"></a>
+### ST::string::string(const std::u16string &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+string(const std::u16string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the contents of `init`.  The string data in `init`
+is expected to be encoded as UTF-16.
+
+------
+
+<a name="ctor_17"></a>
+### ST::string::string(const std::u32string &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+string(const std::u32string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from the contents of `init`.  The string data in `init`
+is expected to be encoded as UTF-32.
 
 ------
 
@@ -666,10 +742,22 @@ is returned.
 
 ------
 
-<a name="c_str"></a>
-### const char \*ST::string::c_str(const char \*substitute = "") const
+<a name="c_str_1"></a>
+### const char \*ST::string::c_str() const
 ~~~c++
-const char *c_str(const char *substitute = "") const noexcept
+const char *c_str() const noexcept
+~~~
+
+Returns a pointer to the stored UTF-8 string data.  This buffer should always
+be nul-terminated, so it's safe to use in functions which require C-style
+string buffers.
+
+------
+
+<a name="c_str_2"></a>
+### const char \*ST::string::c_str(const char \*substitute) const
+~~~c++
+const char *c_str(const char *substitute) const noexcept
 ~~~
 
 Returns a pointer to the stored UTF-8 string data.  This buffer should always
@@ -692,7 +780,7 @@ may return a byte in the middle of a UTF-8 multi-byte sequence!  The
 position is not bounds-checked, so accessing positions outside the range
 [0, [size](#size)()+1] will result in undefined behavior.
 
-**See also** [c_str](#c_str)()
+**See also** [c_str](#c_str_1)()
 
 ------
 
@@ -1102,6 +1190,40 @@ as UTF-8.
 
 ------
 
+<a name="from_std_string_2"></a>
+### ST::string ST::string::from_std_string(const std::wstring &wstr, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_std_string(const std::wstring &wstr, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from a std::wstring.  The string is expected to be encoded
+as either UTF-16 or UTF-32 / UCS-4 depending on your platform's wchar_t
+support.
+
+------
+
+<a name="from_std_string_3"></a>
+### ST::string ST::string::from_std_string(const std::u16string &ustr, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_std_string(const std::u16string &ustr, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from a std::u16string.  The string is expected to be encoded
+as UTF-16.
+
+------
+
+<a name="from_std_string_4"></a>
+### ST::string ST::string::from_std_string(const std::u32string &ustr, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
+~~~c++
+static string from_std_string(const std::u32string &ustr, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Construct a string from a std::u32string.  The string is expected to be encoded
+as UTF-32.
+
+------
+
 <a name="from_std_wstring_1"></a>
 ### ST::string ST::string::from_std_wstring(const std::wstring &wstr, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
 ~~~c++
@@ -1245,7 +1367,7 @@ bool is_empty() const noexcept
 ~~~
 
 Returns `true` if this string is empty (i.e. its size is 0).  Note that even
-for an empty string, the first character pointed to by [c_str](#c_str)() can
+for an empty string, the first character pointed to by [c_str](#c_str_1)() can
 be accessed, and should be the nul character (`'\0'`).
 
 **See also** [size](#size)()
@@ -1292,7 +1414,7 @@ This is equivalent to [set](#set_2)(cstr).
 ------
 
 <a name="operator_eq_3"></a>
-### ST::string &ST::string::operator=(const wchar_t \*cstr)
+### ST::string &ST::string::operator=(const wchar_t \*wstr)
 ~~~c++
 string &operator=(const wchar_t *wstr)
 ~~~
@@ -1301,6 +1423,32 @@ Set the string content from the wide string pointed to by `wstr`.  This is
 equivalent to [set](#set_3)(wstr).
 
 **See also** [set](#set_3)(const wchar_t \*, size_t, utf_validation_t)
+
+------
+
+<a name="operator_eq_14"></a>
+### ST::string &ST::string::operator=(const char16_t \*cstr)
+~~~c++
+string &operator=(const char16_t *cstr)
+~~~
+
+Set the string content from the string pointed to by `cstr`.  This is
+equivalent to [set](#set_14)(cstr).
+
+**See also** [set](#set_14)(const char16_t \*, size_t, utf_validation_t)
+
+------
+
+<a name="operator_eq_15"></a>
+### ST::string &ST::string::operator=(const char32_t \*cstr)
+~~~c++
+string &operator=(const char32_t *cstr)
+~~~
+
+Set the string content from the string pointed to by `cstr`.  This is
+equivalent to [set](#set_15)(cstr).
+
+**See also** [set](#set_15)(const char32_t \*, size_t, utf_validation_t)
 
 ------
 
@@ -1416,6 +1564,28 @@ platform's wchar_t support.
 
 ------
 
+<a name="operator_eq_16"></a>
+### ST::string &ST::string::operator=(const std::u16string &init)
+~~~c++
+string &operator=(const std::u16string &init)
+~~~
+
+Set the string content from the string in `init`. The string data is
+expected to be encoded as UTF-16.
+
+------
+
+<a name="operator_eq_17"></a>
+### ST::string &ST::string::operator=(const std::u32string &init)
+~~~c++
+string &operator=(const std::u32string &init)
+~~~
+
+Set the string content from the string in `init`. The string data is
+expected to be encoded as UTF-32.
+
+------
+
 <a name="operator_eq_13"></a>
 ### ST::string &ST::string::operator=(const std::filesystem::path &init)
 ~~~c++
@@ -1451,6 +1621,34 @@ wchar_t \*).
 
 ------
 
+<a name="operator_pluseq_8"></a>
+### ST::string &ST::string::operator+=(const char16_t \*cstr)
+~~~c++
+string &operator+=(const char16_t *cstr)
+~~~
+
+Append the contents of `cstr` to the end of this string.  The input is
+converted to UTF-8 in the same manner as [from_utf16](#from_utf16_1)(const
+char16_t \*).
+
+**See also** [from_utf16](#from_utf16_1)(const char16_t \*, size_t, utf_validation_t)
+
+------
+
+<a name="operator_pluseq_9"></a>
+### ST::string &ST::string::operator+=(const char32_t \*cstr)
+~~~c++
+string &operator+=(const char32_t *cstr)
+~~~
+
+Append the contents of `cstr` to the end of this string.  The input is
+converted to UTF-8 in the same manner as [from_utf32](#from_utf32_1)(const
+char32_t \*).
+
+**See also** [from_utf32](#from_utf32_1)(const char32_t \*, size_t, utf_validation_t)
+
+------
+
 <a name="operator_pluseq_3"></a>
 ### ST::string &ST::string::operator+=(const ST::string &other)
 ~~~c++
@@ -1471,6 +1669,16 @@ Append the character `ch` to the end of this string.
 
 ------
 
+<a name="operator_pluseq_7"></a>
+### ST::string &ST::string::operator+=(wchar_t ch)
+~~~c++
+string &operator+=(wchar_t ch)
+~~~
+
+Append the wide character `ch` to the end of this string.
+
+------
+
 <a name="operator_pluseq_5"></a>
 ### ST::string &ST::string::operator+=(char16_t ch)
 ~~~c++
@@ -1488,16 +1696,6 @@ string &operator+=(char32_t ch)
 ~~~
 
 Append the unicode character `ch` to the end of this string.
-
-------
-
-<a name="operator_pluseq_7"></a>
-### ST::string &ST::string::operator+=(wchar_t ch)
-~~~c++
-string &operator+=(wchar_t ch)
-~~~
-
-Append the wide character `ch` to the end of this string.
 
 ------
 
@@ -1693,6 +1891,36 @@ UTF-32, depending on your platform's wchar_t support.
 
 ------
 
+<a name="set_14"></a>
+### void ST::string::set(const char16_t \*cstr, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+void set(const char16_t *cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Set the string content from the first `size` characters of the string
+pointed to by `cstr`.  If `size` is `ST_AUTO_SIZE`, the length of the input
+will be determined with [ST::utf16_buffer::strlen](st_buffer.md#strlen)().
+The data pointed to by `cstr` is expected to be encoded as UTF-16.
+
+**See also** [from_utf16](#from_utf16_1)(const char16_t \*, size_t, utf_validation_t)
+
+------
+
+<a name="set_15"></a>
+### void ST::string::set(const char32_t \*cstr, size_t size = ST_AUTO_SIZE, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+void set(const char32_t *cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Set the string content from the first `size` characters of the string
+pointed to by `cstr`.  If `size` is `ST_AUTO_SIZE`, the length of the input
+will be determined with [ST::utf32_buffer::strlen](st_buffer.md#strlen)().
+The data pointed to by `cstr` is expected to be encoded as UTF-32.
+
+**See also** [from_utf32](#from_utf32_1)(const char32_t \*, size_t, utf_validation_t)
+
+------
+
 <a name="set_4"></a>
 ### void ST::string::set(const ST::string &copy)
 ~~~c++
@@ -1802,6 +2030,28 @@ void set(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALI
 Set the string content from the wide string data provided in `init`.
 The string is expected to be encoded as either UTF-16 or UTF-32, depending
 on your platform's wchar_t support.
+
+------
+
+<a name="set_16"></a>
+### void ST::string::set(const std::u16string &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+void set(const std::u16string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Set the string content from the string data provided in `init`.  The string
+is expected to be encoded as UTF-16.
+
+------
+
+<a name="set_17"></a>
+### void ST::string::set(const std::u32string &init, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
+~~~c++
+void set(const std::u32string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION)
+~~~
+
+Set the string content from the string data provided in `init`.  The string
+is expected to be encoded as UTF-32.
 
 ------
 
@@ -2143,6 +2393,28 @@ support.
 
 ------
 
+<a name="to_std_u16string"></a>
+### std::u16string ST::string::to_std_u16string() const
+~~~c++
+std::u16string to_std_u16string() const
+~~~
+
+Convert the string content to a std::u16string.  The string will be encoded
+as UTF-16.
+
+------
+
+<a name="to_std_u32string"></a>
+### std::u32string ST::string::to_std_u32string() const
+~~~c++
+std::u32string to_std_u32string() const
+~~~
+
+Convert the string content to a std::u32string.  The string will be encoded
+as UTF-32.
+
+------
+
 <a name="to_path"></a>
 ### std::filesystem::path ST::string::to_path() const
 ~~~c++
@@ -2324,9 +2596,6 @@ struct [equal_i](#equal_i), [operator==](#operator_iseq_2)()
 struct hash
 {
     size_t operator()(const string &str) const noexcept;
-
-protected:
-      virtual unsigned char fetch_char(const string &str, size_t index);
 };
 ~~~
 
@@ -2341,10 +2610,9 @@ is designed for STL-style containers which use hashing for indexes, e.g.
 <a name="hash_i"></a>
 ### struct ST::hash_i
 ~~~c++
-struct hash_i : public hash
+struct hash_i
 {
-protected:
-      unsigned char fetch_char(const string &str, size_t index) override;
+    size_t operator()(const string &str) const noexcept;
 };
 ~~~
 
@@ -2432,6 +2700,54 @@ string operator+(const wchar_t *left, const string &right)
 Returns a string which is the concatenation of `left` and `right`.
 
 **See also** [operator+=](#operator_pluseq_2)(const wchar_t \*)
+
+------
+
+<a name="operator_plus_14"></a>
+### ST::string ST::operator+(const ST::string &left, const char16_t \*right)
+~~~c++
+string operator+(const string &left, const char16_t *right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+**See also** [operator+=](#operator_pluseq_8)(const char16_t \*)
+
+------
+
+<a name="operator_plus_15"></a>
+### ST::string ST::operator+(const char16_t \*left, const ST::string &right)
+~~~c++
+string operator+(const char16_t *left, const string &right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+**See also** [operator+=](#operator_pluseq_8)(const char16_t \*)
+
+------
+
+<a name="operator_plus_16"></a>
+### ST::string ST::operator+(const ST::string &left, const char32_t \*right)
+~~~c++
+string operator+(const string &left, const char32_t *right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+**See also** [operator+=](#operator_pluseq_9)(const char32_t \*)
+
+------
+
+<a name="operator_plus_17"></a>
+### ST::string ST::operator+(const char32_t \*left, const ST::string &right)
+~~~c++
+string operator+(const char32_t *left, const string &right)
+~~~
+
+Returns a string which is the concatenation of `left` and `right`.
+
+**See also** [operator+=](#operator_pluseq_9)(const char32_t \*)
 
 ------
 
