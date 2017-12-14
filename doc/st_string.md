@@ -29,8 +29,6 @@
 |    | [string](#ctor_10)(const wchar_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_11)(const std::string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_12)(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-|    | [string](#ctor_14)(const std::string_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-|    | [string](#ctor_15)(const std::wstring_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 |    | [string](#ctor_13)(const std::filesystem::path &init) |
 | void | [set](#set_1)(const null_t &) noexcept |
 | void | [set](#set_2)(const char \*cstr, size_t size = ST_AUTO_SIZE, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
@@ -44,8 +42,6 @@
 | void | [set](#set_10)(const wchar_buffer &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_11)(const std::string &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_12)(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-| void | [set](#set_14)(const std::string_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
-| void | [set](#set_15)(const std::wstring_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION) |
 | void | [set](#set_13)(const std::filesystem::path &init) |
 | string & | [operator=](#operator_eq_1)(const null_t &) noexcept |
 | string & | [operator=](#operator_eq_2)(const char *cstr) |
@@ -59,8 +55,6 @@
 | string & | [operator=](#operator_eq_10)(const wchar_buffer &init) |
 | string & | [operator=](#operator_eq_11)(const std::string &init) |
 | string & | [operator=](#operator_eq_12)(const std::wstring &init) |
-| string & | [operator=](#operator_eq_14)(const std::string_view &view) |
-| string & | [operator=](#operator_eq_15)(const std::wstring_view &view) |
 | string & | [operator=](#operator_eq_13)(const std::filesystem::path &init) |
 | string & | [operator+=](#operator_pluseq_1)(const char *cstr) |
 | string & | [operator+=](#operator_pluseq_2)(const wchar_t *wstr) |
@@ -174,8 +168,6 @@
 | string | [from_latin_1](#from_latin_1_2)(const char_buffer &astr) |
 | string | [from_std_string](#from_std_string_1)(const std::string &sstr, validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_std_wstring](#from_std_wstring_1)(const std::wstring &wstr, validation_t validation = ST_DEFAULT_VALIDATION) |
-| string | [from_std_string](#from_std_string_2)(const std::string_view &view, validation_t validation = ST_DEFAULT_VALIDATION) |
-| string | [from_std_wstring](#from_std_wstring_2)(const std::wstring_view &view, validation_t validation = ST_DEFAULT_VALIDATION) |
 | string | [from_path](#from_path)(const std::filesystem::path &path) |
 | string | [from_int](#from_int)(int value, int base = 10, bool upper_case = false) |
 | string | [from_uint](#from_uint)(unsigned int value, int base = 10, bool upper_case = false) |
@@ -516,29 +508,6 @@ string(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALIDA
 
 Construct a string from the contents of `init`.  The string data
 in `init` is expected to be encoded as either UTF-16 or UTF-32, depending
-on your platform's wchar_t support.
-
-------
-
-<a name="ctor_14"></a>
-### ST::string::string(const std::string_view &view, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
-~~~c++
-string(const std::string_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION)
-~~~
-
-Construct a string from the string view captured by `view`.  The string data
-is expected to be encoded as UTF-8.
-
-------
-
-<a name="ctor_15"></a>
-### ST::string::string(const std::wstring_view &view, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
-~~~c++
-string(const std::wstring_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION)
-~~~
-
-Construct a string from the string view captured by `view`.  The string data
-in `view` is expected to be encoded as either UTF-16 or UTF-32, depending
 on your platform's wchar_t support.
 
 ------
@@ -1145,29 +1114,6 @@ support.
 
 ------
 
-<a name="from_std_string_2"></a>
-### ST::string ST::string::from_std_string(const std::string_view &view, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
-~~~c++
-static string from_std_string(const std::string_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION)
-~~~
-
-Construct a string from a std::string_view.  The view is expected to be
-encoded as UTF-8.
-
-------
-
-<a name="from_std_wstring_2"></a>
-### ST::string ST::string::from_std_wstring(const std::wstring_view &view, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION)) [static]
-~~~c++
-static string from_std_wstring(const std::wstring_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION)
-~~~
-
-Construct a string from a std::wstring_view.  The view is expected to be
-encoded as either UTF-16 or UTF-32 / UCS-4 depending on your platform's
-wchar_t support.
-
-------
-
 <a name="from_path"></a>
 ### ST::string ST::string::from_path(const std::filesystem::path &path) [static]
 ~~~c++
@@ -1467,29 +1413,6 @@ string &operator=(const std::wstring &init)
 Set the string content from the wide string in `init`. The string data is
 expected to be encoded as either UTF-16 or UTF-32, depending on your
 platform's wchar_t support.
-
-------
-
-<a name="operator_eq_14"></a>
-### ST::string &ST::string::operator=(const std::string_view &view)
-~~~c++
-string &operator=(const std::string_view &view)
-~~~
-
-Set the string content from the string view contained in `view`.  The string
-data is expected to be encoded as UTF-8.
-
-------
-
-<a name="operator_eq_15"></a>
-### ST::string &ST::string::operator=(const std::wstring_view &view)
-~~~c++
-string &operator=(const std::wstring_view &view)
-~~~
-
-Set the string content from the wide string view contained in `init`. The
-string data is expected to be encoded as either UTF-16 or UTF-32, depending
-on your platform's wchar_t support.
 
 ------
 
@@ -1877,29 +1800,6 @@ void set(const std::wstring &init, utf_validation_t validation = ST_DEFAULT_VALI
 ~~~
 
 Set the string content from the wide string data provided in `init`.
-The string is expected to be encoded as either UTF-16 or UTF-32, depending
-on your platform's wchar_t support.
-
-------
-
-<a name="set_14"></a>
-### void ST::string::set(const std::string_view &view, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
-~~~c++
-void set(const std::string_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION)
-~~~
-
-Set the string content from the string view captured in `view`.  The string is
-expected to be encoded as UTF-8.
-
-------
-
-<a name="set_15"></a>
-### void ST::string::set(const std::wstring_view &view, [ST::utf_validation_t](#utf_validation_t) validation = [ST_DEFAULT_VALIDATION](#ST_DEFAULT_VALIDATION))
-~~~c++
-void set(const std::wstring_view &view, utf_validation_t validation = ST_DEFAULT_VALIDATION)
-~~~
-
-Set the string content from the wide string view captured in `view`.
 The string is expected to be encoded as either UTF-16 or UTF-32, depending
 on your platform's wchar_t support.
 

@@ -41,8 +41,6 @@
 #cmakedefine ST_HAVE_CONSTEXPR
 #cmakedefine ST_INT64_IS_LONG
 #if __cplusplus > 201402L
-#cmakedefine ST_HAVE_CXX17_STRING_VIEW
-#cmakedefine ST_HAVE_EXPERIMENTAL_STRING_VIEW
 #cmakedefine ST_HAVE_CXX17_FILESYSTEM
 #cmakedefine ST_HAVE_EXPERIMENTAL_FILESYSTEM
 #endif
@@ -105,10 +103,6 @@ namespace _ST_PRIVATE
 #else
 #   define ST_STRONG_ENUM(name) enum name
 #   define ST_ENUM_CONSTANT(type, name)
-#endif
-
-#if defined(ST_HAVE_CXX17_STRING_VIEW) || defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
-#   define ST_HAVE_STD_STRING_VIEW
 #endif
 
 #if defined(ST_HAVE_CXX17_FILESYSTEM) || defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)

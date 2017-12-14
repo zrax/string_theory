@@ -26,25 +26,6 @@
 
 #if !defined(ST_NO_STL_STRINGS)
 #   include <string>
-#   if defined(ST_HAVE_CXX17_STRING_VIEW)
-#       include <string_view>
-        namespace ST
-        {
-            using _std_string_view = std::string_view;
-            using _std_wstring_view = std::wstring_view;
-            using _std_u16string_view = std::u16string_view;
-            using _std_u32string_view = std::u32string_view;
-        }
-#   elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
-#       include <experimental/string_view>
-        namespace ST
-        {
-            using _std_string_view = std::experimental::string_view;
-            using _std_wstring_view = std::experimental::wstring_view;
-            using _std_u16string_view = std::experimental::u16string_view;
-            using _std_u32string_view = std::experimental::u32string_view;
-        }
-#   endif
 #   if defined(ST_HAVE_CXX17_FILESYSTEM)
 #       include <filesystem>
         namespace ST { namespace _filesystem = std::filesystem; }
@@ -231,32 +212,6 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_STD_STRING_VIEW
-        string(const ST::_std_string_view &view,
-               utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _convert_from_utf8(view.data(), view.size(), validation);
-        }
-
-        string(const ST::_std_wstring_view &view,
-               utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _convert_from_wchar(view.data(), view.size(), validation);
-        }
-
-        string(const ST::_std_u16string_view &view,
-               utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _convert_from_utf16(view.data(), view.size(), validation);
-        }
-
-        string(const ST::_std_u32string_view &view,
-               utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _convert_from_utf32(view.data(), view.size(), validation);
-        }
-#endif
-
 #ifdef ST_HAVE_FILESYSTEM
         string(const ST::_filesystem::path &path)
         {
@@ -364,32 +319,6 @@ namespace ST
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf32(init.c_str(), init.size(), validation);
-        }
-#endif
-
-#ifdef ST_HAVE_STD_STRING_VIEW
-        void set(const ST::_std_string_view &view,
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _convert_from_utf8(view.data(), view.size(), validation);
-        }
-
-        void set(const ST::_std_wstring_view &view,
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _convert_from_wchar(view.data(), view.size(), validation);
-        }
-
-        void set(const ST::_std_u16string_view &view,
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _convert_from_utf16(view.data(), view.size(), validation);
-        }
-
-        void set(const ST::_std_u32string_view &view,
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _convert_from_utf32(view.data(), view.size(), validation);
         }
 #endif
 
@@ -504,32 +433,6 @@ namespace ST
         string &operator=(const std::u32string &init)
         {
             set(init);
-            return *this;
-        }
-#endif
-
-#ifdef ST_HAVE_STD_STRING_VIEW
-        string &operator=(const ST::_std_string_view &view)
-        {
-            set(view);
-            return *this;
-        }
-
-        string &operator=(const ST::_std_wstring_view &view)
-        {
-            set(view);
-            return *this;
-        }
-
-        string &operator=(const ST::_std_u16string_view &view)
-        {
-            set(view);
-            return *this;
-        }
-
-        string &operator=(const ST::_std_u32string_view &view)
-        {
-            set(view);
             return *this;
         }
 #endif
@@ -704,46 +607,6 @@ namespace ST
         {
             string str;
             str._convert_from_utf32(ustr.c_str(), ustr.size(), validation);
-            return str;
-        }
-#endif
-
-#ifdef ST_HAVE_STD_STRING_VIEW
-        static inline string from_std_string(const ST::_std_string_view &view,
-                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            string str;
-            str._convert_from_utf8(view.data(), view.size(), validation);
-            return str;
-        }
-
-        static inline string from_std_string(const ST::_std_wstring_view &view,
-                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            string str;
-            str._convert_from_wchar(view.data(), view.size(), validation);
-            return str;
-        }
-
-        static inline string from_std_wstring(const ST::_std_wstring_view &view,
-                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            return from_std_string(view, validation);
-        }
-
-        static inline string from_std_string(const ST::_std_u16string_view &view,
-                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            string str;
-            str._convert_from_utf16(view.data(), view.size(), validation);
-            return str;
-        }
-
-        static inline string from_std_string(const ST::_std_u32string_view &view,
-                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            string str;
-            str._convert_from_utf32(view.data(), view.size(), validation);
             return str;
         }
 #endif

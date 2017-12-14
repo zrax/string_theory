@@ -195,19 +195,6 @@ inline ST_FORMAT_TYPE(const ST::_filesystem::path &)
 }
 #endif
 
-#ifdef ST_HAVE_STD_STRING_VIEW
-inline ST_FORMAT_TYPE(const ST::_std_string_view &)
-{
-    ST::format_string(format, output, value.data(), value.size());
-}
-
-inline ST_FORMAT_TYPE(const ST::_std_wstring_view &)
-{
-    ST::char_buffer utf8 = ST::string::from_wchar(value.data(), value.size()).to_utf8();
-    ST::format_string(format, output, utf8.data(), utf8.size());
-}
-#endif
-
 #endif // !defined(ST_NO_STL_STRINGS)
 
 inline ST_FORMAT_TYPE(bool)

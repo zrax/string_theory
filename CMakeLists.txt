@@ -97,14 +97,6 @@ if(NOT ST_INT64_IS_NOT_LONG)
     set(ST_INT64_IS_LONG TRUE)
 endif()
 
-try_compile(ST_HAVE_CXX17_STRING_VIEW "${PROJECT_BINARY_DIR}"
-    "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp")
-if(NOT ST_HAVE_CXX17_STRING_VIEW)
-    try_compile(ST_HAVE_EXPERIMENTAL_STRING_VIEW "${PROJECT_BINARY_DIR}"
-        "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp"
-        COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_STRING_VIEW")
-endif()
-
 try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp")
 if(NOT ST_HAVE_CXX17_FILESYSTEM)
