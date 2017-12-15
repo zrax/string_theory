@@ -237,5 +237,8 @@ install(FILES
 install(EXPORT string_theory-targets
         DESTINATION "${ST_INSTALL_CMAKE_DIR}/string_theory" COMPONENT devel)
 
-enable_testing()
-add_subdirectory(test)
+option(ST_BUILD_TESTS "Build string_theory test suite (recommended)" ON)
+if(ST_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif()
