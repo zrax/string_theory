@@ -1137,14 +1137,14 @@ ST::string ST::string::substr(ST_ssize_t start, size_t count) const
     return sub;
 }
 
-bool ST::string::starts_with(const ST::string &prefix, case_sensitivity_t cs) const
+bool ST::string::starts_with(const ST::string &prefix, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     if (prefix.size() > size())
         return false;
     return compare_n(prefix, prefix.size(), cs) == 0;
 }
 
-bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const
+bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     size_t count = strlen(prefix);
     if (count > size())
@@ -1152,7 +1152,7 @@ bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const
     return compare_n(prefix, count, cs) == 0;
 }
 
-bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) const
+bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     if (suffix.size() > size())
         return false;
@@ -1162,7 +1162,7 @@ bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) cons
                                   : strnicmp(c_str() + start, suffix.c_str(), suffix.size()) == 0;
 }
 
-bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const
+bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     size_t count = strlen(suffix);
     if (count > size())
