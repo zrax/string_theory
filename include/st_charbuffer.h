@@ -242,6 +242,26 @@ namespace ST
             return m_chars[index];
         }
 
+        char_T &front() ST_NOEXCEPT
+        {
+            return m_chars[0];
+        }
+
+        char_T front() const ST_NOEXCEPT
+        {
+            return m_chars[0];
+        }
+
+        char_T &back() ST_NOEXCEPT
+        {
+            return empty() ? m_chars[0] : m_chars[m_size - 1];
+        }
+
+        char_T back() const ST_NOEXCEPT
+        {
+            return empty() ? m_chars[0] : m_chars[m_size - 1];
+        }
+
         void allocate(size_t size)
         {
             if (is_reffed())

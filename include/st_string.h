@@ -754,6 +754,16 @@ namespace ST
         ST_DEPRECATED("replaced with at() in string_theory 2.0")
         char char_at(size_t position) const ST_NOEXCEPT { return at(position); }
 
+        char front() const ST_NOEXCEPT
+        {
+            return m_buffer.front();
+        }
+
+        char back() const ST_NOEXCEPT
+        {
+            return m_buffer.back();
+        }
+
         char_buffer to_utf8() const ST_NOEXCEPT { return m_buffer; }
 
         utf16_buffer to_utf16() const;
