@@ -103,6 +103,10 @@ namespace ST
                                  utf_validation_t validation);
         void _convert_from_latin_1(const char *astr, size_t size);
 
+        struct from_literal_t {};
+        string(const from_literal_t &, const char *data, size_t size)
+            : m_buffer(data, size) { }
+
     public:
         string() ST_NOEXCEPT { }
         string(const null_t &) ST_NOEXCEPT { }
@@ -541,9 +545,8 @@ namespace ST
 
         static inline string from_literal(const char *literal, size_t size)
         {
-            string str;
-            str.set(ST::char_buffer(literal, size), ST::assume_valid);
-            return str;
+            from_literal_t lit_marker;
+            return string(lit_marker, literal, size);
         }
 
         static inline string from_utf8(const char *utf8,
