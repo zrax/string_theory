@@ -27,6 +27,7 @@
 #include <cstring>
 #include <cwchar>
 #include <stdexcept>
+#include <iterator>
 #ifdef ST_HAVE_RVALUE_MOVE
 #  include <utility>    // For std::move
 #endif
@@ -72,6 +73,22 @@ namespace ST
     template <typename char_T>
     class ST_EXPORT buffer
     {
+    public:
+        // STL-compatible typedefs
+        typedef size_t size_type;
+        typedef ptrdiff_t difference_type;
+        typedef char_T value_type;
+        typedef value_type *pointer;
+        typedef const value_type *const_pointer;
+        typedef value_type &reference;
+        typedef const value_type &const_reference;
+
+        // This should satisfy ContiguousIterator if std::array is any indication
+        typedef value_type *iterator;
+        typedef const value_type *const_iterator;
+        typedef std::reverse_iterator<iterator> reverse_iterator;
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
     private:
         char_T *m_chars;
         size_t m_size;
@@ -260,6 +277,40 @@ namespace ST
         char_T back() const ST_NOEXCEPT
         {
             return empty() ? m_chars[0] : m_chars[m_size - 1];
+        }
+
+        iterator begin() ST_NOEXCEPT { return m_chars; }
+        const_iterator begin() const ST_NOEXCEPT { return m_chars; }
+        const_iterator cbegin() const ST_NOEXCEPT { return m_chars; }
+
+        iterator end() ST_NOEXCEPT { return m_chars + m_size; }
+        const_iterator end() const ST_NOEXCEPT { return m_chars + m_size; }
+        const_iterator cend() const ST_NOEXCEPT { return m_chars + m_size; }
+
+        reverse_iterator rbegin() ST_NOEXCEPT
+        {
+            return reverse_iterator(end());
+        }
+        const_reverse_iterator rbegin() const ST_NOEXCEPT
+        {
+            return const_reverse_iterator(end());
+        }
+        const_reverse_iterator crbegin() const ST_NOEXCEPT
+        {
+            return const_reverse_iterator(cend());
+        }
+
+        reverse_iterator rend() ST_NOEXCEPT
+        {
+            return reverse_iterator(begin());
+        }
+        const_reverse_iterator rend() const ST_NOEXCEPT
+        {
+            return const_reverse_iterator(begin());
+        }
+        const_reverse_iterator crend() const ST_NOEXCEPT
+        {
+            return const_reverse_iterator(cbegin());
         }
 
         void allocate(size_t size)

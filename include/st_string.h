@@ -90,6 +90,18 @@ namespace ST
 
     class ST_EXPORT string
     {
+    public:
+        // STL-compatible typedefs
+        typedef size_t size_type;
+        typedef ptrdiff_t difference_type;
+        typedef char_buffer::value_type value_type;
+        typedef const value_type *const_pointer;
+        typedef const value_type &const_reference;
+
+        // This should satisfy ContiguousIterator if std::array is any indication
+        typedef char_buffer::const_iterator const_iterator;
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
     private:
         char_buffer m_buffer;
 
@@ -766,6 +778,16 @@ namespace ST
         {
             return m_buffer.back();
         }
+
+        const_iterator begin() const ST_NOEXCEPT { return m_buffer.begin(); }
+        const_iterator cbegin() const ST_NOEXCEPT { return m_buffer.cbegin(); }
+        const_iterator end() const ST_NOEXCEPT { return m_buffer.end(); }
+        const_iterator cend() const ST_NOEXCEPT { return m_buffer.cend(); }
+
+        const_reverse_iterator rbegin() const ST_NOEXCEPT { return m_buffer.rbegin(); }
+        const_reverse_iterator crbegin() const ST_NOEXCEPT { return m_buffer.crbegin(); }
+        const_reverse_iterator rend() const ST_NOEXCEPT { return m_buffer.rend(); }
+        const_reverse_iterator crend() const ST_NOEXCEPT { return m_buffer.crend(); }
 
         char_buffer to_utf8() const ST_NOEXCEPT { return m_buffer; }
 

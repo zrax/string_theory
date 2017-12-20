@@ -1599,3 +1599,43 @@ TEST(string, fill)
     EXPECT_EQ(ST_LITERAL("aaaaa"), ST::string::fill(5, 'a'));
     EXPECT_EQ(ST_LITERAL("aaaaaaaaaaaaaaaaaaaa"), ST::string::fill(20, 'a'));
 }
+
+TEST(string, iterators)
+{
+    ST::string source_short("X");
+    ST::string source_long("The quick brown fox jumped over the lazy dog.");
+    ST::string empty;
+
+    EXPECT_EQ('X', source_short.front());
+    EXPECT_EQ('X', source_short.back());
+    EXPECT_EQ('T', source_long.front());
+    EXPECT_EQ('.', source_long.back());
+    EXPECT_EQ('\0', empty.front());
+    EXPECT_EQ('\0', empty.back());
+
+    EXPECT_NE(source_long.begin(), source_long.end());
+    EXPECT_NE(source_long.rbegin(), source_long.rend());
+    EXPECT_NE(source_long.begin(), source_long.end());
+    EXPECT_NE(source_long.rbegin(), source_long.rend());
+    EXPECT_EQ(empty.begin(), empty.end());
+    EXPECT_EQ(empty.rbegin(), empty.rend());
+
+    std::string result;
+    std::string forward = "The quick brown fox jumped over the lazy dog.";
+    std::copy(source_long.begin(), source_long.end(), std::back_inserter(result));
+    EXPECT_EQ(forward, result);
+
+    result.clear();
+    std::string reverse = ".god yzal eht revo depmuj xof nworb kciuq ehT";
+    std::copy(source_long.rbegin(), source_long.rend(), std::back_inserter(result));
+    EXPECT_EQ(reverse, result);
+
+    result.clear();
+    std::string x = "X";
+    std::copy(source_short.begin(), source_short.end(), std::back_inserter(result));
+    EXPECT_EQ(x, result);
+
+    result.clear();
+    std::copy(source_short.rbegin(), source_short.rend(), std::back_inserter(result));
+    EXPECT_EQ(x, result);
+}
