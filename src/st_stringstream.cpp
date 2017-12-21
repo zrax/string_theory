@@ -28,8 +28,6 @@
 #endif
 
 #define EXPAND_SS_BUFFER(added_size)                                \
-    char *bufp = is_heap() ? m_buffer : m_stack;                    \
-                                                                    \
     if (m_size + added_size > m_alloc) {                            \
         size_t big_size = m_alloc;                                  \
         do {                                                        \
@@ -37,10 +35,10 @@
         } while (m_size + added_size > big_size);                   \
                                                                     \
         char *bigger = new char[big_size];                          \
-        memcpy(bigger, raw_buffer(), m_alloc);                      \
+        memcpy(bigger, m_chars, m_alloc);                           \
         if (is_heap())                                              \
-            delete[] m_buffer;                                      \
-        m_buffer = bufp = bigger;                                   \
+            delete[] m_chars;                                       \
+        m_chars = bigger;                                           \
         m_alloc = big_size;                                         \
     }
 
@@ -54,7 +52,7 @@ ST::string_stream &ST::string_stream::append(const char *data, size_t size)
 
     EXPAND_SS_BUFFER(size)
 
-    memmove(bufp + m_size, data, size);
+    memmove(m_chars + m_size, data, size);
     m_size += size;
     return *this;
 }
@@ -67,9 +65,9 @@ ST::string_stream &ST::string_stream::append_char(char ch, size_t count)
     EXPAND_SS_BUFFER(count)
 
     if (count == 1)
-        *(bufp + m_size) = ch;
+        *(m_chars + m_size) = ch;
     else
-        memset(bufp + m_size, ch, count);
+        memset(m_chars + m_size, ch, count);
     m_size += count;
     return *this;
 }

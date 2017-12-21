@@ -18,7 +18,7 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
-#include "st_string.h"
+#include "st_stringstream.h"
 #include "st_assert.h"
 
 #include <gtest/gtest.h>
@@ -41,3 +41,15 @@ TEST(regress, github_5)
     EXPECT_STREQ(utf8_data, s.c_str());
 }
 #endif
+
+TEST(regress, string_stream_move)
+{
+    ST::string_stream ss;
+    ss << "Hello";
+    EXPECT_EQ(5U, ss.size());
+    EXPECT_EQ(ST_LITERAL("Hello"), ss.to_string());
+
+    ST::string_stream ss2 = std::move(ss);
+    EXPECT_EQ(5U, ss2.size());
+    EXPECT_EQ(ST_LITERAL("Hello"), ss2.to_string());
+}

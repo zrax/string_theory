@@ -31,26 +31,32 @@ namespace ST
 
     public:
         string_stream() ST_NOEXCEPT
-            : m_alloc(ST_STACK_STRING_LEN), m_size() { }
+            : m_chars(m_stack), m_alloc(ST_STACK_STRING_LEN), m_size() { }
 
         ~string_stream() ST_NOEXCEPT
         {
             if (is_heap())
-                delete[] m_buffer;
+                delete[] m_chars;
         }
 
 #ifdef ST_HAVE_RVALUE_MOVE
         string_stream(string_stream &&move) ST_NOEXCEPT
+            : m_alloc(move.m_alloc), m_size(move.m_size)
         {
+            m_chars = is_heap() ? move.m_chars : m_stack;
             memcpy(m_stack, move.m_stack, sizeof(m_stack));
             move.m_alloc = 0;
         }
 
         string_stream &operator=(string_stream &&move) ST_NOEXCEPT
         {
-            memcpy(m_stack, move.m_stack, sizeof(m_stack));
+            if (is_heap())
+                delete[] m_chars;
+
             m_alloc = move.m_alloc;
             m_size = move.m_size;
+            m_chars = is_heap() ? move.m_chars : m_stack;
+            memcpy(m_stack, move.m_stack, sizeof(m_stack));
             move.m_alloc = 0;
             return *this;
         }
@@ -92,11 +98,7 @@ namespace ST
             return append(text.c_str(), text.size());
         }
 
-        const char *raw_buffer() const ST_NOEXCEPT
-        {
-            return is_heap() ? m_buffer : m_stack;
-        }
-
+        const char *raw_buffer() const ST_NOEXCEPT { return m_chars; }
         size_t size() const ST_NOEXCEPT { return m_size; }
 
         string to_string(bool utf8_encoded = true,
@@ -123,12 +125,9 @@ namespace ST
         }
 
     private:
-        union
-        {
-            char *m_buffer;
-            char  m_stack[ST_STACK_STRING_LEN];
-        };
+        char  *m_chars;
         size_t m_alloc, m_size;
+        char   m_stack[ST_STACK_STRING_LEN];
 
         bool is_heap() const ST_NOEXCEPT
         {
