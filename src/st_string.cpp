@@ -53,6 +53,7 @@
 
 #define BADCHAR_SUBSTITUTE          0xFFFDul
 #define BADCHAR_SUBSTITUTE_UTF8     "\xEF\xBF\xBD"
+#define BADCHAR_SUBSTITUTE_UTF8_LEN 3
 
 // This is 256MiB worth of UTF-8 string data
 #define HUGE_BUFFER_SIZE 0x10000000
@@ -71,134 +72,84 @@ void ST::string::_convert_from_utf8(const char *utf8, size_t size,
     set(char_buffer(utf8, size), validation);
 }
 
-static void _assert_utf8_buffer(const ST::char_buffer &buffer)
-{
-    const char *sp = buffer.data();
-    const char *ep = sp + buffer.size();
-    while (sp < ep) {
-        unsigned char uch = *sp++;
-        if ((uch & 0xF8) == 0xF0) {
-            // Four bytes
-            ST_ASSERT(sp + 3 <= ep, "Incomplete UTF-8 sequence");
-            ST_ASSERT((*sp++) & 0x80, "Invalid UTF-8 sequence byte (1)");
-            ST_ASSERT((*sp++) & 0x80, "Invalid UTF-8 sequence byte (2)");
-            ST_ASSERT((*sp++) & 0x80, "Invalid UTF-8 sequence byte (3)");
-        } else if ((uch & 0xF0) == 0xE0) {
-            // Three bytes
-            ST_ASSERT(sp + 2 <= ep, "Incomplete UTF-8 sequence");
-            ST_ASSERT((*sp++) & 0x80, "Invalid UTF-8 sequence byte (1)");
-            ST_ASSERT((*sp++) & 0x80, "Invalid UTF-8 sequence byte (2)");
-        } else if ((uch & 0xE0) == 0xC0) {
-            // Two bytes
-            ST_ASSERT(sp + 1 <= ep, "Incomplete UTF-8 sequence");
-            ST_ASSERT((*sp++) & 0x80, "Invalid UTF-8 sequence byte (1)");
-        } else if ((uch & 0xC0) == 0x80) {
-            ST_ASSERT(false, "Invalid UTF-8 marker byte");
-        } else if ((uch & 0x80) != 0) {
-            ST_ASSERT(false, "UTF-8 character out of range");
-        }
-    }
-}
-
-#define _CHECK_SEQUENCE(condition, message) \
+#define _CHECK_NEXT_SEQ_BYTE() \
     do { \
-        if (!(condition)) \
-            throw ST::unicode_error(message); \
-    } while (0)
+        ++cp; \
+        if ((*cp & 0xC0) != 0x80) \
+            return false; \
+    } while (false)
 
-static void _check_utf8_buffer(const ST::char_buffer &buffer)
+static bool _validate_utf8(const ST::char_buffer &buffer)
 {
-    const char *sp = buffer.data();
-    const char *ep = sp + buffer.size();
-    while (sp < ep) {
-        unsigned char uch = *sp++;
-        if ((uch & 0xF8) == 0xF0) {
-            // Four bytes
-            _CHECK_SEQUENCE(sp + 3 <= ep, "Incomplete UTF-8 sequence");
-            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (1)");
-            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (2)");
-            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (3)");
-        } else if ((uch & 0xF0) == 0xE0) {
-            // Three bytes
-            _CHECK_SEQUENCE(sp + 2 <= ep, "Incomplete UTF-8 sequence");
-            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (1)");
-            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (2)");
-        } else if ((uch & 0xE0) == 0xC0) {
+    const unsigned char *cp = reinterpret_cast<const unsigned char *>(buffer.data());
+    const unsigned char *ep = cp + buffer.size();
+    for (; cp < ep; ++cp) {
+        if (*cp < 0x80)
+            continue;
+
+        if ((*cp & 0xE0) == 0xC0) {
             // Two bytes
-            _CHECK_SEQUENCE(sp + 1 <= ep, "Incomplete UTF-8 sequence");
-            _CHECK_SEQUENCE((*sp++) & 0x80, "Invalid UTF-8 sequence byte (1)");
-        } else if ((uch & 0xC0) == 0x80) {
-            _CHECK_SEQUENCE(false, "Invalid UTF-8 marker byte");
-        } else if ((uch & 0x80) != 0) {
-            _CHECK_SEQUENCE(false, "UTF-8 character out of range");
+            if (cp + 2 > ep)
+                return false;
+            _CHECK_NEXT_SEQ_BYTE();
+        } else if ((*cp & 0xF0) == 0xE0) {
+            // Three bytes
+            if (cp + 3 > ep)
+                return false;
+            _CHECK_NEXT_SEQ_BYTE();
+            _CHECK_NEXT_SEQ_BYTE();
+        } else if ((*cp & 0xF8) == 0xF0) {
+            // Four bytes
+            if (cp + 4 > ep)
+                return false;
+            _CHECK_NEXT_SEQ_BYTE();
+            _CHECK_NEXT_SEQ_BYTE();
+            _CHECK_NEXT_SEQ_BYTE();
+        } else {
+            // Invalid sequence byte
+            return false;
         }
     }
+
+    return true;
 }
 
 static ST::char_buffer _cleanup_utf8_buffer(const ST::char_buffer &buffer)
 {
-    bool valid = true;
     ST::string_stream ss_clean;
 
-    const char *sp = buffer.data();
-    const char *ep = sp + buffer.size();
+    const unsigned char *sp = reinterpret_cast<const unsigned char *>(buffer.data());
+    const unsigned char *ep = sp + buffer.size();
     while (sp < ep) {
-        unsigned char uch = *sp++;
-        if ((uch & 0xF8) == 0xF0) {
-            // Four bytes
-            if (sp + 3 > ep) {
-                valid = false;
-                ss_clean << BADCHAR_SUBSTITUTE_UTF8;
-                break;
-            }
-            if ((sp[0] & 0x80) == 0 || (sp[1] & 0x80) == 0 || (sp[2] & 0x80) == 0) {
-                valid = false;
-                ss_clean << BADCHAR_SUBSTITUTE_UTF8;
-            } else {
-                ss_clean.append_char(uch);
-                ss_clean.append(sp, 3);
-            }
-            sp += 3;
-        } else if ((uch & 0xF0) == 0xE0) {
-            // Three bytes
-            if (sp + 2 > ep) {
-                valid = false;
-                ss_clean << BADCHAR_SUBSTITUTE_UTF8;
-                break;
-            }
-            if ((sp[0] & 0x80) == 0 || (sp[1] & 0x80) == 0) {
-                valid = false;
-                ss_clean << BADCHAR_SUBSTITUTE_UTF8;
-            } else {
-                ss_clean.append_char(uch);
-                ss_clean.append(sp, 2);
-            }
-            sp += 2;
-        } else if ((uch & 0xE0) == 0xC0) {
+        if (*sp < 0x80) {
+            ss_clean.append_char(*sp++);
+        } else if ((*sp & 0xE0) == 0xC0) {
             // Two bytes
-            if (sp + 1 > ep) {
-                valid = false;
-                ss_clean << BADCHAR_SUBSTITUTE_UTF8;
-                break;
-            }
-            if ((sp[0] & 0x80) == 0) {
-                valid = false;
-                ss_clean << BADCHAR_SUBSTITUTE_UTF8;
-            } else {
-                ss_clean.append_char(uch);
-                ss_clean.append_char(*sp);
-            }
-            sp += 1;
-        } else if ((uch & 0xC0) == 0x80 || (uch & 0x80) != 0) {
-            valid = false;
-            ss_clean << BADCHAR_SUBSTITUTE_UTF8;
+            if (sp + 2 > ep || (sp[1] & 0xC0) != 0x80)
+                ss_clean.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+            else
+                ss_clean.append(reinterpret_cast<const char *>(sp), 2);
+            sp += 2;
+        } else if ((*sp & 0xF0) == 0xE0) {
+            // Three bytes
+            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 80)
+                ss_clean.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+            else
+                ss_clean.append(reinterpret_cast<const char *>(sp), 3);
+            sp += 3;
+        } else if ((*sp & 0xF8) == 0xF0) {
+            // Four bytes
+            if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 80
+                            || (sp[3] & 0xC0) != 0x80)
+                ss_clean.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+            else
+                ss_clean.append(reinterpret_cast<const char *>(sp), 4);
+            sp += 4;
         } else {
-            ss_clean.append_char(uch);
+            // Invalid sequence byte
+            ss_clean.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
         }
     }
-
-    if (valid)
-        return buffer;
 
     return ST::char_buffer(ss_clean.raw_buffer(), ss_clean.size());
 }
@@ -207,12 +158,13 @@ void ST::string::set(const char_buffer &init, utf_validation_t validation)
 {
     switch (validation) {
     case assert_validity:
-        _assert_utf8_buffer(init);
+        ST_ASSERT(_validate_utf8(init), "Invalid UTF-8 sequence");
         m_buffer = init;
         break;
 
     case check_validity:
-        _check_utf8_buffer(init);
+        if (!_validate_utf8(init))
+            throw ST::unicode_error("Invalid UTF-8 sequence");
         m_buffer = init;
         break;
 
@@ -234,12 +186,13 @@ void ST::string::set(char_buffer &&init, utf_validation_t validation)
 {
     switch (validation) {
     case assert_validity:
-        _assert_utf8_buffer(init);
+        ST_ASSERT(_validate_utf8(init), "Invalid UTF-8 sequence");
         m_buffer = std::move(init);
         break;
 
     case check_validity:
-        _check_utf8_buffer(init);
+        if (!_validate_utf8(init))
+            throw ST::unicode_error("Invalid UTF-8 sequence");
         m_buffer = std::move(init);
         break;
 
