@@ -53,3 +53,30 @@ TEST(regress, string_stream_move)
     EXPECT_EQ(5U, ss2.size());
     EXPECT_EQ(ST_LITERAL("Hello"), ss2.to_string());
 }
+
+TEST(regress, surrogate_replacement)
+{
+    // string_theory 1.x would eat the trailing character after an incomplete
+    // or invalid UTF-16 surrogate pair
+    const char replacement_text[] = "A\xef\xbf\xbdz";
+    const char16_t incomplete_surrogate_padded[] = { 0x41, 0xd800, 0x7a, 0 };
+    ST::string incomplete_surr = ST::string::from_utf16(incomplete_surrogate_padded,
+                                                        ST_AUTO_SIZE,
+                                                        ST::substitute_invalid);
+    EXPECT_STREQ(replacement_text, incomplete_surr.c_str());
+
+    // Ensure that a valid surrogate after an incomplete one still gets converted
+    const char replacement_text2[] = "A\xef\xbf\xbd\xf4\x8f\xbf\xbfz";
+    const char16_t surrogate_dupe[] = { 0x41, 0xdbff, 0xdbff, 0xdfff, 0x7a, 0};
+    ST::string surr_dupe = ST::string::from_utf16(surrogate_dupe, ST_AUTO_SIZE,
+                                                  ST::substitute_invalid);
+    EXPECT_STREQ(replacement_text2, surr_dupe.c_str());
+
+    // string_theory 1.x would use a 4-byte representation for \ufffd, even
+    // though canonically it should use 3 bytes.
+    const char replacement_text3[] = "A\xef\xbf\xbd\xef\xbf\xbdz";
+    const char16_t bad_surrogate_padded[] = { 0x41, 0xd800, 0xd801, 0x7a, 0 };
+    ST::string bad_surr = ST::string::from_utf16(bad_surrogate_padded, ST_AUTO_SIZE,
+                                                 ST::substitute_invalid);
+    EXPECT_STREQ(replacement_text3, bad_surr.c_str());
+}

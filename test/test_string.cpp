@@ -259,19 +259,28 @@ TEST(string, conversion_errors)
                                                         ST::substitute_invalid);
     EXPECT_EQ(0, T_strcmp(unicode_replacement, incomplete_surr.to_utf32().data()));
 
+    const char32_t unicode_replacement2[] = { 0xfffd, 0xfffd, 0 };
     const char16_t double_low_c[] = { 0xd800, 0xd801, 0 };
     EXPECT_THROW(ST::string::from_utf16(double_low_c, ST_AUTO_SIZE, ST::check_validity),
                  ST::unicode_error);
     ST::string double_low = ST::string::from_utf16(double_low_c, ST_AUTO_SIZE,
                                                    ST::substitute_invalid);
-    EXPECT_EQ(0, T_strcmp(unicode_replacement, double_low.to_utf32().data()));
+    EXPECT_EQ(0, T_strcmp(unicode_replacement2, double_low.to_utf32().data()));
 
+    const char16_t double_high_c[] = { 0xdc00, 0xdc01, 0 };
+    EXPECT_THROW(ST::string::from_utf16(double_high_c, ST_AUTO_SIZE, ST::check_validity),
+                 ST::unicode_error);
+    ST::string double_high = ST::string::from_utf16(double_high_c, ST_AUTO_SIZE,
+                                                    ST::substitute_invalid);
+    EXPECT_EQ(0, T_strcmp(unicode_replacement2, double_high.to_utf32().data()));
+
+    const char32_t unicode_replacement3[] = { 0xfffd, 0x20, 0 };
     const char16_t bad_combo_c[] = { 0xdc00, 0x20, 0 };
     EXPECT_THROW(ST::string::from_utf16(bad_combo_c, ST_AUTO_SIZE, ST::check_validity),
                  ST::unicode_error);
     ST::string bad_combo = ST::string::from_utf16(bad_combo_c, ST_AUTO_SIZE,
                                                   ST::substitute_invalid);
-    EXPECT_EQ(0, T_strcmp(unicode_replacement, bad_combo.to_utf32().data()));
+    EXPECT_EQ(0, T_strcmp(unicode_replacement3, bad_combo.to_utf32().data()));
 
     // Latin-1 doesn't have \ufffd, so it uses '?' instead
     const char32_t non_latin1_c[] = { 0x1ff, 0 };

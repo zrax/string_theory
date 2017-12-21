@@ -277,39 +277,17 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
     if (!utf16)
         return;
 
-    // Calculate the UTF-8 size
-    size_t convlen = 0;
+    string_stream converted;
     const char16_t *sp = utf16;
     const char16_t *ep = sp + size;
-    while (sp < ep) {
+    for (; sp < ep; ++sp) {
         if (*sp < 0x80) {
-            convlen += 1;
+            converted.append_char(*sp);
         } else if (*sp < 0x800) {
-            convlen += 2;
+            converted.append_char(0xC0 | ((*sp >>  6) & 0x1F));
+            converted.append_char(0x80 | ((*sp      ) & 0x3F));
         } else if (*sp >= 0xD800 && *sp <= 0xDFFF) {
             // Surrogate pair
-            convlen += 4;
-            ++sp;
-        } else {
-            convlen += 3;
-        }
-        ++sp;
-    }
-
-    // Perform the actual conversion
-    m_buffer.allocate(convlen);
-    char *dp = m_buffer.data();
-    sp = utf16;
-    while (sp < ep) {
-        if (*sp < 0x80) {
-            *dp++ = static_cast<char>(*sp);
-        } else if (*sp < 0x800) {
-            *dp++ = 0xC0 | ((*sp >>  6) & 0x1F);
-            *dp++ = 0x80 | ((*sp      ) & 0x3F);
-        } else if (*sp >= 0xD800 && *sp <= 0xDFFF) {
-            // Surrogate pair
-            char32_t bigch = 0x10000;
-
             if (sp + 1 >= ep) {
                 switch (validation) {
                 case check_validity:
@@ -318,68 +296,82 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                     ST_ASSERT(false, "Incomplete surrogate pair");
                     /* fall through */
                 case substitute_invalid:
-                    bigch = BADCHAR_SUBSTITUTE;
+                    converted.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
                     break;
                 case assume_valid:
-                    // Will encode the bad surrogate char as a UTF-8 value
+                    // Encode the bad surrogate char as a UTF-8 value
+                    converted.append_char(0xE0 | ((*sp >> 12) & 0x0F));
+                    converted.append_char(0x80 | ((*sp >>  6) & 0x3F));
+                    converted.append_char(0x80 | ((*sp      ) & 0x3F));
                     break;
                 default:
                     ST_ASSERT(false, "Invalid validation type");
                 }
             } else if (*sp < 0xDC00) {
-                bigch += (*sp++ & 0x3FF) << 10;
-                if (*sp < 0xDC00 || *sp > 0xDFFF) {
+                if (sp[1] >= 0xDC00 && sp[1] <= 0xDFFF) {
+                    char32_t bigch = 0x10000 + ((sp[0] & 0x3FFF) << 10) + (sp[1] & 0x3FF);
+                    converted.append_char(0xF0 | ((bigch >> 18) & 0x07));
+                    converted.append_char(0x80 | ((bigch >> 12) & 0x3F));
+                    converted.append_char(0x80 | ((bigch >>  6) & 0x3F));
+                    converted.append_char(0x80 | ((bigch      ) & 0x3F));
+                    ++sp;
+                } else {
                     switch (validation) {
                     case check_validity:
-                        throw ST::unicode_error("Invalid surrogate pair");
+                        throw ST::unicode_error("Incomplete surrogate pair");
                     case assert_validity:
-                        ST_ASSERT(false, "Invalid surrogate pair");
+                        ST_ASSERT(false, "Incomplete surrogate pair");
                         /* fall through */
                     case substitute_invalid:
-                        bigch = BADCHAR_SUBSTITUTE;
+                        converted.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
                         break;
                     case assume_valid:
-                        // Will encode the bad surrogate char as a UTF-8 value
+                        // Encode the bad surrogate char as a UTF-8 value
+                        converted.append_char(0xE0 | ((*sp >> 12) & 0x0F));
+                        converted.append_char(0x80 | ((*sp >>  6) & 0x3F));
+                        converted.append_char(0x80 | ((*sp      ) & 0x3F));
                         break;
                     default:
                         ST_ASSERT(false, "Invalid validation type");
                     }
-                } else {
-                    bigch += (*sp & 0x3FF);
                 }
             } else {
-                bigch += (*sp++ & 0x3FF);
-                if (*sp < 0xD800 || *sp >= 0xDC00) {
+                if (sp[1] >= 0xD800 && sp[1] <= 0xDBFF) {
+                    char32_t bigch = 0x10000 + (sp[0] & 0x3FFF) + ((sp[1] & 0x3FF) << 10);
+                    converted.append_char(0xF0 | ((bigch >> 18) & 0x07));
+                    converted.append_char(0x80 | ((bigch >> 12) & 0x3F));
+                    converted.append_char(0x80 | ((bigch >>  6) & 0x3F));
+                    converted.append_char(0x80 | ((bigch      ) & 0x3F));
+                    ++sp;
+                } else {
                     switch (validation) {
                     case check_validity:
-                        throw ST::unicode_error("Invalid surrogate pair");
+                        throw ST::unicode_error("Incomplete surrogate pair");
                     case assert_validity:
-                        ST_ASSERT(false, "Invalid surrogate pair");
+                        ST_ASSERT(false, "Incomplete surrogate pair");
                         /* fall through */
                     case substitute_invalid:
-                        bigch = BADCHAR_SUBSTITUTE;
+                        converted.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
                         break;
                     case assume_valid:
-                        // Will encode the bad surrogate char as a UTF-8 value
+                        // Encode the bad surrogate char as a UTF-8 value
+                        converted.append_char(0xE0 | ((*sp >> 12) & 0x0F));
+                        converted.append_char(0x80 | ((*sp >>  6) & 0x3F));
+                        converted.append_char(0x80 | ((*sp      ) & 0x3F));
                         break;
                     default:
                         ST_ASSERT(false, "Invalid validation type");
                     }
-                } else {
-                    bigch += (*sp & 0x3FF) << 10;
                 }
             }
-            *dp++ = 0xF0 | ((bigch >> 18) & 0x07);
-            *dp++ = 0x80 | ((bigch >> 12) & 0x3F);
-            *dp++ = 0x80 | ((bigch >>  6) & 0x3F);
-            *dp++ = 0x80 | ((bigch      ) & 0x3F);
         } else {
-            *dp++ = 0xE0 | ((*sp >> 12) & 0x0F);
-            *dp++ = 0x80 | ((*sp >>  6) & 0x3F);
-            *dp++ = 0x80 | ((*sp      ) & 0x3F);
+            converted.append_char(0xE0 | ((*sp >> 12) & 0x0F));
+            converted.append_char(0x80 | ((*sp >>  6) & 0x3F));
+            converted.append_char(0x80 | ((*sp      ) & 0x3F));
         }
-        ++sp;
     }
+
+    m_buffer = char_buffer(converted.raw_buffer(), converted.size());
 }
 
 void ST::string::_convert_from_utf32(const char32_t *utf32, size_t size,
