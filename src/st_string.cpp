@@ -282,27 +282,31 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
     const char16_t *sp = utf16;
     const char16_t *ep = sp + size;
     while (sp < ep) {
-        if (*sp >= 0xD800 && *sp <= 0xDFFF) {
+        if (*sp < 0x80) {
+            convlen += 1;
+        } else if (*sp < 0x800) {
+            convlen += 2;
+        } else if (*sp >= 0xD800 && *sp <= 0xDFFF) {
             // Surrogate pair
             convlen += 4;
             ++sp;
-        } else if (*sp > 0x7FF) {
-            convlen += 3;
-        } else if (*sp > 0x7F) {
-            convlen += 2;
         } else {
-            convlen += 1;
+            convlen += 3;
         }
         ++sp;
     }
 
     // Perform the actual conversion
     m_buffer.allocate(convlen);
-    char *utf8 = m_buffer.data();
-    char *dp = utf8;
+    char *dp = m_buffer.data();
     sp = utf16;
     while (sp < ep) {
-        if (*sp >= 0xD800 && *sp <= 0xDFFF) {
+        if (*sp < 0x80) {
+            *dp++ = static_cast<char>(*sp);
+        } else if (*sp < 0x800) {
+            *dp++ = 0xC0 | ((*sp >>  6) & 0x1F);
+            *dp++ = 0x80 | ((*sp      ) & 0x3F);
+        } else if (*sp >= 0xD800 && *sp <= 0xDFFF) {
             // Surrogate pair
             char32_t bigch = 0x10000;
 
@@ -369,15 +373,10 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
             *dp++ = 0x80 | ((bigch >> 12) & 0x3F);
             *dp++ = 0x80 | ((bigch >>  6) & 0x3F);
             *dp++ = 0x80 | ((bigch      ) & 0x3F);
-        } else if (*sp > 0x7FF) {
+        } else {
             *dp++ = 0xE0 | ((*sp >> 12) & 0x0F);
             *dp++ = 0x80 | ((*sp >>  6) & 0x3F);
             *dp++ = 0x80 | ((*sp      ) & 0x3F);
-        } else if (*sp > 0x7F) {
-            *dp++ = 0xC0 | ((*sp >>  6) & 0x1F);
-            *dp++ = 0x80 | ((*sp      ) & 0x3F);
-        } else {
-            *dp++ = static_cast<char>(*sp);
         }
         ++sp;
     }
@@ -396,52 +395,48 @@ void ST::string::_convert_from_utf32(const char32_t *utf32, size_t size,
     size_t convlen = 0;
     const char32_t *sp = utf32;
     const char32_t *ep = sp + size;
-    while (sp < ep) {
-        if (*sp > 0x10FFFF) {
-            // Out-of-range code point always gets replaced
-            convlen += 3;
-        } else if (*sp > 0xFFFF) {
-            convlen += 4;
-        } else if (*sp > 0x7FF) {
-            convlen += 3;
-        } else if (*sp > 0x7F) {
-            convlen += 2;
-        } else {
+    for (; sp < ep; ++sp) {
+        if (*sp < 0x80) {
             convlen += 1;
+        } else if (*sp < 0x800) {
+            convlen += 2;
+        } else if (*sp < 0x10000) {
+            convlen += 3;
+        } else if (*sp <= 0x10FFFF) {
+            convlen += 4;
+        } else {
+            // Out-of-range code point always gets replaced
+            convlen += BADCHAR_SUBSTITUTE_UTF8_LEN;
         }
-        ++sp;
     }
 
     // Perform the actual conversion
     m_buffer.allocate(convlen);
-    char *utf8 = m_buffer.data();
-    char *dp = utf8;
+    char *dp = m_buffer.data();
     sp = utf32;
-    while (sp < ep) {
-        if (*sp > 0x10FFFF) {
-            if (validation == check_validity)
-                throw ST::unicode_error("Unicode character out of range");
-            else if (validation == assert_validity)
-                ST_ASSERT(false, "Unicode character out of range");
-            *dp++ = 0xE0 | ((BADCHAR_SUBSTITUTE >> 12) & 0x0F);
-            *dp++ = 0x80 | ((BADCHAR_SUBSTITUTE >>  6) & 0x3F);
-            *dp++ = 0x80 | ((BADCHAR_SUBSTITUTE      ) & 0x3F);
-        } else if (*sp > 0xFFFF) {
+    for (; sp < ep; ++sp) {
+        if (*sp < 0x80) {
+            *dp++ = static_cast<char>(*sp);
+        } else if (*sp < 0x800) {
+            *dp++ = 0xC0 | ((*sp >>  6) & 0x1F);
+            *dp++ = 0x80 | ((*sp      ) & 0x3F);
+        } else if (*sp < 0x10000) {
+            *dp++ = 0xE0 | ((*sp >> 12) & 0x0F);
+            *dp++ = 0x80 | ((*sp >>  6) & 0x3F);
+            *dp++ = 0x80 | ((*sp      ) & 0x3F);
+        } else if (*sp <= 0x10FFFF) {
             *dp++ = 0xF0 | ((*sp >> 18) & 0x07);
             *dp++ = 0x80 | ((*sp >> 12) & 0x3F);
             *dp++ = 0x80 | ((*sp >>  6) & 0x3F);
             *dp++ = 0x80 | ((*sp      ) & 0x3F);
-        } else if (*sp > 0x7FF) {
-            *dp++ = 0xE0 | ((*sp >> 12) & 0x0F);
-            *dp++ = 0x80 | ((*sp >>  6) & 0x3F);
-            *dp++ = 0x80 | ((*sp      ) & 0x3F);
-        } else if (*sp > 0x7F) {
-            *dp++ = 0xC0 | ((*sp >>  6) & 0x1F);
-            *dp++ = 0x80 | ((*sp      ) & 0x3F);
         } else {
-            *dp++ = static_cast<char>(*sp);
+            if (validation == check_validity)
+                throw ST::unicode_error("Unicode character out of range");
+            else if (validation == assert_validity)
+                ST_ASSERT(false, "Unicode character out of range");
+            memcpy(dp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+            dp += BADCHAR_SUBSTITUTE_UTF8_LEN;
         }
-        ++sp;
     }
 }
 
@@ -467,8 +462,8 @@ void ST::string::_convert_from_latin_1(const char *astr, size_t size)
     size_t convlen = 0;
     const char *sp = astr;
     const char *ep = sp + size;
-    while (sp < ep) {
-        if ((*sp++) & 0x80)
+    for (; sp < ep; ++sp) {
+        if (*sp & 0x80)
             convlen += 2;
         else
             convlen += 1;
@@ -479,14 +474,13 @@ void ST::string::_convert_from_latin_1(const char *astr, size_t size)
     char *utf8 = m_buffer.data();
     char *dp = utf8;
     sp = astr;
-    while (sp < ep) {
+    for (; sp < ep; ++sp) {
         if (*sp & 0x80) {
             *dp++ = 0xC0 | ((static_cast<unsigned char>(*sp) >> 6) & 0x1F);
             *dp++ = 0x80 | ((static_cast<unsigned char>(*sp)     ) & 0x3F);
         } else {
             *dp++ = *sp;
         }
-        ++sp;
     }
 }
 
@@ -498,32 +492,42 @@ ST::utf16_buffer ST::string::to_utf16() const
 
     // Calculate the UTF-16 size
     size_t convlen = 0;
-    const char *utf8 = m_buffer.data();
-    const char *sp = utf8;
-    const char *ep = sp + m_buffer.size();
+    const unsigned char *utf8 = reinterpret_cast<const unsigned char *>(m_buffer.data());
+    const unsigned char *sp = utf8;
+    const unsigned char *ep = sp + m_buffer.size();
     while (sp < ep) {
-        if ((*sp & 0xF8) == 0xF0) {
+        if (*sp < 0x80) {
+            sp += 1;
+        } else if ((*sp & 0xE0) == 0xC0) {
+            sp += 2;
+        } else if ((*sp & 0xF0) == 0xE0) {
+            sp += 3;
+        } else {
             // Encode with surrogate pair
             ++convlen;
             sp += 4;
-        } else if ((*sp & 0xF0) == 0xE0) {
-            sp += 3;
-        } else if ((*sp & 0xE0) == 0xC0) {
-            sp += 2;
-        } else {
-            sp += 1;
         }
         ++convlen;
     }
 
     // Perform the actual conversion
     result.allocate(convlen);
-    char16_t *utf16 = result.data();
-    char16_t *dp = utf16;
+    char16_t *dp = result.data();
     sp = utf8;
     while (sp < ep) {
         char32_t bigch = 0;
-        if ((*sp & 0xF8) == 0xF0) {
+        if (*sp < 0x80) {
+            *dp++ = *sp++;
+        } else if ((*sp & 0xE0) == 0xC0) {
+            bigch  = (*sp++ & 0x1F) << 6;
+            bigch |= (*sp++ & 0x3F);
+            *dp++ = static_cast<char16_t>(bigch);
+        } else if ((*sp & 0xF0) == 0xE0) {
+            bigch  = (*sp++ & 0x0F) << 12;
+            bigch |= (*sp++ & 0x3F) << 6;
+            bigch |= (*sp++ & 0x3F);
+            *dp++ = static_cast<char16_t>(bigch);
+        } else {
             bigch  = (*sp++ & 0x07) << 18;
             bigch |= (*sp++ & 0x3F) << 12;
             bigch |= (*sp++ & 0x3F) << 6;
@@ -532,17 +536,6 @@ ST::utf16_buffer ST::string::to_utf16() const
 
             *dp++ = 0xD800 | ((bigch >> 10) & 0x3FF);
             *dp++ = 0xDC00 | ((bigch      ) & 0x3FF);
-        } else if ((*sp & 0xF0) == 0xE0) {
-            bigch  = (*sp++ & 0x0F) << 12;
-            bigch |= (*sp++ & 0x3F) << 6;
-            bigch |= (*sp++ & 0x3F);
-            *dp++ = static_cast<char16_t>(bigch);
-        } else if ((*sp & 0xE0) == 0xC0) {
-            bigch  = (*sp++ & 0x1F) << 6;
-            bigch |= (*sp++ & 0x3F);
-            *dp++ = static_cast<char16_t>(bigch);
-        } else {
-            *dp++ = *sp++;
         }
     }
 
@@ -557,42 +550,41 @@ ST::utf32_buffer ST::string::to_utf32() const
 
     // Calculate the UTF-32 size
     size_t convlen = 0;
-    const char *utf8 = m_buffer.data();
-    const char *sp = utf8;
-    const char *ep = sp + m_buffer.size();
+    const unsigned char *utf8 = reinterpret_cast<const unsigned char *>(m_buffer.data());
+    const unsigned char *sp = utf8;
+    const unsigned char *ep = sp + m_buffer.size();
     while (sp < ep) {
-        if ((*sp & 0xF8) == 0xF0)
-            sp += 4;
-        else if ((*sp & 0xF0) == 0xE0)
-            sp += 3;
+        if (*sp < 0x80)
+            sp += 1;
         else if ((*sp & 0xE0) == 0xC0)
             sp += 2;
+        else if ((*sp & 0xF0) == 0xE0)
+            sp += 3;
         else
-            sp += 1;
+            sp += 4;
         ++convlen;
     }
 
     // Perform the actual conversion
     result.allocate(convlen);
-    char32_t *utf32 = result.data();
-    char32_t *dp = utf32;
+    char32_t *dp = result.data();
     sp = utf8;
     while (sp < ep) {
         char32_t bigch = 0;
-        if ((*sp & 0xF8) == 0xF0) {
-            bigch  = (*sp++ & 0x07) << 18;
-            bigch |= (*sp++ & 0x3F) << 12;
-            bigch |= (*sp++ & 0x3F) << 6;
+        if (*sp < 0x80) {
+            bigch = *sp++;
+        } else if ((*sp & 0xE0) == 0xC0) {
+            bigch  = (*sp++ & 0x1F) << 6;
             bigch |= (*sp++ & 0x3F);
         } else if ((*sp & 0xF0) == 0xE0) {
             bigch  = (*sp++ & 0x0F) << 12;
             bigch |= (*sp++ & 0x3F) << 6;
             bigch |= (*sp++ & 0x3F);
-        } else if ((*sp & 0xE0) == 0xC0) {
-            bigch  = (*sp++ & 0x1F) << 6;
-            bigch |= (*sp++ & 0x3F);
         } else {
-            bigch = *sp++;
+            bigch  = (*sp++ & 0x07) << 18;
+            bigch |= (*sp++ & 0x3F) << 12;
+            bigch |= (*sp++ & 0x3F) << 6;
+            bigch |= (*sp++ & 0x3F);
         }
         *dp++ = bigch;
     }
@@ -619,42 +611,41 @@ ST::char_buffer ST::string::to_latin_1(utf_validation_t validation) const
 
     // Calculate the ASCII size
     size_t convlen = 0;
-    const char *utf8 = m_buffer.data();
-    const char *sp = utf8;
-    const char *ep = sp + m_buffer.size();
+    const unsigned char *utf8 = reinterpret_cast<const unsigned char *>(m_buffer.data());
+    const unsigned char *sp = utf8;
+    const unsigned char *ep = sp + m_buffer.size();
     while (sp < ep) {
-        if ((*sp & 0xF8) == 0xF0)
-            sp += 4;
-        else if ((*sp & 0xF0) == 0xE0)
-            sp += 3;
+        if (*sp < 0x80)
+            sp += 1;
         else if ((*sp & 0xE0) == 0xC0)
             sp += 2;
+        else if ((*sp & 0xF0) == 0xE0)
+            sp += 3;
         else
-            sp += 1;
+            sp += 4;
         ++convlen;
     }
 
     // Perform the actual conversion
     result.allocate(convlen);
-    char *astr = result.data();
-    char *dp = astr;
+    char *dp = result.data();
     sp = utf8;
     while (sp < ep) {
         char32_t bigch = 0;
-        if ((*sp & 0xF8) == 0xF0) {
-            bigch  = (*sp++ & 0x07) << 18;
-            bigch |= (*sp++ & 0x3F) << 12;
-            bigch |= (*sp++ & 0x3F) << 6;
+        if (*sp < 0x80) {
+            bigch = *sp++;
+        } else if ((*sp & 0xE0) == 0xC0) {
+            bigch  = (*sp++ & 0x1F) << 6;
             bigch |= (*sp++ & 0x3F);
         } else if ((*sp & 0xF0) == 0xE0) {
             bigch  = (*sp++ & 0x0F) << 12;
             bigch |= (*sp++ & 0x3F) << 6;
             bigch |= (*sp++ & 0x3F);
-        } else if ((*sp & 0xE0) == 0xC0) {
-            bigch  = (*sp++ & 0x1F) << 6;
-            bigch |= (*sp++ & 0x3F);
         } else {
-            bigch = *sp++;
+            bigch  = (*sp++ & 0x07) << 18;
+            bigch |= (*sp++ & 0x3F) << 12;
+            bigch |= (*sp++ & 0x3F) << 6;
+            bigch |= (*sp++ & 0x3F);
         }
 
         if (bigch >= 0x100) {
@@ -1461,17 +1452,17 @@ ST::string ST::operator+(const ST::string &left, const ST::string &right)
 static ST::string _append(const ST::string &left, char32_t right)
 {
     size_t newsize = left.size();
-    if (right > 0x10FFFF) {
-        // Out-of-range code point always gets replaced
-        newsize += 3;
-    } else if (right > 0xFFFF) {
-        newsize += 4;
-    } else if (right > 0x7FF) {
-        newsize += 3;
-    } else if (right > 0x7F) {
-        newsize += 2;
-    } else {
+    if (right < 0x80) {
         newsize += 1;
+    } else if (right < 0x800) {
+        newsize += 2;
+    } else if (right < 0x10000) {
+        newsize += 3;
+    } else if (right <= 0x10FFFF) {
+        newsize += 4;
+    } else {
+        // Out-of-range code point always gets replaced
+        newsize += BADCHAR_SUBSTITUTE_UTF8_LEN;
     }
 
     ST::char_buffer cat;
@@ -1480,25 +1471,24 @@ static ST::string _append(const ST::string &left, char32_t right)
     memcpy(catp, left.c_str(), left.size());
     catp += left.size();
 
-    if (right > 0x10FFFF) {
-        ST_ASSERT(false, "Unicode character out of range");
-        *catp++ = 0xE0 | ((BADCHAR_SUBSTITUTE >> 12) & 0x0F);
-        *catp++ = 0x80 | ((BADCHAR_SUBSTITUTE >>  6) & 0x3F);
-        *catp++ = 0x80 | ((BADCHAR_SUBSTITUTE      ) & 0x3F);
-    } else if (right > 0xFFFF) {
+    if (right < 0x80) {
+        *catp++ = static_cast<char>(right);
+    } else if (right < 0x800) {
+        *catp++ = 0xC0 | ((right >>  6) & 0x1F);
+        *catp++ = 0x80 | ((right      ) & 0x3F);
+    } else if (right < 0x10000) {
+        *catp++ = 0xE0 | ((right >> 12) & 0x0F);
+        *catp++ = 0x80 | ((right >>  6) & 0x3F);
+        *catp++ = 0x80 | ((right      ) & 0x3F);
+    } else if (right <= 0x10FFFF) {
         *catp++ = 0xF0 | ((right >> 18) & 0x07);
         *catp++ = 0x80 | ((right >> 12) & 0x3F);
         *catp++ = 0x80 | ((right >>  6) & 0x3F);
         *catp++ = 0x80 | ((right      ) & 0x3F);
-    } else if (right > 0x7FF) {
-        *catp++ = 0xE0 | ((right >> 12) & 0x0F);
-        *catp++ = 0x80 | ((right >>  6) & 0x3F);
-        *catp++ = 0x80 | ((right      ) & 0x3F);
-    } else if (right > 0x7F) {
-        *catp++ = 0xC0 | ((right >>  6) & 0x1F);
-        *catp++ = 0x80 | ((right      ) & 0x3F);
     } else {
-        *catp++ = static_cast<char>(right);
+        ST_ASSERT(false, "Unicode character out of range");
+        memcpy(catp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+        catp += BADCHAR_SUBSTITUTE_UTF8_LEN;
     }
 
     return ST::string(cat, ST::assume_valid);
@@ -1536,42 +1526,41 @@ ST::string ST::operator+(const ST::string &left, wchar_t right)
 static ST::string _prepend(char32_t left, const ST::string &right)
 {
     size_t newsize = right.size();
-    if (left > 0x10FFFF) {
-        // Out-of-range code point always gets replaced
-        newsize += 3;
-    } else if (left > 0xFFFF) {
-        newsize += 4;
-    } else if (left > 0x7FF) {
-        newsize += 3;
-    } else if (left > 0x7F) {
-        newsize += 2;
-    } else {
+    if (left < 0x80) {
         newsize += 1;
+    } else if (left < 0x800) {
+        newsize += 2;
+    } else if (left < 0x10000) {
+        newsize += 3;
+    } else if (left <= 0x10FFFF) {
+        newsize += 4;
+    } else {
+        // Out-of-range code point always gets replaced
+        newsize += BADCHAR_SUBSTITUTE_UTF8_LEN;
     }
 
     ST::char_buffer cat;
     cat.allocate(newsize);
     char *catp = cat.data();
 
-    if (left > 0x10FFFF) {
-        ST_ASSERT(false, "Unicode character out of range");
-        *catp++ = 0xE0 | ((BADCHAR_SUBSTITUTE >> 12) & 0x0F);
-        *catp++ = 0x80 | ((BADCHAR_SUBSTITUTE >>  6) & 0x3F);
-        *catp++ = 0x80 | ((BADCHAR_SUBSTITUTE      ) & 0x3F);
-    } else if (left > 0xFFFF) {
+    if (left < 0x80) {
+        *catp++ = static_cast<char>(left);
+    } else if (left < 0x800) {
+        *catp++ = 0xC0 | ((left >>  6) & 0x1F);
+        *catp++ = 0x80 | ((left      ) & 0x3F);
+    } else if (left < 0x10000) {
+        *catp++ = 0xE0 | ((left >> 12) & 0x0F);
+        *catp++ = 0x80 | ((left >>  6) & 0x3F);
+        *catp++ = 0x80 | ((left      ) & 0x3F);
+    } else if (left <= 0x10FFFF) {
         *catp++ = 0xF0 | ((left >> 18) & 0x07);
         *catp++ = 0x80 | ((left >> 12) & 0x3F);
         *catp++ = 0x80 | ((left >>  6) & 0x3F);
         *catp++ = 0x80 | ((left      ) & 0x3F);
-    } else if (left > 0x7FF) {
-        *catp++ = 0xE0 | ((left >> 12) & 0x0F);
-        *catp++ = 0x80 | ((left >>  6) & 0x3F);
-        *catp++ = 0x80 | ((left      ) & 0x3F);
-    } else if (left > 0x7F) {
-        *catp++ = 0xC0 | ((left >>  6) & 0x1F);
-        *catp++ = 0x80 | ((left      ) & 0x3F);
     } else {
-        *catp++ = static_cast<char>(left);
+        ST_ASSERT(false, "Unicode character out of range");
+        memcpy(catp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+        catp += BADCHAR_SUBSTITUTE_UTF8_LEN;
     }
 
     memcpy(catp, right.c_str(), right.size());

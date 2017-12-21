@@ -74,7 +74,7 @@ static const char16_t utf16_test_data[] = {
     0
 };
 
-/* Utility for comparing char32_t buffers */
+/* Utility for comparing char16_t/char32_t buffers */
 template <typename char_T>
 static int T_strcmp(const char_T *left, const char_T *right)
 {
