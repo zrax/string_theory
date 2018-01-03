@@ -62,7 +62,7 @@ namespace _ST_PRIVATE
         {
             // TODO: This is probably not very efficient...
             ST::wchar_buffer wide = ST::string(data, size).to_wchar();
-            m_stream.write(wide.data(), size);
+            m_stream.write(wide.data(), wide.size());
             return *this;
         }
 
