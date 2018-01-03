@@ -37,22 +37,30 @@ namespace _ST_PRIVATE
         };
     }
 
-    template <typename... args_T>
-    void apply_format(ST::format_writer &data, args_T ...args)
+    template <typename arg0_T, typename... args_T>
+    void apply_format(ST::format_writer &data, arg0_T &&arg0, args_T &&...args)
     {
-        formatter_ref_t formatters[sizeof...(args)] = {
-            make_formatter_ref(args)...
+        formatter_ref_t formatters[] = {
+            make_formatter_ref(std::forward<arg0_T>(arg0)),
+            make_formatter_ref(std::forward<args_T>(args))...
         };
+        const size_t num_formatters = sizeof(formatters) / sizeof(formatters[0]);
         size_t index = 0;
         while (data.next_format()) {
             ST::format_spec format = data.parse_format();
             size_t formatter_id = format.arg_index >= 0
                                   ? format.arg_index - 1
                                   : index++;
-            if (formatter_id >= sizeof...(args))
+            if (formatter_id >= num_formatters)
                 throw std::out_of_range("Parameter index out of range");
             formatters[formatter_id](format, data);
         }
+    }
+
+    void apply_format(ST::format_writer &data)
+    {
+        if (data.next_format())
+            throw std::out_of_range("Parameter index out of range");
     }
 }
 

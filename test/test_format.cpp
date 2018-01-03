@@ -73,6 +73,7 @@ TEST(format, errors)
     EXPECT_THROW(ST::format("{}{}", 1), std::out_of_range);
     EXPECT_THROW(ST::format("{&0}", 1), std::out_of_range);
     EXPECT_THROW(ST::format("{&2}", 1), std::out_of_range);
+    EXPECT_THROW(ST::format("{}"), std::out_of_range);
 
     ST::set_default_assert_handler();
 }
@@ -846,11 +847,15 @@ TEST(format, booleans)
 TEST(format, references)
 {
     EXPECT_EQ(ST_LITERAL("2, one"), ST::format("{&2}, {&1}", "one", 2));
-    EXPECT_EQ(ST_LITERAL("2, 2"), ST::format("{&2}, {&2}", "one", 2, 3.0));
+    EXPECT_EQ(ST_LITERAL("2, 2"), ST::format("{&2}, {&2}", "one", 2, 3.5));
     EXPECT_EQ(ST_LITERAL("42|0042|0x2a"), ST::format("{&2}{&1}{04&2}{&1}{&2#x}", '|', 42));
 
     // Mixing ordered and referenced args -- references should not interfere
     // with ordered parameters
     EXPECT_EQ(ST_LITERAL("one, 2, 3.5"), ST::format("{}, {&3}, {}", "one", 3.5, 2));
     EXPECT_EQ(ST_LITERAL("one, 2, 2"), ST::format("{&3}, {&1}, {}", 2, 3.5, "one"));
+
+    // No used actual parameters
+    EXPECT_EQ(ST_LITERAL("xxxx"), ST::format("xxxx", "one", 2, 3.5));
+    EXPECT_EQ(ST_LITERAL("xxxx"), ST::format("xxxx"));
 }
