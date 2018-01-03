@@ -40,16 +40,18 @@ namespace _ST_PRIVATE
     template <typename... args_T>
     void apply_format(ST::format_writer &data, args_T ...args)
     {
-        std::array<formatter_ref_t, sizeof...(args)> formatters {
-            { make_formatter_ref(args)... }
+        formatter_ref_t formatters[sizeof...(args)] = {
+            make_formatter_ref(args)...
         };
         size_t index = 0;
         while (data.next_format()) {
             ST::format_spec format = data.parse_format();
-            formatter_ref_t &formatter = formatters.at(format.arg_index >= 0
-                                                       ? format.arg_index - 1
-                                                       : index++);
-            formatter(format, data);
+            size_t formatter_id = format.arg_index >= 0
+                                  ? format.arg_index - 1
+                                  : index++;
+            if (formatter_id >= sizeof...(args))
+                throw std::out_of_range("Parameter index out of range");
+            formatters[formatter_id](format, data);
         }
     }
 }
