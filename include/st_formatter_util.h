@@ -40,8 +40,8 @@ namespace _ST_PRIVATE
     template <typename... args_T>
     void apply_format(ST::format_writer &data, args_T ...args)
     {
-        std::array<formatter_ref_t, sizeof...(args)> formatters = {
-            make_formatter_ref(args)...
+        std::array<formatter_ref_t, sizeof...(args)> formatters {
+            { make_formatter_ref(args)... }
         };
         size_t index = 0;
         while (data.next_format()) {
