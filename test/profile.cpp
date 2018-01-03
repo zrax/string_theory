@@ -25,10 +25,12 @@
 #include <chrono>
 #include <functional>
 #include <sstream>
+#include <fstream>
 #include <cmath>
 
 #include "st_format.h"
 #include "st_stdio.h"
+#include "st_iostream.h"
 
 #ifdef ST_PROFILE_HAVE_BOOST
 #   include <boost/format.hpp>
@@ -468,6 +470,19 @@ int main(int, char **)
     } else {
         ST::printf("{32}: Couldn't open file " DEVNULL "\n", "printf");
         ST::printf("{32}: Couldn't open file " DEVNULL "\n", "ST::printf");
+    }
+
+    std::ofstream devnull_ofs;
+    devnull_ofs.open(DEVNULL);
+    if (devnull_ofs.is_open()) {
+        _measure("ST::writef", [&devnull_ofs]() {
+            ST::writef(devnull_ofs, "This {} is {6.2f} a {} test {}.", 42, M_PI,
+                                    "<Singin' in the rain>", '?');
+        });
+
+        devnull_ofs.close();
+    } else {
+        ST::printf("{32}: Couldn't open file " DEVNULL "\n", "ST::writef");
     }
 
     _measure("std::stringstream (~format)", []() {

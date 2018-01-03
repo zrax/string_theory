@@ -185,11 +185,13 @@ if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS AND ST_HAVE_LAMBDA_EXPR)
         include/st_formatter.h
         include/st_formatter_util.h
         include/st_format.h
+        include/st_iostream.h
         include/st_stdio.h
     )
     set(ST_HEADERS_PUB ${ST_HEADERS_PUB}
         include/string_theory/formatter
         include/string_theory/format
+        include/string_theory/iostream
         include/string_theory/stl_formatter
         include/string_theory/stdio
     )

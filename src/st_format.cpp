@@ -30,6 +30,7 @@
 * least one source file. */
 #include "st_format.h"
 #include "st_stdio.h"
+#include "st_iostream.h"
 
 #define BADCHAR_SUBSTITUTE (0xFFFDul)
 
