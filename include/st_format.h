@@ -29,10 +29,8 @@ namespace _ST_PRIVATE
     class ST_EXPORT string_format_writer : public ST::format_writer
     {
     public:
-        string_format_writer(const char *format_str, bool is_utf8,
-                             ST::utf_validation_t validation) ST_NOEXCEPT
-            : ST::format_writer(format_str), m_validation(validation),
-              m_is_utf8(is_utf8) { }
+        string_format_writer(const char *format_str) ST_NOEXCEPT
+            : ST::format_writer(format_str) { }
 
         string_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
         {
@@ -46,15 +44,13 @@ namespace _ST_PRIVATE
             return *this;
         }
 
-        ST::string to_string()
+        ST::string to_string(bool utf8_encoded, ST::utf_validation_t validation)
         {
-            return m_output.to_string(m_is_utf8, m_validation);
+            return m_output.to_string(utf8_encoded, validation);
         }
 
     private:
         ST::string_stream m_output;
-        ST::utf_validation_t m_validation;
-        bool m_is_utf8;
     };
 }
 
@@ -63,26 +59,26 @@ namespace ST
     template <typename... args_T>
     string format(const char *fmt_str, args_T ...args)
     {
-        _ST_PRIVATE::string_format_writer data(fmt_str, true, ST_DEFAULT_VALIDATION);
+        _ST_PRIVATE::string_format_writer data(fmt_str);
         _ST_PRIVATE::apply_format(data, args...);
-        return data.to_string();
+        return data.to_string(true, ST_DEFAULT_VALIDATION);
     }
 
     template <typename... args_T>
     string format(utf_validation_t validation, const char *fmt_str,
                   args_T ...args)
     {
-        _ST_PRIVATE::string_format_writer data(fmt_str, true, validation);
+        _ST_PRIVATE::string_format_writer data(fmt_str);
         _ST_PRIVATE::apply_format(data, args...);
-        return data.to_string();
+        return data.to_string(true, validation);
     }
 
     template <typename... args_T>
     string format_latin_1(const char *fmt_str, args_T ...args)
     {
-        _ST_PRIVATE::string_format_writer data(fmt_str, false, assume_valid);
+        _ST_PRIVATE::string_format_writer data(fmt_str);
         _ST_PRIVATE::apply_format(data, args...);
-        return data.to_string();
+        return data.to_string(false, assume_valid);
     }
 }
 

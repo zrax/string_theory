@@ -33,21 +33,22 @@ namespace _ST_PRIVATE
     formatter_ref_t make_formatter_ref(type_T value)
     {
         return [value](const ST::format_spec &format, ST::format_writer &output) {
-            _ST_impl_format_data_handler(format, output, value);
+            ST_INVOKE_FORMATTER(format, output, value);
         };
     }
 
     template <typename... args_T>
     void apply_format(ST::format_writer &data, args_T ...args)
     {
-        std::array<formatter_ref_t, sizeof...(args)> values = {
+        std::array<formatter_ref_t, sizeof...(args)> formatters = {
             make_formatter_ref(args)...
         };
         size_t index = 0;
         while (data.next_format()) {
             ST::format_spec format = data.parse_format();
-            formatter_ref_t &formatter = values.at(format.arg_index >= 0
-                                                   ? format.arg_index - 1 : index++);
+            formatter_ref_t &formatter = formatters.at(format.arg_index >= 0
+                                                       ? format.arg_index - 1
+                                                       : index++);
             formatter(format, data);
         }
     }
