@@ -57,7 +57,7 @@ namespace _ST_PRIVATE
         }
     }
 
-    void apply_format(ST::format_writer &data)
+    inline void apply_format(ST::format_writer &data)
     {
         if (data.next_format())
             throw std::out_of_range("Parameter index out of range");
