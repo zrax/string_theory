@@ -86,6 +86,8 @@ try_compile(ST_HAVE_DELETED_FUNC "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_deleted_func.cpp")
 try_compile(ST_HAVE_VARARG_TEMPLATE "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_vararg_template.cpp")
+try_compile(ST_HAVE_LAMBDA_EXPR "${PROJECT_BINARY_DIR}"
+            "${PROJECT_SOURCE_DIR}/cmake/check_lambda.cpp")
 try_compile(ST_HAVE_TYPE_TRAITS "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_type_traits.cpp")
 try_compile(ST_HAVE_CONSTEXPR "${PROJECT_BINARY_DIR}"
@@ -178,9 +180,10 @@ set(ST_SOURCES
     src/st_stringstream.cpp
 )
 
-if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS)
+if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS AND ST_HAVE_LAMBDA_EXPR)
     set(ST_HEADERS_PRIV ${ST_HEADERS_PRIV}
         include/st_formatter.h
+        include/st_formatter_util.h
         include/st_format.h
         include/st_stdio.h
     )

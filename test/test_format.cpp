@@ -54,18 +54,25 @@ TEST(format, errors)
 {
     ST::set_assert_handler(&clean_assert);
 
-    EXPECT_EXIT(ST::format("{}", 1, 2), ::testing::ExitedWithCode(0),
-                "Too many actual parameters for format string");
-    EXPECT_EXIT(ST::format("{} {}", 1), ::testing::ExitedWithCode(0),
-                "Not enough actual parameters for format string");
     EXPECT_EXIT(ST::format("{", 1), ::testing::ExitedWithCode(0),
                 "Unterminated format specifier");
     EXPECT_EXIT(ST::format("{.", 1), ::testing::ExitedWithCode(0),
                 "Unterminated format specifier");
     EXPECT_EXIT(ST::format("{_", 1), ::testing::ExitedWithCode(0),
                 "Unterminated format specifier");
+    EXPECT_EXIT(ST::format("{&", 1), ::testing::ExitedWithCode(0),
+                "Unterminated format specifier");
+    EXPECT_EXIT(ST::format("{\x7f", 1), ::testing::ExitedWithCode(0),
+                "Unexpected character in format string");
     EXPECT_EXIT(ST::format(ST_NULLPTR, 1), ::testing::ExitedWithCode(0),
                 "Passed a null format string");
+
+    // Too many actual parameters is no longer an error due to arg references
+    // However, attempting to use a parameter number that is not provided
+    // should still throw an exception
+    EXPECT_THROW(ST::format("{}{}", 1), std::out_of_range);
+    EXPECT_THROW(ST::format("{&0}", 1), std::out_of_range);
+    EXPECT_THROW(ST::format("{&2}", 1), std::out_of_range);
 
     ST::set_default_assert_handler();
 }
@@ -834,4 +841,16 @@ TEST(format, booleans)
     // This basically just uses the string formatter with constant strings
     EXPECT_EQ(ST_LITERAL("xxtrue xx"), ST::format("xx{5}xx", true));
     EXPECT_EQ(ST_LITERAL("xxfalsexx"), ST::format("xx{5}xx", false));
+}
+
+TEST(format, references)
+{
+    EXPECT_EQ(ST_LITERAL("2, one"), ST::format("{&2}, {&1}", "one", 2));
+    EXPECT_EQ(ST_LITERAL("2, 2"), ST::format("{&2}, {&2}", "one", 2, 3.0));
+    EXPECT_EQ(ST_LITERAL("42|0042|0x2a"), ST::format("{&2}{&1}{04&2}{&1}{&2#x}", '|', 42));
+
+    // Mixing ordered and referenced args -- references should not interfere
+    // with ordered parameters
+    EXPECT_EQ(ST_LITERAL("one, 2, 3.5"), ST::format("{}, {&3}, {}", "one", 3.5, 2));
+    EXPECT_EQ(ST_LITERAL("one, 2, 2"), ST::format("{&3}, {&1}, {}", 2, 3.5, "one"));
 }

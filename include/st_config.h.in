@@ -37,6 +37,7 @@
 #cmakedefine ST_HAVE_INT64
 #cmakedefine ST_HAVE_DELETED_FUNC
 #cmakedefine ST_HAVE_VARARG_TEMPLATE
+#cmakedefine ST_HAVE_LAMBDA_EXPR
 #cmakedefine ST_HAVE_TYPE_TRAITS
 #cmakedefine ST_HAVE_CONSTEXPR
 #cmakedefine ST_HAVE_DEPRECATED_ATTR

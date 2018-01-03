@@ -21,7 +21,7 @@
 #ifndef _ST_STDIO_H
 #define _ST_STDIO_H
 
-#include "st_formatter.h"
+#include "st_formatter_util.h"
 
 #include <cstdio>
 
@@ -51,55 +51,23 @@ namespace _ST_PRIVATE
     private:
         FILE *m_stream;
     };
-
-    inline void printf(stdio_format_writer &data)
-    {
-        data.finalize();
-    }
-
-    template <typename type_T, typename... args_T>
-    void printf(stdio_format_writer &data, type_T value, args_T ...args)
-    {
-        ST::format_spec format = data.fetch_next_format();
-        ST_INVOKE_FORMATTER(format, data, value);
-        _ST_PRIVATE::printf(data, args...);
-    }
 }
 
 namespace ST
 {
-    template <typename type_T, typename... args_T>
-    void printf(const char *fmt_str, type_T value, args_T ...args)
+    template <typename... args_T>
+    void printf(const char *fmt_str, args_T ...args)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, stdout);
-        ST::format_spec format = data.fetch_next_format();
-        ST_INVOKE_FORMATTER(format, data, value);
-        _ST_PRIVATE::printf(data, args...);
+        _ST_PRIVATE::apply_format(data, args...);
     }
 
-    template <typename type_T, typename... args_T>
+    template <typename... args_T>
     void printf(FILE *out_file, const char *fmt_str,
-                type_T value, args_T ...args)
+                args_T ...args)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, out_file);
-        ST::format_spec format = data.fetch_next_format();
-        ST_INVOKE_FORMATTER(format, data, value);
-        _ST_PRIVATE::printf(data, args...);
-    }
-
-    /* Unlike ST::format, it is common to use printf without any formatting.
-     * Even though it's probably better to skip the format altogether (e.g.
-     * by using puts/fputs directly), it's also still legal to use printf. */
-    inline void printf(const char *fmt_str)
-    {
-        _ST_PRIVATE::stdio_format_writer data(fmt_str, stdout);
-        _ST_PRIVATE::printf(data);
-    }
-
-    inline void printf(FILE *out_file, const char *fmt_str)
-    {
-        _ST_PRIVATE::stdio_format_writer data(fmt_str, out_file);
-        _ST_PRIVATE::printf(data);
+        _ST_PRIVATE::apply_format(data, args...);
     }
 }
 

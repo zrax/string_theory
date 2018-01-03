@@ -21,7 +21,7 @@
 #ifndef _ST_FORMAT_H
 #define _ST_FORMAT_H
 
-#include "st_formatter.h"
+#include "st_formatter_util.h"
 #include "st_stringstream.h"
 
 namespace _ST_PRIVATE
@@ -56,50 +56,33 @@ namespace _ST_PRIVATE
         ST::utf_validation_t m_validation;
         bool m_is_utf8;
     };
-
-    inline ST::string format(string_format_writer &data)
-    {
-        data.finalize();
-        return data.to_string();
-    }
-
-    template <typename type_T, typename... args_T>
-    ST::string format(string_format_writer &data, type_T value, args_T ...args)
-    {
-        ST::format_spec format = data.fetch_next_format();
-        ST_INVOKE_FORMATTER(format, data, value);
-        return _ST_PRIVATE::format(data, args...);
-    }
 }
 
 namespace ST
 {
-    template <typename type_T, typename... args_T>
-    string format(const char *fmt_str, type_T value, args_T ...args)
+    template <typename... args_T>
+    string format(const char *fmt_str, args_T ...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str, true, ST_DEFAULT_VALIDATION);
-        ST::format_spec format = data.fetch_next_format();
-        ST_INVOKE_FORMATTER(format, data, value);
-        return _ST_PRIVATE::format(data, args...);
+        _ST_PRIVATE::apply_format(data, args...);
+        return data.to_string();
     }
 
-    template <typename type_T, typename... args_T>
+    template <typename... args_T>
     string format(utf_validation_t validation, const char *fmt_str,
-                  type_T value, args_T ...args)
+                  args_T ...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str, true, validation);
-        ST::format_spec format = data.fetch_next_format();
-        ST_INVOKE_FORMATTER(format, data, value);
-        return _ST_PRIVATE::format(data, args...);
+        _ST_PRIVATE::apply_format(data, args...);
+        return data.to_string();
     }
 
-    template <typename type_T, typename... args_T>
-    string format_latin_1(const char *fmt_str, type_T value, args_T ...args)
+    template <typename... args_T>
+    string format_latin_1(const char *fmt_str, args_T ...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str, false, assume_valid);
-        ST::format_spec format = data.fetch_next_format();
-        ST_INVOKE_FORMATTER(format, data, value);
-        return _ST_PRIVATE::format(data, args...);
+        _ST_PRIVATE::apply_format(data, args...);
+        return data.to_string();
     }
 }
 

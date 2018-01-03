@@ -40,10 +40,6 @@
 
 static const char *_scan_next_format(const char *format_str)
 {
-    ST_ASSERT(format_str, "Passed a null format string!");
-    if (!format_str)
-        return "";
-
     const char *ptr = format_str;
     while (*ptr) {
         if (*ptr == '{')
@@ -74,9 +70,26 @@ char ST::format_writer::fetch_prefix()
     return *m_format_str;
 }
 
-ST::format_spec ST::format_writer::fetch_next_format()
+bool ST::format_writer::next_format()
 {
-    ST_ASSERT(fetch_prefix() == '{', "Too many actual parameters for format string");
+    ST_ASSERT(m_format_str, "Passed a null format string!");
+    if (!m_format_str)
+        return false;
+
+    switch (fetch_prefix()) {
+    case 0:
+        return false;
+    case '{':
+        return true;
+    default:
+        ST_ASSERT(false, "Error parsing format string");
+        return false;
+    }
+}
+
+ST::format_spec ST::format_writer::parse_format()
+{
+    ST_ASSERT(*m_format_str == '{', "parse_format() called with no format");
 
     ST::format_spec spec;
     const char *ptr = m_format_str;
@@ -158,17 +171,19 @@ ST::format_spec ST::format_writer::fetch_next_format()
             ptr = end - 1;
             break;
         }
+        case '&':
+        {
+            ST_ASSERT(*(ptr + 1), "Unterminated format specifier");
+            char *end = ST_NULLPTR;
+            spec.arg_index = static_cast<int>(strtol(ptr + 1, &end, 10));
+            ptr = end - 1;
+            break;
+        }
         default:
             ST_ASSERT(false, "Unexpected character in format string");
             break;
         }
     }
-}
-
-void ST::format_writer::finalize()
-{
-    ST_ASSERT(fetch_prefix() == 0,
-              "Not enough actual parameters for format string");
 }
 
 void ST::format_string(const ST::format_spec &format, ST::format_writer &output,

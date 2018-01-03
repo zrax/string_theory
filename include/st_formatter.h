@@ -73,12 +73,13 @@ namespace ST
     struct ST_EXPORT format_spec
     {
         format_spec() ST_NOEXCEPT
-            : minimum_length(), precision(-1), alignment(),
+            : minimum_length(), precision(-1), arg_index(-1), alignment(),
               digit_class(), float_class(), pad(), always_signed(),
               class_prefix(), numeric_pad() { }
 
         int minimum_length;
         int precision;
+        int arg_index;
         alignment_t alignment;
         digit_class_t digit_class;
         float_class_t float_class;
@@ -99,8 +100,8 @@ namespace ST
         virtual format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) = 0;
         virtual format_writer &append_char(char ch, size_t count = 1) = 0;
 
-        ST::format_spec fetch_next_format();
-        void finalize();
+        bool next_format();
+        ST::format_spec parse_format();
 
     private:
         const char *m_format_str;
