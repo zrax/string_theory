@@ -80,3 +80,14 @@ TEST(regress, surrogate_replacement)
                                                  ST::substitute_invalid);
     EXPECT_STREQ(replacement_text3, bad_surr.c_str());
 }
+
+TEST(regress, null_init)
+{
+    ST::string dont_crash = (const char *)ST_NULLPTR;
+    EXPECT_TRUE(dont_crash.empty());
+
+    dont_crash = (const char *)ST_NULLPTR;
+    dont_crash = ST::string::from_wchar((const wchar_t *)ST_NULLPTR);
+    dont_crash = ST::string::from_utf16((const char16_t *)ST_NULLPTR);
+    dont_crash = ST::string::from_utf32((const char32_t *)ST_NULLPTR);
+}

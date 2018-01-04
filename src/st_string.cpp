@@ -1082,7 +1082,7 @@ bool ST::string::starts_with(const ST::string &prefix, case_sensitivity_t cs) co
 
 bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const ST_NOEXCEPT
 {
-    size_t count = strlen(prefix);
+    size_t count = prefix ? strlen(prefix) : 0;
     if (count > size())
         return false;
     return compare_n(prefix, count, cs) == 0;
@@ -1100,7 +1100,7 @@ bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) cons
 
 bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const ST_NOEXCEPT
 {
-    size_t count = strlen(suffix);
+    size_t count = suffix ? strlen(suffix) : 0;
     if (count > size())
         return false;
 

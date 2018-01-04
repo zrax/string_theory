@@ -152,13 +152,16 @@ inline ST_FORMAT_TYPE(float)
 
 inline ST_FORMAT_TYPE(const char *)
 {
-    ST::format_string(format, output, value, strlen(value));
+    if (value)
+        ST::format_string(format, output, value, strlen(value));
 }
 
 inline ST_FORMAT_TYPE(const wchar_t *)
 {
-    ST::char_buffer utf8 = ST::string::from_wchar(value).to_utf8();
-    ST::format_string(format, output, utf8.data(), utf8.size());
+    if (value) {
+        ST::char_buffer utf8 = ST::string::from_wchar(value).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
 }
 
 inline ST_FORMAT_TYPE(const ST::string &)

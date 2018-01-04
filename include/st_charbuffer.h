@@ -21,12 +21,11 @@
 #ifndef _ST_CHARBUFFER_H
 #define _ST_CHARBUFFER_H
 
-#include "st_config.h"
+#include "st_assert.h"
 
 #include <cstddef>
 #include <cstring>
 #include <cwchar>
-#include <stdexcept>
 #include <iterator>
 #ifdef ST_HAVE_RVALUE_MOVE
 #  include <utility>    // For std::move
@@ -340,8 +339,7 @@ namespace ST
 
         static inline size_t strlen(const char_T *buffer)
         {
-            if (!buffer)
-                return 0;
+            ST_ASSERT(buffer, "buffer<char_T>::strlen passed null buffer");
 
             size_t length = 0;
             for ( ; *buffer++; ++length)

@@ -48,7 +48,7 @@ ST::string_stream &ST::string_stream::append(const char *data, size_t size)
         return *this;
 
     if (size == ST_AUTO_SIZE)
-        size = strlen(data);
+        size = data ? strlen(data) : 0;
 
     EXPAND_SS_BUFFER(size)
 
