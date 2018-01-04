@@ -24,6 +24,7 @@
 #include "st_formatter_util.h"
 
 #include <ostream>
+#include <istream>
 
 namespace _ST_PRIVATE
 {
@@ -96,7 +97,25 @@ namespace ST
         _ST_PRIVATE::ostream_format_writer<char_T, traits_T> data(fmt_str, stream);
         _ST_PRIVATE::apply_format(data, args...);
     }
+}
 
+template <class char_T, class traits_T>
+std::basic_ostream<char_T, traits_T> &operator<<(
+        std::basic_ostream<char_T, traits_T> &stream, const ST::string &str)
+{
+    std::basic_string<char_T, traits_T> stl_string;
+    str.to_std_string(stl_string);
+    return stream << stl_string;
+}
+
+template <class char_T, class traits_T>
+std::basic_istream<char_T, traits_T> &operator>>(
+        std::basic_istream<char_T, traits_T> &stream, ST::string &str)
+{
+    std::basic_string<char_T, traits_T> stl_string;
+    stream >> stl_string;
+    str = ST::string::from_std_string(stl_string);
+    return stream;
 }
 
 #endif // _ST_IOSTREAM_H
