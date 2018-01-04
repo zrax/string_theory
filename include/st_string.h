@@ -806,9 +806,20 @@ namespace ST
             return to_latin_1(validation).to_std_string();
         }
 
+        void to_std_string(std::string &result, bool utf8 = true,
+                           utf_validation_t validation = substitute_invalid) const
+        {
+            result = to_std_string(utf8, validation);
+        }
+
         std::wstring to_std_wstring() const
         {
             return to_wchar().to_std_string();
+        }
+
+        void to_std_string(std::wstring &result) const
+        {
+            result = to_std_wstring();
         }
 
 #ifdef ST_HAVE_STD_USTRING_TYPES
@@ -817,9 +828,19 @@ namespace ST
             return to_utf16().to_std_string();
         }
 
+        void to_std_string(std::u16string &result) const
+        {
+            result = to_std_u16string();
+        }
+
         std::u32string to_std_u32string() const
         {
             return to_utf32().to_std_string();
+        }
+
+        void to_std_string(std::u32string &result) const
+        {
+            result = to_std_u32string();
         }
 #endif
 

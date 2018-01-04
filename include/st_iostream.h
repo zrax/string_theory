@@ -27,76 +27,76 @@
 
 namespace _ST_PRIVATE
 {
+    template <class char_T, class traits_T>
     class ST_EXPORT ostream_format_writer : public ST::format_writer
     {
     public:
-        ostream_format_writer(const char *format_str, std::ostream &stream) ST_NOEXCEPT
+        ostream_format_writer(const char *format_str,
+                              std::basic_ostream<char_T, traits_T> &stream) ST_NOEXCEPT
             : ST::format_writer(format_str), m_stream(stream) { }
+
+        template <class write_char_T>
+        typename std::enable_if<std::is_same<write_char_T, char>::value, void>::type
+        write_data(const char *data, size_t size)
+        {
+            m_stream.write(data, size);
+        }
+
+        template <class write_char_T>
+        typename std::enable_if<std::is_same<write_char_T, wchar_t>::value, void>::type
+        write_data(const char *data, size_t size)
+        {
+            // TODO: There may be a more efficient way to do this...
+            ST::wchar_buffer wide = ST::string(data, size).to_wchar();
+            m_stream.write(wide.data(), wide.size());
+        }
+
+        template <class write_char_T>
+        typename std::enable_if<std::is_same<write_char_T, char16_t>::value, void>::type
+        write_data(const char *data, size_t size)
+        {
+            ST::utf16_buffer utf16 = ST::string(data, size).to_utf16();
+            m_stream.write(utf16.data(), utf16.size());
+        }
+
+        template <class write_char_T>
+        typename std::enable_if<std::is_same<write_char_T, char32_t>::value, void>::type
+        write_data(const char *data, size_t size)
+        {
+            ST::utf32_buffer utf32 = ST::string(data, size).to_utf32();
+            m_stream.write(utf32.data(), utf32.size());
+        }
 
         ostream_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
         {
-            m_stream.write(data, size);
+            write_data<char_T>(data, size);
             return *this;
         }
 
         ostream_format_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
         {
             while (count) {
-                m_stream.put(ch);
+                m_stream.put(char_T(ch));
                 --count;
             }
             return *this;
         }
 
     private:
-        std::ostream &m_stream;
-    };
-
-    class ST_EXPORT wostream_format_writer : public ST::format_writer
-    {
-    public:
-        wostream_format_writer(const char *format_str, std::wostream &stream) ST_NOEXCEPT
-            : ST::format_writer(format_str), m_stream(stream) { }
-
-        wostream_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
-        {
-            // TODO: This is probably not very efficient...
-            ST::wchar_buffer wide = ST::string(data, size).to_wchar();
-            m_stream.write(wide.data(), wide.size());
-            return *this;
-        }
-
-        wostream_format_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
-        {
-            while (count) {
-                m_stream.put(wchar_t(ch));
-                --count;
-            }
-            return *this;
-        }
-
-    private:
-        std::wostream &m_stream;
+        std::basic_ostream<char_T, traits_T> &m_stream;
     };
 }
 
 namespace ST
 {
-    template <typename... args_T>
-    void writef(std::ostream &stream, const char *fmt_str,
-                args_T ...args)
+    template <class char_T, class traits_T, typename... args_T>
+    void writef(std::basic_ostream<char_T, traits_T> &stream,
+                const char *fmt_str, args_T ...args)
     {
-        _ST_PRIVATE::ostream_format_writer data(fmt_str, stream);
+        _ST_PRIVATE::ostream_format_writer<char_T, traits_T> data(fmt_str, stream);
         _ST_PRIVATE::apply_format(data, args...);
     }
 
-    template <typename... args_T>
-    void writef(std::wostream &stream, const char *fmt_str,
-                args_T ...args)
-    {
-        _ST_PRIVATE::wostream_format_writer data(fmt_str, stream);
-        _ST_PRIVATE::apply_format(data, args...);
-    }
 }
 
 #endif // _ST_IOSTREAM_H
