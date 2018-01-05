@@ -25,12 +25,6 @@
 
 #include <cstdio>
 
-#ifndef _MSC_VER
-    /* This header does not exist on older versions of MSVC, but isn't actually
-       needed per MSDN docs on the needed functions */
-#   include <cwchar>
-#endif
-
 namespace _ST_PRIVATE
 {
     class ST_EXPORT stdio_format_writer : public ST::format_writer
@@ -54,32 +48,8 @@ namespace _ST_PRIVATE
             return *this;
         }
 
-    protected:
+    private:
         FILE *m_stream;
-    };
-
-    class ST_EXPORT wstdio_format_writer : public stdio_format_writer
-    {
-    public:
-        wstdio_format_writer(const char *format_str, FILE *stream) ST_NOEXCEPT
-            : stdio_format_writer(format_str, stream) { }
-
-        wstdio_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
-        {
-            // TODO: This is probably not very efficient...
-            ST::wchar_buffer wide = ST::string(data, size).to_wchar();
-            (void)fwrite(wide.data(), sizeof(wchar_t), wide.size(), m_stream);
-            return *this;
-        }
-
-        wstdio_format_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
-        {
-            while (count) {
-                fputwc(wchar_t(ch), m_stream);
-                --count;
-            }
-            return *this;
-        }
     };
 }
 
@@ -97,21 +67,6 @@ namespace ST
                 args_T ...args)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, out_file);
-        _ST_PRIVATE::apply_format(data, args...);
-    }
-
-    template <typename... args_T>
-    void wprintf(const char *fmt_str, args_T ...args)
-    {
-        _ST_PRIVATE::wstdio_format_writer data(fmt_str, stdout);
-        _ST_PRIVATE::apply_format(data, args...);
-    }
-
-    template <typename... args_T>
-    void wprintf(FILE *out_file, const char *fmt_str,
-                args_T ...args)
-    {
-        _ST_PRIVATE::wstdio_format_writer data(fmt_str, out_file);
         _ST_PRIVATE::apply_format(data, args...);
     }
 }

@@ -150,6 +150,10 @@ endif()
 
 option(ST_NO_STL_STRINGS "Disable std::string and std::filesystem::path support" OFF)
 
+if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS AND ST_HAVE_LAMBDA_EXPR)
+    set(ST_HAVE_FORMAT TRUE)
+endif()
+
 configure_file("${PROJECT_SOURCE_DIR}/include/st_config.h.in"
                "${PROJECT_BINARY_DIR}/include/st_config.h")
 include_directories("${PROJECT_BINARY_DIR}/include")
@@ -158,6 +162,7 @@ set(ST_HEADERS_PRIV
     include/st_assert.h
     include/st_charbuffer.h
     include/st_codecs.h
+    include/st_iostream.h
     include/st_string.h
     include/st_stringstream.h
     "${PROJECT_BINARY_DIR}/include/st_config.h"
@@ -167,6 +172,7 @@ set(ST_HEADERS_PUB
     include/string_theory/char_buffer
     include/string_theory/codecs
     include/string_theory/exceptions
+    include/string_theory/iostream
     include/string_theory/string
     include/string_theory/string_stream
 )
@@ -180,25 +186,22 @@ set(ST_SOURCES
     src/st_stringstream.cpp
 )
 
-if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS AND ST_HAVE_LAMBDA_EXPR)
+if(ST_HAVE_FORMAT)
     set(ST_HEADERS_PRIV ${ST_HEADERS_PRIV}
         include/st_formatter.h
         include/st_formatter_util.h
         include/st_format.h
-        include/st_iostream.h
         include/st_stdio.h
     )
     set(ST_HEADERS_PUB ${ST_HEADERS_PUB}
         include/string_theory/formatter
         include/string_theory/format
-        include/string_theory/iostream
         include/string_theory/stl_formatter
         include/string_theory/stdio
     )
     set(ST_SOURCES ${ST_SOURCES}
         src/st_format.cpp
     )
-    set(ST_HAVE_FORMAT TRUE)
 endif()
 
 set(ST_INSTALL_BIN_DIR "bin" CACHE PATH "Path to install DLLs on Windows")

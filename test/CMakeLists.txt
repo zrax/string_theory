@@ -70,9 +70,11 @@ endif()
 
 add_gtest(test_string)
 add_gtest(test_codecs)
+add_gtest(test_iostream)
 
 if(ST_HAVE_FORMAT)
     add_gtest(test_format)
+    add_gtest(test_stdio)
 
     option(ST_BUILD_PROFILE_TEST "Build string profile test application" OFF)
     if(ST_BUILD_PROFILE_TEST)

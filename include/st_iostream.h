@@ -26,6 +26,8 @@
 #include <ostream>
 #include <istream>
 
+#ifdef ST_HAVE_FORMAT
+
 namespace _ST_PRIVATE
 {
     template <class char_T, class traits_T>
@@ -98,6 +100,8 @@ namespace ST
         _ST_PRIVATE::apply_format(data, args...);
     }
 }
+
+#endif // ST_HAVE_FORMAT
 
 template <class char_T, class traits_T>
 std::basic_ostream<char_T, traits_T> &operator<<(

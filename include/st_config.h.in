@@ -48,8 +48,10 @@
 #cmakedefine ST_HAVE_CXX17_FILESYSTEM
 #cmakedefine ST_HAVE_EXPERIMENTAL_FILESYSTEM
 #endif
-#cmakedefine01 ST_BUILD_SHARED
+#cmakedefine ST_HAVE_FORMAT
 #cmakedefine ST_NO_STL_STRINGS
+
+#cmakedefine01 ST_BUILD_SHARED
 
 #ifdef ST_HAVE_NOEXCEPT
 #   define ST_NOEXCEPT noexcept
