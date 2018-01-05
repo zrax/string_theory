@@ -21,7 +21,10 @@
 #ifndef _ST_IOSTREAM_H
 #define _ST_IOSTREAM_H
 
-#include "st_formatter_util.h"
+#include "st_string.h"
+#ifdef ST_HAVE_FORMAT
+#   include "st_formatter_util.h"
+#endif
 
 #include <ostream>
 #include <istream>
