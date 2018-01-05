@@ -60,7 +60,7 @@ namespace ST
     string format(const char *fmt_str, args_T ...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str);
-        _ST_PRIVATE::apply_format(data, args...);
+        apply_format(data, args...);
         return data.to_string(true, ST_DEFAULT_VALIDATION);
     }
 
@@ -69,7 +69,7 @@ namespace ST
                   args_T ...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str);
-        _ST_PRIVATE::apply_format(data, args...);
+        apply_format(data, args...);
         return data.to_string(true, validation);
     }
 
@@ -77,7 +77,7 @@ namespace ST
     string format_latin_1(const char *fmt_str, args_T ...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str);
-        _ST_PRIVATE::apply_format(data, args...);
+        apply_format(data, args...);
         return data.to_string(false, assume_valid);
     }
 }

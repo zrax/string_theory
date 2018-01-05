@@ -59,7 +59,7 @@ namespace ST
     void printf(const char *fmt_str, args_T ...args)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, stdout);
-        _ST_PRIVATE::apply_format(data, args...);
+        apply_format(data, args...);
     }
 
     template <typename... args_T>
@@ -67,7 +67,7 @@ namespace ST
                 args_T ...args)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, out_file);
-        _ST_PRIVATE::apply_format(data, args...);
+        apply_format(data, args...);
     }
 }
 

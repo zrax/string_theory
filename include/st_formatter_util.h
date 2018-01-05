@@ -36,14 +36,17 @@ namespace _ST_PRIVATE
             ST_INVOKE_FORMATTER(format, output, value);
         };
     }
+}
 
+namespace ST
+{
     template <typename arg0_T, typename... args_T>
     void apply_format(ST::format_writer &data, arg0_T &&arg0, args_T &&...args)
     {
         enum { num_formatters = 1 + sizeof...(args) };
-        formatter_ref_t formatters[num_formatters] = {
-            make_formatter_ref(std::forward<arg0_T>(arg0)),
-            make_formatter_ref(std::forward<args_T>(args))...
+        _ST_PRIVATE::formatter_ref_t formatters[num_formatters] = {
+            _ST_PRIVATE::make_formatter_ref(std::forward<arg0_T>(arg0)),
+            _ST_PRIVATE::make_formatter_ref(std::forward<args_T>(args))...
         };
         size_t index = 0;
         while (data.next_format()) {

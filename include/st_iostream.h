@@ -100,7 +100,7 @@ namespace ST
                 const char *fmt_str, args_T ...args)
     {
         _ST_PRIVATE::ostream_format_writer<char_T, traits_T> data(fmt_str, stream);
-        _ST_PRIVATE::apply_format(data, args...);
+        apply_format(data, args...);
     }
 }
 
