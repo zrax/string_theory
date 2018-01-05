@@ -91,7 +91,7 @@ if(ST_HAVE_FORMAT)
 
         find_package(PkgConfig)
         if(PkgConfig_FOUND)
-            pkg_check_modules(GLIBMM gtkmm-2.4)
+            pkg_check_modules(GLIBMM glibmm-2.4)
             if(GLIBMM_FOUND)
                 add_definitions(-DST_PROFILE_HAVE_GLIBMM)
                 include_directories(${GLIBMM_INCLUDE_DIRS})
