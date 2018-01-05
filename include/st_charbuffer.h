@@ -241,7 +241,7 @@ namespace ST
             return m_chars[index];
         }
 
-        char_T at(size_t index) const
+        const char_T &at(size_t index) const
         {
             if (index >= size())
                 throw std::out_of_range("Character index out of range");
@@ -253,7 +253,7 @@ namespace ST
             return m_chars[index];
         }
 
-        char_T operator[](size_t index) const ST_NOEXCEPT
+        const char_T &operator[](size_t index) const ST_NOEXCEPT
         {
             return m_chars[index];
         }
@@ -263,7 +263,7 @@ namespace ST
             return m_chars[0];
         }
 
-        char_T front() const ST_NOEXCEPT
+        const char_T &front() const ST_NOEXCEPT
         {
             return m_chars[0];
         }
@@ -273,7 +273,7 @@ namespace ST
             return empty() ? m_chars[0] : m_chars[m_size - 1];
         }
 
-        char_T back() const ST_NOEXCEPT
+        const char_T &back() const ST_NOEXCEPT
         {
             return empty() ? m_chars[0] : m_chars[m_size - 1];
         }

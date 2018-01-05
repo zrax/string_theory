@@ -761,20 +761,20 @@ namespace ST
             return empty() ? substitute : m_buffer.data();
         }
 
-        char at(size_t position) const ST_NOEXCEPT
+        const char &at(size_t position) const ST_NOEXCEPT
         {
             return c_str()[position];
         }
 
         ST_DEPRECATED_IN_2_0("replaced with at() in string_theory 2.0")
-        char char_at(size_t position) const ST_NOEXCEPT { return at(position); }
+        char char_at(size_t position) const ST_NOEXCEPT { return c_str()[position]; }
 
-        char front() const ST_NOEXCEPT
+        const char &front() const ST_NOEXCEPT
         {
             return m_buffer.front();
         }
 
-        char back() const ST_NOEXCEPT
+        const char &back() const ST_NOEXCEPT
         {
             return m_buffer.back();
         }
