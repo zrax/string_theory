@@ -38,12 +38,35 @@ TEST(stdio, writef)
 
     EXPECT_EQ(sstream.str(), "xxxxxTesting ###formatted output");
 }
+
+TEST(stdio, writef_wide)
+{
+    std::wstringstream sstream;
+    ST::writef(sstream, "xxxxx");
+    ST::writef(sstream, "Testing {>12_#} output", "formatted");
+
+    EXPECT_EQ(sstream.str(), L"xxxxxTesting ###formatted output");
+}
 #endif // ST_HAVE_FORMAT
 
 TEST(stdio, stream_ops)
 {
     std::stringstream sstream;
     sstream << ST_LITERAL("xxxxx") << " " << ST_LITERAL("yyyyy");
+
+    sstream.seekg(0);
+    ST::string x, y;
+    sstream >> x;
+    sstream >> y;
+
+    EXPECT_EQ(ST_LITERAL("xxxxx"), x);
+    EXPECT_EQ(ST_LITERAL("yyyyy"), y);
+}
+
+TEST(stdio, stream_ops_wide)
+{
+    std::wstringstream sstream;
+    sstream << ST_LITERAL("xxxxx") << L" " << ST_LITERAL("yyyyy");
 
     sstream.seekg(0);
     ST::string x, y;
