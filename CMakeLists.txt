@@ -145,7 +145,6 @@ if(ST_BUILD_STATIC)
 else()
     set(ST_LIB_TYPE SHARED)
     set(ST_BUILD_SHARED TRUE)
-    add_definitions(-DST_BUILD_EXPORTS)
 endif()
 
 option(ST_NO_STL_STRINGS "Disable std::string and std::filesystem::path support" OFF)
@@ -211,6 +210,7 @@ set(ST_INSTALL_CMAKE_DIR "${ST_INSTALL_LIB_DIR}/cmake" CACHE PATH "Path to insta
 
 add_library(string_theory ${ST_LIB_TYPE}
             ${ST_HEADERS_PRIV} ${ST_SOURCES})
+target_compile_definitions(string_theory PRIVATE ST_BUILD_EXPORTS)
 if(WIN32)
     set_target_properties(string_theory PROPERTIES DEBUG_POSTFIX "d")
 endif()

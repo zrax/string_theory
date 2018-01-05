@@ -34,7 +34,7 @@
 namespace _ST_PRIVATE
 {
     template <class char_T, class traits_T>
-    class ST_EXPORT ostream_format_writer : public ST::format_writer
+    class ostream_format_writer : public ST::format_writer
     {
     public:
         ostream_format_writer(const char *format_str,
