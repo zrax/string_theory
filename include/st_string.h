@@ -761,12 +761,17 @@ namespace ST
             return empty() ? substitute : m_buffer.data();
         }
 
-        const char &at(size_t position) const ST_NOEXCEPT
+        const char &at(size_t position) const
         {
-            return c_str()[position];
+            return m_buffer.at(position);
         }
 
-        ST_DEPRECATED_IN_2_0("replaced with at() in string_theory 2.0")
+        const char &operator[](size_t position) const ST_NOEXCEPT
+        {
+            return m_buffer.operator[](position);
+        }
+
+        ST_DEPRECATED_IN_2_0("replaced with at() or operator[] in string_theory 2.0")
         char char_at(size_t position) const ST_NOEXCEPT { return c_str()[position]; }
 
         const char &front() const ST_NOEXCEPT
@@ -852,7 +857,7 @@ namespace ST
 #endif
 
 #ifdef ST_HAVE_STD_STRING_VIEW
-        ST::_std_string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE)
+        ST::_std_string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const
         {
             return m_buffer.view(start, length);
         }

@@ -355,7 +355,7 @@ namespace ST
 
 #ifdef ST_HAVE_STD_STRING_VIEW
         ST::_std_basic_string_view<char_T> view(size_t start = 0,
-                                                size_t length = ST_AUTO_SIZE)
+                                                size_t length = ST_AUTO_SIZE) const
         {
             if (length == ST_AUTO_SIZE)
                 length = size() - start;
