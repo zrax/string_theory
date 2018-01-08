@@ -132,14 +132,14 @@ static ST::char_buffer _cleanup_utf8_buffer(const ST::char_buffer &buffer)
             sp += 2;
         } else if ((*sp & 0xF0) == 0xE0) {
             // Three bytes
-            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 80)
+            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80)
                 ss_clean.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
             else
                 ss_clean.append(reinterpret_cast<const char *>(sp), 3);
             sp += 3;
         } else if ((*sp & 0xF8) == 0xF0) {
             // Four bytes
-            if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 80
+            if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80
                             || (sp[3] & 0xC0) != 0x80)
                 ss_clean.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
             else
@@ -1105,8 +1105,8 @@ bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const ST_N
         return false;
 
     size_t start = size() - count;
-    return (cs == case_sensitive) ? strncmp(c_str() + start, suffix, count) == 0
-                                  : strnicmp(c_str() + start, suffix, count) == 0;
+    return (cs == case_sensitive) ? strncmp(c_str() + start, suffix ? suffix : "", count) == 0
+                                  : strnicmp(c_str() + start, suffix ? suffix : "", count) == 0;
 }
 
 ST::string ST::string::before_first(char sep, case_sensitivity_t cs) const
