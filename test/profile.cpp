@@ -43,6 +43,9 @@
 #ifdef ST_PROFILE_HAVE_GLIBMM
 #   include <glibmm/ustring.h>
 #endif
+#ifdef ST_PROFILE_HAVE_FMT
+#   include <fmt/format.h>
+#endif
 
 #ifndef M_PI
 #   define M_PI (3.14159265358979)
@@ -443,6 +446,14 @@ int main(int, char **)
     _measure("Glib::ustring::compose", []() {
         Glib::ustring foo = Glib::ustring::compose("This %1 is %2 a %3 test %4.",
                                 42, M_PI, "<Singin' in the rain>", '?');
+        NO_OPTIMIZE(foo.c_str());
+    });
+#endif
+
+#ifdef ST_PROFILE_HAVE_FMT
+    _measure("fmt::format", []() {
+        std::string foo = fmt::format("This {} is {:6.2f} a {} test {}.", 42, M_PI,
+                                      "<Singin' in the rain>", '?');
         NO_OPTIMIZE(foo.c_str());
     });
 #endif
