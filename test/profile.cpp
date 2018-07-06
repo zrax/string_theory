@@ -45,6 +45,7 @@
 #endif
 #ifdef ST_PROFILE_HAVE_FMT
 #   include <fmt/format.h>
+#   include <fmt/ostream.h>
 #endif
 
 #ifndef M_PI
@@ -476,8 +477,6 @@ int main(int, char **)
             ST::printf(devnull, "This {} is {6.2f} a {} test {}.", 42, M_PI,
                                 "<Singin' in the rain>", '?');
         });
-
-        fclose(devnull);
     } else {
         ST::printf("{32}: Couldn't open file " DEVNULL "\n", "printf");
         ST::printf("{32}: Couldn't open file " DEVNULL "\n", "ST::printf");
@@ -490,11 +489,34 @@ int main(int, char **)
             ST::writef(devnull_ofs, "This {} is {6.2f} a {} test {}.", 42, M_PI,
                                     "<Singin' in the rain>", '?');
         });
-
-        devnull_ofs.close();
     } else {
         ST::printf("{32}: Couldn't open file " DEVNULL "\n", "ST::writef");
     }
+
+#ifdef ST_PROFILE_HAVE_FMT
+    if (devnull) {
+        _measure("fmt::print (FILE*)", [devnull]() {
+            fmt::print(devnull, "This {} is {:6.2f} a {} test {}.", 42, M_PI,
+                       "<Singin' in the rain>", '?');
+        });
+    } else {
+        ST::printf("{32}: Couldn't open file " DEVNULL "\n", "fmt::print");
+    }
+
+    if (devnull_ofs.is_open()) {
+        _measure("fmt::print (ostream)", [&devnull_ofs]() {
+            fmt::print(devnull_ofs, "This {} is {:6.2f} a {} test {}.", 42, M_PI,
+                       "<Singin' in the rain>", '?');
+        });
+    } else {
+        ST::printf("{32}: Couldn't open file " DEVNULL "\n", "fmt::print");
+    }
+#endif
+
+    if (devnull)
+        fclose(devnull);
+    if (devnull_ofs.is_open())
+        devnull_ofs.close();
 
     _measure("std::stringstream (~format)", []() {
         std::stringstream ss;
