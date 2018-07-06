@@ -91,3 +91,14 @@ TEST(regress, null_init)
     dont_crash = ST::string::from_utf16((const char16_t *)ST_NULLPTR);
     dont_crash = ST::string::from_utf32((const char32_t *)ST_NULLPTR);
 }
+
+TEST(regress, allocate_fill)
+{
+    ST::char_buffer cb;
+    cb.allocate(20, 'x');
+    EXPECT_EQ(ST::char_buffer("xxxxxxxxxxxxxxxxxxxx", 20), cb);
+
+    ST::wchar_buffer wcb;
+    wcb.allocate(20, L'x');
+    EXPECT_EQ(ST::wchar_buffer(L"xxxxxxxxxxxxxxxxxxxx", 20), wcb);
+}

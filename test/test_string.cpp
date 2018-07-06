@@ -150,6 +150,60 @@ TEST(string, stack_construction)
     EXPECT_EQ(strlen("operator="), wtest.size());
 }
 
+TEST(string, copy)
+{
+    // If this changes, this test may need to be updated to match
+    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+
+    ST::string s1("Test");
+    ST::string dest(s1);
+    EXPECT_EQ(ST_LITERAL("Test"), dest);
+    EXPECT_EQ(4U, dest.size());
+
+    ST::string s2("operator=");
+    dest = s2;
+    EXPECT_EQ(ST_LITERAL("operator="), dest);
+    EXPECT_EQ(9U, dest.size());
+
+    ST::string s3("0123456789abcdefghij");
+    ST::string dest2(s3);
+    EXPECT_EQ(ST_LITERAL("0123456789abcdefghij"), dest2);
+    EXPECT_EQ(20U, dest2.size());
+
+    ST::string s4("9876543210zyxwvutsrqponm");
+    dest2 = s4;
+    EXPECT_EQ(ST_LITERAL("9876543210zyxwvutsrqponm"), dest2);
+    EXPECT_EQ(24U, dest2.size());
+}
+
+#ifdef ST_HAVE_RVALUE_MOVE
+TEST(string, move)
+{
+    // If this changes, this test may need to be updated to match
+    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+
+    ST::string s1("Test");
+    ST::string dest(std::move(s1));
+    EXPECT_EQ(ST_LITERAL("Test"), dest);
+    EXPECT_EQ(4U, dest.size());
+
+    ST::string s2("operator=");
+    dest = std::move(s2);
+    EXPECT_EQ(ST_LITERAL("operator="), dest);
+    EXPECT_EQ(9U, dest.size());
+
+    ST::string s3("0123456789abcdefghij");
+    ST::string dest2(std::move(s3));
+    EXPECT_EQ(ST_LITERAL("0123456789abcdefghij"), dest2);
+    EXPECT_EQ(20U, dest2.size());
+
+    ST::string s4("9876543210zyxwvutsrqponm");
+    dest2 = std::move(s4);
+    EXPECT_EQ(ST_LITERAL("9876543210zyxwvutsrqponm"), dest2);
+    EXPECT_EQ(24U, dest2.size());
+}
+#endif
+
 TEST(string, utf8)
 {
     // From UTF-8 to ST::string
