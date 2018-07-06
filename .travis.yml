@@ -1,0 +1,59 @@
+language: cpp
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      env: CMAKE_C_COMPILER=gcc CMAKE_CXX_COMPILER=g++
+      addons:
+        apt:
+          packages:
+            - cmake
+    - os: linux
+      dist: trusty
+      compiler: clang
+      env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
+      addons:
+        apt:
+          packages:
+            - cmake
+    - os: linux
+      dist: trusty
+      compiler: gcc-4.6
+      env: CMAKE_CXX_COMPILER=g++-4.6 CMAKE_C_COMPILER=gcc-4.6
+      addons:
+        apt:
+          packages:
+            - g++-4.6
+    - os: linux
+      dist: trusty
+      compiler: gcc-4.4
+      env: CMAKE_CXX_COMPILER=g++-4.4 CMAKE_C_COMPILER=gcc-4.4
+      addons:
+        apt:
+          packages:
+            - g++-4.4
+    - os: osx
+      osx_image: xcode6.4
+      compiler: clang
+      env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
+    - os: osx
+      osx_image: xcode7.3
+      compiler: clang
+      env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
+    - os: osx
+      osx_image: xcode9.4
+      compiler: clang
+      env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
+
+script:
+  - mkdir -p build
+  - cd build
+  - cmake -DCMAKE_C_COMPILER=$CMAKE_C_COMPILER -DCMAKE_CXX_COMPILER=$CMAKE_CXX_COMPILER -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
+  - make
+  - make test
