@@ -127,7 +127,7 @@ namespace ST
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = cstr ? strlen(cstr) : 0;
+                size = cstr ? std::char_traits<char>::length(cstr) : 0;
             _convert_from_utf8(cstr, size, validation);
         }
 
@@ -135,7 +135,7 @@ namespace ST
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = wstr ? wcslen(wstr) : 0;
+                size = wstr ? std::char_traits<wchar_t>::length(wstr) : 0;
             _convert_from_wchar(wstr, size, validation);
         }
 
@@ -144,7 +144,7 @@ namespace ST
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = cstr ? ST::utf16_buffer::strlen(cstr) : 0;
+                size = cstr ? std::char_traits<char16_t>::length(cstr) : 0;
             _convert_from_utf16(cstr, size, validation);
         }
 
@@ -152,7 +152,7 @@ namespace ST
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = cstr ? ST::utf32_buffer::strlen(cstr) : 0;
+                size = cstr ? std::char_traits<char32_t>::length(cstr) : 0;
             _convert_from_utf32(cstr, size, validation);
         }
 #endif
@@ -265,7 +265,7 @@ namespace ST
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = cstr ? strlen(cstr) : 0;
+                size = cstr ? std::char_traits<char>::length(cstr) : 0;
             _convert_from_utf8(cstr, size, validation);
         }
 
@@ -273,7 +273,7 @@ namespace ST
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = wstr ? wcslen(wstr) : 0;
+                size = wstr ? std::char_traits<wchar_t>::length(wstr) : 0;
             _convert_from_wchar(wstr, size, validation);
         }
 
@@ -282,7 +282,7 @@ namespace ST
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = cstr ? ST::utf16_buffer::strlen(cstr) : 0;
+                size = cstr ? std::char_traits<char16_t>::length(cstr) : 0;
             _convert_from_utf16(cstr, size, validation);
         }
 
@@ -290,7 +290,7 @@ namespace ST
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = cstr ? ST::utf32_buffer::strlen(cstr) : 0;
+                size = cstr ? std::char_traits<char32_t>::length(cstr) : 0;
             _convert_from_utf32(cstr, size, validation);
         }
 #endif
@@ -566,7 +566,7 @@ namespace ST
                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = utf8 ? strlen(utf8) : 0;
+                size = utf8 ? std::char_traits<char>::length(utf8) : 0;
 
             string str;
             str._convert_from_utf8(utf8, size, validation);
@@ -578,7 +578,7 @@ namespace ST
                                         utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = utf16 ? ST::utf16_buffer::strlen(utf16) : 0;
+                size = utf16 ? std::char_traits<char16_t>::length(utf16) : 0;
 
             string str;
             str._convert_from_utf16(utf16, size, validation);
@@ -590,7 +590,7 @@ namespace ST
                                         utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = utf32 ? ST::utf32_buffer::strlen(utf32) : 0;
+                size = utf32 ? std::char_traits<char32_t>::length(utf32) : 0;
 
             string str;
             str._convert_from_utf32(utf32, size, validation);
@@ -602,7 +602,7 @@ namespace ST
                                         utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             if (size == ST_AUTO_SIZE)
-                size = wstr ? wcslen(wstr) : 0;
+                size = wstr ? std::char_traits<wchar_t>::length(wstr) : 0;
 
             string str;
             str._convert_from_wchar(wstr, size, validation);
@@ -613,7 +613,7 @@ namespace ST
                                           size_t size = ST_AUTO_SIZE)
         {
             if (size == ST_AUTO_SIZE)
-                size = astr ? strlen(astr) : 0;
+                size = astr ? std::char_traits<char>::length(astr) : 0;
 
             string str;
             str._convert_from_latin_1(astr, size);

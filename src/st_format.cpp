@@ -510,7 +510,7 @@ ST_FORMAT_TYPE(double)
 
     if (format.minimum_length > format_size) {
         out_buffer.allocate(format.minimum_length);
-        memset(out_buffer.data(), pad, format.minimum_length);
+        std::char_traits<char>::assign(out_buffer.data(), format.minimum_length, pad);
         if (format.alignment == ST::align_left) {
             snprintf(out_buffer.data(), format_size + 1, format_buffer, value);
             out_buffer[format_size] = pad;  // snprintf overwrites this

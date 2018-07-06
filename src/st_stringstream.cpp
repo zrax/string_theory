@@ -35,7 +35,7 @@
         } while (m_size + added_size > big_size);                   \
                                                                     \
         char *bigger = new char[big_size];                          \
-        memcpy(bigger, m_chars, m_alloc);                           \
+        std::char_traits<char>::copy(bigger, m_chars, m_alloc);     \
         if (is_heap())                                              \
             delete[] m_chars;                                       \
         m_chars = bigger;                                           \
@@ -48,11 +48,11 @@ ST::string_stream &ST::string_stream::append(const char *data, size_t size)
         return *this;
 
     if (size == ST_AUTO_SIZE)
-        size = data ? strlen(data) : 0;
+        size = data ? std::char_traits<char>::length(data) : 0;
 
     EXPAND_SS_BUFFER(size)
 
-    memmove(m_chars + m_size, data, size);
+    std::char_traits<char>::move(m_chars + m_size, data, size);
     m_size += size;
     return *this;
 }
@@ -67,7 +67,7 @@ ST::string_stream &ST::string_stream::append_char(char ch, size_t count)
     if (count == 1)
         *(m_chars + m_size) = ch;
     else
-        memset(m_chars + m_size, ch, count);
+        std::char_traits<char>::assign(m_chars + m_size, count, ch);
     m_size += count;
     return *this;
 }

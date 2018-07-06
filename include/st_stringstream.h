@@ -44,7 +44,7 @@ namespace ST
             : m_alloc(move.m_alloc), m_size(move.m_size)
         {
             m_chars = is_heap() ? move.m_chars : m_stack;
-            memcpy(m_stack, move.m_stack, sizeof(m_stack));
+            std::char_traits<char>::copy(m_stack, move.m_stack, ST_STACK_STRING_LEN);
             move.m_alloc = 0;
         }
 
@@ -56,7 +56,7 @@ namespace ST
             m_alloc = move.m_alloc;
             m_size = move.m_size;
             m_chars = is_heap() ? move.m_chars : m_stack;
-            memcpy(m_stack, move.m_stack, sizeof(m_stack));
+            std::char_traits<char>::copy(m_stack, move.m_stack, ST_STACK_STRING_LEN);
             move.m_alloc = 0;
             return *this;
         }

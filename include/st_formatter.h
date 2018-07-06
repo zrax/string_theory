@@ -153,7 +153,7 @@ inline ST_FORMAT_TYPE(float)
 inline ST_FORMAT_TYPE(const char *)
 {
     if (value)
-        ST::format_string(format, output, value, strlen(value));
+        ST::format_string(format, output, value, std::char_traits<char>::length(value));
 }
 
 inline ST_FORMAT_TYPE(const wchar_t *)

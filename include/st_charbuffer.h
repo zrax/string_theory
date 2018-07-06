@@ -24,15 +24,14 @@
 #include "st_assert.h"
 
 #include <cstddef>
-#include <cstring>
 #include <cwchar>
 #include <iterator>
+#include <string>       // Needed for char_traits
 #ifdef ST_HAVE_RVALUE_MOVE
 #  include <utility>    // For std::move
 #endif
 
 #if !defined(ST_NO_STL_STRINGS)
-#   include <string>
 #   if defined(ST_HAVE_CXX17_STRING_VIEW)
 #       include <string_view>
         namespace ST
@@ -93,6 +92,8 @@ namespace ST
         size_t m_size;
         char_T m_data[ST_SHORT_STRING_LEN];
 
+        typedef std::char_traits<char_T> traits_t;
+
         inline bool is_reffed() const ST_NOEXCEPT
         {
             return m_size >= ST_SHORT_STRING_LEN;
@@ -120,13 +121,13 @@ namespace ST
         buffer() ST_NOEXCEPT
             : m_chars(m_data), m_size()
         {
-            memset(m_data, 0, sizeof(m_data));
+            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
         }
 
         buffer(const null_t &) ST_NOEXCEPT
             : m_chars(m_data), m_size()
         {
-            memset(m_data, 0, sizeof(m_data));
+            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
         }
 
         buffer(const buffer<char_T> &copy)
@@ -134,10 +135,10 @@ namespace ST
         {
             if (is_reffed()) {
                 m_chars = new char_T[m_size + 1];
-                memcpy(m_chars, copy.m_chars, m_size * sizeof(char_T));
+                traits_t::copy(m_chars, copy.m_chars, m_size);
                 m_chars[m_size] = 0;
             } else {
-                memcpy(m_data, copy.m_data, sizeof(m_data));
+                traits_t::copy(m_data, copy.m_data, ST_SHORT_STRING_LEN);
                 m_chars = m_data;
             }
         }
@@ -147,7 +148,7 @@ namespace ST
             : m_size(move.m_size)
         {
             m_chars = is_reffed() ? move.m_chars : m_data;
-            memcpy(m_data, move.m_data, sizeof(m_data));
+            traits_t::copy(m_data, move.m_data, ST_SHORT_STRING_LEN);
             move.m_size = 0;
         }
 #endif
@@ -155,9 +156,9 @@ namespace ST
         buffer(const char_T *data, size_t size)
             : m_size(size)
         {
-            memset(m_data, 0, sizeof(m_data));
+            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
             m_chars = is_reffed() ? new char_T[m_size + 1] : m_data;
-            memmove(m_chars, data, m_size * sizeof(char_T));
+            traits_t::move(m_chars, data, m_size);
             m_chars[m_size] = 0;
         }
 
@@ -172,7 +173,7 @@ namespace ST
             _scope_deleter unref(this);
             m_chars = m_data;
             m_size = 0;
-            memset(m_data, 0, sizeof(m_data));
+            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
             return *this;
         }
 
@@ -182,10 +183,10 @@ namespace ST
             m_size = copy.m_size;
             if (is_reffed()) {
                 m_chars = new char_T[m_size + 1];
-                memcpy(m_chars, copy.m_chars, m_size * sizeof(char_T));
+                traits_t::copy(m_chars, copy.m_chars, m_size);
                 m_chars[m_size] = 0;
             } else {
-                memcpy(m_data, copy.m_data, sizeof(m_data));
+                traits_t::copy(m_data, copy.m_data, ST_SHORT_STRING_LEN);
                 m_chars = m_data;
             }
             return *this;
@@ -197,7 +198,7 @@ namespace ST
             _scope_deleter unref(this);
             m_size = move.m_size;
             m_chars = is_reffed() ? move.m_chars : m_data;
-            memcpy(m_data, move.m_data, sizeof(m_data));
+            traits_t::copy(m_data, move.m_data, ST_SHORT_STRING_LEN);
             move.m_size = 0;
             return *this;
         }
@@ -212,7 +213,7 @@ namespace ST
         {
             if (other.size() != size())
                 return false;
-            return memcmp(data(), other.data(), size()) == 0;
+            return traits_t::compare(data(), other.data(), size()) == 0;
         }
 
         bool operator!=(const null_t &) const ST_NOEXCEPT
@@ -317,7 +318,7 @@ namespace ST
             if (is_reffed())
                 delete[] m_chars;
             else
-                memset(m_data, 0, sizeof(m_data));
+                traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
 
             m_size = size;
             m_chars = is_reffed() ? new char_T[m_size + 1] : m_data;
@@ -327,7 +328,7 @@ namespace ST
         void allocate(size_t size, int fill)
         {
             allocate(size);
-            memset(m_chars, fill, size);
+            traits_t::assign(m_chars, size, fill);
         }
 
         ST_DEPRECATED_IN_2_0("Use allocate() and mutable data()/operator[] accessors")
@@ -340,11 +341,7 @@ namespace ST
         static inline size_t strlen(const char_T *buffer)
         {
             ST_ASSERT(buffer, "buffer<char_T>::strlen passed null buffer");
-
-            size_t length = 0;
-            for ( ; *buffer++; ++length)
-                ;
-            return length;
+            return traits_t::length(buffer);
         }
 
 #ifndef ST_NO_STL_STRINGS

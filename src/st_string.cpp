@@ -23,6 +23,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 #include "st_assert.h"
 #include "st_stringstream.h"
 #include "st_format_priv.h"
@@ -426,7 +427,7 @@ void ST::string::_convert_from_utf32(const char32_t *utf32, size_t size,
                 throw ST::unicode_error("Unicode character out of range");
             else if (validation == assert_validity)
                 ST_ASSERT(false, "Unicode character out of range");
-            memcpy(dp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+            std::char_traits<char>::copy(dp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
             dp += BADCHAR_SUBSTITUTE_UTF8_LEN;
         }
     }
@@ -921,9 +922,9 @@ int ST::string::compare_n(const char *str, size_t count,
 static const char *_stristr(const char *haystack, const char *needle)
 {
     // The "easy" way
-    size_t sublen = strlen(needle);
+    size_t sublen = std::char_traits<char>::length(needle);
     const char *cp = haystack;
-    const char *ep = cp + strlen(haystack);
+    const char *ep = cp + std::char_traits<char>::length(haystack);
     while (cp + sublen <= ep) {
         if (strnicmp(cp, needle, sublen) == 0)
             return cp;
@@ -1068,7 +1069,7 @@ ST::string ST::string::substr(ST_ssize_t start, size_t count) const
 
     string sub;
     sub.m_buffer.allocate(count);
-    memcpy(sub.m_buffer.data(), c_str() + start, count);
+    std::char_traits<char>::copy(sub.m_buffer.data(), c_str() + start, count);
 
     return sub;
 }
@@ -1082,7 +1083,7 @@ bool ST::string::starts_with(const ST::string &prefix, case_sensitivity_t cs) co
 
 bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const ST_NOEXCEPT
 {
-    size_t count = prefix ? strlen(prefix) : 0;
+    size_t count = prefix ? std::char_traits<char>::length(prefix) : 0;
     if (count > size())
         return false;
     return compare_n(prefix, count, cs) == 0;
@@ -1100,7 +1101,7 @@ bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) cons
 
 bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const ST_NOEXCEPT
 {
-    size_t count = suffix ? strlen(suffix) : 0;
+    size_t count = suffix ? std::char_traits<char>::length(suffix) : 0;
     if (count > size())
         return false;
 
@@ -1149,7 +1150,7 @@ ST::string ST::string::after_first(const char *sep, case_sensitivity_t cs) const
 {
     ST_ssize_t first = find(sep, cs);
     if (first >= 0)
-        return substr(first + strlen(sep));
+        return substr(first + std::char_traits<char>::length(sep));
     else
         return null;
 }
@@ -1203,7 +1204,7 @@ ST::string ST::string::after_last(const char *sep, case_sensitivity_t cs) const
 {
     ST_ssize_t last = find_last(sep, cs);
     if (last >= 0)
-        return substr(last + strlen(sep));
+        return substr(last + std::char_traits<char>::length(sep));
     else
         return *this;
 }
@@ -1321,7 +1322,7 @@ std::vector<ST::string> ST::string::split(const char *splitter, size_t max_split
 
     const char *next = c_str();
     const char *end = next + size();
-    size_t splitlen = strlen(splitter);
+    size_t splitlen = std::char_traits<char>::length(splitter);
     while (max_splits) {
         const char *sp = (cs == case_sensitive) ? strstr(next, splitter)
                                                 : _stristr(next, splitter);
@@ -1435,8 +1436,8 @@ ST::string ST::operator+(const ST::string &left, const ST::string &right)
 {
     ST::char_buffer cat;
     cat.allocate(left.size() + right.size());
-    memcpy(&cat[0], left.c_str(), left.size());
-    memcpy(&cat[left.size()], right.c_str(), right.size());
+    std::char_traits<char>::copy(&cat[0], left.c_str(), left.size());
+    std::char_traits<char>::copy(&cat[left.size()], right.c_str(), right.size());
 
     return ST::string(cat, ST::assume_valid);
 }
@@ -1460,7 +1461,7 @@ static ST::string _append(const ST::string &left, char32_t right)
     ST::char_buffer cat;
     cat.allocate(newsize);
     char *catp = cat.data();
-    memcpy(catp, left.c_str(), left.size());
+    std::char_traits<char>::copy(catp, left.c_str(), left.size());
     catp += left.size();
 
     if (right < 0x80) {
@@ -1479,7 +1480,7 @@ static ST::string _append(const ST::string &left, char32_t right)
         *catp++ = 0x80 | ((right      ) & 0x3F);
     } else {
         ST_ASSERT(false, "Unicode character out of range");
-        memcpy(catp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+        std::char_traits<char>::copy(catp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
         catp += BADCHAR_SUBSTITUTE_UTF8_LEN;
     }
 
@@ -1551,11 +1552,11 @@ static ST::string _prepend(char32_t left, const ST::string &right)
         *catp++ = 0x80 | ((left      ) & 0x3F);
     } else {
         ST_ASSERT(false, "Unicode character out of range");
-        memcpy(catp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+        std::char_traits<char>::copy(catp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
         catp += BADCHAR_SUBSTITUTE_UTF8_LEN;
     }
 
-    memcpy(catp, right.c_str(), right.size());
+    std::char_traits<char>::copy(catp, right.c_str(), right.size());
     return ST::string(cat, ST::assume_valid);
 }
 
