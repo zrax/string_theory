@@ -172,7 +172,7 @@ namespace ST
         {
             if (other.size() != size())
                 return false;
-            return _ST_PRIVATE::_compare_buffer(data(), other.data(), size()) == 0;
+            return _ST_PRIVATE::_compare_buffer(data(), other.data(), size() * sizeof(char_T)) == 0;
         }
 
         bool operator!=(const null_t &) const ST_NOEXCEPT
