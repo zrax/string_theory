@@ -19,6 +19,7 @@
     DEALINGS IN THE SOFTWARE. */
 
 #include "st_stringstream.h"
+#include "st_format_simple.h"
 
 #include <cstdio>
 
@@ -74,44 +75,56 @@ ST::string_stream &ST::string_stream::append_char(char ch, size_t count)
 
 ST::string_stream &ST::string_stream::operator<<(int num)
 {
-    char buffer[12];
-    snprintf(buffer, sizeof(buffer), "%d", num);
-    return append(buffer);
+    const int abs = (num < 0) ? -num : num;
+
+    ST::uint_formatter<unsigned int> formatter;
+    formatter.format(static_cast<unsigned int>(abs), 10, false);
+    if (num < 0)
+        append_char('-');
+    return append(formatter.text(), formatter.size());
 }
 
 ST::string_stream &ST::string_stream::operator<<(unsigned int num)
 {
-    char buffer[12];
-    snprintf(buffer, sizeof(buffer), "%u", num);
-    return append(buffer);
+    ST::uint_formatter<unsigned int> formatter;
+    formatter.format(num, 10, false);
+    return append(formatter.text(), formatter.size());
 }
 
 ST::string_stream &ST::string_stream::operator<<(long num)
 {
-    char buffer[24];
-    snprintf(buffer, sizeof(buffer), "%ld", num);
-    return append(buffer);
+    const long abs = (num < 0) ? -num : num;
+
+    ST::uint_formatter<unsigned long> formatter;
+    formatter.format(static_cast<unsigned long>(abs), 10, false);
+    if (num < 0)
+        append_char('-');
+    return append(formatter.text(), formatter.size());
 }
 
 ST::string_stream &ST::string_stream::operator<<(unsigned long num)
 {
-    char buffer[24];
-    snprintf(buffer, sizeof(buffer), "%lu", num);
-    return append(buffer);
+    ST::uint_formatter<unsigned long> formatter;
+    formatter.format(num, 10, false);
+    return append(formatter.text(), formatter.size());
 }
 
 ST::string_stream &ST::string_stream::operator<<(long long num)
 {
-    char buffer[24];
-    snprintf(buffer, sizeof(buffer), "%lld", num);
-    return append(buffer);
+    const long long abs = (num < 0) ? -num : num;
+
+    ST::uint_formatter<unsigned long long> formatter;
+    formatter.format(static_cast<unsigned long long>(abs), 10, false);
+    if (num < 0)
+        append_char('-');
+    return append(formatter.text(), formatter.size());
 }
 
 ST::string_stream &ST::string_stream::operator<<(unsigned long long num)
 {
-    char buffer[24];
-    snprintf(buffer, sizeof(buffer), "%llu", num);
-    return append(buffer);
+    ST::uint_formatter<unsigned long long> formatter;
+    formatter.format(num, 10, false);
+    return append(formatter.text(), formatter.size());
 }
 
 ST::string_stream &ST::string_stream::operator<<(double num)
