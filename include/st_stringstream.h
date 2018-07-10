@@ -69,11 +69,8 @@ namespace ST
         string_stream &operator<<(unsigned int num);
         string_stream &operator<<(long num);
         string_stream &operator<<(unsigned long num);
-
-#if defined(ST_HAVE_INT64) && !defined(ST_INT64_IS_LONG)
-        string_stream &operator<<(int64_t num);
-        string_stream &operator<<(uint64_t num);
-#endif
+        string_stream &operator<<(long long num);
+        string_stream &operator<<(unsigned long long num);
 
         string_stream &operator<<(float num)
         {

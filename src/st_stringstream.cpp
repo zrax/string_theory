@@ -103,25 +103,23 @@ ST::string_stream &ST::string_stream::operator<<(unsigned long num)
     return append(buffer);
 }
 
-#if defined(ST_HAVE_INT64) && !defined(ST_INT64_IS_LONG)
-ST::string_stream &ST::string_stream::operator<<(int64_t num)
+ST::string_stream &ST::string_stream::operator<<(long long num)
 {
     char buffer[24];
-    snprintf(buffer, sizeof(buffer), "%lld", static_cast<long long>(num));
+    snprintf(buffer, sizeof(buffer), "%lld", num);
     return append(buffer);
 }
 
-ST::string_stream &ST::string_stream::operator<<(uint64_t num)
+ST::string_stream &ST::string_stream::operator<<(unsigned long long num)
 {
     char buffer[24];
-    snprintf(buffer, sizeof(buffer), "%llu", static_cast<unsigned long long>(num));
+    snprintf(buffer, sizeof(buffer), "%llu", num);
     return append(buffer);
 }
-#endif
 
 ST::string_stream &ST::string_stream::operator<<(double num)
 {
     char buffer[64];
     snprintf(buffer, sizeof(buffer), "%g", num);
-    return *this;
+    return append(buffer);
 }

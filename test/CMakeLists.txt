@@ -70,6 +70,7 @@ endif()
 
 add_gtest(test_string)
 add_gtest(test_codecs)
+add_gtest(test_sstream)
 
 if(ST_HAVE_FORMAT)
     add_gtest(test_format)
