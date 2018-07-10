@@ -19,7 +19,7 @@
     DEALINGS IN THE SOFTWARE. */
 
 #include "st_formatter.h"
-#include "st_format_priv.h"
+#include "st_format_simple.h"
 
 #include <cstdlib>
 #include <type_traits>
@@ -339,25 +339,14 @@ static void _format_numeric_s(const ST::format_spec &format,
     typedef typename std::make_unsigned<int_T>::type uint_T;
     int_T abs = (value < 0) ? -value : value;
 
-    size_t format_size = 0;
-    int_T temp = abs;
-    while (temp) {
-        ++format_size;
-        temp /= radix;
-    }
+    ST::uint_formatter<uint_T> formatter;
+    formatter.format(static_cast<uint_T>(abs), radix, upper_case);
 
-    numeric_type ntype = (value < 0) ? numeric_negative : numeric_positive;
-    if (format_size == 0) {
-        format_size = 1;
-        ntype = numeric_zero;
-    }
+    const numeric_type ntype = (value == 0) ? numeric_zero
+                             : (value < 0) ? numeric_negative
+                             : numeric_positive;
 
-    char buffer[68];
-    ST_ASSERT(format_size < sizeof(buffer), "Format length too long");
-    _format_numeric_impl<uint_T>(buffer + format_size,
-                                 static_cast<uint_T>(abs), radix, upper_case);
-
-    _format_numeric_string(format, output, buffer, format_size, ntype);
+    _format_numeric_string(format, output, formatter.text(), formatter.size(), ntype);
 }
 
 template <typename uint_T>
@@ -389,24 +378,12 @@ static void _format_numeric_u(const ST::format_spec &format,
         ST_ASSERT(false, "Invalid digit class for _format_numeric_u");
     }
 
-    size_t format_size = 0;
-    uint_T temp = value;
-    while (temp) {
-        ++format_size;
-        temp /= radix;
-    }
+    ST::uint_formatter<uint_T> formatter;
+    formatter.format(value, radix, upper_case);
 
-    numeric_type ntype = numeric_positive;
-    if (format_size == 0) {
-        format_size = 1;
-        ntype = numeric_zero;
-    }
+    const numeric_type ntype = (value == 0) ? numeric_zero : numeric_positive;
 
-    char buffer[68];
-    ST_ASSERT(format_size < sizeof(buffer), "Format length too long");
-    _format_numeric_impl<uint_T>(buffer + format_size, value, radix, upper_case);
-
-    _format_numeric_string(format, output, buffer, format_size, ntype);
+    _format_numeric_string(format, output, formatter.text(), formatter.size(), ntype);
 }
 
 static void _format_char(const ST::format_spec &format,

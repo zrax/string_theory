@@ -26,7 +26,7 @@
 #include <cstring>
 #include "st_assert.h"
 #include "st_stringstream.h"
-#include "st_format_priv.h"
+#include "st_format_simple.h"
 
 #if !defined(ST_WCHAR_BYTES) || ((ST_WCHAR_BYTES != 2) && (ST_WCHAR_BYTES != 4))
 #   error ST_WCHAR_SIZE must either be 2 (16-bit) or 4 (32-bit)
@@ -664,26 +664,18 @@ static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value
     typedef typename std::make_unsigned<int_T>::type uint_T;
     int_T abs = (value < 0) ? -value : value;
 
-    size_t format_size = 0;
-    int_T temp = abs;
-    while (temp) {
-        ++format_size;
-        temp /= radix;
-    }
-
-    if (format_size == 0)
-        format_size = 1;
-
-    if (value < 0)
-        ++format_size;
+    ST::uint_formatter<uint_T> formatter;
+    formatter.format(static_cast<uint_T>(abs), radix, upper_case);
 
     ST::char_buffer result;
-    result.allocate(format_size);
-    _format_numeric_impl<uint_T>(&result[format_size],
-                                 static_cast<uint_T>(abs), radix, upper_case);
-
-    if (value < 0)
+    if (value < 0) {
+        result.allocate(formatter.size() + 1);
+        std::char_traits<char>::copy(result.data() + 1, formatter.text(), formatter.size());
         result[0] = '-';
+    } else {
+        result.allocate(formatter.size());
+        std::char_traits<char>::copy(result.data(), formatter.text(), formatter.size());
+    }
 
     return ST::string(result, ST::assume_valid);
 }
@@ -691,19 +683,12 @@ static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value
 template <typename uint_T>
 static ST::string _mini_format_numeric_u(int radix, bool upper_case, uint_T value)
 {
-    size_t format_size = 0;
-    uint_T temp = value;
-    while (temp) {
-        ++format_size;
-        temp /= radix;
-    }
-
-    if (format_size == 0)
-        format_size = 1;
+    ST::uint_formatter<uint_T> formatter;
+    formatter.format(value, radix, upper_case);
 
     ST::char_buffer result;
-    result.allocate(format_size);
-    _format_numeric_impl<uint_T>(&result[format_size], value, radix, upper_case);
+    result.allocate(formatter.size());
+    std::char_traits<char>::copy(result.data(), formatter.text(), formatter.size());
 
     return ST::string(result, ST::assume_valid);
 }
