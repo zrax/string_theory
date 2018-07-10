@@ -18,13 +18,18 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
+#include <limits>
+#include <string>
+
 namespace ST
 {
     template <typename uint_T>
     class uint_formatter
     {
     public:
-        void format(uint_T value, int radix, bool upper_case = false)
+        uint_formatter() ST_NOEXCEPT : m_start(ST_NULLPTR) { }
+
+        void format(uint_T value, int radix, bool upper_case = false) ST_NOEXCEPT
         {
             m_buffer[std::numeric_limits<uint_T>::digits] = 0;
             m_start = &m_buffer[std::numeric_limits<uint_T>::digits];
@@ -47,11 +52,46 @@ namespace ST
             }
         }
 
-        char *text() const { return m_start; }
-        size_t size() const { return m_buffer + std::numeric_limits<uint_T>::digits - m_start; }
+        char *text() const ST_NOEXCEPT { return m_start; }
+
+        size_t size() const ST_NOEXCEPT
+        {
+            return m_buffer + std::numeric_limits<uint_T>::digits - m_start;
+        }
 
     private:
         char m_buffer[std::numeric_limits<uint_T>::digits + 1];
-        char *m_start = ST_NULLPTR;
+        char *m_start;
+    };
+
+    template <typename float_T>
+    class float_formatter
+    {
+    public:
+        float_formatter() ST_NOEXCEPT : m_size() { }
+
+        void format(float_T value, char format)
+        {
+            static const char valid_formats[] = "efgEFG";
+            if (!std::char_traits<char>::find(valid_formats, sizeof(valid_formats) - 1, format)) {
+                ST_ASSERT(false, "Unsupported floating-point format specifier");
+                format = 'g';
+            }
+
+            char format_spec[] = { '%', format, 0 };
+            int format_size = snprintf(ST_NULLPTR, 0, format_spec, double(value));
+            ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
+            m_size = static_cast<size_t>(format_size);
+            ST_ASSERT(m_size < sizeof(m_buffer), "Format buffer too small");
+
+            snprintf(m_buffer, m_size + 1, format_spec, value);
+        }
+
+        char *text() const ST_NOEXCEPT { return m_buffer; }
+        size_t size() const ST_NOEXCEPT { return m_size; }
+
+    private:
+        char m_buffer[64];
+        size_t m_size;
     };
 }

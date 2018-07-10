@@ -703,27 +703,26 @@ ST::string ST::string::from_uint(unsigned int value, int base, bool upper_case)
     return _mini_format_numeric_u<unsigned int>(base, upper_case, value);
 }
 
+template <typename float_T>
+static ST::string _mini_format_float(float_T value, char format)
+{
+    ST::float_formatter<float_T> formatter;
+    formatter.format(value, format);
+
+    ST::char_buffer result;
+    result.allocate(formatter.size());
+    std::char_traits<char>::copy(result.data(), formatter.text(), formatter.size());
+    return ST::string(result, ST::assume_valid);
+}
+
 ST::string ST::string::from_float(float value, char format)
 {
-    return from_double(double(value), format);
+    return _mini_format_float<float>(value, format);
 }
 
 ST::string ST::string::from_double(double value, char format)
 {
-    static const char valid_formats[] = "efgEFG";
-    if (!strchr(valid_formats, format)) {
-        ST_ASSERT(false, "Unsupported floating-point format specifier");
-        format = 'g';
-    }
-
-    char format_spec[] = { '%', format, 0 };
-    int format_size = snprintf(ST_NULLPTR, 0, format_spec, value);
-    ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
-
-    ST::char_buffer out_buffer;
-    out_buffer.allocate(format_size);
-    snprintf(out_buffer.data(), format_size + 1, format_spec, value);
-    return ST::string(out_buffer, ST::assume_valid);
+    return _mini_format_float<double>(value, format);
 }
 
 #ifdef ST_HAVE_INT64

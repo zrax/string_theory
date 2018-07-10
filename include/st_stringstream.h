@@ -78,11 +78,7 @@ namespace ST
         string_stream &operator<<(long long num);
         string_stream &operator<<(unsigned long long num);
 
-        string_stream &operator<<(float num)
-        {
-            return operator<<(static_cast<double>(num));
-        }
-
+        string_stream &operator<<(float num);
         string_stream &operator<<(double num);
 
         string_stream &operator<<(char ch)

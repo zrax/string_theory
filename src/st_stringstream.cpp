@@ -127,9 +127,16 @@ ST::string_stream &ST::string_stream::operator<<(unsigned long long num)
     return append(formatter.text(), formatter.size());
 }
 
+ST::string_stream &ST::string_stream::operator<<(float num)
+{
+    ST::float_formatter<float> formatter;
+    formatter.format(num, 'g');
+    return append(formatter.text(), formatter.size());
+}
+
 ST::string_stream &ST::string_stream::operator<<(double num)
 {
-    char buffer[64];
-    snprintf(buffer, sizeof(buffer), "%g", num);
-    return append(buffer);
+    ST::float_formatter<double> formatter;
+    formatter.format(num, 'g');
+    return append(formatter.text(), formatter.size());
 }
