@@ -662,10 +662,8 @@ template <typename int_T>
 static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value)
 {
     typedef typename std::make_unsigned<int_T>::type uint_T;
-    int_T abs = (value < 0) ? -value : value;
-
     ST::uint_formatter<uint_T> formatter;
-    formatter.format(static_cast<uint_T>(abs), radix, upper_case);
+    formatter.format(ST::safe_abs(value), radix, upper_case);
 
     ST::char_buffer result;
     if (value < 0) {

@@ -23,6 +23,24 @@
 
 namespace ST
 {
+    inline unsigned int safe_abs(int value)
+    {
+        return (value < 0) ? -static_cast<unsigned int>(value)
+                           : static_cast<unsigned int>(value);
+    }
+
+    inline unsigned long safe_abs(long value)
+    {
+        return (value < 0) ? -static_cast<unsigned long>(value)
+                           : static_cast<unsigned long>(value);
+    }
+
+    inline unsigned long long safe_abs(long long value)
+    {
+        return (value < 0) ? -static_cast<unsigned long long>(value)
+                           : static_cast<unsigned long long>(value);
+    }
+
     template <typename uint_T>
     class uint_formatter
     {
@@ -52,7 +70,7 @@ namespace ST
             }
         }
 
-        char *text() const ST_NOEXCEPT { return m_start; }
+        const char *text() const ST_NOEXCEPT { return m_start; }
 
         size_t size() const ST_NOEXCEPT
         {
@@ -87,7 +105,7 @@ namespace ST
             snprintf(m_buffer, m_size + 1, format_spec, value);
         }
 
-        char *text() const ST_NOEXCEPT { return m_buffer; }
+        const char *text() const ST_NOEXCEPT { return m_buffer; }
         size_t size() const ST_NOEXCEPT { return m_size; }
 
     private:

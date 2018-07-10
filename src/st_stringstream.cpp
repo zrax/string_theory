@@ -75,10 +75,8 @@ ST::string_stream &ST::string_stream::append_char(char ch, size_t count)
 
 ST::string_stream &ST::string_stream::operator<<(int num)
 {
-    const int abs = (num < 0) ? -num : num;
-
     ST::uint_formatter<unsigned int> formatter;
-    formatter.format(static_cast<unsigned int>(abs), 10, false);
+    formatter.format(safe_abs(num), 10, false);
     if (num < 0)
         append_char('-');
     return append(formatter.text(), formatter.size());
@@ -93,10 +91,8 @@ ST::string_stream &ST::string_stream::operator<<(unsigned int num)
 
 ST::string_stream &ST::string_stream::operator<<(long num)
 {
-    const long abs = (num < 0) ? -num : num;
-
     ST::uint_formatter<unsigned long> formatter;
-    formatter.format(static_cast<unsigned long>(abs), 10, false);
+    formatter.format(safe_abs(num), 10, false);
     if (num < 0)
         append_char('-');
     return append(formatter.text(), formatter.size());
@@ -111,10 +107,8 @@ ST::string_stream &ST::string_stream::operator<<(unsigned long num)
 
 ST::string_stream &ST::string_stream::operator<<(long long num)
 {
-    const long long abs = (num < 0) ? -num : num;
-
     ST::uint_formatter<unsigned long long> formatter;
-    formatter.format(static_cast<unsigned long long>(abs), 10, false);
+    formatter.format(safe_abs(num), 10, false);
     if (num < 0)
         append_char('-');
     return append(formatter.text(), formatter.size());
