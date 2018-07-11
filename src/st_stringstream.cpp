@@ -23,11 +23,6 @@
 
 #include <cstdio>
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#   define snprintf _snprintf
-#   pragma warning(disable: 4996)
-#endif
-
 #define EXPAND_SS_BUFFER(added_size)                                \
     if (m_size + added_size > m_alloc) {                            \
         size_t big_size = m_alloc;                                  \

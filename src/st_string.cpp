@@ -43,10 +43,6 @@
 #       define strtoll  _strtoi64
 #       define strtoull _strtoui64
 #   endif
-#   if _MSC_VER < 1900
-#       define snprintf _snprintf
-#       pragma warning(disable: 4996)
-#   endif
 #else
 #   define stricmp  strcasecmp
 #   define strnicmp strncasecmp
