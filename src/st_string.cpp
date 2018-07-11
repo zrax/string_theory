@@ -20,7 +20,7 @@
 
 #include "st_string.h"
 
-#include <cctype>
+#include <locale>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -36,16 +36,9 @@
 #   error Supported size_t sizes are 4 (32-bit) or 8 (64-bit) bytes
 #endif
 
-#ifdef _MSC_VER
-#   define stricmp  _stricmp
-#   define strnicmp _strnicmp
-#   if _MSC_VER < 1800
-#       define strtoll  _strtoi64
-#       define strtoull _strtoui64
-#   endif
-#else
-#   define stricmp  strcasecmp
-#   define strnicmp strncasecmp
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#   define strtoll  _strtoi64
+#   define strtoull _strtoui64
 #endif
 
 #define BADCHAR_SUBSTITUTE          0xFFFDul
@@ -871,30 +864,53 @@ bool ST::string::to_bool(conversion_result &result) const ST_NOEXCEPT
     return to_int(result) != 0;
 }
 
+static int _compare_ci(const char *left, const char *right)
+{
+    const std::locale &c_locale = std::locale::classic();
+    for ( ;; ) {
+        const char cl = std::tolower(*left++, c_locale);
+        const char cr = std::tolower(*right++, c_locale);
+        if (!cl || cl != cr)
+            return cl - cr;
+    }
+}
+
+static int _compare_ci(const char *left, const char *right, size_t max)
+{
+    const std::locale &c_locale = std::locale::classic();
+    while (max--) {
+        const char cl = std::tolower(*left++, c_locale);
+        const char cr = std::tolower(*right++, c_locale);
+        if (!cl || cl != cr)
+            return cl - cr;
+    }
+    return 0;
+}
+
 int ST::string::compare(const string &str, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     return (cs == case_sensitive) ? strcmp(c_str(), str.c_str())
-                                  : stricmp(c_str(), str.c_str());
+                                  : _compare_ci(c_str(), str.c_str());
 }
 
 int ST::string::compare(const char *str, case_sensitivity_t cs) const ST_NOEXCEPT
 {
     return (cs == case_sensitive) ? strcmp(c_str(), str ? str : "")
-                                  : stricmp(c_str(), str ? str : "");
+                                  : _compare_ci(c_str(), str ? str : "");
 }
 
 int ST::string::compare_n(const string &str, size_t count,
                           case_sensitivity_t cs) const ST_NOEXCEPT
 {
     return (cs == case_sensitive) ? strncmp(c_str(), str.c_str(), count)
-                                  : strnicmp(c_str(), str.c_str(), count);
+                                  : _compare_ci(c_str(), str.c_str(), count);
 }
 
 int ST::string::compare_n(const char *str, size_t count,
                           case_sensitivity_t cs) const ST_NOEXCEPT
 {
     return (cs == case_sensitive) ? strncmp(c_str(), str ? str : "", count)
-                                  : strnicmp(c_str(), str ? str : "", count);
+                                  : _compare_ci(c_str(), str ? str : "", count);
 }
 
 static const char *_stristr(const char *haystack, const char *needle)
@@ -904,7 +920,7 @@ static const char *_stristr(const char *haystack, const char *needle)
     const char *cp = haystack;
     const char *ep = cp + std::char_traits<char>::length(haystack);
     while (cp + sublen <= ep) {
-        if (strnicmp(cp, needle, sublen) == 0)
+        if (_compare_ci(cp, needle, sublen) == 0)
             return cp;
         ++cp;
     }
@@ -913,9 +929,14 @@ static const char *_stristr(const char *haystack, const char *needle)
 
 static const char *_strichr(const char *haystack, int ch)
 {
+    if (ch > 0xFF || ch < 0)
+        return ST_NULLPTR;
+
     const char *cp = haystack;
+    const std::locale &c_locale = std::locale::classic();
+    const int lch = std::tolower(static_cast<char>(ch), c_locale);
     while (*cp) {
-        if (tolower(ch) == tolower(*cp))
+        if (std::tolower(*cp, c_locale) == lch)
             return cp;
         ++cp;
     }
@@ -1073,8 +1094,9 @@ bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) cons
         return false;
 
     size_t start = size() - suffix.size();
-    return (cs == case_sensitive) ? strncmp(c_str() + start, suffix.c_str(), suffix.size()) == 0
-                                  : strnicmp(c_str() + start, suffix.c_str(), suffix.size()) == 0;
+    return (cs == case_sensitive)
+            ? strncmp(c_str() + start, suffix.c_str(), suffix.size()) == 0
+            : _compare_ci(c_str() + start, suffix.c_str(), suffix.size()) == 0;
 }
 
 bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const ST_NOEXCEPT
@@ -1084,8 +1106,9 @@ bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const ST_N
         return false;
 
     size_t start = size() - count;
-    return (cs == case_sensitive) ? strncmp(c_str() + start, suffix ? suffix : "", count) == 0
-                                  : strnicmp(c_str() + start, suffix ? suffix : "", count) == 0;
+    return (cs == case_sensitive)
+            ? strncmp(c_str() + start, suffix ? suffix : "", count) == 0
+            : _compare_ci(c_str() + start, suffix ? suffix : "", count) == 0;
 }
 
 ST::string ST::string::before_first(char sep, case_sensitivity_t cs) const
@@ -1225,7 +1248,8 @@ ST::string ST::string::replace(const string &from, const string &to,
 
 ST::string ST::string::to_upper() const
 {
-    // TODO: Make this unicode aware
+    const std::locale &c_locale = std::locale::classic();
+
     string result;
     result.m_buffer.allocate(size());
     char *dupe = result.m_buffer.data();
@@ -1233,14 +1257,15 @@ ST::string ST::string::to_upper() const
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
-        *dp++ = toupper(*sp++);
+        *dp++ = std::toupper(*sp++, c_locale);
 
     return result;
 }
 
 ST::string ST::string::to_lower() const
 {
-    // TODO: Make this unicode aware
+    const std::locale &c_locale = std::locale::classic();
+
     string result;
     result.m_buffer.allocate(size());
     char *dupe = result.m_buffer.data();
@@ -1248,7 +1273,7 @@ ST::string ST::string::to_lower() const
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
-        *dp++ = tolower(*sp++);
+        *dp++ = std::tolower(*sp++, c_locale);
 
     return result;
 }
@@ -1400,11 +1425,13 @@ size_t ST::hash_i::operator()(const string &str) const ST_NOEXCEPT
 #   define FNV_PRIME        0x00000100000001b3ULL
 #endif
 
+    const std::locale &c_locale = std::locale::classic();
+
     size_t hash = FNV_OFFSET_BASIS;
     const char *cp = str.c_str();
     const char *ep = cp + str.size();
     while (cp < ep) {
-        hash ^= static_cast<size_t>(tolower(*cp++));
+        hash ^= static_cast<size_t>(std::tolower(*cp++, c_locale));
         hash *= FNV_PRIME;
     }
     return hash;

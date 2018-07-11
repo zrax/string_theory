@@ -26,8 +26,8 @@
 #include "st_assert.h"
 
 /* DO NOT REMOVE THESE LINES.  Classes declared only in these headers won't
-* get properly dllexported unless the compiler sees their declarations in at
-* least one source file. */
+ * get properly dllexported unless the compiler sees their declarations in at
+ * least one source file. */
 #include "st_format.h"
 #include "st_stdio.h"
 #include "st_iostream.h"
