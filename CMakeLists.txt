@@ -32,10 +32,10 @@ set(ST_VERSION ${ST_MAJOR_VERSION}.${ST_MINOR_VERSION})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
+include(CheckCXXCompilerFlag)
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
     set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
 
-    include(CheckCXXCompilerFlag)
     check_cxx_compiler_flag("-std=c++17" HAVE_STD_CXX17)
     check_cxx_compiler_flag("-std=c++14" HAVE_STD_CXX14)
     check_cxx_compiler_flag("-std=c++11" HAVE_STD_CXX11)
@@ -61,6 +61,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
     if(ST_BUILD_TEST_COVERAGE)
         include(CodeCoverage)
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage")
+    endif()
+elseif(MSVC)
+    check_cxx_compiler_flag("/std:c++latest" HAVE_STD_CXXLATEST)
+    if(HAVE_STD_CXXLATEST)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
     endif()
 endif()
 
