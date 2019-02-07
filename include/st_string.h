@@ -28,10 +28,9 @@
 #if !defined(ST_NO_STL_STRINGS)
 #   if defined(ST_HAVE_CXX17_FILESYSTEM)
 #       include <filesystem>
-        namespace ST { namespace _filesystem = std::filesystem; }
-#   elif defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+#   endif
+#   if defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
 #       include <experimental/filesystem>
-        namespace ST { namespace _filesystem = std::experimental::filesystem; }
 #   endif
 #endif
 
@@ -224,34 +223,67 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_STD_STRING_VIEW
-        string(const ST::_std_string_view &view,
+#ifdef ST_HAVE_CXX17_STRING_VIEW
+        string(const std::string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf8(view.data(), view.size(), validation);
         }
 
-        string(const ST::_std_wstring_view &view,
+        string(const std::wstring_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_wchar(view.data(), view.size(), validation);
         }
 
-        string(const ST::_std_u16string_view &view,
+        string(const std::u16string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf16(view.data(), view.size(), validation);
         }
 
-        string(const ST::_std_u32string_view &view,
+        string(const std::u32string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf32(view.data(), view.size(), validation);
         }
 #endif
 
-#ifdef ST_HAVE_FILESYSTEM
-        string(const ST::_filesystem::path &path)
+#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
+        string(const std::experimental::string_view &view,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_utf8(view.data(), view.size(), validation);
+        }
+
+        string(const std::experimental::wstring_view &view,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_wchar(view.data(), view.size(), validation);
+        }
+
+        string(const std::experimental::u16string_view &view,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_utf16(view.data(), view.size(), validation);
+        }
+
+        string(const std::experimental::u32string_view &view,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_utf32(view.data(), view.size(), validation);
+        }
+#endif
+
+#ifdef ST_HAVE_CXX17_FILESYSTEM
+        string(const std::filesystem::path &path)
+        {
+            set(path);
+        }
+#endif
+
+#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
+        string(const std::experimental::filesystem::path &path)
         {
             set(path);
         }
@@ -360,34 +392,68 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_STD_STRING_VIEW
-        void set(const ST::_std_string_view &view,
+#ifdef ST_HAVE_CXX17_STRING_VIEW
+        void set(const std::string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf8(view.data(), view.size(), validation);
         }
 
-        void set(const ST::_std_wstring_view &view,
+        void set(const std::wstring_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_wchar(view.data(), view.size(), validation);
         }
 
-        void set(const ST::_std_u16string_view &view,
+        void set(const std::u16string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf16(view.data(), view.size(), validation);
         }
 
-        void set(const ST::_std_u32string_view &view,
+        void set(const std::u32string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             _convert_from_utf32(view.data(), view.size(), validation);
         }
 #endif
 
-#ifdef ST_HAVE_FILESYSTEM
-        void set(const ST::_filesystem::path &path)
+#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
+        void set(const std::experimental::string_view &view,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_utf8(view.data(), view.size(), validation);
+        }
+
+        void set(const std::experimental::wstring_view &view,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_wchar(view.data(), view.size(), validation);
+        }
+
+        void set(const std::experimental::u16string_view &view,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_utf16(view.data(), view.size(), validation);
+        }
+
+        void set(const std::experimental::u32string_view &view,
+                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            _convert_from_utf32(view.data(), view.size(), validation);
+        }
+#endif
+
+#ifdef ST_HAVE_CXX17_FILESYSTEM
+        void set(const std::filesystem::path &path)
+        {
+            std::string path_utf8 = path.u8string();
+            _convert_from_utf8(path_utf8.c_str(), path_utf8.size(), ST::assume_valid);
+        }
+#endif
+
+#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
+        void set(const std::experimental::filesystem::path &path)
         {
             std::string path_utf8 = path.u8string();
             _convert_from_utf8(path_utf8.c_str(), path_utf8.size(), ST::assume_valid);
@@ -501,34 +567,68 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_STD_STRING_VIEW
-        string &operator=(const ST::_std_string_view &view)
+#ifdef ST_HAVE_CXX17_STRING_VIEW
+        string &operator=(const std::string_view &view)
         {
             set(view);
             return *this;
         }
 
-        string &operator=(const ST::_std_wstring_view &view)
+        string &operator=(const std::wstring_view &view)
         {
             set(view);
             return *this;
         }
 
-        string &operator=(const ST::_std_u16string_view &view)
+        string &operator=(const std::u16string_view &view)
         {
             set(view);
             return *this;
         }
 
-        string &operator=(const ST::_std_u32string_view &view)
+        string &operator=(const std::u32string_view &view)
         {
             set(view);
             return *this;
         }
 #endif
 
-#ifdef ST_HAVE_FILESYSTEM
-        string &operator=(const ST::_filesystem::path &path)
+#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
+        string &operator=(const std::experimental::string_view &view)
+        {
+            set(view);
+            return *this;
+        }
+
+        string &operator=(const std::experimental::wstring_view &view)
+        {
+            set(view);
+            return *this;
+        }
+
+        string &operator=(const std::experimental::u16string_view &view)
+        {
+            set(view);
+            return *this;
+        }
+
+        string &operator=(const std::experimental::u32string_view &view)
+        {
+            set(view);
+            return *this;
+        }
+#endif
+
+#ifdef ST_HAVE_CXX17_FILESYSTEM
+        string &operator=(const std::filesystem::path &path)
+        {
+            set(path);
+            return *this;
+        }
+#endif
+
+#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
+        string &operator=(const std::experimental::filesystem::path &path)
         {
             set(path);
             return *this;
@@ -700,8 +800,8 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_STD_STRING_VIEW
-        static inline string from_std_string(const ST::_std_string_view &view,
+#ifdef ST_HAVE_CXX17_STRING_VIEW
+        static inline string from_std_string(const std::string_view &view,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
@@ -709,7 +809,7 @@ namespace ST
             return str;
         }
 
-        static inline string from_std_string(const ST::_std_wstring_view &view,
+        static inline string from_std_string(const std::wstring_view &view,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
@@ -717,13 +817,13 @@ namespace ST
             return str;
         }
 
-        static inline string from_std_wstring(const ST::_std_wstring_view &view,
+        static inline string from_std_wstring(const std::wstring_view &view,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_std_string(view, validation);
         }
 
-        static inline string from_std_string(const ST::_std_u16string_view &view,
+        static inline string from_std_string(const std::u16string_view &view,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
@@ -731,7 +831,7 @@ namespace ST
             return str;
         }
 
-        static inline string from_std_string(const ST::_std_u32string_view &view,
+        static inline string from_std_string(const std::u32string_view &view,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
@@ -740,8 +840,57 @@ namespace ST
         }
 #endif
 
-#if defined(ST_HAVE_FILESYSTEM)
-        static inline string from_path(const ST::_filesystem::path &path)
+#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
+        static inline string from_std_string(const std::experimental::string_view &view,
+                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_utf8(view.data(), view.size(), validation);
+            return str;
+        }
+
+        static inline string from_std_string(const std::experimental::wstring_view &view,
+                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_wchar(view.data(), view.size(), validation);
+            return str;
+        }
+
+        static inline string from_std_wstring(const std::experimental::wstring_view &view,
+                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            return from_std_string(view, validation);
+        }
+
+        static inline string from_std_string(const std::experimental::u16string_view &view,
+                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_utf16(view.data(), view.size(), validation);
+            return str;
+        }
+
+        static inline string from_std_string(const std::experimental::u32string_view &view,
+                                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+        {
+            string str;
+            str._convert_from_utf32(view.data(), view.size(), validation);
+            return str;
+        }
+#endif
+
+#if defined(ST_HAVE_CXX17_FILESYSTEM)
+        static inline string from_path(const std::filesystem::path &path)
+        {
+            string str;
+            str.set(path);
+            return str;
+        }
+#endif
+
+#if defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+        static inline string from_path(const std::experimental::filesystem::path &path)
         {
             string str;
             str.set(path);
@@ -849,22 +998,41 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_FILESYSTEM
-        ST::_filesystem::path to_path() const
+#if defined(ST_HAVE_CXX17_FILESYSTEM)
+        std::filesystem::path to_path() const
         {
-            return ST::_filesystem::u8path(c_str(), c_str() + size());
+            return std::filesystem::u8path(c_str(), c_str() + size());
+        }
+#elif defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+        std::experimental::filesystem::path to_path() const
+        {
+            return std::experimental::filesystem::u8path(c_str(), c_str() + size());
         }
 #endif
 
-#ifdef ST_HAVE_STD_STRING_VIEW
-        ST::_std_string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const
+#if defined(ST_HAVE_CXX17_STRING_VIEW)
+        std::string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const
         {
             return m_buffer.view(start, length);
         }
-
-        operator ST::_std_string_view() const
+#elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
+        std::experimental::string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const
         {
-            return (ST::_std_string_view)m_buffer;
+            return m_buffer.view(start, length);
+        }
+#endif
+
+#ifdef ST_HAVE_CXX17_STRING_VIEW
+        operator std::string_view() const
+        {
+            return (std::string_view)m_buffer;
+        }
+#endif
+
+#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
+        operator std::experimental::string_view() const
+        {
+            return (std::experimental::string_view)m_buffer;
         }
 #endif
 

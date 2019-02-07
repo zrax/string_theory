@@ -34,26 +34,9 @@
 #if !defined(ST_NO_STL_STRINGS)
 #   if defined(ST_HAVE_CXX17_STRING_VIEW)
 #       include <string_view>
-        namespace ST
-        {
-            template <typename char_T>
-            using _std_basic_string_view = std::basic_string_view<char_T>;
-            using _std_string_view = std::string_view;
-            using _std_wstring_view = std::wstring_view;
-            using _std_u16string_view = std::u16string_view;
-            using _std_u32string_view = std::u32string_view;
-        }
-#   elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
+#   endif
+#   if defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
 #       include <experimental/string_view>
-        namespace ST
-        {
-            template <typename char_T>
-            using _std_basic_string_view = std::experimental::basic_string_view<char_T>;
-            using _std_string_view = std::experimental::string_view;
-            using _std_wstring_view = std::experimental::wstring_view;
-            using _std_u16string_view = std::experimental::u16string_view;
-            using _std_u32string_view = std::experimental::u32string_view;
-        }
 #   endif
 #endif
 
@@ -350,18 +333,35 @@ namespace ST
             return std::basic_string<char_T>(data(), size());
         }
 
-#ifdef ST_HAVE_STD_STRING_VIEW
-        ST::_std_basic_string_view<char_T> view(size_t start = 0,
-                                                size_t length = ST_AUTO_SIZE) const
+#if defined(ST_HAVE_CXX17_STRING_VIEW)
+        std::basic_string_view<char_T> view(size_t start = 0,
+                                            size_t length = ST_AUTO_SIZE) const
         {
             if (length == ST_AUTO_SIZE)
                 length = size() - start;
-            return ST::_std_basic_string_view<char_T>(data() + start, length);
+            return std::basic_string_view<char_T>(data() + start, length);
         }
-
-        operator ST::_std_basic_string_view<char_T>() const
+#elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
+        std::experimental::basic_string_view<char_T> view(size_t start = 0,
+                                                          size_t length = ST_AUTO_SIZE) const
         {
-            return ST::_std_basic_string_view<char_T>(data(), size());
+            if (length == ST_AUTO_SIZE)
+                length = size() - start;
+            return std::experimental::basic_string_view<char_T>(data() + start, length);
+        }
+#endif
+
+#ifdef ST_HAVE_CXX17_STRING_VIEW
+        operator std::basic_string_view<char_T>() const
+        {
+            return std::basic_string_view<char_T>(data(), size());
+        }
+#endif
+
+#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
+        operator std::experimental::basic_string_view<char_T>() const
+        {
+            return std::experimental::basic_string_view<char_T>(data(), size());
         }
 #endif
 

@@ -191,21 +191,42 @@ ST_FORMAT_TYPE(const std::complex<value_T> &)
     output.append_char('i');
 }
 
-#ifdef ST_HAVE_FILESYSTEM
-inline ST_FORMAT_TYPE(const ST::_filesystem::path &)
+#ifdef ST_HAVE_CXX17_FILESYSTEM
+inline ST_FORMAT_TYPE(const std::filesystem::path &)
 {
     std::string u8path = value.u8string();
     ST::format_string(format, output, u8path.c_str(), u8path.size());
 }
 #endif
 
-#ifdef ST_HAVE_STD_STRING_VIEW
-inline ST_FORMAT_TYPE(const ST::_std_string_view &)
+#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
+inline ST_FORMAT_TYPE(const std::experimental::filesystem::path &)
+{
+    std::string u8path = value.u8string();
+    ST::format_string(format, output, u8path.c_str(), u8path.size());
+}
+#endif
+
+#ifdef ST_HAVE_CXX17_STRING_VIEW
+inline ST_FORMAT_TYPE(const std::string_view &)
 {
     ST::format_string(format, output, value.data(), value.size());
 }
 
-inline ST_FORMAT_TYPE(const ST::_std_wstring_view &)
+inline ST_FORMAT_TYPE(const std::wstring_view &)
+{
+    ST::char_buffer utf8 = ST::string::from_wchar(value.data(), value.size()).to_utf8();
+    ST::format_string(format, output, utf8.data(), utf8.size());
+}
+#endif
+
+#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
+inline ST_FORMAT_TYPE(const std::experimental::string_view &)
+{
+    ST::format_string(format, output, value.data(), value.size());
+}
+
+inline ST_FORMAT_TYPE(const std::experimental::wstring_view &)
 {
     ST::char_buffer utf8 = ST::string::from_wchar(value.data(), value.size()).to_utf8();
     ST::format_string(format, output, utf8.data(), utf8.size());

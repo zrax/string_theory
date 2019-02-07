@@ -131,14 +131,6 @@ namespace _ST_PRIVATE
 #   define ST_DEPRECATED_IN_2_0(message) ST_DEPRECATED(message)
 #endif
 
-#if defined(ST_HAVE_CXX17_STRING_VIEW) || defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
-#   define ST_HAVE_STD_STRING_VIEW
-#endif
-
-#if defined(ST_HAVE_CXX17_FILESYSTEM) || defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
-#   define ST_HAVE_FILESYSTEM
-#endif
-
 #define ST_WCHAR_BYTES          (@ST_WCHAR_BYTES@)
 #define ST_SIZET_BYTES          (@ST_SIZET_BYTES@)
 #define ST_SHORT_STRING_LEN     (16)

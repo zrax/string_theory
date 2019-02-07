@@ -20,14 +20,14 @@
 
 #ifdef TRY_EXPERIMENTAL_STRING_VIEW
 #   include <experimental/string_view>
-    namespace ST { using _std_string_view = std::experimental::string_view; }
+#   define STD_STRING_VIEW std::experimental::string_view
 #else
 #   include <string_view>
-    namespace ST { using _std_string_view = std::string_view; }
+#   define STD_STRING_VIEW std::string_view
 #endif
 
 int main(int argc, char *argv[])
 {
-    ST::_std_string_view p(argv[0]);
+    STD_STRING_VIEW p(argv[0]);
     return 0;
 }
