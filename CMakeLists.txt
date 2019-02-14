@@ -108,23 +108,20 @@ endif()
 
 try_compile(ST_HAVE_CXX17_STRING_VIEW "${PROJECT_BINARY_DIR}"
     "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp")
-if(NOT ST_HAVE_CXX17_STRING_VIEW)
-    try_compile(ST_HAVE_EXPERIMENTAL_STRING_VIEW "${PROJECT_BINARY_DIR}"
-        "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp"
-        COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_STRING_VIEW")
-endif()
+try_compile(ST_HAVE_EXPERIMENTAL_STRING_VIEW "${PROJECT_BINARY_DIR}"
+    "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp"
+    COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_STRING_VIEW")
 
-try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp")
-if(NOT ST_HAVE_CXX17_FILESYSTEM)
-    if(CMAKE_COMPILER_IS_GNUCXX)
-        set(ST_CXXFS_LIBS stdc++fs)
-    endif()
-    try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
-                "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
-                COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
-                LINK_LIBRARIES ${ST_CXXFS_LIBS})
+if(CMAKE_COMPILER_IS_GNUCXX)
+    set(ST_CXXFS_LIBS stdc++fs)
 endif()
+try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
+            "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
+            LINK_LIBRARIES ${ST_CXXFS_LIBS})
+try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
+            "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
+            COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
+            LINK_LIBRARIES ${ST_CXXFS_LIBS})
 
 include(CheckTypeSize)
 if(NOT ST_WCHAR_BYTES)
