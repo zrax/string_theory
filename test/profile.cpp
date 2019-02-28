@@ -276,6 +276,50 @@ int main(int, char **)
 
     ST::printf("\n");
 
+    const char _cs2[] = "This is a long string.  Testing the excessively long long string.";
+    _measure("strcmp", [&_cs2]() {
+        int cmp = strcmp(_cs2, "This is a long string.  Testing the excessively long long string.");
+        NO_OPTIMIZE(cmp);
+    });
+
+    _measure("std::string::compare", [&_ss2]() {
+        int cmp = _ss2.compare("This is a long string.  Testing the excessively long long string.");
+        NO_OPTIMIZE(cmp);
+    });
+
+    _measure("ST::string::compare", [&_st2]() {
+        int cmp = _st2.compare("This is a long string.  Testing the excessively long long string.");
+        NO_OPTIMIZE(cmp);
+    });
+
+    _measure("ST::string::compare CI", [&_st2]() {
+        int cmp = _st2.compare_i("this is a long string.  testing the excessively long long string.");
+        NO_OPTIMIZE(cmp);
+    });
+
+#ifdef ST_PROFILE_HAVE_QSTRING
+    _measure("QString::compare", [&_qs2]() {
+        int cmp = _qs2.compare("This is a long string.  Testing the excessively long long string.");
+        NO_OPTIMIZE(cmp);
+    });
+
+    _measure("QString::compare CI", [&_qs2]() {
+        int cmp = _qs2.compare("this is a long string.  testing the excessively long long string.",
+                               Qt::CaseInsensitive);
+        NO_OPTIMIZE(cmp);
+    });
+#endif
+
+#ifdef ST_PROFILE_HAVE_GLIBMM
+    _measure("Glib::ustring::compare", [&_gs2]() {
+        // Glib::ustring::compare is actually case insensitive!
+        int cmp = _gs2.compare("this is a long string.  testing the excessively long long string.");
+        NO_OPTIMIZE(cmp);
+    });
+#endif
+
+    ST::printf("\n");
+
     const char *_is1 = "5143200";
     _measure("strtol", [&_is1]() {
         long result = strtol(_is1, nullptr, 10);

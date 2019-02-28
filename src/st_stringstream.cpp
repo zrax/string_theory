@@ -60,10 +60,7 @@ ST::string_stream &ST::string_stream::append_char(char ch, size_t count)
 
     EXPAND_SS_BUFFER(count)
 
-    if (count == 1)
-        *(m_chars + m_size) = ch;
-    else
-        std::char_traits<char>::assign(m_chars + m_size, count, ch);
+    std::char_traits<char>::assign(m_chars + m_size, count, ch);
     m_size += count;
     return *this;
 }

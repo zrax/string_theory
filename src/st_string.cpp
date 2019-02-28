@@ -864,53 +864,76 @@ bool ST::string::to_bool(conversion_result &result) const ST_NOEXCEPT
     return to_int(result) != 0;
 }
 
-static int _compare_ci(const char *left, const char *right)
+static int _compare_cs(const char *left, size_t lsize,
+                       const char *right, size_t rsize)
 {
-    const std::locale &c_locale = std::locale::classic();
-    for ( ;; ) {
-        const char cl = std::tolower(*left++, c_locale);
-        const char cr = std::tolower(*right++, c_locale);
-        if (!cl || cl != cr)
-            return cl - cr;
-    }
+    const size_t cmplen = std::min(lsize, rsize);
+    const int cmp = std::char_traits<char>::compare(left, right, cmplen);
+    return cmp ? cmp : lsize - rsize;
 }
 
-static int _compare_ci(const char *left, const char *right, size_t max)
+static int _compare_cs(const char *left, size_t lsize,
+                       const char *right, size_t rsize, size_t maxlen)
+{
+    lsize = std::min(lsize, maxlen);
+    rsize = std::min(rsize, maxlen);
+    return _compare_cs(left, lsize, right, rsize);
+}
+
+static int _compare_ci(const char *left, const char *right, size_t fsize)
 {
     const std::locale &c_locale = std::locale::classic();
-    while (max--) {
+    while (fsize--) {
         const char cl = std::tolower(*left++, c_locale);
         const char cr = std::tolower(*right++, c_locale);
-        if (!cl || cl != cr)
+        if (cl != cr)
             return cl - cr;
     }
     return 0;
 }
 
+static int _compare_ci(const char *left, size_t lsize,
+                       const char *right, size_t rsize)
+{
+    const size_t cmplen = std::min(lsize, rsize);
+    const int cmp = _compare_ci(left, right, cmplen);
+    return cmp ? cmp : lsize - rsize;
+}
+
+static int _compare_ci(const char *left, size_t lsize,
+                       const char *right, size_t rsize, size_t maxlen)
+{
+    lsize = std::min(lsize, maxlen);
+    rsize = std::min(rsize, maxlen);
+    return _compare_ci(left, lsize, right, rsize);
+}
+
 int ST::string::compare(const string &str, case_sensitivity_t cs) const ST_NOEXCEPT
 {
-    return (cs == case_sensitive) ? strcmp(c_str(), str.c_str())
-                                  : _compare_ci(c_str(), str.c_str());
+    return (cs == case_sensitive) ? _compare_cs(c_str(), size(), str.c_str(), str.size())
+                                  : _compare_ci(c_str(), size(), str.c_str(), str.size());
 }
 
 int ST::string::compare(const char *str, case_sensitivity_t cs) const ST_NOEXCEPT
 {
-    return (cs == case_sensitive) ? strcmp(c_str(), str ? str : "")
-                                  : _compare_ci(c_str(), str ? str : "");
+    const size_t rsize = str ? std::char_traits<char>::length(str) : 0;
+    return (cs == case_sensitive) ? _compare_cs(c_str(), size(), str ? str : "", rsize)
+                                  : _compare_ci(c_str(), size(), str ? str : "", rsize);
 }
 
 int ST::string::compare_n(const string &str, size_t count,
                           case_sensitivity_t cs) const ST_NOEXCEPT
 {
-    return (cs == case_sensitive) ? strncmp(c_str(), str.c_str(), count)
-                                  : _compare_ci(c_str(), str.c_str(), count);
+    return (cs == case_sensitive) ? _compare_cs(c_str(), size(), str.c_str(), str.size(), count)
+                                  : _compare_ci(c_str(), size(), str.c_str(), str.size(), count);
 }
 
 int ST::string::compare_n(const char *str, size_t count,
                           case_sensitivity_t cs) const ST_NOEXCEPT
 {
-    return (cs == case_sensitive) ? strncmp(c_str(), str ? str : "", count)
-                                  : _compare_ci(c_str(), str ? str : "", count);
+    const size_t rsize = str ? std::char_traits<char>::length(str) : 0;
+    return (cs == case_sensitive) ? _compare_cs(c_str(), size(), str ? str : "", rsize, count)
+                                  : _compare_ci(c_str(), size(), str ? str : "", rsize, count);
 }
 
 static const char *_stristr(const char *haystack, const char *needle)
@@ -1095,7 +1118,7 @@ bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) cons
 
     size_t start = size() - suffix.size();
     return (cs == case_sensitive)
-            ? strncmp(c_str() + start, suffix.c_str(), suffix.size()) == 0
+            ? std::char_traits<char>::compare(c_str() + start, suffix.c_str(), suffix.size()) == 0
             : _compare_ci(c_str() + start, suffix.c_str(), suffix.size()) == 0;
 }
 
@@ -1107,7 +1130,7 @@ bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const ST_N
 
     size_t start = size() - count;
     return (cs == case_sensitive)
-            ? strncmp(c_str() + start, suffix ? suffix : "", count) == 0
+            ? std::char_traits<char>::compare(c_str() + start, suffix ? suffix : "", count) == 0
             : _compare_ci(c_str() + start, suffix ? suffix : "", count) == 0;
 }
 
