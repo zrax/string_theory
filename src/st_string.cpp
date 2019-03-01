@@ -20,7 +20,6 @@
 
 #include "st_string.h"
 
-#include <locale>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -880,12 +879,27 @@ static int _compare_cs(const char *left, size_t lsize,
     return _compare_cs(left, lsize, right, rsize);
 }
 
+static char _cl_fast_lower(char ch)
+{
+    // In the C locale, the only characters that get converted are ['A'..'Z']
+    if (ch >= 'A' && ch <= 'Z')
+        return ch + 32;
+    return ch;
+}
+
+static char _cl_fast_upper(char ch)
+{
+    // In the C locale, the only characters that get converted are ['a'..'z']
+    if (ch >= 'a' && ch <= 'z')
+        return ch - 32;
+    return ch;
+}
+
 static int _compare_ci(const char *left, const char *right, size_t fsize)
 {
-    const std::locale &c_locale = std::locale::classic();
     while (fsize--) {
-        const char cl = std::tolower(*left++, c_locale);
-        const char cr = std::tolower(*right++, c_locale);
+        const char cl = _cl_fast_lower(*left++);
+        const char cr = _cl_fast_lower(*right++);
         if (cl != cr)
             return cl - cr;
     }
@@ -956,10 +970,9 @@ static const char *_strichr(const char *haystack, int ch)
         return ST_NULLPTR;
 
     const char *cp = haystack;
-    const std::locale &c_locale = std::locale::classic();
-    const int lch = std::tolower(static_cast<char>(ch), c_locale);
+    const int lch = _cl_fast_lower(static_cast<char>(ch));
     while (*cp) {
-        if (std::tolower(*cp, c_locale) == lch)
+        if (_cl_fast_lower(*cp) == lch)
             return cp;
         ++cp;
     }
@@ -1271,8 +1284,6 @@ ST::string ST::string::replace(const string &from, const string &to,
 
 ST::string ST::string::to_upper() const
 {
-    const std::locale &c_locale = std::locale::classic();
-
     string result;
     result.m_buffer.allocate(size());
     char *dupe = result.m_buffer.data();
@@ -1280,15 +1291,13 @@ ST::string ST::string::to_upper() const
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
-        *dp++ = std::toupper(*sp++, c_locale);
+        *dp++ = _cl_fast_upper(*sp++);
 
     return result;
 }
 
 ST::string ST::string::to_lower() const
 {
-    const std::locale &c_locale = std::locale::classic();
-
     string result;
     result.m_buffer.allocate(size());
     char *dupe = result.m_buffer.data();
@@ -1296,7 +1305,7 @@ ST::string ST::string::to_lower() const
     const char *ep = sp + size();
     char *dp = dupe;
     while (sp < ep)
-        *dp++ = std::tolower(*sp++, c_locale);
+        *dp++ = _cl_fast_lower(*sp++);
 
     return result;
 }
@@ -1448,13 +1457,11 @@ size_t ST::hash_i::operator()(const string &str) const ST_NOEXCEPT
 #   define FNV_PRIME        0x00000100000001b3ULL
 #endif
 
-    const std::locale &c_locale = std::locale::classic();
-
     size_t hash = FNV_OFFSET_BASIS;
     const char *cp = str.c_str();
     const char *ep = cp + str.size();
     while (cp < ep) {
-        hash ^= static_cast<size_t>(std::tolower(*cp++, c_locale));
+        hash ^= static_cast<size_t>(_cl_fast_lower(*cp++));
         hash *= FNV_PRIME;
     }
     return hash;
