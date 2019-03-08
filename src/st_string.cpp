@@ -20,6 +20,7 @@
 
 #include "st_string.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
