@@ -118,6 +118,16 @@ namespace ST
         string(const from_literal_t &, const char *data, size_t size)
             : m_buffer(data, size) { }
 
+        struct from_validated_t {};
+        string(const from_validated_t &, const char *data, size_t size)
+            : m_buffer(data, size) { }
+        string(const from_validated_t &, const char_buffer &buffer)
+            : m_buffer(buffer) { }
+        string(const from_validated_t &, char_buffer &&buffer)
+            : m_buffer(std::move(buffer)) { }
+
+        friend ST_EXPORT ST::string operator+(const ST::string &left, const ST::string &right);
+
     public:
         string() ST_NOEXCEPT { }
         string(const null_t &) ST_NOEXCEPT { }
@@ -448,7 +458,7 @@ namespace ST
         void set(const std::filesystem::path &path)
         {
             std::string path_utf8 = path.u8string();
-            _convert_from_utf8(path_utf8.c_str(), path_utf8.size(), ST::assume_valid);
+            set_validated(path_utf8.c_str(), path_utf8.size());
         }
 #endif
 
@@ -456,11 +466,26 @@ namespace ST
         void set(const std::experimental::filesystem::path &path)
         {
             std::string path_utf8 = path.u8string();
-            _convert_from_utf8(path_utf8.c_str(), path_utf8.size(), ST::assume_valid);
+            set_validated(path_utf8.c_str(), path_utf8.size());
         }
 #endif
 
 #endif // !defined(ST_NO_STL_STRINGS)
+
+        inline void set_validated(const char *text, size_t size)
+        {
+            m_buffer = ST::char_buffer(text, size);
+        }
+
+        inline void set_validated(const char_buffer &buffer)
+        {
+            m_buffer = buffer;
+        }
+
+        inline void set_validated(char_buffer &&buffer)
+        {
+            m_buffer = std::move(buffer);
+        }
 
         string &operator=(const null_t &) ST_NOEXCEPT
         {
@@ -659,6 +684,24 @@ namespace ST
         {
             from_literal_t lit_marker;
             return string(lit_marker, literal, size);
+        }
+
+        static inline string from_validated(const char *text, size_t size)
+        {
+            from_validated_t valid_tag;
+            return string(valid_tag, text, size);
+        }
+
+        static inline string from_validated(const char_buffer &buffer)
+        {
+            from_validated_t valid_tag;
+            return string(valid_tag, buffer);
+        }
+
+        static inline string from_validated(char_buffer &&buffer)
+        {
+            from_validated_t valid_tag;
+            return string(valid_tag, std::move(buffer));
         }
 
         static inline string from_utf8(const char *utf8,

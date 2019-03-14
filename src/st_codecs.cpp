@@ -73,7 +73,11 @@ ST::string ST::hex_encode(const void *data, size_t size)
         --size;
     }
 
-    return ST::string(buffer, ST::assume_valid);
+#ifdef ST_HAVE_RVALUE_MOVE
+    return ST::string::from_validated(std::move(buffer));
+#else
+    return ST::string::from_validated(buffer);
+#endif
 }
 
 ST::char_buffer ST::hex_decode(const ST::string &hex)
@@ -174,7 +178,11 @@ ST::string ST::base64_encode(const void *data, size_t size)
         break;
     }
 
-    return ST::string(buffer, ST::assume_valid);
+#ifdef ST_HAVE_RVALUE_MOVE
+    return ST::string::from_validated(std::move(buffer));
+#else
+    return ST::string::from_validated(buffer);
+#endif
 }
 
 static ST_ssize_t _base64_decode_size(size_t size, const char *data)

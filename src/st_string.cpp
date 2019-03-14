@@ -664,7 +664,11 @@ static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value
         std::char_traits<char>::copy(result.data(), formatter.text(), formatter.size());
     }
 
-    return ST::string(result, ST::assume_valid);
+#ifdef ST_HAVE_RVALUE_MOVE
+    return ST::string::from_validated(std::move(result));
+#else
+    return ST::string::from_validated(result);
+#endif
 }
 
 template <typename uint_T>
@@ -677,7 +681,11 @@ static ST::string _mini_format_numeric_u(int radix, bool upper_case, uint_T valu
     result.allocate(formatter.size());
     std::char_traits<char>::copy(result.data(), formatter.text(), formatter.size());
 
-    return ST::string(result, ST::assume_valid);
+#ifdef ST_HAVE_RVALUE_MOVE
+    return ST::string::from_validated(std::move(result));
+#else
+    return ST::string::from_validated(result);
+#endif
 }
 
 ST::string ST::string::from_int(int value, int base, bool upper_case)
@@ -699,7 +707,12 @@ static ST::string _mini_format_float(float_T value, char format)
     ST::char_buffer result;
     result.allocate(formatter.size());
     std::char_traits<char>::copy(result.data(), formatter.text(), formatter.size());
-    return ST::string(result, ST::assume_valid);
+
+#ifdef ST_HAVE_RVALUE_MOVE
+    return ST::string::from_validated(std::move(result));
+#else
+    return ST::string::from_validated(result);
+#endif
 }
 
 ST::string ST::string::from_float(float value, char format)
@@ -1327,12 +1340,12 @@ std::vector<ST::string> ST::string::split(char split_char, size_t max_splits,
         if (!sp)
             break;
 
-        result.push_back(string(next, sp - next, assume_valid));
+        result.push_back(string::from_validated(next, sp - next));
         next = sp + 1;
         --max_splits;
     }
 
-    result.push_back(string(next, end - next, assume_valid));
+    result.push_back(string::from_validated(next, end - next));
     return result;
 }
 
@@ -1387,12 +1400,12 @@ std::vector<ST::string> ST::string::split(const string &splitter, size_t max_spl
         if (!sp)
             break;
 
-        result.push_back(string(next, sp - next, assume_valid));
+        result.push_back(string::from_validated(next, sp - next));
         next = sp + splitter.size();
         --max_splits;
     }
 
-    result.push_back(string(next, end - next, assume_valid));
+    result.push_back(string::from_validated(next, end - next));
     return result;
 }
 
@@ -1409,7 +1422,7 @@ std::vector<ST::string> ST::string::tokenize(const char *delims) const
 
         // Found a delimiter
         if (cur != next)
-            result.push_back(string(next, cur - next, assume_valid));
+            result.push_back(string::from_validated(next, cur - next));
 
         next = cur;
         while (next != end && strchr(delims, *next))
@@ -1475,7 +1488,11 @@ ST::string ST::operator+(const ST::string &left, const ST::string &right)
     std::char_traits<char>::copy(&cat[0], left.c_str(), left.size());
     std::char_traits<char>::copy(&cat[left.size()], right.c_str(), right.size());
 
-    return ST::string(cat, ST::assume_valid);
+#ifdef ST_HAVE_RVALUE_MOVE
+    return ST::string::from_validated(std::move(cat));
+#else
+    return ST::string::from_validated(cat);
+#endif
 }
 
 static ST::string _append(const ST::string &left, char32_t right)
@@ -1520,7 +1537,11 @@ static ST::string _append(const ST::string &left, char32_t right)
         catp += BADCHAR_SUBSTITUTE_UTF8_LEN;
     }
 
-    return ST::string(cat, ST::assume_valid);
+#ifdef ST_HAVE_RVALUE_MOVE
+    return ST::string::from_validated(std::move(cat));
+#else
+    return ST::string::from_validated(cat);
+#endif
 }
 
 ST::string ST::operator+(const ST::string &left, char right)
@@ -1593,7 +1614,12 @@ static ST::string _prepend(char32_t left, const ST::string &right)
     }
 
     std::char_traits<char>::copy(catp, right.c_str(), right.size());
-    return ST::string(cat, ST::assume_valid);
+
+#ifdef ST_HAVE_RVALUE_MOVE
+    return ST::string::from_validated(std::move(cat));
+#else
+    return ST::string::from_validated(cat);
+#endif
 }
 
 ST::string ST::operator+(char left, const ST::string &right)
