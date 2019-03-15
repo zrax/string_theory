@@ -126,8 +126,6 @@ namespace ST
         string(const from_validated_t &, char_buffer &&buffer)
             : m_buffer(std::move(buffer)) { }
 
-        friend ST_EXPORT ST::string operator+(const ST::string &left, const ST::string &right);
-
     public:
         string() ST_NOEXCEPT { }
         string(const null_t &) ST_NOEXCEPT { }
