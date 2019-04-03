@@ -299,7 +299,7 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                 }
             } else if (*sp < 0xDC00) {
                 if (sp[1] >= 0xDC00 && sp[1] <= 0xDFFF) {
-                    char32_t bigch = 0x10000 + ((sp[0] & 0x3FFF) << 10) + (sp[1] & 0x3FF);
+                    char32_t bigch = 0x10000 + ((sp[0] & 0x3FF) << 10) + (sp[1] & 0x3FF);
                     converted.append_char(0xF0 | ((bigch >> 18) & 0x07));
                     converted.append_char(0x80 | ((bigch >> 12) & 0x3F));
                     converted.append_char(0x80 | ((bigch >>  6) & 0x3F));
@@ -327,7 +327,7 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                 }
             } else {
                 if (sp[1] >= 0xD800 && sp[1] <= 0xDBFF) {
-                    char32_t bigch = 0x10000 + (sp[0] & 0x3FFF) + ((sp[1] & 0x3FF) << 10);
+                    char32_t bigch = 0x10000 + (sp[0] & 0x3FF) + ((sp[1] & 0x3FF) << 10);
                     converted.append_char(0xF0 | ((bigch >> 18) & 0x07));
                     converted.append_char(0x80 | ((bigch >> 12) & 0x3F));
                     converted.append_char(0x80 | ((bigch >>  6) & 0x3F));
