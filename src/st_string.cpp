@@ -226,6 +226,14 @@ ST::string &ST::string::operator+=(const char32_t *cstr)
 }
 #endif
 
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+ST::string &ST::string::operator+=(const char8_t *cstr)
+{
+    set(*this + cstr);
+    return *this;
+}
+#endif
+
 ST::string &ST::string::operator+=(const ST::string &other)
 {
     set(*this + other);
