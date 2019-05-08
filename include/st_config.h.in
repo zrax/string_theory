@@ -111,6 +111,13 @@ namespace _ST_PRIVATE
 #   define ST_ENUM_CONSTANT(type, name)
 #endif
 
+#ifdef _LIBCPP_VERSION
+#   if defined(ST_HAVE_CXX17_FILESYSTEM) && defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+        // This is a typedef in libc++
+#       undef ST_HAVE_EXPERIMENTAL_FILESYSTEM
+#   endif
+#endif
+
 #if defined(_MSC_VER)
 #   define ST_DEPRECATED(message) __declspec(deprecated(message))
 #elif defined(__GNUC__)
