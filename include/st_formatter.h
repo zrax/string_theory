@@ -112,6 +112,16 @@ namespace ST
     ST_EXPORT void format_string(const format_spec &format, format_writer &output,
                                  const char *text, size_t size,
                                  alignment_t default_alignment = align_left);
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    inline void format_string(const format_spec &format, format_writer &output,
+                              const char8_t *text, size_t size,
+                              alignment_t default_alignment = align_left)
+    {
+        format_string(format, output, reinterpret_cast<const char *>(text),
+                      size, default_alignment);
+    }
+#endif
 }
 
 #define ST_DECL_FORMAT_TYPE(type_T) \
@@ -194,7 +204,7 @@ ST_FORMAT_TYPE(const std::complex<value_T> &)
 #ifdef ST_HAVE_CXX17_FILESYSTEM
 inline ST_FORMAT_TYPE(const std::filesystem::path &)
 {
-    std::string u8path = value.u8string();
+    auto u8path = value.u8string();
     ST::format_string(format, output, u8path.c_str(), u8path.size());
 }
 #endif
@@ -202,7 +212,7 @@ inline ST_FORMAT_TYPE(const std::filesystem::path &)
 #ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
 inline ST_FORMAT_TYPE(const std::experimental::filesystem::path &)
 {
-    std::string u8path = value.u8string();
+    auto u8path = value.u8string();
     ST::format_string(format, output, u8path.c_str(), u8path.size());
 }
 #endif
