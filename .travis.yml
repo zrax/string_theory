@@ -19,21 +19,21 @@ matrix:
           packages:
             - cmake
     - os: linux
-      dist: trusty
-      compiler: gcc-4.6
-      env: CMAKE_CXX_COMPILER=g++-4.6 CMAKE_C_COMPILER=gcc-4.6
+      dist: xenial
+      compiler: gcc
+      env: CMAKE_C_COMPILER=gcc CMAKE_CXX_COMPILER=g++
       addons:
         apt:
           packages:
-            - g++-4.6
+            - cmake
     - os: linux
-      dist: trusty
-      compiler: gcc-4.4
-      env: CMAKE_CXX_COMPILER=g++-4.4 CMAKE_C_COMPILER=gcc-4.4
+      dist: xenial
+      compiler: clang
+      env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
       addons:
         apt:
           packages:
-            - g++-4.4
+            - cmake
     - os: osx
       osx_image: xcode6.4
       compiler: clang
@@ -48,6 +48,10 @@ matrix:
       env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
     - os: osx
       osx_image: xcode9.4
+      compiler: clang
+      env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
+    - os: osx
+      osx_image: xcode10.2
       compiler: clang
       env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
 

@@ -27,9 +27,7 @@
 #include <cwchar>
 #include <iterator>
 #include <string>       // Needed for char_traits
-#ifdef ST_HAVE_RVALUE_MOVE
-#  include <utility>    // For std::move
-#endif
+#include <utility>      // For std::move
 
 #if !defined(ST_NO_STL_STRINGS)
 #   if defined(ST_HAVE_CXX17_STRING_VIEW)
@@ -126,7 +124,6 @@ namespace ST
             }
         }
 
-#ifdef ST_HAVE_RVALUE_MOVE
         buffer(buffer<char_T> &&move) ST_NOEXCEPT
             : m_size(move.m_size)
         {
@@ -134,7 +131,6 @@ namespace ST
             traits_t::copy(m_data, move.m_data, ST_SHORT_STRING_LEN);
             move.m_size = 0;
         }
-#endif
 
         buffer(const char_T *data, size_t size)
             : m_size(size)
@@ -175,7 +171,6 @@ namespace ST
             return *this;
         }
 
-#ifdef ST_HAVE_RVALUE_MOVE
         buffer<char_T> &operator=(buffer<char_T> &&move) ST_NOEXCEPT
         {
             _scope_deleter unref(this);
@@ -185,7 +180,6 @@ namespace ST
             move.m_size = 0;
             return *this;
         }
-#endif
 
         bool operator==(const null_t &) const ST_NOEXCEPT
         {

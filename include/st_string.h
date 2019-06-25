@@ -165,7 +165,6 @@ namespace ST
             _convert_from_wchar(wstr, size, validation);
         }
 
-#ifdef ST_HAVE_CHAR_TYPES
         string(const char16_t *cstr, size_t size = ST_AUTO_SIZE,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -181,7 +180,6 @@ namespace ST
                 size = cstr ? std::char_traits<char32_t>::length(cstr) : 0;
             _convert_from_utf32(cstr, size, validation);
         }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         string(const char8_t *cstr, size_t size = ST_AUTO_SIZE,
@@ -196,10 +194,8 @@ namespace ST
         string(const string &copy)
             : m_buffer(copy.m_buffer) { }
 
-#ifdef ST_HAVE_RVALUE_MOVE
         string(string &&move) ST_NOEXCEPT
             : m_buffer(std::move(move.m_buffer)) { }
-#endif
 
         string(const char_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
@@ -207,13 +203,11 @@ namespace ST
             set(init, validation);
         }
 
-#ifdef ST_HAVE_RVALUE_MOVE
         string(char_buffer &&init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             set(std::move(init), validation);
         }
-#endif
 
         string(const utf16_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
@@ -246,7 +240,6 @@ namespace ST
             _convert_from_wchar(init.c_str(), init.size(), validation);
         }
 
-#ifdef ST_HAVE_STD_USTRING_TYPES
         string(const std::u16string &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -258,7 +251,6 @@ namespace ST
         {
             _convert_from_utf32(init.c_str(), init.size(), validation);
         }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         string(const std::u8string &init,
@@ -362,7 +354,6 @@ namespace ST
             _convert_from_wchar(wstr, size, validation);
         }
 
-#ifdef ST_HAVE_CHAR_TYPES
         void set(const char16_t *cstr, size_t size = ST_AUTO_SIZE,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -378,7 +369,6 @@ namespace ST
                 size = cstr ? std::char_traits<char32_t>::length(cstr) : 0;
             _convert_from_utf32(cstr, size, validation);
         }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         void set(const char8_t *cstr, size_t size = ST_AUTO_SIZE,
@@ -395,20 +385,16 @@ namespace ST
             m_buffer = copy.m_buffer;
         }
 
-#ifdef ST_HAVE_RVALUE_MOVE
         void set(string &&move) ST_NOEXCEPT
         {
             m_buffer = std::move(move.m_buffer);
         }
-#endif
 
         void set(const char_buffer &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION);
 
-#ifdef ST_HAVE_RVALUE_MOVE
         void set(char_buffer &&init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION);
-#endif
 
         void set(const utf16_buffer &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
@@ -441,7 +427,6 @@ namespace ST
             _convert_from_wchar(init.c_str(), init.size(), validation);
         }
 
-#ifdef ST_HAVE_STD_USTRING_TYPES
         void set(const std::u16string &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -453,7 +438,6 @@ namespace ST
         {
             _convert_from_utf32(init.c_str(), init.size(), validation);
         }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         void set(const std::u8string &init,
@@ -581,7 +565,6 @@ namespace ST
             return *this;
         }
 
-#ifdef ST_HAVE_CHAR_TYPES
         string &operator=(const char16_t *cstr)
         {
             set(cstr);
@@ -593,7 +576,6 @@ namespace ST
             set(cstr);
             return *this;
         }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         string &operator=(const char8_t *cstr)
@@ -609,13 +591,11 @@ namespace ST
             return *this;
         }
 
-#ifdef ST_HAVE_RVALUE_MOVE
         string &operator=(string &&move) ST_NOEXCEPT
         {
             m_buffer = std::move(move.m_buffer);
             return *this;
         }
-#endif
 
         string &operator=(const char_buffer &init)
         {
@@ -623,13 +603,11 @@ namespace ST
             return *this;
         }
 
-#ifdef ST_HAVE_RVALUE_MOVE
         string &operator=(char_buffer &&init)
         {
             set(std::move(init));
             return *this;
         }
-#endif
 
         string &operator=(const utf16_buffer &init)
         {
@@ -662,7 +640,6 @@ namespace ST
             return *this;
         }
 
-#ifdef ST_HAVE_STD_USTRING_TYPES
         string &operator=(const std::u16string &init)
         {
             set(init);
@@ -674,7 +651,6 @@ namespace ST
             set(init);
             return *this;
         }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         string &operator=(const std::u8string &init)
@@ -765,10 +741,8 @@ namespace ST
         string &operator+=(const char *cstr);
         string &operator+=(const wchar_t *wstr);
 
-#ifdef ST_HAVE_CHAR_TYPES
         string &operator+=(const char16_t *cstr);
         string &operator+=(const char32_t *cstr);
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         string &operator+=(const char8_t *cstr);
@@ -778,11 +752,8 @@ namespace ST
 
         string &operator+=(char ch);
         string &operator+=(wchar_t ch);
-
-#ifdef ST_HAVE_CHAR_TYPES
         string &operator+=(char16_t ch);
         string &operator+=(char32_t ch);
-#endif
 
         static inline string from_literal(const char *literal, size_t size)
         {
@@ -959,7 +930,6 @@ namespace ST
             return from_std_string(wstr, validation);
         }
 
-#ifdef ST_HAVE_STD_USTRING_TYPES
         static inline string from_std_string(const std::u16string &ustr,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -975,7 +945,6 @@ namespace ST
             str._convert_from_utf32(ustr.c_str(), ustr.size(), validation);
             return str;
         }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         static inline string from_std_string(const std::u8string &ustr,
@@ -1185,7 +1154,6 @@ namespace ST
             result = to_std_wstring();
         }
 
-#ifdef ST_HAVE_STD_USTRING_TYPES
         std::u16string to_std_u16string() const
         {
             return to_utf16().to_std_string();
@@ -1205,7 +1173,6 @@ namespace ST
         {
             result = to_std_u32string();
         }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         std::u8string to_std_u8string() const
@@ -1722,7 +1689,6 @@ namespace ST
         return operator+(string::from_wchar(left), right);
     }
 
-#ifdef ST_HAVE_CHAR_TYPES
     inline string operator+(const string &left, const char16_t *right)
     {
         return operator+(left, string::from_utf16(right));
@@ -1742,7 +1708,6 @@ namespace ST
     {
         return operator+(string::from_utf32(left), right);
     }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
     inline string operator+(const string &left, const char8_t *right)
@@ -1758,19 +1723,13 @@ namespace ST
 
     ST_EXPORT string operator+(const string &left, char right);
     ST_EXPORT string operator+(const string &left, wchar_t right);
-
-#ifdef ST_HAVE_CHAR_TYPES
     ST_EXPORT string operator+(const string &left, char16_t right);
     ST_EXPORT string operator+(const string &left, char32_t right);
-#endif
 
     ST_EXPORT string operator+(char left, const string &right);
     ST_EXPORT string operator+(wchar_t left, const string &right);
-
-#ifdef ST_HAVE_CHAR_TYPES
     ST_EXPORT string operator+(char16_t left, const string &right);
     ST_EXPORT string operator+(char32_t left, const string &right);
-#endif
 
     inline bool operator==(const null_t &, const string &right) ST_NOEXCEPT
     {
@@ -1798,7 +1757,6 @@ namespace std
 #define ST_LITERAL(str) \
     ST::string::from_literal("" str "", sizeof(str) - 1)
 
-#ifdef ST_HAVE_USER_LITERALS
 inline ST::string operator"" _st(const char *str, size_t size)
 {
     return ST::string::from_literal(str, size);
@@ -1824,8 +1782,6 @@ inline ST::string operator"" _st(const char8_t *str, size_t size)
 {
     return ST::string::from_literal(str, size);
 }
-#endif
-
 #endif
 
 #endif // _ST_STRING_H

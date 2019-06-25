@@ -29,7 +29,6 @@
 
 #define BUFFER_LEN (256)
 
-#ifdef ST_HAVE_FORMAT
 TEST(stdio, writef)
 {
     std::stringstream sstream;
@@ -47,7 +46,6 @@ TEST(stdio, writef_wide)
 
     EXPECT_EQ(sstream.str(), L"xxxxxTesting ###formatted output");
 }
-#endif // ST_HAVE_FORMAT
 
 TEST(stdio, stream_ops)
 {

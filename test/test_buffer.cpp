@@ -221,7 +221,6 @@ TEST(char_buffer, copy)
     EXPECT_EQ(24U, wdest2.size());
 }
 
-#ifdef ST_HAVE_RVALUE_MOVE
 TEST(char_buffer, move)
 {
     // If this changes, this test may need to be updated to match
@@ -267,7 +266,6 @@ TEST(char_buffer, move)
     EXPECT_EQ(0, T_strcmp(wdest2.data(), L"9876543210zyxwvutsrqponm"));
     EXPECT_EQ(24U, wdest2.size());
 }
-#endif
 
 TEST(char_buffer, compare)
 {

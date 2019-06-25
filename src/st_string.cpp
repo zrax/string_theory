@@ -171,7 +171,6 @@ void ST::string::set(const char_buffer &init, utf_validation_t validation)
     }
 }
 
-#ifdef ST_HAVE_RVALUE_MOVE
 void ST::string::set(char_buffer &&init, utf_validation_t validation)
 {
     switch (validation) {
@@ -198,7 +197,6 @@ void ST::string::set(char_buffer &&init, utf_validation_t validation)
         ST_ASSERT(false, "Invalid validation type");
     }
 }
-#endif
 
 ST::string &ST::string::operator+=(const char *cstr)
 {
@@ -212,7 +210,6 @@ ST::string &ST::string::operator+=(const wchar_t *wstr)
     return *this;
 }
 
-#ifdef ST_HAVE_CHAR_TYPES
 ST::string &ST::string::operator+=(const char16_t *cstr)
 {
     set(*this + cstr);
@@ -224,7 +221,6 @@ ST::string &ST::string::operator+=(const char32_t *cstr)
     set(*this + cstr);
     return *this;
 }
-#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
 ST::string &ST::string::operator+=(const char8_t *cstr)
@@ -246,7 +242,6 @@ ST::string &ST::string::operator+=(char ch)
     return *this;
 }
 
-#ifdef ST_HAVE_CHAR_TYPES
 ST::string &ST::string::operator+=(char16_t ch)
 {
     set(*this + ch);
@@ -258,7 +253,6 @@ ST::string &ST::string::operator+=(char32_t ch)
     set(*this + ch);
     return *this;
 }
-#endif
 
 ST::string &ST::string::operator+=(wchar_t ch)
 {
@@ -672,11 +666,7 @@ static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value
         std::char_traits<char>::copy(result.data(), formatter.text(), formatter.size());
     }
 
-#ifdef ST_HAVE_RVALUE_MOVE
     return ST::string::from_validated(std::move(result));
-#else
-    return ST::string::from_validated(result);
-#endif
 }
 
 template <typename uint_T>
@@ -689,11 +679,7 @@ static ST::string _mini_format_numeric_u(int radix, bool upper_case, uint_T valu
     result.allocate(formatter.size());
     std::char_traits<char>::copy(result.data(), formatter.text(), formatter.size());
 
-#ifdef ST_HAVE_RVALUE_MOVE
     return ST::string::from_validated(std::move(result));
-#else
-    return ST::string::from_validated(result);
-#endif
 }
 
 ST::string ST::string::from_int(int value, int base, bool upper_case)
@@ -716,11 +702,7 @@ static ST::string _mini_format_float(float_T value, char format)
     result.allocate(formatter.size());
     std::char_traits<char>::copy(result.data(), formatter.text(), formatter.size());
 
-#ifdef ST_HAVE_RVALUE_MOVE
     return ST::string::from_validated(std::move(result));
-#else
-    return ST::string::from_validated(result);
-#endif
 }
 
 ST::string ST::string::from_float(float value, char format)
@@ -1496,11 +1478,7 @@ ST::string ST::operator+(const ST::string &left, const ST::string &right)
     std::char_traits<char>::copy(&cat[0], left.c_str(), left.size());
     std::char_traits<char>::copy(&cat[left.size()], right.c_str(), right.size());
 
-#ifdef ST_HAVE_RVALUE_MOVE
     return ST::string::from_validated(std::move(cat));
-#else
-    return ST::string::from_validated(cat);
-#endif
 }
 
 static ST::string _append(const ST::string &left, char32_t right)
@@ -1545,11 +1523,7 @@ static ST::string _append(const ST::string &left, char32_t right)
         catp += BADCHAR_SUBSTITUTE_UTF8_LEN;
     }
 
-#ifdef ST_HAVE_RVALUE_MOVE
     return ST::string::from_validated(std::move(cat));
-#else
-    return ST::string::from_validated(cat);
-#endif
 }
 
 ST::string ST::operator+(const ST::string &left, char right)
@@ -1558,7 +1532,6 @@ ST::string ST::operator+(const ST::string &left, char right)
     return _append(left, uchar);
 }
 
-#ifdef ST_HAVE_CHAR_TYPES
 ST::string ST::operator+(const ST::string &left, char16_t right)
 {
     char32_t uchar = right;
@@ -1569,7 +1542,6 @@ ST::string ST::operator+(const ST::string &left, char32_t right)
 {
     return _append(left, right);
 }
-#endif
 
 ST::string ST::operator+(const ST::string &left, wchar_t right)
 {
@@ -1623,11 +1595,7 @@ static ST::string _prepend(char32_t left, const ST::string &right)
 
     std::char_traits<char>::copy(catp, right.c_str(), right.size());
 
-#ifdef ST_HAVE_RVALUE_MOVE
     return ST::string::from_validated(std::move(cat));
-#else
-    return ST::string::from_validated(cat);
-#endif
 }
 
 ST::string ST::operator+(char left, const ST::string &right)
@@ -1636,7 +1604,6 @@ ST::string ST::operator+(char left, const ST::string &right)
     return _prepend(uchar, right);
 }
 
-#ifdef ST_HAVE_CHAR_TYPES
 ST::string ST::operator+(char16_t left, const ST::string &right)
 {
     char32_t uchar = left;
@@ -1647,7 +1614,6 @@ ST::string ST::operator+(char32_t left, const ST::string &right)
 {
     return _prepend(left, right);
 }
-#endif
 
 ST::string ST::operator+(wchar_t left, const ST::string &right)
 {

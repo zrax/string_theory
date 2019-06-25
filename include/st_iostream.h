@@ -22,14 +22,10 @@
 #define _ST_IOSTREAM_H
 
 #include "st_string.h"
-#ifdef ST_HAVE_FORMAT
-#   include "st_formatter_util.h"
-#endif
+#include "st_formatter_util.h"
 
 #include <ostream>
 #include <istream>
-
-#ifdef ST_HAVE_FORMAT
 
 namespace _ST_PRIVATE
 {
@@ -103,8 +99,6 @@ namespace ST
         apply_format(data, args...);
     }
 }
-
-#endif // ST_HAVE_FORMAT
 
 template <class char_T, class traits_T>
 std::basic_ostream<char_T, traits_T> &operator<<(

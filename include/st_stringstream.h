@@ -39,7 +39,6 @@ namespace ST
                 delete[] m_chars;
         }
 
-#ifdef ST_HAVE_RVALUE_MOVE
         string_stream(string_stream &&move) ST_NOEXCEPT
             : m_alloc(move.m_alloc), m_size(move.m_size)
         {
@@ -60,7 +59,6 @@ namespace ST
             move.m_alloc = 0;
             return *this;
         }
-#endif
 
         string_stream &append(const char *data, size_t size = ST_AUTO_SIZE);
 
