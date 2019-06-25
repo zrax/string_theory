@@ -18,12 +18,24 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(string_theory)
 
-if(POLICY CMP0054)
-    # Don't dereference quoted names in if() statements
-    cmake_policy(SET CMP0054 NEW)
+# We will detect and use optional features in newer C++ standards,
+# but C++11 is required at minimum
+if(${CMAKE_VERSION} VERSION_GREATER "3.11.99")
+    set(CMAKE_CXX_STANDARD 20)
+elseif(${CMAKE_VERSION} VERSION_GREATER "3.7.99")
+    set(CMAKE_CXX_STANDARD 17)
+else()
+    set(CMAKE_CXX_STANDARD 14)
+endif()
+set(CMAKE_CXX_STANDARD_REQUIRED OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(POLICY CMP0067)
+    # Honor CMAKE_CXX_STANDARD in try_compile() commands
+    cmake_policy(SET CMP0067 NEW)
 endif()
 
 set(ST_MAJOR_VERSION 3)
@@ -32,39 +44,13 @@ set(ST_VERSION ${ST_MAJOR_VERSION}.${ST_MINOR_VERSION})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
-include(CheckCXXCompilerFlag)
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
     set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
-
-    check_cxx_compiler_flag("-std=c++20" HAVE_STD_CXX20)
-    check_cxx_compiler_flag("-std=c++17" HAVE_STD_CXX17)
-    check_cxx_compiler_flag("-std=c++14" HAVE_STD_CXX14)
-    if(HAVE_STD_CXX20)
-        set(HAVE_STD_CXX17 1)
-        set(HAVE_STD_CXX14 1)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
-    elseif(HAVE_STD_CXX17)
-        set(HAVE_STD_CXX14 1)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-    elseif(HAVE_STD_CXX14)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-    else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    endif()
-
-    if(APPLE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-    endif()
 
     option(ST_BUILD_TEST_COVERAGE "Enable code coverage in string_theory and tests" OFF)
     if(ST_BUILD_TEST_COVERAGE)
         include(CodeCoverage)
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage")
-    endif()
-elseif(MSVC)
-    check_cxx_compiler_flag("/std:c++latest" HAVE_STD_CXXLATEST)
-    if(HAVE_STD_CXXLATEST)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
     endif()
 endif()
 
