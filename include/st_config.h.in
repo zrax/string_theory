@@ -47,13 +47,11 @@
 #define ST_NOEXCEPT noexcept
 #define ST_OVERRIDE override
 #define ST_NULLPTR nullptr
-#define ST_STATIC_ASSERT(x, msg) static_assert((x), msg);
 
 #define ST_DISABLE_COPY(name) \
         name(const name &) = delete; \
         void operator=(const name &) = delete;
 
-#define ST_STRONG_ENUM(name) enum class name
 #define ST_ENUM_CONSTANT(type, name) constexpr type name = type::name
 
 #ifdef _LIBCPP_VERSION

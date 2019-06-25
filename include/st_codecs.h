@@ -36,7 +36,7 @@ namespace ST
 
     ST_EXPORT char_buffer hex_decode(const string &hex);
     ST_EXPORT ST_ssize_t hex_decode(const string &hex, void *output,
-                                    size_t output_size) ST_NOEXCEPT;
+                                    size_t output_size) noexcept;
 
     ST_EXPORT string base64_encode(const void *data, size_t size);
 
@@ -47,7 +47,7 @@ namespace ST
 
     ST_EXPORT char_buffer base64_decode(const string &base64);
     ST_EXPORT ST_ssize_t base64_decode(const string &base64, void *output,
-                                       size_t output_size) ST_NOEXCEPT;
+                                       size_t output_size) noexcept;
 }
 
 #endif // _ST_CODECS_H

@@ -30,16 +30,16 @@ namespace ST
         ST_DISABLE_COPY(string_stream)
 
     public:
-        string_stream() ST_NOEXCEPT
+        string_stream() noexcept
             : m_chars(m_stack), m_alloc(ST_STACK_STRING_LEN), m_size() { }
 
-        ~string_stream() ST_NOEXCEPT
+        ~string_stream() noexcept
         {
             if (is_heap())
                 delete[] m_chars;
         }
 
-        string_stream(string_stream &&move) ST_NOEXCEPT
+        string_stream(string_stream &&move) noexcept
             : m_alloc(move.m_alloc), m_size(move.m_size)
         {
             m_chars = is_heap() ? move.m_chars : m_stack;
@@ -47,7 +47,7 @@ namespace ST
             move.m_alloc = 0;
         }
 
-        string_stream &operator=(string_stream &&move) ST_NOEXCEPT
+        string_stream &operator=(string_stream &&move) noexcept
         {
             if (is_heap())
                 delete[] m_chars;
@@ -89,8 +89,8 @@ namespace ST
             return append(text.c_str(), text.size());
         }
 
-        const char *raw_buffer() const ST_NOEXCEPT { return m_chars; }
-        size_t size() const ST_NOEXCEPT { return m_size; }
+        const char *raw_buffer() const noexcept { return m_chars; }
+        size_t size() const noexcept { return m_size; }
 
         string to_string(bool utf8_encoded = true,
                          utf_validation_t validation = assert_validity) const
@@ -101,13 +101,13 @@ namespace ST
                 return string::from_latin_1(raw_buffer(), size());
         }
 
-        void truncate(size_t size = 0) ST_NOEXCEPT
+        void truncate(size_t size = 0) noexcept
         {
             if (size < m_size)
                 m_size = size;
         }
 
-        void erase(size_t count) ST_NOEXCEPT
+        void erase(size_t count) noexcept
         {
             if (count < m_size)
                 m_size -= count;
@@ -120,7 +120,7 @@ namespace ST
         size_t m_alloc, m_size;
         char   m_stack[ST_STACK_STRING_LEN];
 
-        bool is_heap() const ST_NOEXCEPT
+        bool is_heap() const noexcept
         {
             return m_alloc > ST_STACK_STRING_LEN;
         }

@@ -50,9 +50,9 @@ namespace ST
     class uint_formatter
     {
     public:
-        uint_formatter() ST_NOEXCEPT : m_start(ST_NULLPTR) { }
+        uint_formatter() noexcept : m_start(nullptr) { }
 
-        void format(uint_T value, int radix, bool upper_case = false) ST_NOEXCEPT
+        void format(uint_T value, int radix, bool upper_case = false) noexcept
         {
             m_buffer[std::numeric_limits<uint_T>::digits] = 0;
             m_start = &m_buffer[std::numeric_limits<uint_T>::digits];
@@ -75,9 +75,9 @@ namespace ST
             }
         }
 
-        const char *text() const ST_NOEXCEPT { return m_start; }
+        const char *text() const noexcept { return m_start; }
 
-        size_t size() const ST_NOEXCEPT
+        size_t size() const noexcept
         {
             return m_buffer + std::numeric_limits<uint_T>::digits - m_start;
         }
@@ -91,7 +91,7 @@ namespace ST
     class float_formatter
     {
     public:
-        float_formatter() ST_NOEXCEPT : m_size() { }
+        float_formatter() noexcept : m_size() { }
 
         void format(float_T value, char format)
         {
@@ -102,7 +102,7 @@ namespace ST
             }
 
             char format_spec[] = { '%', format, 0 };
-            int format_size = snprintf(ST_NULLPTR, 0, format_spec, double(value));
+            int format_size = snprintf(nullptr, 0, format_spec, double(value));
             ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
             m_size = static_cast<size_t>(format_size);
             ST_ASSERT(m_size < sizeof(m_buffer), "Format buffer too small");
@@ -110,8 +110,8 @@ namespace ST
             snprintf(m_buffer, m_size + 1, format_spec, value);
         }
 
-        const char *text() const ST_NOEXCEPT { return m_buffer; }
-        size_t size() const ST_NOEXCEPT { return m_size; }
+        const char *text() const noexcept { return m_buffer; }
+        size_t size() const noexcept { return m_size; }
 
     private:
         char m_buffer[64];

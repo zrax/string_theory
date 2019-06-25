@@ -335,7 +335,7 @@ int main(int, char **)
 #ifdef ST_PROFILE_HAVE_QSTRING
     QString _iqs1 = "5143200";
     _measure("QString::toInt", [&_iqs1]() {
-        long result = _iqs1.toInt(ST_NULLPTR, 10);
+        long result = _iqs1.toInt(nullptr, 10);
         NO_OPTIMIZE_L(result);
     });
 #endif

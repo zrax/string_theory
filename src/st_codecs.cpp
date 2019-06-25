@@ -23,7 +23,7 @@
 #include "st_assert.h"
 
 static const char _hex_chars[] = "0123456789abcdef";
-ST_STATIC_ASSERT(sizeof(_hex_chars) - 1 == 16, "Missing hex characters");
+static_assert(sizeof(_hex_chars) - 1 == 16, "Missing hex characters");
 
 static const int _hex_values[] = {
     /* 00 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -35,10 +35,10 @@ static const int _hex_values[] = {
     /* 60 */ -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     /* 70 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 };
-ST_STATIC_ASSERT(sizeof(_hex_values) / sizeof(int) == 0x80, "Missing hex values");
+static_assert(sizeof(_hex_values) / sizeof(int) == 0x80, "Missing hex values");
 
 static const char _b64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-ST_STATIC_ASSERT(sizeof(_b64_chars) - 1 == 64, "Missing base64 characters");
+static_assert(sizeof(_b64_chars) - 1 == 64, "Missing base64 characters");
 
 static const int _b64_values[] = {
     /* 00 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -50,7 +50,7 @@ static const int _b64_values[] = {
     /* 60 */ -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
     /* 70 */ 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1,
 };
-ST_STATIC_ASSERT(sizeof(_b64_values) / sizeof(int) == 0x80, "Missing base64 values");
+static_assert(sizeof(_b64_values) / sizeof(int) == 0x80, "Missing base64 values");
 
 ST::string ST::hex_encode(const void *data, size_t size)
 {
@@ -94,7 +94,7 @@ ST::char_buffer ST::hex_decode(const ST::string &hex)
 }
 
 ST_ssize_t ST::hex_decode(const ST::string &hex, void *output, size_t output_size)
-    ST_NOEXCEPT
+    noexcept
 {
     if ((hex.size() % 2) != 0)
         return -1;
@@ -208,7 +208,7 @@ ST::char_buffer ST::base64_decode(const ST::string &base64)
 }
 
 ST_ssize_t ST::base64_decode(const ST::string &base64, void *output, size_t output_size)
-    ST_NOEXCEPT
+    noexcept
 {
     ST_ssize_t decode_size = _base64_decode_size(base64.size(), base64.c_str());
     if (!output)

@@ -20,10 +20,10 @@
 
 #include "st_charbuffer.h"
 
-ST_STATIC_ASSERT(ST_SHORT_STRING_LEN >= sizeof(void *),
-                 "ST_SHORT_STRING_LEN must be at least as large as a pointer")
-ST_STATIC_ASSERT(ST_STACK_STRING_LEN >= sizeof(void *),
-                 "ST_STACK_STRING_LEN must be at least as large as a pointer")
+static_assert(ST_SHORT_STRING_LEN >= sizeof(void *),
+              "ST_SHORT_STRING_LEN must be at least as large as a pointer");
+static_assert(ST_STACK_STRING_LEN >= sizeof(void *),
+              "ST_STACK_STRING_LEN must be at least as large as a pointer");
 
 /* Ensure these get instantiated by the library */
 namespace ST

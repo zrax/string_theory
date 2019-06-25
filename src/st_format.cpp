@@ -154,7 +154,7 @@ ST::format_spec ST::format_writer::parse_format()
         case '1': case '2': case '3': case '4': case '5':
         case '6': case '7': case '8': case '9':
         {
-            char *end = ST_NULLPTR;
+            char *end = nullptr;
             spec.minimum_length = static_cast<int>(strtol(ptr, &end, 10));
             ptr = end - 1;
             break;
@@ -162,7 +162,7 @@ ST::format_spec ST::format_writer::parse_format()
         case '.':
         {
             ST_ASSERT(*(ptr + 1), "Unterminated format specifier");
-            char *end = ST_NULLPTR;
+            char *end = nullptr;
             spec.precision = static_cast<int>(strtol(ptr + 1, &end, 10));
             ptr = end - 1;
             break;
@@ -170,7 +170,7 @@ ST::format_spec ST::format_writer::parse_format()
         case '&':
         {
             ST_ASSERT(*(ptr + 1), "Unterminated format specifier");
-            char *end = ST_NULLPTR;
+            char *end = nullptr;
             spec.arg_index = static_cast<int>(strtol(ptr + 1, &end, 10));
             ptr = end - 1;
             break;
@@ -306,8 +306,8 @@ template <typename int_T>
 static void _format_numeric_s(const ST::format_spec &format,
                               ST::format_writer &output, int_T value)
 {
-    ST_STATIC_ASSERT(std::is_signed<int_T>::value,
-                     "Use _format_numeric_u for unsigned numerics");
+    static_assert(std::is_signed<int_T>::value,
+                  "Use _format_numeric_u for unsigned numerics");
 
     int radix = 10;
     bool upper_case = false;
@@ -348,8 +348,8 @@ template <typename uint_T>
 static void _format_numeric_u(const ST::format_spec &format,
                               ST::format_writer &output, uint_T value)
 {
-    ST_STATIC_ASSERT(std::is_unsigned<uint_T>::value,
-                     "Use _format_numeric_s for signed numerics");
+    static_assert(std::is_unsigned<uint_T>::value,
+                  "Use _format_numeric_s for signed numerics");
 
     int radix = 10;
     bool upper_case = false;
@@ -476,7 +476,7 @@ ST_FORMAT_TYPE(double)
         (format.float_class == ST::float_fixed) ? 'f' : 'g';
     format_buffer[end] = 0;
 
-    int format_size = snprintf(ST_NULLPTR, 0, format_buffer, value);
+    int format_size = snprintf(nullptr, 0, format_buffer, value);
     ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
     ST::char_buffer out_buffer;
 

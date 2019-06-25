@@ -30,7 +30,7 @@
 
 namespace ST
 {
-    ST_STRONG_ENUM(alignment_t)
+    enum class alignment_t
     {
         align_default,
         align_left,
@@ -40,7 +40,7 @@ namespace ST
     ST_ENUM_CONSTANT(alignment_t, align_left);
     ST_ENUM_CONSTANT(alignment_t, align_right);
 
-    ST_STRONG_ENUM(digit_class_t)
+    enum class digit_class_t
     {
         digit_default,
         digit_dec,
@@ -58,7 +58,7 @@ namespace ST
     ST_ENUM_CONSTANT(digit_class_t, digit_bin);
     ST_ENUM_CONSTANT(digit_class_t, digit_char);
 
-    ST_STRONG_ENUM(float_class_t)
+    enum class float_class_t
     {
         float_default,
         float_fixed,
@@ -72,7 +72,7 @@ namespace ST
 
     struct ST_EXPORT format_spec
     {
-        format_spec() ST_NOEXCEPT
+        format_spec() noexcept
             : minimum_length(), precision(-1), arg_index(-1), alignment(),
               digit_class(), float_class(), pad(), always_signed(),
               class_prefix(), numeric_pad() { }
@@ -94,8 +94,8 @@ namespace ST
         ST_DISABLE_COPY(format_writer);
 
     public:
-        format_writer(const char *format) ST_NOEXCEPT : m_format_str(format) { }
-        virtual ~format_writer() ST_NOEXCEPT { }
+        format_writer(const char *format) noexcept : m_format_str(format) { }
+        virtual ~format_writer() noexcept { }
 
         virtual format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) = 0;
         virtual format_writer &append_char(char ch, size_t count = 1) = 0;

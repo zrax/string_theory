@@ -75,7 +75,7 @@ namespace ST
 
         typedef std::char_traits<char_T> traits_t;
 
-        inline bool is_reffed() const ST_NOEXCEPT
+        inline bool is_reffed() const noexcept
         {
             return m_size >= ST_SHORT_STRING_LEN;
         }
@@ -89,7 +89,7 @@ namespace ST
 
             _scope_deleter(buffer<char_T> *self)
             {
-                m_buffer = self->is_reffed() ? self->m_chars : ST_NULLPTR;
+                m_buffer = self->is_reffed() ? self->m_chars : nullptr;
             }
 
             ~_scope_deleter()
@@ -99,13 +99,13 @@ namespace ST
         };
 
     public:
-        buffer() ST_NOEXCEPT
+        buffer() noexcept
             : m_chars(m_data), m_size()
         {
             traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
         }
 
-        buffer(const null_t &) ST_NOEXCEPT
+        buffer(const null_t &) noexcept
             : m_chars(m_data), m_size()
         {
             traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
@@ -124,7 +124,7 @@ namespace ST
             }
         }
 
-        buffer(buffer<char_T> &&move) ST_NOEXCEPT
+        buffer(buffer<char_T> &&move) noexcept
             : m_size(move.m_size)
         {
             m_chars = is_reffed() ? move.m_chars : m_data;
@@ -141,13 +141,13 @@ namespace ST
             m_chars[m_size] = 0;
         }
 
-        ~buffer<char_T>() ST_NOEXCEPT
+        ~buffer<char_T>() noexcept
         {
             if (is_reffed())
                 delete[] m_chars;
         }
 
-        buffer<char_T> &operator=(const null_t &) ST_NOEXCEPT
+        buffer<char_T> &operator=(const null_t &) noexcept
         {
             _scope_deleter unref(this);
             m_chars = m_data;
@@ -171,7 +171,7 @@ namespace ST
             return *this;
         }
 
-        buffer<char_T> &operator=(buffer<char_T> &&move) ST_NOEXCEPT
+        buffer<char_T> &operator=(buffer<char_T> &&move) noexcept
         {
             _scope_deleter unref(this);
             m_size = move.m_size;
@@ -181,36 +181,36 @@ namespace ST
             return *this;
         }
 
-        bool operator==(const null_t &) const ST_NOEXCEPT
+        bool operator==(const null_t &) const noexcept
         {
             return empty();
         }
 
-        bool operator==(const buffer<char_T> &other) const ST_NOEXCEPT
+        bool operator==(const buffer<char_T> &other) const noexcept
         {
             if (other.size() != size())
                 return false;
             return traits_t::compare(data(), other.data(), size()) == 0;
         }
 
-        bool operator!=(const null_t &) const ST_NOEXCEPT
+        bool operator!=(const null_t &) const noexcept
         {
             return !empty();
         }
 
-        bool operator!=(const buffer<char_T> &other) const ST_NOEXCEPT
+        bool operator!=(const buffer<char_T> &other) const noexcept
         {
             return !operator==(other);
         }
 
-        char_T *data() ST_NOEXCEPT { return m_chars; }
-        const char_T *data() const ST_NOEXCEPT { return m_chars; }
+        char_T *data() noexcept { return m_chars; }
+        const char_T *data() const noexcept { return m_chars; }
 
-        size_t size() const ST_NOEXCEPT { return m_size; }
-        bool empty() const ST_NOEXCEPT { return m_size == 0; }
+        size_t size() const noexcept { return m_size; }
+        bool empty() const noexcept { return m_size == 0; }
 
         ST_DEPRECATED_IN_2_0("replaced with empty() in string_theory 2.0")
-        bool is_empty() const ST_NOEXCEPT { return empty(); }
+        bool is_empty() const noexcept { return empty(); }
 
         char_T &at(size_t index)
         {
@@ -226,66 +226,66 @@ namespace ST
             return m_chars[index];
         }
 
-        char_T &operator[](size_t index) ST_NOEXCEPT
+        char_T &operator[](size_t index) noexcept
         {
             return m_chars[index];
         }
 
-        const char_T &operator[](size_t index) const ST_NOEXCEPT
+        const char_T &operator[](size_t index) const noexcept
         {
             return m_chars[index];
         }
 
-        char_T &front() ST_NOEXCEPT
+        char_T &front() noexcept
         {
             return m_chars[0];
         }
 
-        const char_T &front() const ST_NOEXCEPT
+        const char_T &front() const noexcept
         {
             return m_chars[0];
         }
 
-        char_T &back() ST_NOEXCEPT
+        char_T &back() noexcept
         {
             return empty() ? m_chars[0] : m_chars[m_size - 1];
         }
 
-        const char_T &back() const ST_NOEXCEPT
+        const char_T &back() const noexcept
         {
             return empty() ? m_chars[0] : m_chars[m_size - 1];
         }
 
-        iterator begin() ST_NOEXCEPT { return m_chars; }
-        const_iterator begin() const ST_NOEXCEPT { return m_chars; }
-        const_iterator cbegin() const ST_NOEXCEPT { return m_chars; }
+        iterator begin() noexcept { return m_chars; }
+        const_iterator begin() const noexcept { return m_chars; }
+        const_iterator cbegin() const noexcept { return m_chars; }
 
-        iterator end() ST_NOEXCEPT { return m_chars + m_size; }
-        const_iterator end() const ST_NOEXCEPT { return m_chars + m_size; }
-        const_iterator cend() const ST_NOEXCEPT { return m_chars + m_size; }
+        iterator end() noexcept { return m_chars + m_size; }
+        const_iterator end() const noexcept { return m_chars + m_size; }
+        const_iterator cend() const noexcept { return m_chars + m_size; }
 
-        reverse_iterator rbegin() ST_NOEXCEPT
+        reverse_iterator rbegin() noexcept
         {
             return reverse_iterator(end());
         }
-        const_reverse_iterator rbegin() const ST_NOEXCEPT
+        const_reverse_iterator rbegin() const noexcept
         {
             return const_reverse_iterator(end());
         }
-        const_reverse_iterator crbegin() const ST_NOEXCEPT
+        const_reverse_iterator crbegin() const noexcept
         {
             return const_reverse_iterator(cend());
         }
 
-        reverse_iterator rend() ST_NOEXCEPT
+        reverse_iterator rend() noexcept
         {
             return reverse_iterator(begin());
         }
-        const_reverse_iterator rend() const ST_NOEXCEPT
+        const_reverse_iterator rend() const noexcept
         {
             return const_reverse_iterator(begin());
         }
-        const_reverse_iterator crend() const ST_NOEXCEPT
+        const_reverse_iterator crend() const noexcept
         {
             return const_reverse_iterator(cbegin());
         }
@@ -368,13 +368,13 @@ namespace ST
     typedef buffer<char32_t>    utf32_buffer;
 
     template <typename char_T>
-    bool operator==(const null_t &, const buffer<char_T> &right) ST_NOEXCEPT
+    bool operator==(const null_t &, const buffer<char_T> &right) noexcept
     {
         return right.empty();
     }
 
     template <typename char_T>
-    bool operator!=(const null_t &, const buffer<char_T> &right) ST_NOEXCEPT
+    bool operator!=(const null_t &, const buffer<char_T> &right) noexcept
     {
         return !right.empty();
     }

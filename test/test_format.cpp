@@ -64,7 +64,7 @@ TEST(format, errors)
                 "Unterminated format specifier");
     EXPECT_EXIT(ST::format("{\x7f", 1), ::testing::ExitedWithCode(0),
                 "Unexpected character in format string");
-    EXPECT_EXIT(ST::format(ST_NULLPTR, 1), ::testing::ExitedWithCode(0),
+    EXPECT_EXIT(ST::format(nullptr, 1), ::testing::ExitedWithCode(0),
                 "Passed a null format string");
 
     // Too many actual parameters is no longer an error due to arg references

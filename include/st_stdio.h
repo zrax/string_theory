@@ -30,16 +30,16 @@ namespace _ST_PRIVATE
     class ST_EXPORT stdio_format_writer : public ST::format_writer
     {
     public:
-        stdio_format_writer(const char *format_str, FILE *stream) ST_NOEXCEPT
+        stdio_format_writer(const char *format_str, FILE *stream) noexcept
             : ST::format_writer(format_str), m_stream(stream) { }
 
-        stdio_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
+        stdio_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) override
         {
             (void)fwrite(data, sizeof(char), size, m_stream);
             return *this;
         }
 
-        stdio_format_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
+        stdio_format_writer &append_char(char ch, size_t count = 1) override
         {
             while (count) {
                 fputc(ch, m_stream);

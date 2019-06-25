@@ -48,7 +48,7 @@
 
 namespace ST
 {
-    ST_STRONG_ENUM(case_sensitivity_t)
+    enum class case_sensitivity_t
     {
         case_sensitive,
         case_insensitive
@@ -56,7 +56,7 @@ namespace ST
     ST_ENUM_CONSTANT(case_sensitivity_t, case_sensitive);
     ST_ENUM_CONSTANT(case_sensitivity_t, case_insensitive);
 
-    ST_STRONG_ENUM(utf_validation_t)
+    enum class utf_validation_t
     {
         assume_valid,       //! Don't do any checking
         substitute_invalid, //! Replace invalid sequences with a substitute
@@ -77,10 +77,10 @@ namespace ST
         };
 
     public:
-        explicit conversion_result() ST_NOEXCEPT : m_flags() { }
+        explicit conversion_result() noexcept : m_flags() { }
 
-        bool ok() const ST_NOEXCEPT { return (m_flags & result_ok) != 0; }
-        bool full_match() const ST_NOEXCEPT { return (m_flags & result_full_match) != 0; }
+        bool ok() const noexcept { return (m_flags & result_ok) != 0; }
+        bool full_match() const noexcept { return (m_flags & result_full_match) != 0; }
 
     private:
         int m_flags;
@@ -146,8 +146,8 @@ namespace ST
 #endif
 
     public:
-        string() ST_NOEXCEPT { }
-        string(const null_t &) ST_NOEXCEPT { }
+        string() noexcept { }
+        string(const null_t &) noexcept { }
 
         string(const char *cstr, size_t size = ST_AUTO_SIZE,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
@@ -194,7 +194,7 @@ namespace ST
         string(const string &copy)
             : m_buffer(copy.m_buffer) { }
 
-        string(string &&move) ST_NOEXCEPT
+        string(string &&move) noexcept
             : m_buffer(std::move(move.m_buffer)) { }
 
         string(const char_buffer &init,
@@ -336,7 +336,7 @@ namespace ST
 
 #endif // !defined(ST_NO_STL_STRINGS)
 
-        void set(const null_t &) ST_NOEXCEPT { m_buffer = null; }
+        void set(const null_t &) noexcept { m_buffer = null; }
 
         void set(const char *cstr, size_t size = ST_AUTO_SIZE,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
@@ -385,7 +385,7 @@ namespace ST
             m_buffer = copy.m_buffer;
         }
 
-        void set(string &&move) ST_NOEXCEPT
+        void set(string &&move) noexcept
         {
             m_buffer = std::move(move.m_buffer);
         }
@@ -547,7 +547,7 @@ namespace ST
             m_buffer = std::move(buffer);
         }
 
-        string &operator=(const null_t &) ST_NOEXCEPT
+        string &operator=(const null_t &) noexcept
         {
             m_buffer = null;
             return *this;
@@ -591,7 +591,7 @@ namespace ST
             return *this;
         }
 
-        string &operator=(string &&move) ST_NOEXCEPT
+        string &operator=(string &&move) noexcept
         {
             m_buffer = std::move(move.m_buffer);
             return *this;
@@ -1066,23 +1066,23 @@ namespace ST
 
 #endif // !defined(ST_NO_STL_STRINGS)
 
-        const char *c_str() const ST_NOEXCEPT
+        const char *c_str() const noexcept
         {
             return m_buffer.data();
         }
 
-        const char *c_str(const char *substitute) const ST_NOEXCEPT
+        const char *c_str(const char *substitute) const noexcept
         {
             return empty() ? substitute : m_buffer.data();
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        const char8_t *u8_str() const ST_NOEXCEPT
+        const char8_t *u8_str() const noexcept
         {
             return reinterpret_cast<const char8_t *>(m_buffer.data());
         }
 
-        const char8_t *u8_str(const char8_t *substitute) const ST_NOEXCEPT
+        const char8_t *u8_str(const char8_t *substitute) const noexcept
         {
             return empty() ? substitute : u8_str();
         }
@@ -1093,35 +1093,35 @@ namespace ST
             return m_buffer.at(position);
         }
 
-        const char &operator[](size_t position) const ST_NOEXCEPT
+        const char &operator[](size_t position) const noexcept
         {
             return m_buffer.operator[](position);
         }
 
         ST_DEPRECATED_IN_2_0("replaced with at() or operator[] in string_theory 2.0")
-        char char_at(size_t position) const ST_NOEXCEPT { return c_str()[position]; }
+        char char_at(size_t position) const noexcept { return c_str()[position]; }
 
-        const char &front() const ST_NOEXCEPT
+        const char &front() const noexcept
         {
             return m_buffer.front();
         }
 
-        const char &back() const ST_NOEXCEPT
+        const char &back() const noexcept
         {
             return m_buffer.back();
         }
 
-        const_iterator begin() const ST_NOEXCEPT { return m_buffer.begin(); }
-        const_iterator cbegin() const ST_NOEXCEPT { return m_buffer.cbegin(); }
-        const_iterator end() const ST_NOEXCEPT { return m_buffer.end(); }
-        const_iterator cend() const ST_NOEXCEPT { return m_buffer.cend(); }
+        const_iterator begin() const noexcept { return m_buffer.begin(); }
+        const_iterator cbegin() const noexcept { return m_buffer.cbegin(); }
+        const_iterator end() const noexcept { return m_buffer.end(); }
+        const_iterator cend() const noexcept { return m_buffer.cend(); }
 
-        const_reverse_iterator rbegin() const ST_NOEXCEPT { return m_buffer.rbegin(); }
-        const_reverse_iterator crbegin() const ST_NOEXCEPT { return m_buffer.crbegin(); }
-        const_reverse_iterator rend() const ST_NOEXCEPT { return m_buffer.rend(); }
-        const_reverse_iterator crend() const ST_NOEXCEPT { return m_buffer.crend(); }
+        const_reverse_iterator rbegin() const noexcept { return m_buffer.rbegin(); }
+        const_reverse_iterator crbegin() const noexcept { return m_buffer.crbegin(); }
+        const_reverse_iterator rend() const noexcept { return m_buffer.rend(); }
+        const_reverse_iterator crend() const noexcept { return m_buffer.crend(); }
 
-        char_buffer to_utf8() const ST_NOEXCEPT { return m_buffer; }
+        char_buffer to_utf8() const noexcept { return m_buffer; }
 
         utf16_buffer to_utf16() const;
         utf32_buffer to_utf32() const;
@@ -1226,11 +1226,11 @@ namespace ST
 
 #endif // !defined(ST_NO_STL_STRINGS)
 
-        size_t size() const ST_NOEXCEPT { return m_buffer.size(); }
-        bool empty() const ST_NOEXCEPT { return m_buffer.size() == 0; }
+        size_t size() const noexcept { return m_buffer.size(); }
+        bool empty() const noexcept { return m_buffer.size() == 0; }
 
         ST_DEPRECATED_IN_2_0("replaced with empty() in string_theory 2.0")
-        bool is_empty() const ST_NOEXCEPT { return empty(); }
+        bool is_empty() const noexcept { return empty(); }
 
         static string from_int(int value, int base = 10, bool upper_case = false);
         static string from_uint(unsigned int value, int base = 10, bool upper_case = false);
@@ -1248,248 +1248,248 @@ namespace ST
                          : from_literal("false", 5);
         }
 
-        int to_int(int base = 0) const ST_NOEXCEPT;
-        int to_int(conversion_result &result, int base = 0) const ST_NOEXCEPT;
-        unsigned int to_uint(int base = 0) const ST_NOEXCEPT;
-        unsigned int to_uint(conversion_result &result, int base = 0) const ST_NOEXCEPT;
-        float to_float() const ST_NOEXCEPT;
-        float to_float(conversion_result &result) const ST_NOEXCEPT;
-        double to_double() const ST_NOEXCEPT;
-        double to_double(conversion_result &result) const ST_NOEXCEPT;
+        int to_int(int base = 0) const noexcept;
+        int to_int(conversion_result &result, int base = 0) const noexcept;
+        unsigned int to_uint(int base = 0) const noexcept;
+        unsigned int to_uint(conversion_result &result, int base = 0) const noexcept;
+        float to_float() const noexcept;
+        float to_float(conversion_result &result) const noexcept;
+        double to_double() const noexcept;
+        double to_double(conversion_result &result) const noexcept;
 
 #ifdef ST_HAVE_INT64
-        int64_t to_int64(int base = 0) const ST_NOEXCEPT;
-        int64_t to_int64(conversion_result &result, int base = 0) const ST_NOEXCEPT;
-        uint64_t to_uint64(int base = 0) const ST_NOEXCEPT;
-        uint64_t to_uint64(conversion_result &result, int base = 0) const ST_NOEXCEPT;
+        int64_t to_int64(int base = 0) const noexcept;
+        int64_t to_int64(conversion_result &result, int base = 0) const noexcept;
+        uint64_t to_uint64(int base = 0) const noexcept;
+        uint64_t to_uint64(conversion_result &result, int base = 0) const noexcept;
 #endif
 
-        bool to_bool() const ST_NOEXCEPT;
-        bool to_bool(conversion_result &result) const ST_NOEXCEPT;
+        bool to_bool() const noexcept;
+        bool to_bool(conversion_result &result) const noexcept;
 
         int compare(const string &str, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const noexcept;
         int compare(const char *str, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const noexcept;
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         int compare(const char8_t *str, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return compare(reinterpret_cast<const char *>(str), cs);
         }
 #endif
 
         int compare_n(const string &str, size_t count,
-                      case_sensitivity_t cs = case_sensitive) const ST_NOEXCEPT;
+                      case_sensitivity_t cs = case_sensitive) const noexcept;
         int compare_n(const char *str, size_t count,
-                      case_sensitivity_t cs = case_sensitive) const ST_NOEXCEPT;
+                      case_sensitivity_t cs = case_sensitive) const noexcept;
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         int compare_n(const char8_t *str, size_t count,
-                      case_sensitivity_t cs = case_sensitive) const ST_NOEXCEPT
+                      case_sensitivity_t cs = case_sensitive) const noexcept
         {
             return compare_n(reinterpret_cast<const char *>(str), count, cs);
         }
 #endif
 
-        int compare_i(const string &str) const ST_NOEXCEPT
+        int compare_i(const string &str) const noexcept
         {
             return compare(str, case_insensitive);
         }
 
-        int compare_i(const char *str) const ST_NOEXCEPT
+        int compare_i(const char *str) const noexcept
         {
             return compare(str, case_insensitive);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        int compare_i(const char8_t *str) const ST_NOEXCEPT
+        int compare_i(const char8_t *str) const noexcept
         {
             return compare(str, case_insensitive);
         }
 #endif
 
-        int compare_ni(const string &str, size_t count) const ST_NOEXCEPT
+        int compare_ni(const string &str, size_t count) const noexcept
         {
             return compare_n(str, count, case_insensitive);
         }
 
-        int compare_ni(const char *str, size_t count) const ST_NOEXCEPT
+        int compare_ni(const char *str, size_t count) const noexcept
         {
             return compare_n(str, count, case_insensitive);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        int compare_ni(const char8_t *str, size_t count) const ST_NOEXCEPT
+        int compare_ni(const char8_t *str, size_t count) const noexcept
         {
             return compare_n(str, count ,case_insensitive);
         }
 #endif
 
-        bool operator<(const string &other) const ST_NOEXCEPT
+        bool operator<(const string &other) const noexcept
         {
             return compare(other) < 0;
         }
 
-        bool operator==(const null_t &) const ST_NOEXCEPT
+        bool operator==(const null_t &) const noexcept
         {
             return empty();
         }
 
-        bool operator==(const string &other) const ST_NOEXCEPT
+        bool operator==(const string &other) const noexcept
         {
             return compare(other) == 0;
         }
 
-        bool operator==(const char *other) const ST_NOEXCEPT
+        bool operator==(const char *other) const noexcept
         {
             return compare(other) == 0;
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        bool operator==(const char8_t *other) const ST_NOEXCEPT
+        bool operator==(const char8_t *other) const noexcept
         {
             return compare(other) == 0;
         }
 #endif
 
-        bool operator!=(const null_t &) const ST_NOEXCEPT
+        bool operator!=(const null_t &) const noexcept
         {
             return !empty();
         }
 
-        bool operator!=(const string &other) const ST_NOEXCEPT
+        bool operator!=(const string &other) const noexcept
         {
             return compare(other) != 0;
         }
 
-        bool operator!=(const char *other) const ST_NOEXCEPT
+        bool operator!=(const char *other) const noexcept
         {
             return compare(other) != 0;
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        bool operator!=(const char8_t *other) const ST_NOEXCEPT
+        bool operator!=(const char8_t *other) const noexcept
         {
             return compare(other) != 0;
         }
 #endif
 
         ST_ssize_t find(char ch, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(0, ch, cs);
         }
 
         ST_ssize_t find(const char *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(0, substr, cs);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_ssize_t find(const char8_t *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(0, substr, cs);
         }
 #endif
 
         ST_ssize_t find(const string &substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(0, substr.c_str(), cs);
         }
 
         ST_ssize_t find(size_t start, char ch, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const noexcept;
 
         ST_ssize_t find(size_t start, const char *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const noexcept;
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_ssize_t find(size_t start, const char8_t *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(start, reinterpret_cast<const char *>(substr), cs);
         }
 #endif
 
         ST_ssize_t find(size_t start, const string &substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(start, substr.c_str(), cs);
         }
 
         ST_ssize_t find_last(char ch, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find_last(ST_AUTO_SIZE, ch, cs);
         }
 
         ST_ssize_t find_last(const char *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find_last(ST_AUTO_SIZE, substr, cs);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_ssize_t find_last(const char8_t *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find_last(ST_AUTO_SIZE, substr, cs);
         }
 #endif
 
         ST_ssize_t find_last(const string &substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find_last(ST_AUTO_SIZE, substr.c_str(), cs);
         }
 
         ST_ssize_t find_last(size_t max, char ch, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const noexcept;
 
         ST_ssize_t find_last(size_t max, const char *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT;
+            const noexcept;
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_ssize_t find_last(size_t max, const char8_t *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find_last(max, reinterpret_cast<const char *>(substr), cs);
         }
 #endif
 
         ST_ssize_t find_last(size_t max, const string &substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find_last(max, substr.c_str(), cs);
         }
 
         bool contains(char ch, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(ch, cs) >= 0;
         }
 
         bool contains(const char *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(substr, cs) >= 0;
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         bool contains(const char8_t *substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(substr, cs) >= 0;
         }
 #endif
 
         bool contains(const string &substr, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return find(substr, cs) >= 0;
         }
@@ -1510,20 +1510,20 @@ namespace ST
             return substr(this->size() - size, size);
         }
 
-        bool starts_with(const string &prefix, case_sensitivity_t cs = case_sensitive) const ST_NOEXCEPT;
-        bool starts_with(const char *prefix, case_sensitivity_t cs = case_sensitive) const ST_NOEXCEPT;
-        bool ends_with(const string &suffix, case_sensitivity_t cs = case_sensitive) const ST_NOEXCEPT;
-        bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const ST_NOEXCEPT;
+        bool starts_with(const string &prefix, case_sensitivity_t cs = case_sensitive) const noexcept;
+        bool starts_with(const char *prefix, case_sensitivity_t cs = case_sensitive) const noexcept;
+        bool ends_with(const string &suffix, case_sensitivity_t cs = case_sensitive) const noexcept;
+        bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const noexcept;
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         bool starts_with(const char8_t *prefix, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return starts_with(reinterpret_cast<const char *>(prefix), cs);
         }
 
         bool ends_with(const char8_t *suffix, case_sensitivity_t cs = case_sensitive)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return ends_with(reinterpret_cast<const char *>(suffix), cs);
         }
@@ -1641,18 +1641,18 @@ namespace ST
 
     struct ST_EXPORT hash
     {
-        size_t operator()(const string &str) const ST_NOEXCEPT;
+        size_t operator()(const string &str) const noexcept;
     };
 
     struct ST_EXPORT hash_i
     {
-        size_t operator()(const string &str) const ST_NOEXCEPT;
+        size_t operator()(const string &str) const noexcept;
     };
 
     struct ST_EXPORT less_i
     {
         bool operator()(const string &left, const string &right)
-            const ST_NOEXCEPT
+            const noexcept
         {
             return left.compare_i(right) < 0;
         }
@@ -1661,7 +1661,7 @@ namespace ST
     struct ST_EXPORT equal_i
     {
         bool operator()(const string &left, const string &right)
-        const ST_NOEXCEPT
+        const noexcept
         {
             return left.compare_i(right) == 0;
         }
@@ -1731,12 +1731,12 @@ namespace ST
     ST_EXPORT string operator+(char16_t left, const string &right);
     ST_EXPORT string operator+(char32_t left, const string &right);
 
-    inline bool operator==(const null_t &, const string &right) ST_NOEXCEPT
+    inline bool operator==(const null_t &, const string &right) noexcept
     {
         return right.empty();
     }
 
-    inline bool operator!=(const null_t &, const string &right) ST_NOEXCEPT
+    inline bool operator!=(const null_t &, const string &right) noexcept
     {
         return !right.empty();
     }
@@ -1747,7 +1747,7 @@ namespace std
     template <>
     struct hash<ST::string>
     {
-         inline size_t operator()(const ST::string &str) const ST_NOEXCEPT
+         inline size_t operator()(const ST::string &str) const noexcept
          {
              return ST::hash()(str);
          }

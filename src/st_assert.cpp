@@ -35,12 +35,12 @@ static void _default_assert_handler(const char *condition_str,
 
 ST_EXPORT ST::assert_handler_t _ST_PRIVATE::_assert_handler = _default_assert_handler;
 
-void ST::set_assert_handler(assert_handler_t handler) ST_NOEXCEPT
+void ST::set_assert_handler(assert_handler_t handler) noexcept
 {
     _ST_PRIVATE::_assert_handler = handler;
 }
 
-void ST::set_default_assert_handler() ST_NOEXCEPT
+void ST::set_default_assert_handler() noexcept
 {
     _ST_PRIVATE::_assert_handler = _default_assert_handler;
 }

@@ -29,16 +29,16 @@ namespace _ST_PRIVATE
     class ST_EXPORT string_format_writer : public ST::format_writer
     {
     public:
-        string_format_writer(const char *format_str) ST_NOEXCEPT
+        string_format_writer(const char *format_str) noexcept
             : ST::format_writer(format_str) { }
 
-        string_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
+        string_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) override
         {
             m_output.append(data, size);
             return *this;
         }
 
-        string_format_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
+        string_format_writer &append_char(char ch, size_t count = 1) override
         {
             m_output.append_char(ch, count);
             return *this;

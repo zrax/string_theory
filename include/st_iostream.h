@@ -34,7 +34,7 @@ namespace _ST_PRIVATE
     {
     public:
         ostream_format_writer(const char *format_str,
-                              std::basic_ostream<char_T, traits_T> &stream) ST_NOEXCEPT
+                              std::basic_ostream<char_T, traits_T> &stream) noexcept
             : ST::format_writer(format_str), m_stream(stream) { }
 
         template <class write_char_T>
@@ -69,13 +69,13 @@ namespace _ST_PRIVATE
             m_stream.write(utf32.data(), utf32.size());
         }
 
-        ostream_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
+        ostream_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) override
         {
             write_data<char_T>(data, size);
             return *this;
         }
 
-        ostream_format_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
+        ostream_format_writer &append_char(char ch, size_t count = 1) override
         {
             while (count) {
                 m_stream.put(char_T(ch));

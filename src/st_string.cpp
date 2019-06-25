@@ -727,12 +727,12 @@ ST::string ST::string::from_uint64(uint64_t value, int base, bool upper_case)
 }
 #endif
 
-int ST::string::to_int(int base) const ST_NOEXCEPT
+int ST::string::to_int(int base) const noexcept
 {
-    return static_cast<int>(strtol(c_str(), ST_NULLPTR, base));
+    return static_cast<int>(strtol(c_str(), nullptr, base));
 }
 
-int ST::string::to_int(ST::conversion_result &result, int base) const ST_NOEXCEPT
+int ST::string::to_int(ST::conversion_result &result, int base) const noexcept
 {
     if (empty()) {
         result.m_flags = ST::conversion_result::result_full_match;
@@ -749,13 +749,13 @@ int ST::string::to_int(ST::conversion_result &result, int base) const ST_NOEXCEP
     return value;
 }
 
-unsigned int ST::string::to_uint(int base) const ST_NOEXCEPT
+unsigned int ST::string::to_uint(int base) const noexcept
 {
-    return static_cast<unsigned int>(strtoul(c_str(), ST_NULLPTR, base));
+    return static_cast<unsigned int>(strtoul(c_str(), nullptr, base));
 }
 
 unsigned int ST::string::to_uint(ST::conversion_result &result, int base)
-    const ST_NOEXCEPT
+    const noexcept
 {
     if (empty()) {
         result.m_flags = ST::conversion_result::result_full_match;
@@ -772,24 +772,24 @@ unsigned int ST::string::to_uint(ST::conversion_result &result, int base)
     return value;
 }
 
-float ST::string::to_float() const ST_NOEXCEPT
+float ST::string::to_float() const noexcept
 {
     // Use strtod to avoid requiring C99
-    return static_cast<float>(strtod(c_str(), ST_NULLPTR));
+    return static_cast<float>(strtod(c_str(), nullptr));
 }
 
-float ST::string::to_float(ST::conversion_result &result) const ST_NOEXCEPT
+float ST::string::to_float(ST::conversion_result &result) const noexcept
 {
     // Use strtod to avoid requiring C99
     return static_cast<float>(to_double(result));
 }
 
-double ST::string::to_double() const ST_NOEXCEPT
+double ST::string::to_double() const noexcept
 {
-    return strtod(c_str(), ST_NULLPTR);
+    return strtod(c_str(), nullptr);
 }
 
-double ST::string::to_double(ST::conversion_result &result) const ST_NOEXCEPT
+double ST::string::to_double(ST::conversion_result &result) const noexcept
 {
     if (empty()) {
         result.m_flags = ST::conversion_result::result_full_match;
@@ -807,13 +807,13 @@ double ST::string::to_double(ST::conversion_result &result) const ST_NOEXCEPT
 }
 
 #ifdef ST_HAVE_INT64
-int64_t ST::string::to_int64(int base) const ST_NOEXCEPT
+int64_t ST::string::to_int64(int base) const noexcept
 {
-    return static_cast<int64_t>(strtoll(c_str(), ST_NULLPTR, base));
+    return static_cast<int64_t>(strtoll(c_str(), nullptr, base));
 }
 
 int64_t ST::string::to_int64(ST::conversion_result &result, int base)
-    const ST_NOEXCEPT
+    const noexcept
 {
     char *end;
     int64_t value = static_cast<int64_t>(strtoll(c_str(), &end, base));
@@ -825,13 +825,13 @@ int64_t ST::string::to_int64(ST::conversion_result &result, int base)
     return value;
 }
 
-uint64_t ST::string::to_uint64(int base) const ST_NOEXCEPT
+uint64_t ST::string::to_uint64(int base) const noexcept
 {
-    return static_cast<uint64_t>(strtoull(c_str(), ST_NULLPTR, base));
+    return static_cast<uint64_t>(strtoull(c_str(), nullptr, base));
 }
 
 uint64_t ST::string::to_uint64(ST::conversion_result &result, int base)
-    const ST_NOEXCEPT
+    const noexcept
 {
     char *end;
     uint64_t value = static_cast<uint64_t>(strtoull(c_str(), &end, base));
@@ -844,7 +844,7 @@ uint64_t ST::string::to_uint64(ST::conversion_result &result, int base)
 }
 #endif
 
-bool ST::string::to_bool() const ST_NOEXCEPT
+bool ST::string::to_bool() const noexcept
 {
     if (compare_i("true") == 0)
         return true;
@@ -853,7 +853,7 @@ bool ST::string::to_bool() const ST_NOEXCEPT
     return to_int() != 0;
 }
 
-bool ST::string::to_bool(conversion_result &result) const ST_NOEXCEPT
+bool ST::string::to_bool(conversion_result &result) const noexcept
 {
     if (compare_i("true") == 0) {
         result.m_flags = ST::conversion_result::result_ok
@@ -926,13 +926,13 @@ static int _compare_ci(const char *left, size_t lsize,
     return _compare_ci(left, lsize, right, rsize);
 }
 
-int ST::string::compare(const string &str, case_sensitivity_t cs) const ST_NOEXCEPT
+int ST::string::compare(const string &str, case_sensitivity_t cs) const noexcept
 {
     return (cs == case_sensitive) ? _compare_cs(c_str(), size(), str.c_str(), str.size())
                                   : _compare_ci(c_str(), size(), str.c_str(), str.size());
 }
 
-int ST::string::compare(const char *str, case_sensitivity_t cs) const ST_NOEXCEPT
+int ST::string::compare(const char *str, case_sensitivity_t cs) const noexcept
 {
     const size_t rsize = str ? std::char_traits<char>::length(str) : 0;
     return (cs == case_sensitive) ? _compare_cs(c_str(), size(), str ? str : "", rsize)
@@ -940,14 +940,14 @@ int ST::string::compare(const char *str, case_sensitivity_t cs) const ST_NOEXCEP
 }
 
 int ST::string::compare_n(const string &str, size_t count,
-                          case_sensitivity_t cs) const ST_NOEXCEPT
+                          case_sensitivity_t cs) const noexcept
 {
     return (cs == case_sensitive) ? _compare_cs(c_str(), size(), str.c_str(), str.size(), count)
                                   : _compare_ci(c_str(), size(), str.c_str(), str.size(), count);
 }
 
 int ST::string::compare_n(const char *str, size_t count,
-                          case_sensitivity_t cs) const ST_NOEXCEPT
+                          case_sensitivity_t cs) const noexcept
 {
     const size_t rsize = str ? std::char_traits<char>::length(str) : 0;
     return (cs == case_sensitive) ? _compare_cs(c_str(), size(), str ? str : "", rsize, count)
@@ -965,13 +965,13 @@ static const char *_stristr(const char *haystack, const char *needle)
             return cp;
         ++cp;
     }
-    return ST_NULLPTR;
+    return nullptr;
 }
 
 static const char *_strichr(const char *haystack, int ch)
 {
     if (ch > 0xFF || ch < 0)
-        return ST_NULLPTR;
+        return nullptr;
 
     const char *cp = haystack;
     const int lch = _cl_fast_lower(static_cast<char>(ch));
@@ -980,11 +980,11 @@ static const char *_strichr(const char *haystack, int ch)
             return cp;
         ++cp;
     }
-    return ST_NULLPTR;
+    return nullptr;
 }
 
 ST_ssize_t ST::string::find(size_t start, char ch, case_sensitivity_t cs)
-    const ST_NOEXCEPT
+    const noexcept
 {
     if (start >= size())
         return -1;
@@ -995,7 +995,7 @@ ST_ssize_t ST::string::find(size_t start, char ch, case_sensitivity_t cs)
 }
 
 ST_ssize_t ST::string::find(size_t start, const char *substr, case_sensitivity_t cs)
-    const ST_NOEXCEPT
+    const noexcept
 {
     if (!substr || !substr[0] || start >= size())
         return -1;
@@ -1005,7 +1005,7 @@ ST_ssize_t ST::string::find(size_t start, const char *substr, case_sensitivity_t
     return cp ? (cp - c_str()) : -1;
 }
 
-ST_ssize_t ST::string::find_last(size_t max, char ch, case_sensitivity_t cs) const ST_NOEXCEPT
+ST_ssize_t ST::string::find_last(size_t max, char ch, case_sensitivity_t cs) const noexcept
 {
     if (empty())
         return -1;
@@ -1013,7 +1013,7 @@ ST_ssize_t ST::string::find_last(size_t max, char ch, case_sensitivity_t cs) con
     const char *endp = c_str() + (max > size() ? size() : max);
 
     const char *start = c_str();
-    const char *found = ST_NULLPTR;
+    const char *found = nullptr;
     for ( ;; ) {
         const char *cp = (cs == case_sensitive) ? strchr(start, ch)
                                                 : _strichr(start, ch);
@@ -1026,7 +1026,7 @@ ST_ssize_t ST::string::find_last(size_t max, char ch, case_sensitivity_t cs) con
 }
 
 ST_ssize_t ST::string::find_last(size_t max, const char *substr, case_sensitivity_t cs)
-    const ST_NOEXCEPT
+    const noexcept
 {
     if (!substr || !substr[0] || empty())
         return -1;
@@ -1034,7 +1034,7 @@ ST_ssize_t ST::string::find_last(size_t max, const char *substr, case_sensitivit
     const char *endp = c_str() + (max > size() ? size() : max);
 
     const char *start = c_str();
-    const char *found = ST_NULLPTR;
+    const char *found = nullptr;
     for ( ;; ) {
         const char *cp = (cs == case_sensitive) ? strstr(start, substr)
                                                 : _stristr(start, substr);
@@ -1113,14 +1113,14 @@ ST::string ST::string::substr(ST_ssize_t start, size_t count) const
     return sub;
 }
 
-bool ST::string::starts_with(const ST::string &prefix, case_sensitivity_t cs) const ST_NOEXCEPT
+bool ST::string::starts_with(const ST::string &prefix, case_sensitivity_t cs) const noexcept
 {
     if (prefix.size() > size())
         return false;
     return compare_n(prefix, prefix.size(), cs) == 0;
 }
 
-bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const ST_NOEXCEPT
+bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const noexcept
 {
     size_t count = prefix ? std::char_traits<char>::length(prefix) : 0;
     if (count > size())
@@ -1128,7 +1128,7 @@ bool ST::string::starts_with(const char *prefix, case_sensitivity_t cs) const ST
     return compare_n(prefix, count, cs) == 0;
 }
 
-bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) const ST_NOEXCEPT
+bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) const noexcept
 {
     if (suffix.size() > size())
         return false;
@@ -1139,7 +1139,7 @@ bool ST::string::ends_with(const ST::string &suffix, case_sensitivity_t cs) cons
             : _compare_ci(c_str() + start, suffix.c_str(), suffix.size()) == 0;
 }
 
-bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const ST_NOEXCEPT
+bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const noexcept
 {
     size_t count = suffix ? std::char_traits<char>::length(suffix) : 0;
     if (count > size())
@@ -1429,7 +1429,7 @@ ST::string ST::string::fill(size_t count, char c)
     return result;
 }
 
-size_t ST::hash::operator()(const string &str) const ST_NOEXCEPT
+size_t ST::hash::operator()(const string &str) const noexcept
 {
     /* FNV-1a hash.  See http://isthe.com/chongo/tech/comp/fnv/ for details */
 #if ST_SIZET_BYTES == 4
@@ -1450,7 +1450,7 @@ size_t ST::hash::operator()(const string &str) const ST_NOEXCEPT
     return hash;
 }
 
-size_t ST::hash_i::operator()(const string &str) const ST_NOEXCEPT
+size_t ST::hash_i::operator()(const string &str) const noexcept
 {
     /* FNV-1a hash.  See http://isthe.com/chongo/tech/comp/fnv/ for details */
 #if ST_SIZET_BYTES == 4
