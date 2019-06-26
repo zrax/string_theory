@@ -43,29 +43,14 @@ TEST(format, escapes)
     EXPECT_EQ(ST_LITERAL("{xxx{{yyy{"), ST::format("{{{}{{{{{}{{", "xxx", "yyy"));
 }
 
-static void clean_assert(const char *, const char *, int, const char *message)
-{
-    fputs(message, stderr);
-    fputs("\n", stderr);
-    exit(0);
-}
-
 TEST(format, errors)
 {
-    ST::set_assert_handler(&clean_assert);
-
-    EXPECT_EXIT(ST::format("{", 1), ::testing::ExitedWithCode(0),
-                "Unterminated format specifier");
-    EXPECT_EXIT(ST::format("{.", 1), ::testing::ExitedWithCode(0),
-                "Unterminated format specifier");
-    EXPECT_EXIT(ST::format("{_", 1), ::testing::ExitedWithCode(0),
-                "Unterminated format specifier");
-    EXPECT_EXIT(ST::format("{&", 1), ::testing::ExitedWithCode(0),
-                "Unterminated format specifier");
-    EXPECT_EXIT(ST::format("{\x7f", 1), ::testing::ExitedWithCode(0),
-                "Unexpected character in format string");
-    EXPECT_EXIT(ST::format(nullptr, 1), ::testing::ExitedWithCode(0),
-                "Passed a null format string");
+    EXPECT_THROW(ST::format("{", 1), ST::bad_format);
+    EXPECT_THROW(ST::format("{.", 1), ST::bad_format);
+    EXPECT_THROW(ST::format("{_", 1), ST::bad_format);
+    EXPECT_THROW(ST::format("{&", 1), ST::bad_format);
+    EXPECT_THROW(ST::format("{\x7f", 1), ST::bad_format);
+    EXPECT_THROW(ST::format(nullptr, 1), std::invalid_argument);
 
     // Too many actual parameters is no longer an error due to arg references
     // However, attempting to use a parameter number that is not provided
@@ -74,8 +59,6 @@ TEST(format, errors)
     EXPECT_THROW(ST::format("{&0}", 1), std::out_of_range);
     EXPECT_THROW(ST::format("{&2}", 1), std::out_of_range);
     EXPECT_THROW(ST::format("{}"), std::out_of_range);
-
-    ST::set_default_assert_handler();
 }
 
 TEST(format, strings)

@@ -68,9 +68,8 @@ char ST::format_writer::fetch_prefix()
 
 bool ST::format_writer::next_format()
 {
-    ST_ASSERT(m_format_str, "Passed a null format string!");
     if (!m_format_str)
-        return false;
+        throw std::invalid_argument("Passed a null format string!");
 
     switch (fetch_prefix()) {
     case 0:
@@ -78,14 +77,14 @@ bool ST::format_writer::next_format()
     case '{':
         return true;
     default:
-        ST_ASSERT(false, "Error parsing format string");
-        return false;
+        throw ST::bad_format("Error parsing format string");
     }
 }
 
 ST::format_spec ST::format_writer::parse_format()
 {
-    ST_ASSERT(*m_format_str == '{', "parse_format() called with no format");
+    if (*m_format_str != '{')
+        throw ST::bad_format("parse_format() called with no format");
 
     ST::format_spec spec;
     const char *ptr = m_format_str;
@@ -94,8 +93,7 @@ ST::format_spec ST::format_writer::parse_format()
 
         switch (*ptr) {
         case 0:
-            ST_ASSERT(false, "Unterminated format specifier");
-            abort();
+            throw ST::bad_format("Unterminated format specifier");
         case '}':
             // Done with format spec
             m_format_str = ptr + 1;
@@ -110,7 +108,8 @@ ST::format_spec ST::format_writer::parse_format()
         case '_':
             spec.pad = *(ptr + 1);
             spec.numeric_pad = false;
-            ST_ASSERT(spec.pad, "Unterminated format specifier");
+            if (!spec.pad)
+                throw ST::bad_format("Unterminated format specifier");
             ++ptr;
             break;
         case '0':
@@ -161,7 +160,8 @@ ST::format_spec ST::format_writer::parse_format()
         }
         case '.':
         {
-            ST_ASSERT(*(ptr + 1), "Unterminated format specifier");
+            if (*(ptr + 1) == 0)
+                throw ST::bad_format("Unterminated format specifier");
             char *end = nullptr;
             spec.precision = static_cast<int>(strtol(ptr + 1, &end, 10));
             ptr = end - 1;
@@ -169,15 +169,15 @@ ST::format_spec ST::format_writer::parse_format()
         }
         case '&':
         {
-            ST_ASSERT(*(ptr + 1), "Unterminated format specifier");
+            if (*(ptr + 1) == 0)
+                throw ST::bad_format("Unterminated format specifier");
             char *end = nullptr;
             spec.arg_index = static_cast<int>(strtol(ptr + 1, &end, 10));
             ptr = end - 1;
             break;
         }
         default:
-            ST_ASSERT(false, "Unexpected character in format string");
-            break;
+            throw ST::bad_format("Unexpected character in format string");
         }
     }
 }
@@ -384,8 +384,8 @@ static void _format_numeric_u(const ST::format_spec &format,
 static void _format_char(const ST::format_spec &format,
                          ST::format_writer &output, int ch)
 {
-    ST_ASSERT(format.minimum_length == 0 && format.pad == 0,
-              "Char formatting does not currently support padding");
+    if (format.minimum_length != 0 || format.pad != 0)
+        throw ST::bad_format("Char formatting does not currently support padding");
 
     // Don't need to nul-terminate this, since string_buffer's constructor fixes it
     char utf8[4];

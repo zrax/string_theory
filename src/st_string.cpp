@@ -1513,9 +1513,7 @@ static ST::string _append(const ST::string &left, char32_t right)
         *catp++ = 0x80 | ((right >>  6) & 0x3F);
         *catp++ = 0x80 | ((right      ) & 0x3F);
     } else {
-        ST_ASSERT(false, "Unicode character out of range");
-        std::char_traits<char>::copy(catp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
-        catp += BADCHAR_SUBSTITUTE_UTF8_LEN;
+        throw ST::unicode_error("Unicode character out of range");
     }
 
     return ST::string::from_validated(std::move(cat));
@@ -1583,9 +1581,7 @@ static ST::string _prepend(char32_t left, const ST::string &right)
         *catp++ = 0x80 | ((left >>  6) & 0x3F);
         *catp++ = 0x80 | ((left      ) & 0x3F);
     } else {
-        ST_ASSERT(false, "Unicode character out of range");
-        std::char_traits<char>::copy(catp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
-        catp += BADCHAR_SUBSTITUTE_UTF8_LEN;
+        throw ST::unicode_error("Unicode character out of range");
     }
 
     std::char_traits<char>::copy(catp, right.c_str(), right.size());

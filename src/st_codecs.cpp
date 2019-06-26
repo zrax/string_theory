@@ -57,9 +57,8 @@ ST::string ST::hex_encode(const void *data, size_t size)
     if (size == 0)
         return ST::null;
 
-    ST_ASSERT(data, "null data pointer passed to hex_encode");
     if (!data)
-        return ST::null;
+        throw std::invalid_argument("null data pointer passed to hex_encode");
 
     size_t encoded_size = size * 2;
     ST::char_buffer buffer;
@@ -135,9 +134,8 @@ ST::string ST::base64_encode(const void *data, size_t size)
     if (size == 0)
         return ST::null;
 
-    ST_ASSERT(data, "null data pointer passed to base64_encode");
     if (!data)
-        return ST::null;
+        throw std::invalid_argument("null data pointer passed to base64_encode");
 
     ST::char_buffer buffer;
     buffer.allocate(_base64_encode_size(size));

@@ -73,10 +73,8 @@ namespace ST
         void format(float_T value, char format)
         {
             static const char valid_formats[] = "efgEFG";
-            if (!std::char_traits<char>::find(valid_formats, sizeof(valid_formats) - 1, format)) {
-                ST_ASSERT(false, "Unsupported floating-point format specifier");
-                format = 'g';
-            }
+            if (!std::char_traits<char>::find(valid_formats, sizeof(valid_formats) - 1, format))
+                throw ST::bad_format("Unsupported floating-point format specifier");
 
             char format_spec[] = { '%', format, 0 };
             int format_size = snprintf(nullptr, 0, format_spec, double(value));

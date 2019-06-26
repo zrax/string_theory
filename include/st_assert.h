@@ -55,6 +55,14 @@ namespace ST
             : std::runtime_error(message)
         { }
     };
+
+    class ST_EXPORT bad_format : public std::invalid_argument
+    {
+    public:
+        explicit bad_format(const char *message) noexcept
+            : std::invalid_argument(message)
+        { }
+    };
 }
 
 namespace _ST_PRIVATE
