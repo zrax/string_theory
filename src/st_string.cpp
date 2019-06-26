@@ -36,11 +36,6 @@
 #   error Supported size_t sizes are 4 (32-bit) or 8 (64-bit) bytes
 #endif
 
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#   define strtoll  _strtoi64
-#   define strtoull _strtoui64
-#endif
-
 #define BADCHAR_SUBSTITUTE          0xFFFDul
 #define BADCHAR_SUBSTITUTE_UTF8     "\xEF\xBF\xBD"
 #define BADCHAR_SUBSTITUTE_UTF8_LEN 3
@@ -274,7 +269,7 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
     const char16_t *ep = sp + size;
     for (; sp < ep; ++sp) {
         if (*sp < 0x80) {
-            converted.append_char(*sp);
+            converted.append_char(static_cast<char>(*sp));
         } else if (*sp < 0x800) {
             converted.append_char(0xC0 | ((*sp >>  6) & 0x1F));
             converted.append_char(0x80 | ((*sp      ) & 0x3F));

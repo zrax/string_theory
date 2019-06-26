@@ -28,6 +28,10 @@
 
 #define BUFFER_LEN (256)
 
+#if defined(_MSC_VER)
+#   pragma warning(disable: 4996)
+#endif
+
 TEST(stdio, printf)
 {
     FILE *test_f = fopen("st_test.out", "w");

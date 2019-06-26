@@ -800,10 +800,10 @@ TEST(format, floating_point)
     EXPECT_EQ(ST_LITERAL("xx16384.00xx"), ST::format("xx{.2f}xx", 16384.0));
     EXPECT_EQ(ST_LITERAL("xx0.01xx"), ST::format("xx{.2f}xx", 1.0 / 128));
 
-#if defined(__MINGW32__) || (defined(_MSC_VER) &&  (_MSC_VER < 1900))
+#if defined(__MINGW32__)
     // MSVC uses 3 digits for the exponent by default, up to VC 2013.
-    // VC 2015 produces output compatible with glibc (two digits) and no
-    // longer provides this function.
+    // We don't support MSVC versions older than 2015, but MinGW still
+    // uses the old format, presumably for MSVC compatibility.
     _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 

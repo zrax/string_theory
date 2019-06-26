@@ -24,11 +24,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#   define snprintf _snprintf
-#   pragma warning(disable: 4996)
-#endif
-
 namespace ST
 {
     // Teach GTest how to print an ST::string
