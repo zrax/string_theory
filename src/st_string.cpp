@@ -654,7 +654,7 @@ static ST::string _mini_format_numeric_s(int radix, bool upper_case, int_T value
 {
     typedef typename std::make_unsigned<int_T>::type uint_T;
     ST::uint_formatter<uint_T> formatter;
-    formatter.format(ST::safe_abs(value), radix, upper_case);
+    formatter.format(std::abs(value), radix, upper_case);
 
     ST::char_buffer result;
     if (value < 0) {

@@ -28,24 +28,6 @@
 
 namespace ST
 {
-    inline unsigned int safe_abs(int value)
-    {
-        return (value < 0) ? -static_cast<unsigned int>(value)
-                           : static_cast<unsigned int>(value);
-    }
-
-    inline unsigned long safe_abs(long value)
-    {
-        return (value < 0) ? -static_cast<unsigned long>(value)
-                           : static_cast<unsigned long>(value);
-    }
-
-    inline unsigned long long safe_abs(long long value)
-    {
-        return (value < 0) ? -static_cast<unsigned long long>(value)
-                           : static_cast<unsigned long long>(value);
-    }
-
     template <typename uint_T>
     class uint_formatter
     {

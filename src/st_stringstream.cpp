@@ -22,6 +22,7 @@
 #include "st_format_simple.h"
 
 #include <cstdio>
+#include <cstdlib>
 
 #define EXPAND_SS_BUFFER(added_size)                                \
     if (m_size + added_size > m_alloc) {                            \
@@ -68,7 +69,7 @@ ST::string_stream &ST::string_stream::append_char(char ch, size_t count)
 ST::string_stream &ST::string_stream::operator<<(int num)
 {
     ST::uint_formatter<unsigned int> formatter;
-    formatter.format(safe_abs(num), 10, false);
+    formatter.format(std::abs(num), 10, false);
     if (num < 0)
         append_char('-');
     return append(formatter.text(), formatter.size());
@@ -84,7 +85,7 @@ ST::string_stream &ST::string_stream::operator<<(unsigned int num)
 ST::string_stream &ST::string_stream::operator<<(long num)
 {
     ST::uint_formatter<unsigned long> formatter;
-    formatter.format(safe_abs(num), 10, false);
+    formatter.format(std::abs(num), 10, false);
     if (num < 0)
         append_char('-');
     return append(formatter.text(), formatter.size());
@@ -100,7 +101,7 @@ ST::string_stream &ST::string_stream::operator<<(unsigned long num)
 ST::string_stream &ST::string_stream::operator<<(long long num)
 {
     ST::uint_formatter<unsigned long long> formatter;
-    formatter.format(safe_abs(num), 10, false);
+    formatter.format(std::abs(num), 10, false);
     if (num < 0)
         append_char('-');
     return append(formatter.text(), formatter.size());
