@@ -179,7 +179,7 @@ TEST(codecs, hex_decode_buffer)
     EXPECT_EQ(cbuf(data_17), ST::char_buffer(buffer, sizeof(data_17)));
 }
 
-void clean_assert(const char *, const char *, int, const char *message)
+static void clean_assert(const char *, const char *, int, const char *message)
 {
     fputs(message, stderr);
     fputs("\n", stderr);

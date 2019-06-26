@@ -37,40 +37,42 @@ endif()
 
 add_subdirectory(gtest-1.8.0 EXCLUDE_FROM_ALL)
 
-include_directories(${GTEST_INCLUDE_DIR})
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+add_executable(st_gtests "")
+target_link_libraries(st_gtests PRIVATE gtest gtest_main string_theory)
+target_include_directories(st_gtests PRIVATE
+    ${GTEST_INCLUDE_DIR}
+    ${gtest_SOURCE_DIR}/include
+    ${gtest_SOURCE_DIR}
+)
 
-function(add_gtest _test_name)
-    add_executable(${_test_name} "${_test_name}.cpp")
-    target_link_libraries(${_test_name} gtest gtest_main string_theory)
-    add_test(NAME ${_test_name} COMMAND ${_test_name})
+if(WIN32 AND NOT ST_BUILD_STATIC)
+    add_custom_command(TARGET st_gtests POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:string_theory>"
+        "$<TARGET_FILE_DIR:st_gtests>"
+    )
+    add_custom_command(TARGET st_gtests POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:gtest>"
+        "$<TARGET_FILE_DIR:st_gtests>"
+    )
+    add_custom_command(TARGET st_gtests POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:gtest_main>"
+        "$<TARGET_FILE_DIR:st_gtests>"
+    )
+endif()
 
-    if(WIN32 AND NOT ST_BUILD_STATIC)
-        add_custom_command(TARGET ${_test_name} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:string_theory>"
-            "$<TARGET_FILE_DIR:${_test_name}>"
-        )
-        add_custom_command(TARGET ${_test_name} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:gtest>"
-            "$<TARGET_FILE_DIR:${_test_name}>"
-        )
-        add_custom_command(TARGET ${_test_name} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:gtest_main>"
-            "$<TARGET_FILE_DIR:${_test_name}>"
-        )
-    endif()
-endfunction()
-
-add_gtest(test_buffer)
-add_gtest(test_string)
-add_gtest(test_codecs)
-add_gtest(test_iostream)
-add_gtest(test_sstream)
-add_gtest(test_format)
-add_gtest(test_stdio)
+target_sources(st_gtests PRIVATE
+    test_buffer.cpp
+    test_string.cpp
+    test_codecs.cpp
+    test_iostream.cpp
+    test_sstream.cpp
+    test_format.cpp
+    test_stdio.cpp
+    test_regress.cpp
+)
 
 option(ST_BUILD_PROFILE_TEST "Build string profile test application" OFF)
 if(ST_BUILD_PROFILE_TEST)
@@ -112,7 +114,15 @@ if(ST_BUILD_PROFILE_TEST)
     endif()
 endif()
 
-add_gtest(test_regress)
+cmake_policy(PUSH)
+if(POLICY CMP0037)
+    # The "test" target is reserved when ctest is included (CMake 3.11+),
+    # but older versions of CMake will reserve it always, so we must
+    # explicitly allow older CMake versions to allow the target name
+    cmake_policy(SET CMP0037 OLD)
+endif()
+add_custom_target(test "$<TARGET_FILE:st_gtests>")
+cmake_policy(POP)
 
 if(ST_BUILD_TEST_COVERAGE)
     setup_target_for_coverage(test_coverage

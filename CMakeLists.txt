@@ -207,6 +207,5 @@ install(EXPORT string_theory-targets
 
 option(ST_BUILD_TESTS "Build string_theory test suite (recommended)" ON)
 if(ST_BUILD_TESTS)
-    enable_testing()
     add_subdirectory(test)
 endif()

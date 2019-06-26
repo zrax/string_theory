@@ -43,7 +43,7 @@ TEST(format, escapes)
     EXPECT_EQ(ST_LITERAL("{xxx{{yyy{"), ST::format("{{{}{{{{{}{{", "xxx", "yyy"));
 }
 
-void clean_assert(const char *, const char *, int, const char *message)
+static void clean_assert(const char *, const char *, int, const char *message)
 {
     fputs(message, stderr);
     fputs("\n", stderr);

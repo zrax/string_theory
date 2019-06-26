@@ -35,7 +35,7 @@ build_script:
   - cmake -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
   - if [%TARGET%]==[MSVC] (
       cmake --build . --config Debug &&
-      cmake --build . --config Debug --target RUN_TESTS )
+      cmake --build . --config Debug --target test )
   - if [%TARGET%]==[MinGW] (
       mingw32-make &&
       mingw32-make test )
