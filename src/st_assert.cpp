@@ -1,4 +1,4 @@
-/*  Copyright (c) 2016 Michael Hansen
+/*  Copyright (c) 2019 Michael Hansen
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -23,24 +23,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-static void _default_assert_handler(const char *condition_str,
-                                    const char *filename, int line,
-                                    const char *message)
+void _ST_PRIVATE::assert_handler(const char *filename, int line, const char *message)
 {
-    (void)condition_str;
-
     fprintf(stderr, "%s:%d: %s\n", filename, line, message);
     abort();
-}
-
-ST_EXPORT ST::assert_handler_t _ST_PRIVATE::_assert_handler = _default_assert_handler;
-
-void ST::set_assert_handler(assert_handler_t handler) noexcept
-{
-    _ST_PRIVATE::_assert_handler = handler;
-}
-
-void ST::set_default_assert_handler() noexcept
-{
-    _ST_PRIVATE::_assert_handler = _default_assert_handler;
 }

@@ -33,13 +33,6 @@
 
 namespace ST
 {
-    typedef std::function<void (const char *condition_str,
-                                const char *filename, int line,
-                                const char *message)> assert_handler_t;
-
-    ST_EXPORT void set_assert_handler(assert_handler_t handler) noexcept;
-    ST_EXPORT void set_default_assert_handler() noexcept;
-
     class ST_EXPORT unicode_error : public std::runtime_error
     {
     public:
@@ -67,13 +60,13 @@ namespace ST
 
 namespace _ST_PRIVATE
 {
-    ST_EXPORT extern ST::assert_handler_t _assert_handler;
+    ST_EXPORT void assert_handler(const char *filename, int line, const char *message);
 }
 
 #define ST_ASSERT(condition, message) \
     do { \
-        if (!(condition) && _ST_PRIVATE::_assert_handler) \
-            _ST_PRIVATE::_assert_handler(#condition, __FILE__, __LINE__, message); \
+        if (!(condition)) \
+            _ST_PRIVATE::assert_handler(__FILE__, __LINE__, message); \
     } while (0)
 
 #ifdef _MSC_VER
