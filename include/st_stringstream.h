@@ -22,10 +22,11 @@
 #define _ST_STRINGSTREAM_H
 
 #include "st_string.h"
+#include "st_format_numeric.h"
 
 namespace ST
 {
-    class ST_EXPORT string_stream
+    class string_stream
     {
         ST_DISABLE_COPY(string_stream)
 
@@ -60,24 +61,99 @@ namespace ST
             return *this;
         }
 
-        string_stream &append(const char *data, size_t size = ST_AUTO_SIZE);
+        string_stream &append(const char *data, size_t size = ST_AUTO_SIZE)
+        {
+            if (size == 0)
+                return *this;
 
-        string_stream &append_char(char ch, size_t count = 1);
+            if (size == ST_AUTO_SIZE)
+                size = data ? std::char_traits<char>::length(data) : 0;
+
+            expand_buffer(size);
+
+            std::char_traits<char>::move(m_chars + m_size, data, size);
+            m_size += size;
+            return *this;
+        }
+
+        string_stream &append_char(char ch, size_t count = 1)
+        {
+            if (count == 0)
+                return *this;
+
+            expand_buffer(count);
+
+            std::char_traits<char>::assign(m_chars + m_size, count, ch);
+            m_size += count;
+            return *this;
+        }
 
         string_stream &operator<<(const char *text)
         {
             return append(text);
         }
 
-        string_stream &operator<<(int num);
-        string_stream &operator<<(unsigned int num);
-        string_stream &operator<<(long num);
-        string_stream &operator<<(unsigned long num);
-        string_stream &operator<<(long long num);
-        string_stream &operator<<(unsigned long long num);
+        string_stream &operator<<(int num)
+        {
+            ST::uint_formatter<unsigned int> formatter;
+            formatter.format(std::abs(num), 10, false);
+            if (num < 0)
+                append_char('-');
+            return append(formatter.text(), formatter.size());
+        }
 
-        string_stream &operator<<(float num);
-        string_stream &operator<<(double num);
+        string_stream &operator<<(unsigned int num)
+        {
+            ST::uint_formatter<unsigned int> formatter;
+            formatter.format(num, 10, false);
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(long num)
+        {
+            ST::uint_formatter<unsigned long> formatter;
+            formatter.format(std::abs(num), 10, false);
+            if (num < 0)
+                append_char('-');
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(unsigned long num)
+        {
+            ST::uint_formatter<unsigned long> formatter;
+            formatter.format(num, 10, false);
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(long long num)
+        {
+            ST::uint_formatter<unsigned long long> formatter;
+            formatter.format(std::abs(num), 10, false);
+            if (num < 0)
+                append_char('-');
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(unsigned long long num)
+        {
+            ST::uint_formatter<unsigned long long> formatter;
+            formatter.format(num, 10, false);
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(float num)
+        {
+            ST::float_formatter<float> formatter;
+            formatter.format(num, 'g');
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(double num)
+        {
+            ST::float_formatter<double> formatter;
+            formatter.format(num, 'g');
+            return append(formatter.text(), formatter.size());
+        }
 
         string_stream &operator<<(char ch)
         {
@@ -123,6 +199,23 @@ namespace ST
         bool is_heap() const noexcept
         {
             return m_alloc > ST_STACK_STRING_LEN;
+        }
+
+        void expand_buffer(size_t added_size)
+        {
+            if (m_size + added_size > m_alloc) {
+                size_t big_size = m_alloc;
+                do {
+                    big_size *= 2;
+                } while (m_size + added_size > big_size);
+
+                char *bigger = new char[big_size];
+                std::char_traits<char>::copy(bigger, m_chars, m_alloc);
+                if (is_heap())
+                    delete[] m_chars;
+                m_chars = bigger;
+                m_alloc = big_size;
+            }
         }
     };
 }

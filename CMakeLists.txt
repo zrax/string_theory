@@ -149,7 +149,6 @@ set(ST_SOURCES
     src/st_codecs.cpp
     src/st_format.cpp
     src/st_string.cpp
-    src/st_stringstream.cpp
 )
 
 set(ST_INSTALL_BIN_DIR "bin" CACHE PATH "Path to install DLLs on Windows")
