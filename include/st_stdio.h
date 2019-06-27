@@ -27,7 +27,7 @@
 
 namespace _ST_PRIVATE
 {
-    class ST_EXPORT stdio_format_writer : public ST::format_writer
+    class stdio_format_writer : public ST::format_writer
     {
     public:
         stdio_format_writer(const char *format_str, FILE *stream) noexcept

@@ -43,11 +43,11 @@
 namespace ST
 {
     // For optimized construction of empty objects
-    struct ST_EXPORT null_t
+    struct null_t
     {
-        null_t() { }
+        constexpr null_t() noexcept { }
     };
-    static const null_t null;
+    static constexpr null_t null;
 
     template <typename char_T>
     class ST_EXPORT buffer

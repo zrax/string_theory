@@ -70,7 +70,7 @@ namespace ST
     ST_ENUM_CONSTANT(float_class_t, float_exp);
     ST_ENUM_CONSTANT(float_class_t, float_exp_upper);
 
-    struct ST_EXPORT format_spec
+    struct format_spec
     {
         format_spec() noexcept
             : minimum_length(), precision(-1), arg_index(-1), alignment(),
