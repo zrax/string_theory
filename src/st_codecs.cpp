@@ -54,9 +54,9 @@ static_assert(sizeof(_b64_values) / sizeof(int) == 0x80, "Missing base64 values"
 
 void _ST_PRIVATE::hex_encode(char *output, const void *data, size_t size) noexcept
 {
-    auto sp = static_cast<const uint8_t *>(data);
+    auto sp = static_cast<const unsigned char *>(data);
     while (size) {
-        uint8_t byte = *sp++;
+        unsigned char byte = *sp++;
         *output++ = _hex_chars[(byte >> 4) & 0x0F];
         *output++ = _hex_chars[(byte     ) & 0x0F];
         --size;
@@ -78,7 +78,7 @@ ST_ssize_t _ST_PRIVATE::hex_decode(const char *hex, size_t hex_size,
 
     char *outp = reinterpret_cast<char *>(output);
     char *endp = outp + decode_size;
-    auto sp = reinterpret_cast<const uint8_t *>(hex);
+    auto sp = reinterpret_cast<const unsigned char *>(hex);
 
     while (outp < endp) {
         int bits[2] = {
@@ -97,7 +97,7 @@ ST_ssize_t _ST_PRIVATE::hex_decode(const char *hex, size_t hex_size,
 
 void _ST_PRIVATE::b64_encode(char *output, const void *data, size_t size) noexcept
 {
-    auto sp = static_cast<const uint8_t *>(data);
+    auto sp = static_cast<const unsigned char *>(data);
     while (size > 2) {
         *output++ = _b64_chars[sp[0] >> 2];
         *output++ = _b64_chars[((sp[0] & 0x03) << 4) | ((sp[1] & 0xF0) >> 4)];
@@ -144,7 +144,7 @@ ST_ssize_t _ST_PRIVATE::b64_decode(const char *base64, size_t base64_size,
 
     char *outp = reinterpret_cast<char *>(output);
     char *endp = outp + decode_size;
-    auto sp = reinterpret_cast<const uint8_t *>(base64);
+    auto sp = reinterpret_cast<const unsigned char *>(base64);
 
     while (outp + 3 < endp) {
         int bits[4] = {
