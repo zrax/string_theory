@@ -332,10 +332,8 @@ static void _format_numeric_s(const ST::format_spec &format,
     }
 
     typedef typename std::make_unsigned<int_T>::type uint_T;
-    int_T abs = (value < 0) ? -value : value;
-
     ST::uint_formatter<uint_T> formatter;
-    formatter.format(static_cast<uint_T>(abs), radix, upper_case);
+    formatter.format(static_cast<uint_T>(std::abs(value)), radix, upper_case);
 
     const numeric_type ntype = (value == 0) ? numeric_zero
                              : (value < 0) ? numeric_negative
