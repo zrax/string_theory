@@ -18,14 +18,21 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
+#ifndef _ST_FORMAT_NUMERIC_H
+#define _ST_FORMAT_NUMERIC_H
+
 #include <limits>
-#include <string>
+#include <cstdio>
 
 namespace ST
 {
     template <typename uint_T>
     class uint_formatter
     {
+        typedef std::numeric_limits<uint_T> uint_traits;
+        static_assert(std::is_integral<uint_T>::value && !std::is_signed<uint_T>::value,
+                      "uint_formatter can only be used for unsigned integral types");
+
     public:
         uint_formatter() noexcept : m_start(nullptr) { }
 
@@ -67,6 +74,9 @@ namespace ST
     template <typename float_T>
     class float_formatter
     {
+        static_assert(!std::is_integral<float_T>::value,
+                      "float_formatter can only be used for floating point types");
+
     public:
         float_formatter() noexcept : m_size() { }
 
@@ -93,3 +103,5 @@ namespace ST
         size_t m_size;
     };
 }
+
+#endif // _ST_FORMAT_NUMERIC_H

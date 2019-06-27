@@ -19,7 +19,7 @@
     DEALINGS IN THE SOFTWARE. */
 
 #include "st_formatter.h"
-#include "st_format_simple.h"
+#include "st_format_numeric.h"
 
 #include <cstdlib>
 #include <type_traits>

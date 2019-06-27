@@ -26,7 +26,7 @@
 #include <cstring>
 #include "st_assert.h"
 #include "st_stringstream.h"
-#include "st_format_simple.h"
+#include "st_format_numeric.h"
 
 #if !defined(ST_WCHAR_BYTES) || ((ST_WCHAR_BYTES != 2) && (ST_WCHAR_BYTES != 4))
 #   error ST_WCHAR_SIZE must either be 2 (16-bit) or 4 (32-bit)

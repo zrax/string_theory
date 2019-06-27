@@ -120,9 +120,10 @@ set(ST_HEADERS_PRIV
     include/st_assert.h
     include/st_charbuffer.h
     include/st_codecs.h
+    include/st_format.h
+    include/st_format_numeric.h
     include/st_formatter.h
     include/st_formatter_util.h
-    include/st_format.h
     include/st_iostream.h
     include/st_stdio.h
     include/st_string.h
@@ -148,7 +149,6 @@ set(ST_SOURCES
     src/st_charbuffer.cpp
     src/st_codecs.cpp
     src/st_format.cpp
-    src/st_format_simple.h
     src/st_string.cpp
     src/st_stringstream.cpp
 )

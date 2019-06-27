@@ -19,7 +19,7 @@
     DEALINGS IN THE SOFTWARE. */
 
 #include "st_stringstream.h"
-#include "st_format_simple.h"
+#include "st_format_numeric.h"
 
 #include <cstdio>
 #include <cstdlib>
