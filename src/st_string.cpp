@@ -142,11 +142,6 @@ static ST::char_buffer _cleanup_utf8_buffer(const ST::char_buffer &buffer)
 void ST::string::set(const char_buffer &init, utf_validation_t validation)
 {
     switch (validation) {
-    case assert_validity:
-        ST_ASSERT(_validate_utf8(init), "Invalid UTF-8 sequence");
-        m_buffer = init;
-        break;
-
     case check_validity:
         if (!_validate_utf8(init))
             throw ST::unicode_error("Invalid UTF-8 sequence");
@@ -169,11 +164,6 @@ void ST::string::set(const char_buffer &init, utf_validation_t validation)
 void ST::string::set(char_buffer &&init, utf_validation_t validation)
 {
     switch (validation) {
-    case assert_validity:
-        ST_ASSERT(_validate_utf8(init), "Invalid UTF-8 sequence");
-        m_buffer = std::move(init);
-        break;
-
     case check_validity:
         if (!_validate_utf8(init))
             throw ST::unicode_error("Invalid UTF-8 sequence");
@@ -279,9 +269,6 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                 switch (validation) {
                 case check_validity:
                     throw ST::unicode_error("Incomplete surrogate pair");
-                case assert_validity:
-                    ST_ASSERT(false, "Incomplete surrogate pair");
-                    /* fall through */
                 case substitute_invalid:
                     converted.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
                     break;
@@ -306,9 +293,6 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                     switch (validation) {
                     case check_validity:
                         throw ST::unicode_error("Incomplete surrogate pair");
-                    case assert_validity:
-                        ST_ASSERT(false, "Incomplete surrogate pair");
-                        /* fall through */
                     case substitute_invalid:
                         converted.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
                         break;
@@ -334,9 +318,6 @@ void ST::string::_convert_from_utf16(const char16_t *utf16, size_t size,
                     switch (validation) {
                     case check_validity:
                         throw ST::unicode_error("Incomplete surrogate pair");
-                    case assert_validity:
-                        ST_ASSERT(false, "Incomplete surrogate pair");
-                        /* fall through */
                     case substitute_invalid:
                         converted.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
                         break;
@@ -411,8 +392,6 @@ void ST::string::_convert_from_utf32(const char32_t *utf32, size_t size,
         } else {
             if (validation == check_validity)
                 throw ST::unicode_error("Unicode character out of range");
-            else if (validation == assert_validity)
-                ST_ASSERT(false, "Unicode character out of range");
             std::char_traits<char>::copy(dp, BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
             dp += BADCHAR_SUBSTITUTE_UTF8_LEN;
         }
@@ -628,15 +607,10 @@ ST::char_buffer ST::string::to_latin_1(utf_validation_t validation) const
         }
 
         if (bigch >= 0x100) {
-            switch (validation) {
-            case check_validity:
+            if (validation == check_validity)
                 throw ST::unicode_error("Latin-1 character out of range");
-            case assert_validity:
-                ST_ASSERT(false, "Latin-1 character out of range");
-                /* fall through */
-            default:
+            else
                 bigch = '?';
-            }
         }
         *dp++ = static_cast<char>(bigch);
     }
@@ -1348,7 +1322,7 @@ std::vector<ST::string> ST::string::split(const char *splitter, size_t max_split
     const char *cp = splitter;
     while (*cp) {
         if (*cp & 0x80) {
-            validation = assert_validity;
+            validation = check_validity;
             break;
         }
         ++cp;

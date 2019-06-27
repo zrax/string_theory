@@ -93,7 +93,7 @@ namespace ST
         size_t size() const noexcept { return m_size; }
 
         string to_string(bool utf8_encoded = true,
-                         utf_validation_t validation = assert_validity) const
+                         utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
             if (utf8_encoded)
                 return string::from_utf8(raw_buffer(), size(), validation);

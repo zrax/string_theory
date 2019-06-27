@@ -61,12 +61,10 @@ namespace ST
         assume_valid,       //! Don't do any checking
         substitute_invalid, //! Replace invalid sequences with a substitute
         check_validity,     //! Throw a ST::unicode_error for invalid sequences
-        assert_validity     //! call ST_ASSERT for invalid sequences
     };
     ST_ENUM_CONSTANT(utf_validation_t, assume_valid);
     ST_ENUM_CONSTANT(utf_validation_t, substitute_invalid);
     ST_ENUM_CONSTANT(utf_validation_t, check_validity);
-    ST_ENUM_CONSTANT(utf_validation_t, assert_validity);
 
     class ST_EXPORT conversion_result
     {
