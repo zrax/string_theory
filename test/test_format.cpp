@@ -126,10 +126,8 @@ TEST(format, chars)
     EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (unsigned int)0x10ffff));
     EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (long)0x10ffff));
     EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (unsigned long)0x10ffff));
-#ifdef ST_HAVE_INT64
-    EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (int64_t)0x10ffff));
-    EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (uint64_t)0x10ffff));
-#endif
+    EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (long long)0x10ffff));
+    EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (unsigned long long)0x10ffff));
 }
 
 TEST(format, decimal)
