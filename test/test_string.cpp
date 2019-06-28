@@ -1241,6 +1241,12 @@ TEST(string, find)
     EXPECT_EQ( 8, ST_LITERAL("xxxxabcdabcdxxxx").find(5, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find(5, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find(100, "ABCD", ST::case_insensitive));
+
+    // Empty search string
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find("", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find("", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find(4, "", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find(4, "", ST::case_insensitive));
 }
 
 TEST(string, find_last)
@@ -1310,6 +1316,12 @@ TEST(string, find_last)
     EXPECT_EQ( 8, ST_LITERAL("xxxxabcdabcdxxxx").find_last(9, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find_last(4, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("abcdxxxx").find_last(0, "ABCD", ST::case_insensitive));
+
+    // Empty search string
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last("", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last("", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last(0, "", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last(0, "", ST::case_insensitive));
 }
 
 TEST(string, trim)
@@ -1459,6 +1471,9 @@ TEST(string, replace)
     EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("AA").replace("A", ""));
     EXPECT_EQ(ST_LITERAL("REPLACE"), ST_LITERAL("FIND").replace("FIND", "REPLACE"));
     EXPECT_EQ(ST_LITERAL("REPLACExxREPLACE"), ST_LITERAL("FINDxxFIND").replace("FIND", "REPLACE"));
+
+    // Empty search string
+    EXPECT_EQ(ST_LITERAL("AA"), ST_LITERAL("AA").replace("", "Y"));
 }
 
 TEST(string, case_conversion)

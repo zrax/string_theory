@@ -115,7 +115,7 @@ if(ST_BUILD_PROFILE_TEST)
 endif()
 
 cmake_policy(PUSH)
-if(POLICY CMP0037)
+if(${CMAKE_VERSION} VERSION_LESS "3.11" AND POLICY CMP0037)
     # The "test" target is reserved when ctest is included (CMake 3.11+),
     # but older versions of CMake will reserve it always, so we must
     # explicitly allow older CMake versions to allow the target name
