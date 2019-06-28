@@ -25,6 +25,6 @@
 
 void _ST_PRIVATE::assert_handler(const char *filename, int line, const char *message)
 {
-    fprintf(stderr, "%s:%d: %s\n", filename, line, message);
-    abort();
+    std::fprintf(stderr, "%s:%d: %s\n", filename, line, message);
+    std::abort();
 }
