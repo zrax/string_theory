@@ -145,6 +145,7 @@ set(ST_HEADERS_PUB
 )
 
 set(ST_SOURCES
+    src/st_assert.cpp
     src/st_charbuffer.cpp
     src/st_codecs.cpp
     src/st_format.cpp

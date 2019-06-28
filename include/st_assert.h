@@ -25,8 +25,6 @@
 
 #include <functional>
 #include <stdexcept>
-#include <cstdio>
-#include <cstdlib>
 
 #ifdef _MSC_VER
 #   pragma warning(push)
@@ -62,11 +60,7 @@ namespace ST
 
 namespace _ST_PRIVATE
 {
-    inline void assert_handler(const char *filename, int line, const char *message)
-    {
-        std::fprintf(stderr, "%s:%d: %s\n", filename, line, message);
-        std::abort();
-    }
+    ST_EXPORT void assert_handler(const char *filename, int line, const char *message);
 }
 
 #define ST_ASSERT(condition, message) \
