@@ -34,6 +34,18 @@
 
 #define BADCHAR_SUBSTITUTE (0xFFFDul)
 
+size_t _ST_PRIVATE::format_double(char *buffer, size_t size, double value, char format)
+{
+    char format_spec[] = { '%', format, 0 };
+    int format_size = snprintf(nullptr, 0, format_spec, double(value));
+    ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
+    auto fmt_size = static_cast<size_t>(format_size);
+    ST_ASSERT(fmt_size < size, "Format buffer too small");
+
+    snprintf(buffer, fmt_size + 1, format_spec, value);
+    return fmt_size;
+}
+
 static const char *_scan_next_format(const char *format_str)
 {
     const char *ptr = format_str;

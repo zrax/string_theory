@@ -22,15 +22,19 @@
 #define _ST_FORMAT_NUMERIC_H
 
 #include <limits>
-#include <cstdio>
+
+namespace _ST_PRIVATE
+{
+    ST_EXPORT size_t format_double(char *buffer, size_t size, double value, char format);
+}
 
 namespace ST
 {
     template <typename uint_T>
     class uint_formatter
     {
-        typedef std::numeric_limits<uint_T> uint_traits;
-        static_assert(std::is_integral<uint_T>::value && !std::is_signed<uint_T>::value,
+        typedef std::numeric_limits<uint_T> uint_limits;
+        static_assert(uint_limits::is_integer && !uint_limits::is_signed,
                       "uint_formatter can only be used for unsigned integral types");
 
     public:
@@ -38,8 +42,8 @@ namespace ST
 
         void format(uint_T value, int radix, bool upper_case = false) noexcept
         {
-            m_buffer[std::numeric_limits<uint_T>::digits] = 0;
-            m_start = &m_buffer[std::numeric_limits<uint_T>::digits];
+            m_buffer[uint_limits::digits] = 0;
+            m_start = &m_buffer[uint_limits::digits];
             if (value == 0) {
                 *--m_start = '0';
                 return;
@@ -63,18 +67,18 @@ namespace ST
 
         size_t size() const noexcept
         {
-            return m_buffer + std::numeric_limits<uint_T>::digits - m_start;
+            return m_buffer + uint_limits::digits - m_start;
         }
 
     private:
-        char m_buffer[std::numeric_limits<uint_T>::digits + 1];
+        char m_buffer[uint_limits::digits + 1];
         char *m_start;
     };
 
     template <typename float_T>
     class float_formatter
     {
-        static_assert(!std::is_integral<float_T>::value,
+        static_assert(!std::numeric_limits<float_T>::is_integer,
                       "float_formatter can only be used for floating point types");
 
     public:
@@ -86,13 +90,7 @@ namespace ST
             if (!std::char_traits<char>::find(valid_formats, sizeof(valid_formats) - 1, format))
                 throw ST::bad_format("Unsupported floating-point format specifier");
 
-            char format_spec[] = { '%', format, 0 };
-            int format_size = snprintf(nullptr, 0, format_spec, double(value));
-            ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
-            m_size = static_cast<size_t>(format_size);
-            ST_ASSERT(m_size < sizeof(m_buffer), "Format buffer too small");
-
-            snprintf(m_buffer, m_size + 1, format_spec, value);
+            m_size = _ST_PRIVATE::format_double(m_buffer, sizeof(m_buffer), value, format);
         }
 
         const char *text() const noexcept { return m_buffer; }
