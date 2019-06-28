@@ -49,7 +49,7 @@ namespace ST
     static constexpr null_t null;
 
     template <typename char_T>
-    class ST_EXPORT buffer
+    class buffer
     {
     public:
         // STL-compatible typedefs

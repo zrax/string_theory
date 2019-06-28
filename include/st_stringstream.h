@@ -24,8 +24,6 @@
 #include "st_string.h"
 #include "st_format_numeric.h"
 
-#include <cstdlib>
-
 namespace ST
 {
     class string_stream
