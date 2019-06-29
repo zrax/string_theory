@@ -35,7 +35,10 @@ build_script:
   - cmake -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
   - if [%TARGET%]==[MSVC] (
       cmake --build . --config Debug &&
-      cmake --build . --config Debug --target test )
+      cmake --build . --config Debug --target test &&
+      cmake --build . --config Release --target string_theory &&
+      copy Release\string_theory.dll test\Debug\string_theoryd.dll &&
+      test\Debug\st_gtests.exe )
   - if [%TARGET%]==[MinGW] (
       mingw32-make &&
       mingw32-make test )
