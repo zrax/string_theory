@@ -1919,26 +1919,26 @@ namespace ST
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from ? string(from) : null, to ? string(to) : null, cs, validation);
+            return replace(from ? string(from, ST_AUTO_SIZE, validation) : null,
+                           to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
         }
 
         string replace(const string &from, const char *to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from, to ? string(to) : null, cs, validation);
+            return replace(from, to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
         }
 
         string replace(const char *from, const string &to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from ? string(from) : null, to, cs, validation);
+            return replace(from ? string(from, ST_AUTO_SIZE, validation) : null, to, cs);
         }
 
         string replace(const string &from, const string &to,
-                       case_sensitivity_t cs = case_sensitive,
-                       utf_validation_t validation = ST_DEFAULT_VALIDATION) const
+                       case_sensitivity_t cs = case_sensitive) const
         {
             if (empty() || from.empty())
                 return *this;
@@ -1989,21 +1989,22 @@ namespace ST
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from ? string(from) : null, to ? string(to) : null, cs, validation);
+            return replace(from ? string(from, ST_AUTO_SIZE, validation) : null,
+                           to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
         }
 
         string replace(const string &from, const char8_t *to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from, to ? string(to) : null, cs, validation);
+            return replace(from, to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
         }
 
         string replace(const char8_t *from, const string &to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            return replace(from ? string(from) : null, to, cs, validation);
+            return replace(from ? string(from, ST_AUTO_SIZE, validation) : null, to, cs);
         }
 #endif
 

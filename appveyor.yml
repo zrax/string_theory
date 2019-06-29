@@ -21,7 +21,7 @@ environment:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       TARGET: MinGW
       CMAKE_GENERATOR: MinGW Makefiles
-      MINGW_PREFIX: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64
+      MINGW_PREFIX: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
 
 install:
   # CMake's MinGW generator doesn't play nice with git's sh.exe

@@ -740,9 +740,6 @@ const char *_ST_PRIVATE::find_ci(const char *haystack, const char *needle)
 
 const char *_ST_PRIVATE::find_ci(const char *haystack, size_t size, char ch)
 {
-    if (ch > 0xFF || ch < 0)
-        return nullptr;
-
     const char *cp = haystack;
     const char *ep = haystack + size;
     const int lch = _ST_PRIVATE::cl_fast_lower(static_cast<char>(ch));
