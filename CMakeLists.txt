@@ -127,6 +127,7 @@ set(ST_HEADERS_PRIV
     include/st_iostream.h
     include/st_stdio.h
     include/st_string.h
+    include/st_string_helpers.h
     include/st_stringstream.h
     "${PROJECT_BINARY_DIR}/include/st_config.h"
 )
