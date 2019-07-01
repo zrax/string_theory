@@ -32,7 +32,6 @@
 #cmakedefine ST_HAVE_STATIC_ASSERT
 #cmakedefine ST_HAVE_RVALUE_MOVE
 #cmakedefine ST_HAVE_CHAR_TYPES
-#cmakedefine ST_HAVE_CXX20_CHAR8_TYPES
 #cmakedefine ST_HAVE_STD_USTRING_TYPES
 #cmakedefine ST_HAVE_USER_LITERALS
 #cmakedefine ST_HAVE_INT64
@@ -51,6 +50,9 @@
 #endif
 #cmakedefine ST_HAVE_FORMAT
 #cmakedefine ST_NO_STL_STRINGS
+#if (__cplusplus > 201703L) || (defined(_MSVC_LANG) && (_MSVC_LANG > 201703L))
+#cmakedefine ST_HAVE_CXX20_CHAR8_TYPES
+#endif
 
 #cmakedefine01 ST_BUILD_SHARED
 
