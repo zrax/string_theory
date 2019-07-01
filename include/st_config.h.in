@@ -73,12 +73,6 @@
 #   define ST_DEPRECATED(message)
 #endif
 
-#if defined(ST_NO_2_0_DEPRECATION)
-#   define ST_DEPRECATED_IN_2_0(message)
-#else
-#   define ST_DEPRECATED_IN_2_0(message) ST_DEPRECATED(message)
-#endif
-
 #if defined(ST_NO_3_0_DEPRECATION)
 #   define ST_DEPRECATED_IN_3_0(message)
 #else

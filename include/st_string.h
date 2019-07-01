@@ -1202,9 +1202,6 @@ namespace ST
             return m_buffer.operator[](position);
         }
 
-        ST_DEPRECATED_IN_2_0("replaced with at() or operator[] in string_theory 2.0")
-        char char_at(size_t position) const noexcept { return c_str()[position]; }
-
         const char &front() const noexcept
         {
             return m_buffer.front();
@@ -1378,9 +1375,6 @@ namespace ST
 
         size_t size() const noexcept { return m_buffer.size(); }
         bool empty() const noexcept { return m_buffer.size() == 0; }
-
-        ST_DEPRECATED_IN_2_0("replaced with empty() in string_theory 2.0")
-        bool is_empty() const noexcept { return empty(); }
 
         static string from_int(int value, int base = 10, bool upper_case = false)
         {

@@ -208,9 +208,6 @@ namespace ST
         size_t size() const noexcept { return m_size; }
         bool empty() const noexcept { return m_size == 0; }
 
-        ST_DEPRECATED_IN_2_0("replaced with empty() in string_theory 2.0")
-        bool is_empty() const noexcept { return empty(); }
-
         char_T &at(size_t index)
         {
             if (index >= size())
@@ -305,13 +302,6 @@ namespace ST
         {
             allocate(size);
             traits_t::assign(m_chars, size, fill);
-        }
-
-        ST_DEPRECATED_IN_2_0("Use allocate() and mutable data()/operator[] accessors")
-        char_T *create_writable_buffer(size_t size)
-        {
-            allocate(size);
-            return data();
         }
 
         static inline size_t strlen(const char_T *buffer)
