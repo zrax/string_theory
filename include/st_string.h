@@ -1172,12 +1172,12 @@ namespace ST
 
         const char *c_str() const noexcept
         {
-            return m_buffer.data();
+            return m_buffer.c_str();
         }
 
         const char *c_str(const char *substitute) const noexcept
         {
-            return empty() ? substitute : m_buffer.data();
+            return m_buffer.c_str(substitute);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
@@ -1374,7 +1374,7 @@ namespace ST
 #endif // !defined(ST_NO_STL_STRINGS)
 
         size_t size() const noexcept { return m_buffer.size(); }
-        bool empty() const noexcept { return m_buffer.size() == 0; }
+        bool empty() const noexcept { return m_buffer.empty(); }
 
         static string from_int(int value, int base = 10, bool upper_case = false)
         {

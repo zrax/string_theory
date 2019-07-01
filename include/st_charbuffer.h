@@ -205,6 +205,12 @@ namespace ST
         char_T *data() noexcept { return m_chars; }
         const char_T *data() const noexcept { return m_chars; }
 
+        const char_T *c_str() const noexcept { return m_chars; }
+        const char_T *c_str(const char_T *substitute) const noexcept
+        {
+            return empty() ? substitute : m_chars;
+        }
+
         size_t size() const noexcept { return m_size; }
         bool empty() const noexcept { return m_size == 0; }
 
