@@ -140,6 +140,15 @@ namespace ST
             m_chars[m_size] = 0;
         }
 
+        buffer(size_t count, char_T fill)
+            : m_size(count)
+        {
+            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
+            m_chars = is_reffed() ? new char_T[m_size + 1] : m_data;
+            traits_t::assign(m_chars, m_size, fill);
+            m_chars[m_size] = 0;
+        }
+
         ~buffer<char_T>() noexcept
         {
             if (is_reffed())
@@ -304,7 +313,7 @@ namespace ST
             m_chars[m_size] = 0;
         }
 
-        void allocate(size_t size, int fill)
+        void allocate(size_t size, char_T fill)
         {
             allocate(size);
             traits_t::assign(m_chars, size, fill);

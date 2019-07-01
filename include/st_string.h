@@ -2155,8 +2155,7 @@ namespace ST
 
         static string fill(size_t count, char c)
         {
-            char_buffer result;
-            result.allocate(count, c);
+            char_buffer result(count, c);
             return result;
         }
     };
