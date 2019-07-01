@@ -1099,12 +1099,12 @@ namespace ST
 
         const char *c_str() const ST_NOEXCEPT
         {
-            return m_buffer.data();
+            return m_buffer.c_str();
         }
 
         const char *c_str(const char *substitute) const ST_NOEXCEPT
         {
-            return empty() ? substitute : m_buffer.data();
+            return m_buffer.c_str(substitute);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
@@ -1260,7 +1260,7 @@ namespace ST
 #endif // !defined(ST_NO_STL_STRINGS)
 
         size_t size() const ST_NOEXCEPT { return m_buffer.size(); }
-        bool empty() const ST_NOEXCEPT { return m_buffer.size() == 0; }
+        bool empty() const ST_NOEXCEPT { return m_buffer.empty(); }
 
         ST_DEPRECATED_IN_2_0("replaced with empty() in string_theory 2.0")
         bool is_empty() const ST_NOEXCEPT { return empty(); }
