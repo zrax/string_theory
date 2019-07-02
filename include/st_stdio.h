@@ -30,7 +30,7 @@ namespace _ST_PRIVATE
     class stdio_format_writer : public ST::format_writer
     {
     public:
-        stdio_format_writer(const char *format_str, FILE *stream) noexcept
+        stdio_format_writer(const char *format_str, FILE *stream)
             : ST::format_writer(format_str), m_stream(stream) { }
 
         stdio_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) override

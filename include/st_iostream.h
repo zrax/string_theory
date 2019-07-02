@@ -34,7 +34,7 @@ namespace _ST_PRIVATE
     {
     public:
         ostream_format_writer(const char *format_str,
-                              std::basic_ostream<char_T, traits_T> &stream) noexcept
+                              std::basic_ostream<char_T, traits_T> &stream)
             : ST::format_writer(format_str), m_stream(stream) { }
 
         template <class write_char_T>

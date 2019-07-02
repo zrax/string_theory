@@ -39,34 +39,22 @@ size_t _ST_PRIVATE::format_double(char *buffer, size_t size, double value, char 
     return fmt_size;
 }
 
-static const char *_scan_next_format(const char *format_str)
-{
-    const char *ptr = format_str;
-    while (*ptr) {
-        if (*ptr == '{')
-            return ptr;
-        ++ptr;
-    }
-
-    return ptr;
-}
-
 char ST::format_writer::fetch_prefix()
 {
-    for ( ;; ) {
-        const char *next = _scan_next_format(m_format_str);
-        if (*next && *(next + 1) == '{') {
-            // Escaped '{'
-            append(m_format_str, 1 + next - m_format_str);
-            m_format_str = next + 2;
-            continue;
-        }
+    const char *next = m_format_str;
+    while (*next) {
+        if (*next == '{') {
+            if (*(next + 1) != '{')
+                break;
 
-        if (next != m_format_str)
             append(m_format_str, next - m_format_str);
-        m_format_str = next;
-        break;
-    };
+            m_format_str = ++next;
+        }
+        ++next;
+    }
+    if (next != m_format_str)
+        append(m_format_str, next - m_format_str);
+    m_format_str = next;
 
     return *m_format_str;
 }

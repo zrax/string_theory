@@ -97,7 +97,12 @@ namespace ST
         ST_DISABLE_COPY(format_writer);
 
     public:
-        format_writer(const char *format) noexcept : m_format_str(format) { }
+        format_writer(const char *format) : m_format_str(format)
+        {
+            if (!m_format_str)
+                throw std::invalid_argument("Passed a null format string!");
+        }
+
         virtual ~format_writer() noexcept { }
 
         virtual format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) = 0;
@@ -105,9 +110,6 @@ namespace ST
 
         bool next_format()
         {
-            if (!m_format_str)
-                throw std::invalid_argument("Passed a null format string!");
-
             switch (fetch_prefix()) {
             case 0:
                 return false;
@@ -120,8 +122,7 @@ namespace ST
 
         ST::format_spec parse_format()
         {
-            if (*m_format_str != '{')
-                throw ST::bad_format("parse_format() called with no format");
+            ST_ASSERT(*m_format_str == '{', "parse_format() called with no format");
 
             ST::format_spec spec;
             const char *ptr = m_format_str;
