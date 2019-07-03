@@ -97,10 +97,10 @@ namespace ST
 {
     template <class char_T, class traits_T, typename... args_T>
     void writef(std::basic_ostream<char_T, traits_T> &stream,
-                const char *fmt_str, args_T ...args)
+                const char *fmt_str, args_T &&...args)
     {
         _ST_PRIVATE::ostream_format_writer<char_T, traits_T> data(fmt_str, stream);
-        apply_format(data, args...);
+        apply_format(data, std::forward<args_T>(args)...);
     }
 }
 

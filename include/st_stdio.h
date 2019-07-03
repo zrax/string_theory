@@ -56,18 +56,18 @@ namespace _ST_PRIVATE
 namespace ST
 {
     template <typename... args_T>
-    void printf(const char *fmt_str, args_T ...args)
+    void printf(const char *fmt_str, args_T &&...args)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, stdout);
-        apply_format(data, args...);
+        apply_format(data, std::forward<args_T>(args)...);
     }
 
     template <typename... args_T>
     void printf(FILE *out_file, const char *fmt_str,
-                args_T ...args)
+                args_T &&...args)
     {
         _ST_PRIVATE::stdio_format_writer data(fmt_str, out_file);
-        apply_format(data, args...);
+        apply_format(data, std::forward<args_T>(args)...);
     }
 }
 

@@ -57,27 +57,27 @@ namespace _ST_PRIVATE
 namespace ST
 {
     template <typename... args_T>
-    string format(const char *fmt_str, args_T ...args)
+    string format(const char *fmt_str, args_T &&...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str);
-        apply_format(data, args...);
+        apply_format(data, std::forward<args_T>(args)...);
         return data.to_string(true, ST_DEFAULT_VALIDATION);
     }
 
     template <typename... args_T>
     string format(utf_validation_t validation, const char *fmt_str,
-                  args_T ...args)
+                  args_T &&...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str);
-        apply_format(data, args...);
+        apply_format(data, std::forward<args_T>(args)...);
         return data.to_string(true, validation);
     }
 
     template <typename... args_T>
-    string format_latin_1(const char *fmt_str, args_T ...args)
+    string format_latin_1(const char *fmt_str, args_T &&...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str);
-        apply_format(data, args...);
+        apply_format(data, std::forward<args_T>(args)...);
         return data.to_string(false, assume_valid);
     }
 }
