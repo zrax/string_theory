@@ -961,3 +961,13 @@ TEST(format, references)
     EXPECT_EQ(ST_LITERAL("xxxx"), ST::format("xxxx", "one", 2, 3.5));
     EXPECT_EQ(ST_LITERAL("xxxx"), ST::format("xxxx"));
 }
+
+TEST(format, udl_format)
+{
+    using namespace ST::literals;
+
+    // Only need to test the UDL usage -- formatting is identical
+    EXPECT_EQ(ST_LITERAL("xxxx"), "xxxx"_sfmt());
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), "xx{}xx"_sfmt("TEST"));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx123xx"), "xx{}xx{}xx"_sfmt("TEST", 123));
+}
