@@ -51,9 +51,9 @@ namespace ST
         size_t index = 0;
         while (data.next_format()) {
             ST::format_spec format = data.parse_format();
-            size_t formatter_id = format.arg_index >= 0
-                                  ? format.arg_index - 1
-                                  : index++;
+            size_t formatter_id = (format.arg_index >= 0)
+                                ? format.arg_index - 1
+                                : index++;
             if (formatter_id >= num_formatters)
                 throw std::out_of_range("Parameter index out of range");
             formatters[formatter_id](format, data);

@@ -125,16 +125,13 @@ namespace ST
             ST_ASSERT(*m_format_str == '{', "parse_format() called with no format");
 
             ST::format_spec spec;
-            const char *ptr = m_format_str;
             for ( ;; ) {
-                ++ptr;
-
-                switch (*ptr) {
+                switch (*++m_format_str) {
                 case 0:
                     throw ST::bad_format("Unterminated format specifier");
                 case '}':
                     // Done with format spec
-                    m_format_str = ptr + 1;
+                    ++m_format_str;
                     return spec;
 
                 case '<':
@@ -144,11 +141,11 @@ namespace ST
                     spec.alignment = ST::align_right;
                     break;
                 case '_':
-                    spec.pad = *(ptr + 1);
+                    spec.pad = *(m_format_str + 1);
                     spec.numeric_pad = false;
                     if (!spec.pad)
                         throw ST::bad_format("Unterminated format specifier");
-                    ++ptr;
+                    ++m_format_str;
                     break;
                 case '0':
                     // For easier porting from %08X-style printf strings
@@ -192,26 +189,26 @@ namespace ST
                 case '6': case '7': case '8': case '9':
                 {
                     char *end = nullptr;
-                    spec.minimum_length = static_cast<int>(strtol(ptr, &end, 10));
-                    ptr = end - 1;
+                    spec.minimum_length = static_cast<int>(strtol(m_format_str, &end, 10));
+                    m_format_str = end - 1;
                     break;
                 }
                 case '.':
                 {
-                    if (*(ptr + 1) == 0)
+                    if (*++m_format_str == 0)
                         throw ST::bad_format("Unterminated format specifier");
                     char *end = nullptr;
-                    spec.precision = static_cast<int>(strtol(ptr + 1, &end, 10));
-                    ptr = end - 1;
+                    spec.precision = static_cast<int>(strtol(m_format_str, &end, 10));
+                    m_format_str = end - 1;
                     break;
                 }
                 case '&':
                 {
-                    if (*(ptr + 1) == 0)
+                    if (*++m_format_str == 0)
                         throw ST::bad_format("Unterminated format specifier");
                     char *end = nullptr;
-                    spec.arg_index = static_cast<int>(strtol(ptr + 1, &end, 10));
-                    ptr = end - 1;
+                    spec.arg_index = static_cast<int>(strtol(m_format_str, &end, 10));
+                    m_format_str = end - 1;
                     break;
                 }
                 default:
