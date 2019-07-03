@@ -26,19 +26,19 @@
 
 namespace _ST_PRIVATE
 {
-    class ST_EXPORT string_format_writer : public ST::format_writer
+    class string_format_writer : public ST::format_writer
     {
     public:
-        string_format_writer(const char *format_str) ST_NOEXCEPT
+        string_format_writer(const char *format_str)
             : ST::format_writer(format_str) { }
 
-        string_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
+        string_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) override
         {
             m_output.append(data, size);
             return *this;
         }
 
-        string_format_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
+        string_format_writer &append_char(char ch, size_t count = 1) override
         {
             m_output.append_char(ch, count);
             return *this;
@@ -81,5 +81,32 @@ namespace ST
         return data.to_string(false, assume_valid);
     }
 }
+
+namespace _ST_PRIVATE
+{
+    class udl_formatter
+    {
+    public:
+        explicit udl_formatter(const char *fmt_str)
+            : m_format(fmt_str) { }
+
+        template <typename... args_T>
+        ST::string operator()(args_T &&...args)
+        {
+            return ST::format(m_format, std::forward<args_T>(args)...);
+        }
+
+    private:
+        const char *m_format;
+    };
+}
+
+namespace ST { namespace literals
+{
+    _ST_PRIVATE::udl_formatter operator"" _sfmt(const char *fmt_str, size_t)
+    {
+        return _ST_PRIVATE::udl_formatter(fmt_str);
+    }
+}}
 
 #endif // _ST_FORMAT_H

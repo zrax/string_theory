@@ -19,167 +19,43 @@
     DEALINGS IN THE SOFTWARE. */
 
 #include "st_formatter.h"
-#include "st_format_simple.h"
+#include "st_format_numeric.h"
 
 #include <cstdlib>
 #include <type_traits>
 #include "st_assert.h"
 
-/* DO NOT REMOVE THESE LINES.  Classes declared only in these headers won't
- * get properly dllexported unless the compiler sees their declarations in at
- * least one source file. */
-#include "st_format.h"
-#include "st_stdio.h"
-#include "st_iostream.h"
-
 #define BADCHAR_SUBSTITUTE (0xFFFDul)
 
-static const char *_scan_next_format(const char *format_str)
+size_t _ST_PRIVATE::format_double(char *buffer, size_t size, double value, char format)
 {
-    const char *ptr = format_str;
-    while (*ptr) {
-        if (*ptr == '{')
-            return ptr;
-        ++ptr;
-    }
+    char format_spec[] = { '%', format, 0 };
 
-    return ptr;
+    int format_size = snprintf(buffer, size, format_spec, value);
+    ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
+    ST_ASSERT(static_cast<size_t>(format_size) < size, "Format buffer too small");
+
+    return static_cast<size_t>(format_size);
 }
 
 char ST::format_writer::fetch_prefix()
 {
-    for ( ;; ) {
-        const char *next = _scan_next_format(m_format_str);
-        if (*next && *(next + 1) == '{') {
-            // Escaped '{'
-            append(m_format_str, 1 + next - m_format_str);
-            m_format_str = next + 2;
-            continue;
-        }
+    const char *next = m_format_str;
+    while (*next) {
+        if (*next == '{') {
+            if (*(next + 1) != '{')
+                break;
 
-        if (next != m_format_str)
             append(m_format_str, next - m_format_str);
-        m_format_str = next;
-        break;
-    };
+            m_format_str = ++next;
+        }
+        ++next;
+    }
+    if (next != m_format_str)
+        append(m_format_str, next - m_format_str);
+    m_format_str = next;
 
     return *m_format_str;
-}
-
-bool ST::format_writer::next_format()
-{
-    ST_ASSERT(m_format_str, "Passed a null format string!");
-    if (!m_format_str)
-        return false;
-
-    switch (fetch_prefix()) {
-    case 0:
-        return false;
-    case '{':
-        return true;
-    default:
-        ST_ASSERT(false, "Error parsing format string");
-        return false;
-    }
-}
-
-ST::format_spec ST::format_writer::parse_format()
-{
-    ST_ASSERT(*m_format_str == '{', "parse_format() called with no format");
-
-    ST::format_spec spec;
-    const char *ptr = m_format_str;
-    for ( ;; ) {
-        ++ptr;
-
-        switch (*ptr) {
-        case 0:
-            ST_ASSERT(false, "Unterminated format specifier");
-            abort();
-        case '}':
-            // Done with format spec
-            m_format_str = ptr + 1;
-            return spec;
-
-        case '<':
-            spec.alignment = ST::align_left;
-            break;
-        case '>':
-            spec.alignment = ST::align_right;
-            break;
-        case '_':
-            spec.pad = *(ptr + 1);
-            spec.numeric_pad = false;
-            ST_ASSERT(spec.pad, "Unterminated format specifier");
-            ++ptr;
-            break;
-        case '0':
-            // For easier porting from %08X-style printf strings
-            spec.pad = '0';
-            spec.numeric_pad = true;
-            break;
-        case '#':
-            spec.class_prefix = true;
-            break;
-        case 'x':
-            spec.digit_class = ST::digit_hex;
-            break;
-        case 'X':
-            spec.digit_class = ST::digit_hex_upper;
-            break;
-        case '+':
-            spec.always_signed = true;
-            break;
-        case 'd':
-            spec.digit_class = ST::digit_dec;
-            break;
-        case 'o':
-            spec.digit_class = ST::digit_oct;
-            break;
-        case 'b':
-            spec.digit_class = ST::digit_bin;
-            break;
-        case 'c':
-            spec.digit_class = ST::digit_char;
-            break;
-        case 'f':
-            spec.float_class = ST::float_fixed;
-            break;
-        case 'e':
-            spec.float_class = ST::float_exp;
-            break;
-        case 'E':
-            spec.float_class = ST::float_exp_upper;
-            break;
-        case '1': case '2': case '3': case '4': case '5':
-        case '6': case '7': case '8': case '9':
-        {
-            char *end = ST_NULLPTR;
-            spec.minimum_length = static_cast<int>(strtol(ptr, &end, 10));
-            ptr = end - 1;
-            break;
-        }
-        case '.':
-        {
-            ST_ASSERT(*(ptr + 1), "Unterminated format specifier");
-            char *end = ST_NULLPTR;
-            spec.precision = static_cast<int>(strtol(ptr + 1, &end, 10));
-            ptr = end - 1;
-            break;
-        }
-        case '&':
-        {
-            ST_ASSERT(*(ptr + 1), "Unterminated format specifier");
-            char *end = ST_NULLPTR;
-            spec.arg_index = static_cast<int>(strtol(ptr + 1, &end, 10));
-            ptr = end - 1;
-            break;
-        }
-        default:
-            ST_ASSERT(false, "Unexpected character in format string");
-            break;
-        }
-    }
 }
 
 void ST::format_string(const ST::format_spec &format, ST::format_writer &output,
@@ -306,8 +182,8 @@ template <typename int_T>
 static void _format_numeric_s(const ST::format_spec &format,
                               ST::format_writer &output, int_T value)
 {
-    ST_STATIC_ASSERT(std::is_signed<int_T>::value,
-                     "Use _format_numeric_u for unsigned numerics");
+    static_assert(std::is_signed<int_T>::value,
+                  "Use _format_numeric_u for unsigned numerics");
 
     int radix = 10;
     bool upper_case = false;
@@ -332,10 +208,8 @@ static void _format_numeric_s(const ST::format_spec &format,
     }
 
     typedef typename std::make_unsigned<int_T>::type uint_T;
-    int_T abs = (value < 0) ? -value : value;
-
     ST::uint_formatter<uint_T> formatter;
-    formatter.format(static_cast<uint_T>(abs), radix, upper_case);
+    formatter.format(static_cast<uint_T>(std::abs(value)), radix, upper_case);
 
     const numeric_type ntype = (value == 0) ? numeric_zero
                              : (value < 0) ? numeric_negative
@@ -348,8 +222,8 @@ template <typename uint_T>
 static void _format_numeric_u(const ST::format_spec &format,
                               ST::format_writer &output, uint_T value)
 {
-    ST_STATIC_ASSERT(std::is_unsigned<uint_T>::value,
-                     "Use _format_numeric_s for signed numerics");
+    static_assert(std::is_unsigned<uint_T>::value,
+                  "Use _format_numeric_s for signed numerics");
 
     int radix = 10;
     bool upper_case = false;
@@ -384,8 +258,8 @@ static void _format_numeric_u(const ST::format_spec &format,
 static void _format_char(const ST::format_spec &format,
                          ST::format_writer &output, int ch)
 {
-    ST_ASSERT(format.minimum_length == 0 && format.pad == 0,
-              "Char formatting does not currently support padding");
+    if (format.minimum_length != 0 || format.pad != 0)
+        ST_ASSERT(false, "Char formatting does not currently support padding");
 
     // Don't need to nul-terminate this, since string_buffer's constructor fixes it
     char utf8[4];
@@ -442,10 +316,7 @@ _ST_FORMAT_INT_TYPE(signed char, unsigned char)
 _ST_FORMAT_INT_TYPE(short, unsigned short)
 _ST_FORMAT_INT_TYPE(int, unsigned)
 _ST_FORMAT_INT_TYPE(long, unsigned long)
-
-#if defined(ST_HAVE_INT64) && !defined(ST_INT64_IS_LONG)
-_ST_FORMAT_INT_TYPE(int64_t, uint64_t)
-#endif
+_ST_FORMAT_INT_TYPE(long long, unsigned long long)
 
 ST_FORMAT_TYPE(double)
 {

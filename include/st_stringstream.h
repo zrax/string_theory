@@ -22,25 +22,25 @@
 #define _ST_STRINGSTREAM_H
 
 #include "st_string.h"
+#include "st_format_numeric.h"
 
 namespace ST
 {
-    class ST_EXPORT string_stream
+    class string_stream
     {
         ST_DISABLE_COPY(string_stream)
 
     public:
-        string_stream() ST_NOEXCEPT
+        string_stream() noexcept
             : m_chars(m_stack), m_alloc(ST_STACK_STRING_LEN), m_size() { }
 
-        ~string_stream() ST_NOEXCEPT
+        ~string_stream() noexcept
         {
             if (is_heap())
                 delete[] m_chars;
         }
 
-#ifdef ST_HAVE_RVALUE_MOVE
-        string_stream(string_stream &&move) ST_NOEXCEPT
+        string_stream(string_stream &&move) noexcept
             : m_alloc(move.m_alloc), m_size(move.m_size)
         {
             m_chars = is_heap() ? move.m_chars : m_stack;
@@ -48,7 +48,7 @@ namespace ST
             move.m_alloc = 0;
         }
 
-        string_stream &operator=(string_stream &&move) ST_NOEXCEPT
+        string_stream &operator=(string_stream &&move) noexcept
         {
             if (is_heap())
                 delete[] m_chars;
@@ -60,26 +60,100 @@ namespace ST
             move.m_alloc = 0;
             return *this;
         }
-#endif
 
-        string_stream &append(const char *data, size_t size = ST_AUTO_SIZE);
+        string_stream &append(const char *data, size_t size = ST_AUTO_SIZE)
+        {
+            if (size == 0)
+                return *this;
 
-        string_stream &append_char(char ch, size_t count = 1);
+            if (size == ST_AUTO_SIZE)
+                size = data ? std::char_traits<char>::length(data) : 0;
+
+            expand_buffer(size);
+
+            std::char_traits<char>::move(m_chars + m_size, data, size);
+            m_size += size;
+            return *this;
+        }
+
+        string_stream &append_char(char ch, size_t count = 1)
+        {
+            if (count == 0)
+                return *this;
+
+            expand_buffer(count);
+
+            std::char_traits<char>::assign(m_chars + m_size, count, ch);
+            m_size += count;
+            return *this;
+        }
 
         string_stream &operator<<(const char *text)
         {
             return append(text);
         }
 
-        string_stream &operator<<(int num);
-        string_stream &operator<<(unsigned int num);
-        string_stream &operator<<(long num);
-        string_stream &operator<<(unsigned long num);
-        string_stream &operator<<(long long num);
-        string_stream &operator<<(unsigned long long num);
+        string_stream &operator<<(int num)
+        {
+            ST::uint_formatter<unsigned int> formatter;
+            formatter.format(std::abs(num), 10, false);
+            if (num < 0)
+                append_char('-');
+            return append(formatter.text(), formatter.size());
+        }
 
-        string_stream &operator<<(float num);
-        string_stream &operator<<(double num);
+        string_stream &operator<<(unsigned int num)
+        {
+            ST::uint_formatter<unsigned int> formatter;
+            formatter.format(num, 10, false);
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(long num)
+        {
+            ST::uint_formatter<unsigned long> formatter;
+            formatter.format(std::abs(num), 10, false);
+            if (num < 0)
+                append_char('-');
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(unsigned long num)
+        {
+            ST::uint_formatter<unsigned long> formatter;
+            formatter.format(num, 10, false);
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(long long num)
+        {
+            ST::uint_formatter<unsigned long long> formatter;
+            formatter.format(std::abs(num), 10, false);
+            if (num < 0)
+                append_char('-');
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(unsigned long long num)
+        {
+            ST::uint_formatter<unsigned long long> formatter;
+            formatter.format(num, 10, false);
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(float num)
+        {
+            ST::float_formatter<float> formatter;
+            formatter.format(num, 'g');
+            return append(formatter.text(), formatter.size());
+        }
+
+        string_stream &operator<<(double num)
+        {
+            ST::float_formatter<double> formatter;
+            formatter.format(num, 'g');
+            return append(formatter.text(), formatter.size());
+        }
 
         string_stream &operator<<(char ch)
         {
@@ -91,11 +165,11 @@ namespace ST
             return append(text.c_str(), text.size());
         }
 
-        const char *raw_buffer() const ST_NOEXCEPT { return m_chars; }
-        size_t size() const ST_NOEXCEPT { return m_size; }
+        const char *raw_buffer() const noexcept { return m_chars; }
+        size_t size() const noexcept { return m_size; }
 
         string to_string(bool utf8_encoded = true,
-                         utf_validation_t validation = assert_validity) const
+                         utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
             if (utf8_encoded)
                 return string::from_utf8(raw_buffer(), size(), validation);
@@ -103,13 +177,13 @@ namespace ST
                 return string::from_latin_1(raw_buffer(), size());
         }
 
-        void truncate(size_t size = 0) ST_NOEXCEPT
+        void truncate(size_t size = 0) noexcept
         {
             if (size < m_size)
                 m_size = size;
         }
 
-        void erase(size_t count) ST_NOEXCEPT
+        void erase(size_t count) noexcept
         {
             if (count < m_size)
                 m_size -= count;
@@ -122,9 +196,26 @@ namespace ST
         size_t m_alloc, m_size;
         char   m_stack[ST_STACK_STRING_LEN];
 
-        bool is_heap() const ST_NOEXCEPT
+        bool is_heap() const noexcept
         {
             return m_alloc > ST_STACK_STRING_LEN;
+        }
+
+        void expand_buffer(size_t added_size)
+        {
+            if (m_size + added_size > m_alloc) {
+                size_t big_size = m_alloc;
+                do {
+                    big_size *= 2;
+                } while (m_size + added_size > big_size);
+
+                char *bigger = new char[big_size];
+                std::char_traits<char>::copy(bigger, m_chars, m_alloc);
+                if (is_heap())
+                    delete[] m_chars;
+                m_chars = bigger;
+                m_alloc = big_size;
+            }
         }
     };
 }

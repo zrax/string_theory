@@ -52,10 +52,6 @@
 #   define M_PI (3.14159265358979)
 #endif
 
-#ifdef _MSC_VER
-#   define snprintf _snprintf
-#endif
-
 volatile const char *V;
 #define NO_OPTIMIZE(x) V = reinterpret_cast<const char *>(x)
 
@@ -335,7 +331,7 @@ int main(int, char **)
 #ifdef ST_PROFILE_HAVE_QSTRING
     QString _iqs1 = "5143200";
     _measure("QString::toInt", [&_iqs1]() {
-        long result = _iqs1.toInt(ST_NULLPTR, 10);
+        long result = _iqs1.toInt(nullptr, 10);
         NO_OPTIMIZE_L(result);
     });
 #endif

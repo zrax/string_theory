@@ -176,7 +176,6 @@ TEST(string, copy)
     EXPECT_EQ(24U, dest2.size());
 }
 
-#ifdef ST_HAVE_RVALUE_MOVE
 TEST(string, move)
 {
     // If this changes, this test may need to be updated to match
@@ -202,7 +201,6 @@ TEST(string, move)
     EXPECT_EQ(ST_LITERAL("9876543210zyxwvutsrqponm"), dest2);
     EXPECT_EQ(24U, dest2.size());
 }
-#endif
 
 TEST(string, utf8)
 {
@@ -411,7 +409,6 @@ TEST(string, char_concatenation)
     EXPECT_EQ(ST::string(L"\u00ffxxxxxxxxxxxxxxx"), char(0xff) + input2);
     EXPECT_EQ(ST::string(L"\u00ffxxxxxxxxxxxxxxxx"), char(0xff) + input3);
 
-#ifdef ST_HAVE_CHAR_TYPES
     // ST::string + char16_t
     EXPECT_EQ(ST::string(L"xxxx\u00ff"), input1 + char16_t(0xff));
     EXPECT_EQ(ST::string(L"xxxxxxxxxxxxxxx\u00ff"), input2 + char16_t(0xff));
@@ -426,7 +423,6 @@ TEST(string, char_concatenation)
     EXPECT_EQ(ST::string(L"\u0100xxxx"), char16_t(0x100) + input1);
     EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxx"), char16_t(0x100) + input2);
     EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxxx"), char16_t(0x100) + input3);
-#endif
 
     const char32_t expect_wide1[] = { 0x78, 0x78, 0x78, 0x78, 0x10FFFF, 0 };
     const char32_t expect_wide2[] = {
@@ -452,7 +448,6 @@ TEST(string, char_concatenation)
         0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0
     };
 
-#ifdef ST_HAVE_CHAR_TYPES
     // ST::string + char32_t
     EXPECT_EQ(ST::string::from_utf32(expect_wide1), input1 + char32_t(0x10ffff));
     EXPECT_EQ(ST::string::from_utf32(expect_wide2), input2 + char32_t(0x10ffff));
@@ -460,7 +455,6 @@ TEST(string, char_concatenation)
     EXPECT_EQ(ST::string::from_utf32(expect_wide4), char32_t(0x10ffff) + input1);
     EXPECT_EQ(ST::string::from_utf32(expect_wide5), char32_t(0x10ffff) + input2);
     EXPECT_EQ(ST::string::from_utf32(expect_wide6), char32_t(0x10ffff) + input3);
-#endif
 
     // UTF-16 and UTF-32 are already tested, so just check the conversion from wchar_t
     EXPECT_EQ(ST::string(L"xxxx\u0100"), input1 + wchar_t(0x100));
@@ -1214,9 +1208,9 @@ TEST(string, find)
     EXPECT_EQ(-1, ST::string().find("AAAA", ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find("AAAA", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxx").find("", ST::case_sensitive));
-    EXPECT_EQ(-1, ST_LITERAL("xxxx").find((const char *)ST_NULLPTR, ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find((const char *)nullptr, ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find("", ST::case_sensitive));
-    EXPECT_EQ(-1, ST::string().find((const char *)ST_NULLPTR, ST::case_sensitive));
+    EXPECT_EQ(-1, ST::string().find((const char *)nullptr, ST::case_sensitive));
 
     // Unicode substring
     ST::string haystack;
@@ -1247,6 +1241,12 @@ TEST(string, find)
     EXPECT_EQ( 8, ST_LITERAL("xxxxabcdabcdxxxx").find(5, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find(5, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find(100, "ABCD", ST::case_insensitive));
+
+    // Empty search string
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find("", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find("", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find(4, "", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find(4, "", ST::case_insensitive));
 }
 
 TEST(string, find_last)
@@ -1283,9 +1283,9 @@ TEST(string, find_last)
     EXPECT_EQ(-1, ST::string().find_last("AAAA", ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find_last("AAAA", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last("", ST::case_sensitive));
-    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last((const char *)ST_NULLPTR, ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last((const char *)nullptr, ST::case_sensitive));
     EXPECT_EQ(-1, ST::string().find_last("", ST::case_sensitive));
-    EXPECT_EQ(-1, ST::string().find_last((const char *)ST_NULLPTR, ST::case_sensitive));
+    EXPECT_EQ(-1, ST::string().find_last((const char *)nullptr, ST::case_sensitive));
 
     // Unicode substring
     ST::string haystack;
@@ -1316,6 +1316,12 @@ TEST(string, find_last)
     EXPECT_EQ( 8, ST_LITERAL("xxxxabcdabcdxxxx").find_last(9, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find_last(4, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("abcdxxxx").find_last(0, "ABCD", ST::case_insensitive));
+
+    // Empty search string
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last("", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last("", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last(0, "", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxx").find_last(0, "", ST::case_insensitive));
 }
 
 TEST(string, trim)
@@ -1465,6 +1471,9 @@ TEST(string, replace)
     EXPECT_EQ(ST_LITERAL(""), ST_LITERAL("AA").replace("A", ""));
     EXPECT_EQ(ST_LITERAL("REPLACE"), ST_LITERAL("FIND").replace("FIND", "REPLACE"));
     EXPECT_EQ(ST_LITERAL("REPLACExxREPLACE"), ST_LITERAL("FINDxxFIND").replace("FIND", "REPLACE"));
+
+    // Empty search string
+    EXPECT_EQ(ST_LITERAL("AA"), ST_LITERAL("AA").replace("", "Y"));
 }
 
 TEST(string, case_conversion)
@@ -1701,4 +1710,17 @@ TEST(string, iterators)
     result.clear();
     std::copy(source_short.rbegin(), source_short.rend(), std::back_inserter(result));
     EXPECT_EQ(x, result);
+}
+
+TEST(string, udls)
+{
+    using namespace ST::literals;
+
+    // Only need to test the UDL usage -- the rest is covered above
+    EXPECT_EQ(ST_LITERAL(""), ""_st);
+    EXPECT_EQ(ST_LITERAL("Test"), "Test"_st);
+    EXPECT_EQ(ST_LITERAL("Test"), L"Test"_st);
+    EXPECT_EQ(ST_LITERAL("Test"), u"Test"_st);
+    EXPECT_EQ(ST_LITERAL("Test"), U"Test"_st);
+    EXPECT_EQ(ST_LITERAL("Test"), u8"Test"_st);
 }

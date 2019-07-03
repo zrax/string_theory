@@ -23,7 +23,7 @@
 #include "st_assert.h"
 
 static const char _hex_chars[] = "0123456789abcdef";
-ST_STATIC_ASSERT(sizeof(_hex_chars) - 1 == 16, "Missing hex characters");
+static_assert(sizeof(_hex_chars) - 1 == 16, "Missing hex characters");
 
 static const int _hex_values[] = {
     /* 00 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -35,10 +35,10 @@ static const int _hex_values[] = {
     /* 60 */ -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     /* 70 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 };
-ST_STATIC_ASSERT(sizeof(_hex_values) / sizeof(int) == 0x80, "Missing hex values");
+static_assert(sizeof(_hex_values) / sizeof(int) == 0x80, "Missing hex values");
 
 static const char _b64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-ST_STATIC_ASSERT(sizeof(_b64_chars) - 1 == 64, "Missing base64 characters");
+static_assert(sizeof(_b64_chars) - 1 == 64, "Missing base64 characters");
 
 static const int _b64_values[] = {
     /* 00 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -50,60 +50,26 @@ static const int _b64_values[] = {
     /* 60 */ -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
     /* 70 */ 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1,
 };
-ST_STATIC_ASSERT(sizeof(_b64_values) / sizeof(int) == 0x80, "Missing base64 values");
+static_assert(sizeof(_b64_values) / sizeof(int) == 0x80, "Missing base64 values");
 
-ST::string ST::hex_encode(const void *data, size_t size)
+void _ST_PRIVATE::hex_encode(char *output, const void *data, size_t size) noexcept
 {
-    if (size == 0)
-        return ST::null;
-
-    ST_ASSERT(data, "null data pointer passed to hex_encode");
-    if (!data)
-        return ST::null;
-
-    size_t encoded_size = size * 2;
-    ST::char_buffer buffer;
-    buffer.allocate(encoded_size);
-    char *output = buffer.data();
-    const unsigned char *sp = static_cast<const unsigned char *>(data);
+    auto sp = static_cast<const unsigned char *>(data);
     while (size) {
         unsigned char byte = *sp++;
         *output++ = _hex_chars[(byte >> 4) & 0x0F];
         *output++ = _hex_chars[(byte     ) & 0x0F];
         --size;
     }
-
-#ifdef ST_HAVE_RVALUE_MOVE
-    return ST::string::from_validated(std::move(buffer));
-#else
-    return ST::string::from_validated(buffer);
-#endif
 }
 
-ST::char_buffer ST::hex_decode(const ST::string &hex)
+ST_ssize_t _ST_PRIVATE::hex_decode(const char *hex, size_t hex_size,
+                                   void *output, size_t output_size) noexcept
 {
-    if ((hex.size() % 2) != 0)
-        throw codec_error("Invalid hex input length");
-
-    size_t decode_size = hex.size() / 2;
-    ST::char_buffer result;
-    result.allocate(decode_size);
-    ST_ssize_t written = hex_decode(hex, result.data(), decode_size);
-    if (written < 0)
-        throw codec_error("Invalid character in hex input");
-
-    ST_ASSERT(static_cast<size_t>(written) == decode_size,
-              "Conversion didn't match expected length");
-    return result;
-}
-
-ST_ssize_t ST::hex_decode(const ST::string &hex, void *output, size_t output_size)
-    ST_NOEXCEPT
-{
-    if ((hex.size() % 2) != 0)
+    if ((hex_size % 2) != 0)
         return -1;
 
-    size_t decode_size = hex.size() / 2;
+    size_t decode_size = hex_size / 2;
     if (!output)
         return decode_size;
 
@@ -112,7 +78,7 @@ ST_ssize_t ST::hex_decode(const ST::string &hex, void *output, size_t output_siz
 
     char *outp = reinterpret_cast<char *>(output);
     char *endp = outp + decode_size;
-    const unsigned char *sp = reinterpret_cast<const unsigned char *>(hex.c_str());
+    auto sp = reinterpret_cast<const unsigned char *>(hex);
 
     while (outp < endp) {
         int bits[2] = {
@@ -129,25 +95,9 @@ ST_ssize_t ST::hex_decode(const ST::string &hex, void *output, size_t output_siz
     return outp - reinterpret_cast<char *>(output);
 }
 
-static size_t _base64_encode_size(size_t size)
+void _ST_PRIVATE::b64_encode(char *output, const void *data, size_t size) noexcept
 {
-    return ((size + 2) / 3) * 4;
-}
-
-ST::string ST::base64_encode(const void *data, size_t size)
-{
-    if (size == 0)
-        return ST::null;
-
-    ST_ASSERT(data, "null data pointer passed to base64_encode");
-    if (!data)
-        return ST::null;
-
-    ST::char_buffer buffer;
-    buffer.allocate(_base64_encode_size(size));
-    char *output = buffer.data();
-
-    const unsigned char *sp = static_cast<const unsigned char *>(data);
+    auto sp = static_cast<const unsigned char *>(data);
     while (size > 2) {
         *output++ = _b64_chars[sp[0] >> 2];
         *output++ = _b64_chars[((sp[0] & 0x03) << 4) | ((sp[1] & 0xF0) >> 4)];
@@ -177,48 +127,12 @@ ST::string ST::base64_encode(const void *data, size_t size)
         ST_ASSERT(false, "Unexpected bytes left after encoding loop");
         break;
     }
-
-#ifdef ST_HAVE_RVALUE_MOVE
-    return ST::string::from_validated(std::move(buffer));
-#else
-    return ST::string::from_validated(buffer);
-#endif
 }
 
-static ST_ssize_t _base64_decode_size(size_t size, const char *data)
+ST_ssize_t _ST_PRIVATE::b64_decode(const char *base64, size_t base64_size,
+                                   void *output, size_t output_size) noexcept
 {
-    if ((size % 4) != 0)
-        return -1;
-
-    size_t result = (size / 4) * 3;
-    if (size > 0 && data[size - 1] == '=')
-        result -= 1;
-    if (size > 1 && data[size - 2] == '=')
-        result -= 1;
-
-    return static_cast<ST_ssize_t>(result);
-}
-
-ST::char_buffer ST::base64_decode(const ST::string &base64)
-{
-    ST_ssize_t decode_size = _base64_decode_size(base64.size(), base64.c_str());
-    if (decode_size < 0)
-        throw codec_error("Invalid base64 input length");
-
-    ST::char_buffer result;
-    result.allocate(decode_size);
-    ST_ssize_t written = base64_decode(base64, result.data(), decode_size);
-    if (written < 0)
-        throw codec_error("Invalid character in base64 input");
-
-    ST_ASSERT(written == decode_size, "Conversion didn't match expected length");
-    return result;
-}
-
-ST_ssize_t ST::base64_decode(const ST::string &base64, void *output, size_t output_size)
-    ST_NOEXCEPT
-{
-    ST_ssize_t decode_size = _base64_decode_size(base64.size(), base64.c_str());
+    ST_ssize_t decode_size = b64_decode_size(base64_size, base64);
     if (!output)
         return decode_size;
 
@@ -230,7 +144,7 @@ ST_ssize_t ST::base64_decode(const ST::string &base64, void *output, size_t outp
 
     char *outp = reinterpret_cast<char *>(output);
     char *endp = outp + decode_size;
-    const unsigned char *sp = reinterpret_cast<const unsigned char *>(base64.c_str());
+    auto sp = reinterpret_cast<const unsigned char *>(base64);
 
     while (outp + 3 < endp) {
         int bits[4] = {

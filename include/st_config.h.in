@@ -26,20 +26,7 @@
 #define ST_VERSION ((ST_MAJOR_VERSION * 100) + ST_MINOR_VERSION)
 #define ST_VERSION_STR "@ST_VERSION@"
 
-#cmakedefine ST_HAVE_NOEXCEPT
-#cmakedefine ST_HAVE_OVERRIDE
-#cmakedefine ST_HAVE_NULLPTR
-#cmakedefine ST_HAVE_STATIC_ASSERT
-#cmakedefine ST_HAVE_RVALUE_MOVE
-#cmakedefine ST_HAVE_CHAR_TYPES
-#cmakedefine ST_HAVE_STD_USTRING_TYPES
-#cmakedefine ST_HAVE_USER_LITERALS
 #cmakedefine ST_HAVE_INT64
-#cmakedefine ST_HAVE_DELETED_FUNC
-#cmakedefine ST_HAVE_VARARG_TEMPLATE
-#cmakedefine ST_HAVE_LAMBDA_EXPR
-#cmakedefine ST_HAVE_TYPE_TRAITS
-#cmakedefine ST_HAVE_CONSTEXPR
 #cmakedefine ST_HAVE_DEPRECATED_ATTR
 #cmakedefine ST_INT64_IS_LONG
 #if (__cplusplus > 201402L) || (defined(_MSVC_LANG) && (_MSVC_LANG > 201402L))
@@ -48,7 +35,6 @@
 #cmakedefine ST_HAVE_CXX17_FILESYSTEM
 #cmakedefine ST_HAVE_EXPERIMENTAL_FILESYSTEM
 #endif
-#cmakedefine ST_HAVE_FORMAT
 #cmakedefine ST_NO_STL_STRINGS
 #if (__cplusplus > 201703L) || (defined(_MSVC_LANG) && (_MSVC_LANG > 201703L))
 #cmakedefine ST_HAVE_CXX20_CHAR8_TYPES
@@ -56,63 +42,19 @@
 
 #cmakedefine01 ST_BUILD_SHARED
 
-#ifdef ST_HAVE_NOEXCEPT
-#   define ST_NOEXCEPT noexcept
-#else
-#   define ST_NOEXCEPT throw()
-#endif
-
-#ifdef ST_HAVE_OVERRIDE
-#   define ST_OVERRIDE override
-#else
-#   define ST_OVERRIDE
-#endif
-
-#ifdef ST_HAVE_NULLPTR
-#   define ST_NULLPTR nullptr
-#else
-#   define ST_NULLPTR 0
-#endif
-
 #define _ST_MACRO_JOIN(l, r)  l ## r
 #define ST_MACRO_JOIN(l, r)   _ST_MACRO_JOIN(l, r)
 
-#ifdef ST_HAVE_STATIC_ASSERT
-#   define ST_STATIC_ASSERT(x, msg) static_assert((x), msg);
-#else
-namespace _ST_PRIVATE
-{
-    template<bool> struct static_assertion;
-    template<> struct static_assertion<true> {};
-}
-#   define ST_STATIC_ASSERT(x, msg) \
-        enum { ST_MACRO_JOIN(_ST_static_assertion_, __LINE__) = \
-                sizeof(_ST_PRIVATE::static_assertion<static_cast<bool>(x)>) };
-#endif
+// Backwards compatibility for clients of string_theory
+#define ST_NOEXCEPT noexcept
+#define ST_OVERRIDE override
+#define ST_NULLPTR nullptr
 
-#ifndef ST_HAVE_CHAR_TYPES
-    typedef unsigned short  char16_t;
-    typedef unsigned int    char32_t;
-#endif
-
-#ifdef ST_HAVE_DELETED_FUNC
-#   define ST_DISABLE_COPY(name) \
+#define ST_DISABLE_COPY(name) \
         name(const name &) = delete; \
         void operator=(const name &) = delete;
-#else
-#   define ST_DISABLE_COPY(name) \
-    private: \
-        name(const name &) { } \
-        void operator=(const name &) { }
-#endif
 
-#ifdef ST_HAVE_CONSTEXPR
-#   define ST_STRONG_ENUM(name) enum class name
-#   define ST_ENUM_CONSTANT(type, name) constexpr type name = type::name
-#else
-#   define ST_STRONG_ENUM(name) enum name
-#   define ST_ENUM_CONSTANT(type, name)
-#endif
+#define ST_ENUM_CONSTANT(type, name) constexpr type name = type::name
 
 #ifdef _LIBCPP_VERSION
 #   if defined(ST_HAVE_CXX17_FILESYSTEM) && defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
@@ -124,21 +66,17 @@ namespace _ST_PRIVATE
 #if defined(_MSC_VER)
 #   define ST_DEPRECATED(message) __declspec(deprecated(message))
 #elif defined(__GNUC__)
-#   if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR > 4))
-#       define ST_DEPRECATED(message) __attribute__((deprecated(message)))
-#   else
-#       define ST_DEPRECATED(message) __attribute__((deprecated))
-#   endif
+#   define ST_DEPRECATED(message) __attribute__((deprecated(message)))
 #elif defined(ST_HAVE_DEPRECATED_ATTR)
 #   define ST_DEPRECATED(message) [[deprecated(message)]]
 #else
 #   define ST_DEPRECATED(message)
 #endif
 
-#if defined(ST_NO_2_0_DEPRECATION)
-#   define ST_DEPRECATED_IN_2_0(message)
+#if defined(ST_NO_3_0_DEPRECATION)
+#   define ST_DEPRECATED_IN_3_0(message)
 #else
-#   define ST_DEPRECATED_IN_2_0(message) ST_DEPRECATED(message)
+#   define ST_DEPRECATED_IN_3_0(message) ST_DEPRECATED(message)
 #endif
 
 #define ST_WCHAR_BYTES          (@ST_WCHAR_BYTES@)

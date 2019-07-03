@@ -30,7 +30,7 @@
 
 namespace ST
 {
-    ST_STRONG_ENUM(alignment_t)
+    enum class alignment_t
     {
         align_default,
         align_left,
@@ -40,7 +40,7 @@ namespace ST
     ST_ENUM_CONSTANT(alignment_t, align_left);
     ST_ENUM_CONSTANT(alignment_t, align_right);
 
-    ST_STRONG_ENUM(digit_class_t)
+    enum class digit_class_t
     {
         digit_default,
         digit_dec,
@@ -58,7 +58,7 @@ namespace ST
     ST_ENUM_CONSTANT(digit_class_t, digit_bin);
     ST_ENUM_CONSTANT(digit_class_t, digit_char);
 
-    ST_STRONG_ENUM(float_class_t)
+    enum class float_class_t
     {
         float_default,
         float_fixed,
@@ -70,9 +70,9 @@ namespace ST
     ST_ENUM_CONSTANT(float_class_t, float_exp);
     ST_ENUM_CONSTANT(float_class_t, float_exp_upper);
 
-    struct ST_EXPORT format_spec
+    struct format_spec
     {
-        format_spec() ST_NOEXCEPT
+        format_spec() noexcept
             : minimum_length(), precision(-1), arg_index(-1), alignment(),
               digit_class(), float_class(), pad(), always_signed(),
               class_prefix(), numeric_pad() { }
@@ -89,24 +89,138 @@ namespace ST
         bool numeric_pad;
     };
 
-    class ST_EXPORT format_writer
+    static_assert(std::is_standard_layout<ST::format_spec>::value,
+                  "ST::format_spec must be standard-layout to pass across the DLL boundary");
+
+    class format_writer
     {
         ST_DISABLE_COPY(format_writer);
 
     public:
-        format_writer(const char *format) ST_NOEXCEPT : m_format_str(format) { }
-        virtual ~format_writer() ST_NOEXCEPT { }
+        format_writer(const char *format) : m_format_str(format)
+        {
+            if (!m_format_str)
+                throw std::invalid_argument("Passed a null format string!");
+        }
+
+        virtual ~format_writer() noexcept { }
 
         virtual format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) = 0;
         virtual format_writer &append_char(char ch, size_t count = 1) = 0;
 
-        bool next_format();
-        ST::format_spec parse_format();
+        bool next_format()
+        {
+            switch (fetch_prefix()) {
+            case 0:
+                return false;
+            case '{':
+                return true;
+            default:
+                throw ST::bad_format("Error parsing format string");
+            }
+        }
+
+        ST::format_spec parse_format()
+        {
+            ST_ASSERT(*m_format_str == '{', "parse_format() called with no format");
+
+            ST::format_spec spec;
+            for ( ;; ) {
+                switch (*++m_format_str) {
+                case 0:
+                    throw ST::bad_format("Unterminated format specifier");
+                case '}':
+                    // Done with format spec
+                    ++m_format_str;
+                    return spec;
+
+                case '<':
+                    spec.alignment = ST::align_left;
+                    break;
+                case '>':
+                    spec.alignment = ST::align_right;
+                    break;
+                case '_':
+                    spec.pad = *(m_format_str + 1);
+                    spec.numeric_pad = false;
+                    if (!spec.pad)
+                        throw ST::bad_format("Unterminated format specifier");
+                    ++m_format_str;
+                    break;
+                case '0':
+                    // For easier porting from %08X-style printf strings
+                    spec.pad = '0';
+                    spec.numeric_pad = true;
+                    break;
+                case '#':
+                    spec.class_prefix = true;
+                    break;
+                case 'x':
+                    spec.digit_class = ST::digit_hex;
+                    break;
+                case 'X':
+                    spec.digit_class = ST::digit_hex_upper;
+                    break;
+                case '+':
+                    spec.always_signed = true;
+                    break;
+                case 'd':
+                    spec.digit_class = ST::digit_dec;
+                    break;
+                case 'o':
+                    spec.digit_class = ST::digit_oct;
+                    break;
+                case 'b':
+                    spec.digit_class = ST::digit_bin;
+                    break;
+                case 'c':
+                    spec.digit_class = ST::digit_char;
+                    break;
+                case 'f':
+                    spec.float_class = ST::float_fixed;
+                    break;
+                case 'e':
+                    spec.float_class = ST::float_exp;
+                    break;
+                case 'E':
+                    spec.float_class = ST::float_exp_upper;
+                    break;
+                case '1': case '2': case '3': case '4': case '5':
+                case '6': case '7': case '8': case '9':
+                {
+                    char *end = nullptr;
+                    spec.minimum_length = static_cast<int>(strtol(m_format_str, &end, 10));
+                    m_format_str = end - 1;
+                    break;
+                }
+                case '.':
+                {
+                    if (*++m_format_str == 0)
+                        throw ST::bad_format("Unterminated format specifier");
+                    char *end = nullptr;
+                    spec.precision = static_cast<int>(strtol(m_format_str, &end, 10));
+                    m_format_str = end - 1;
+                    break;
+                }
+                case '&':
+                {
+                    if (*++m_format_str == 0)
+                        throw ST::bad_format("Unterminated format specifier");
+                    char *end = nullptr;
+                    spec.arg_index = static_cast<int>(strtol(m_format_str, &end, 10));
+                    m_format_str = end - 1;
+                    break;
+                }
+                default:
+                    throw ST::bad_format("Unexpected character in format string");
+                }
+            }
+        }
 
     private:
         const char *m_format_str;
 
-        char fetch_prefix();
+        ST_EXPORT char fetch_prefix();
     };
 
     ST_EXPORT void format_string(const format_spec &format, format_writer &output,
@@ -147,11 +261,8 @@ ST_EXPORT ST_DECL_FORMAT_TYPE(int);
 ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned int);
 ST_EXPORT ST_DECL_FORMAT_TYPE(long);
 ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned long);
-
-#if defined(ST_HAVE_INT64) && !defined(ST_INT64_IS_LONG)
-ST_EXPORT ST_DECL_FORMAT_TYPE(int64_t);
-ST_EXPORT ST_DECL_FORMAT_TYPE(uint64_t);
-#endif
+ST_EXPORT ST_DECL_FORMAT_TYPE(long long);
+ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned long long);
 
 ST_EXPORT ST_DECL_FORMAT_TYPE(double);
 

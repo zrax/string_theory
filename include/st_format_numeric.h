@@ -18,44 +18,32 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
-#include <limits>
-#include <string>
+#ifndef _ST_FORMAT_NUMERIC_H
+#define _ST_FORMAT_NUMERIC_H
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#   define snprintf _snprintf
-#   pragma warning(disable: 4996)
-#endif
+#include <limits>
+
+namespace _ST_PRIVATE
+{
+    ST_EXPORT size_t format_double(char *buffer, size_t size, double value, char format);
+}
 
 namespace ST
 {
-    inline unsigned int safe_abs(int value)
-    {
-        return (value < 0) ? -static_cast<unsigned int>(value)
-                           : static_cast<unsigned int>(value);
-    }
-
-    inline unsigned long safe_abs(long value)
-    {
-        return (value < 0) ? -static_cast<unsigned long>(value)
-                           : static_cast<unsigned long>(value);
-    }
-
-    inline unsigned long long safe_abs(long long value)
-    {
-        return (value < 0) ? -static_cast<unsigned long long>(value)
-                           : static_cast<unsigned long long>(value);
-    }
-
     template <typename uint_T>
     class uint_formatter
     {
-    public:
-        uint_formatter() ST_NOEXCEPT : m_start(ST_NULLPTR) { }
+        typedef std::numeric_limits<uint_T> uint_limits;
+        static_assert(uint_limits::is_integer && !uint_limits::is_signed,
+                      "uint_formatter can only be used for unsigned integral types");
 
-        void format(uint_T value, int radix, bool upper_case = false) ST_NOEXCEPT
+    public:
+        uint_formatter() noexcept : m_start(nullptr) { }
+
+        void format(uint_T value, int radix, bool upper_case = false) noexcept
         {
-            m_buffer[std::numeric_limits<uint_T>::digits] = 0;
-            m_start = &m_buffer[std::numeric_limits<uint_T>::digits];
+            m_buffer[uint_limits::digits] = 0;
+            m_start = &m_buffer[uint_limits::digits];
             if (value == 0) {
                 *--m_start = '0';
                 return;
@@ -75,44 +63,43 @@ namespace ST
             }
         }
 
-        const char *text() const ST_NOEXCEPT { return m_start; }
+        const char *text() const noexcept { return m_start; }
 
-        size_t size() const ST_NOEXCEPT
+        size_t size() const noexcept
         {
-            return m_buffer + std::numeric_limits<uint_T>::digits - m_start;
+            return m_buffer + uint_limits::digits - m_start;
         }
 
     private:
-        char m_buffer[std::numeric_limits<uint_T>::digits + 1];
+        char m_buffer[uint_limits::digits + 1];
         char *m_start;
     };
 
     template <typename float_T>
     class float_formatter
     {
+        static_assert(!std::numeric_limits<float_T>::is_integer,
+                      "float_formatter can only be used for floating point types");
+
     public:
-        float_formatter() ST_NOEXCEPT : m_size() { }
+        float_formatter() noexcept : m_size() { }
 
         void format(float_T value, char format)
         {
             static const char valid_formats[] = "efgEFG";
-            if (!std::char_traits<char>::find(valid_formats, sizeof(valid_formats) - 1, format)) {
-                ST_ASSERT(false, "Unsupported floating-point format specifier");
-                format = 'g';
-            }
+            if (!std::char_traits<char>::find(valid_formats, sizeof(valid_formats) - 1, format))
+                throw ST::bad_format("Unsupported floating-point format specifier");
 
-            char format_spec[] = { '%', format, 0 };
-            int format_size = snprintf(m_buffer, sizeof(m_buffer), format_spec, double(value));
-            ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
-            m_size = static_cast<size_t>(format_size);
-            ST_ASSERT(m_size < sizeof(m_buffer), "Format buffer too small");
+            m_size = _ST_PRIVATE::format_double(m_buffer, sizeof(m_buffer), value, format);
         }
 
-        const char *text() const ST_NOEXCEPT { return m_buffer; }
-        size_t size() const ST_NOEXCEPT { return m_size; }
+        const char *text() const noexcept { return m_buffer; }
+        size_t size() const noexcept { return m_size; }
 
     private:
         char m_buffer[64];
         size_t m_size;
     };
 }
+
+#endif // _ST_FORMAT_NUMERIC_H

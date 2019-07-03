@@ -18,93 +18,46 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(string_theory)
 
-if(POLICY CMP0054)
-    # Don't dereference quoted names in if() statements
-    cmake_policy(SET CMP0054 NEW)
+# We will detect and use optional features in newer C++ standards,
+# but C++11 is required at minimum
+if(${CMAKE_VERSION} VERSION_GREATER "3.11.99")
+    set(CMAKE_CXX_STANDARD 20)
+elseif(${CMAKE_VERSION} VERSION_GREATER "3.7.99")
+    set(CMAKE_CXX_STANDARD 17)
+else()
+    set(CMAKE_CXX_STANDARD 14)
+endif()
+set(CMAKE_CXX_STANDARD_REQUIRED OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(POLICY CMP0067)
+    # Honor CMAKE_CXX_STANDARD in try_compile() commands
+    cmake_policy(SET CMP0067 NEW)
 endif()
 
-set(ST_MAJOR_VERSION 2)
-set(ST_MINOR_VERSION 3)
+set(ST_MAJOR_VERSION 3)
+set(ST_MINOR_VERSION 0)
 set(ST_VERSION ${ST_MAJOR_VERSION}.${ST_MINOR_VERSION})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
-include(CheckCXXCompilerFlag)
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
     set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
-
-    check_cxx_compiler_flag("-std=c++20" HAVE_STD_CXX20)
-    check_cxx_compiler_flag("-std=c++17" HAVE_STD_CXX17)
-    check_cxx_compiler_flag("-std=c++14" HAVE_STD_CXX14)
-    check_cxx_compiler_flag("-std=c++11" HAVE_STD_CXX11)
-    check_cxx_compiler_flag("-std=c++0x" HAVE_STD_CXX0X)
-    if(HAVE_STD_CXX20)
-        set(HAVE_STD_CXX17 1)
-        set(HAVE_STD_CXX14 1)
-        set(HAVE_STD_CXX11 1)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
-    elseif(HAVE_STD_CXX17)
-        set(HAVE_STD_CXX14 1)
-        set(HAVE_STD_CXX11 1)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-    elseif(HAVE_STD_CXX14)
-        set(HAVE_STD_CXX11 1)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-    elseif(HAVE_STD_CXX11)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    elseif(HAVE_STD_CXX0X)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-    endif()
-
-    if(APPLE AND (HAVE_STD_CXX11 OR HAVE_STD_CXX0X))
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-    endif()
 
     option(ST_BUILD_TEST_COVERAGE "Enable code coverage in string_theory and tests" OFF)
     if(ST_BUILD_TEST_COVERAGE)
         include(CodeCoverage)
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage")
     endif()
-elseif(MSVC)
-    check_cxx_compiler_flag("/std:c++latest" HAVE_STD_CXXLATEST)
-    if(HAVE_STD_CXXLATEST)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
-    endif()
 endif()
 
-try_compile(ST_HAVE_NOEXCEPT "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_noexcept.cpp")
-try_compile(ST_HAVE_OVERRIDE "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_override.cpp")
-try_compile(ST_HAVE_NULLPTR "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_nullptr.cpp")
-try_compile(ST_HAVE_STATIC_ASSERT "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_static_assert.cpp")
-try_compile(ST_HAVE_RVALUE_MOVE "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_rvalue_move.cpp")
-try_compile(ST_HAVE_CHAR_TYPES "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_char_types.cpp")
 try_compile(ST_HAVE_CXX20_CHAR8_TYPES "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_char8_types.cpp")
-try_compile(ST_HAVE_STD_USTRING_TYPES "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_string_types.cpp")
-try_compile(ST_HAVE_USER_LITERALS "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_user_literals.cpp")
 try_compile(ST_HAVE_INT64 "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_int64.cpp")
-try_compile(ST_HAVE_DELETED_FUNC "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_deleted_func.cpp")
-try_compile(ST_HAVE_VARARG_TEMPLATE "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_vararg_template.cpp")
-try_compile(ST_HAVE_LAMBDA_EXPR "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_lambda.cpp")
-try_compile(ST_HAVE_TYPE_TRAITS "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_type_traits.cpp")
-try_compile(ST_HAVE_CONSTEXPR "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_constexpr.cpp")
 try_compile(ST_HAVE_DEPRECATED_ATTR "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_deprecated_attr.cpp")
 
@@ -159,10 +112,6 @@ endif()
 
 option(ST_NO_STL_STRINGS "Disable std::string and std::filesystem::path support" OFF)
 
-if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS AND ST_HAVE_LAMBDA_EXPR)
-    set(ST_HAVE_FORMAT TRUE)
-endif()
-
 configure_file("${PROJECT_SOURCE_DIR}/include/st_config.h.in"
                "${PROJECT_BINARY_DIR}/include/st_config.h")
 include_directories("${PROJECT_BINARY_DIR}/include")
@@ -171,8 +120,14 @@ set(ST_HEADERS_PRIV
     include/st_assert.h
     include/st_charbuffer.h
     include/st_codecs.h
+    include/st_format.h
+    include/st_format_numeric.h
+    include/st_formatter.h
+    include/st_formatter_util.h
     include/st_iostream.h
+    include/st_stdio.h
     include/st_string.h
+    include/st_string_helpers.h
     include/st_stringstream.h
     "${PROJECT_BINARY_DIR}/include/st_config.h"
 )
@@ -181,37 +136,21 @@ set(ST_HEADERS_PUB
     include/string_theory/char_buffer
     include/string_theory/codecs
     include/string_theory/exceptions
+    include/string_theory/formatter
+    include/string_theory/format
     include/string_theory/iostream
+    include/string_theory/stdio
+    include/string_theory/stl_formatter
     include/string_theory/string
     include/string_theory/string_stream
 )
 
 set(ST_SOURCES
     src/st_assert.cpp
-    src/st_charbuffer.cpp
     src/st_codecs.cpp
-    src/st_format_simple.h
+    src/st_format.cpp
     src/st_string.cpp
-    src/st_stringstream.cpp
 )
-
-if(ST_HAVE_FORMAT)
-    set(ST_HEADERS_PRIV ${ST_HEADERS_PRIV}
-        include/st_formatter.h
-        include/st_formatter_util.h
-        include/st_format.h
-        include/st_stdio.h
-    )
-    set(ST_HEADERS_PUB ${ST_HEADERS_PUB}
-        include/string_theory/formatter
-        include/string_theory/format
-        include/string_theory/stl_formatter
-        include/string_theory/stdio
-    )
-    set(ST_SOURCES ${ST_SOURCES}
-        src/st_format.cpp
-    )
-endif()
 
 set(ST_INSTALL_BIN_DIR "bin" CACHE PATH "Path to install DLLs on Windows")
 set(ST_INSTALL_LIB_DIR "lib" CACHE PATH "Path to install shared libraries")
@@ -267,6 +206,5 @@ install(EXPORT string_theory-targets
 
 option(ST_BUILD_TESTS "Build string_theory test suite (recommended)" ON)
 if(ST_BUILD_TESTS)
-    enable_testing()
     add_subdirectory(test)
 endif()

@@ -22,14 +22,10 @@
 #define _ST_IOSTREAM_H
 
 #include "st_string.h"
-#ifdef ST_HAVE_FORMAT
-#   include "st_formatter_util.h"
-#endif
+#include "st_formatter_util.h"
 
 #include <ostream>
 #include <istream>
-
-#ifdef ST_HAVE_FORMAT
 
 namespace _ST_PRIVATE
 {
@@ -38,7 +34,7 @@ namespace _ST_PRIVATE
     {
     public:
         ostream_format_writer(const char *format_str,
-                              std::basic_ostream<char_T, traits_T> &stream) ST_NOEXCEPT
+                              std::basic_ostream<char_T, traits_T> &stream)
             : ST::format_writer(format_str), m_stream(stream) { }
 
         template <class write_char_T>
@@ -73,13 +69,13 @@ namespace _ST_PRIVATE
             m_stream.write(utf32.data(), utf32.size());
         }
 
-        ostream_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
+        ostream_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) override
         {
             write_data<char_T>(data, size);
             return *this;
         }
 
-        ostream_format_writer &append_char(char ch, size_t count = 1) ST_OVERRIDE
+        ostream_format_writer &append_char(char ch, size_t count = 1) override
         {
             while (count) {
                 m_stream.put(char_T(ch));
@@ -103,8 +99,6 @@ namespace ST
         apply_format(data, std::forward<args_T>(args)...);
     }
 }
-
-#endif // ST_HAVE_FORMAT
 
 template <class char_T, class traits_T>
 std::basic_ostream<char_T, traits_T> &operator<<(

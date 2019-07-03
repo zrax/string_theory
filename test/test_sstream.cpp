@@ -45,7 +45,7 @@ TEST(string_stream, empty)
     EXPECT_EQ(0U, ss.size());
     EXPECT_EQ(ST_LITERAL(""), ss.to_string());
 
-    ss.append(ST_NULLPTR, 0);
+    ss.append(nullptr, 0);
     EXPECT_EQ(0U, ss.size());
     EXPECT_EQ(ST_LITERAL(""), ss.to_string());
 }

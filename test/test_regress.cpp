@@ -23,7 +23,6 @@
 
 #include <gtest/gtest.h>
 
-#ifdef ST_HAVE_RVALUE_MOVE
 TEST(regress, github_5)
 {
     static const char latin1_data[] = "F\xfcr Elise";
@@ -40,7 +39,6 @@ TEST(regress, github_5)
 
     EXPECT_STREQ(utf8_data, s.c_str());
 }
-#endif
 
 TEST(regress, string_stream_move)
 {
@@ -83,13 +81,13 @@ TEST(regress, surrogate_replacement)
 
 TEST(regress, null_init)
 {
-    ST::string dont_crash = (const char *)ST_NULLPTR;
+    ST::string dont_crash = (const char *)nullptr;
     EXPECT_TRUE(dont_crash.empty());
 
-    dont_crash = (const char *)ST_NULLPTR;
-    dont_crash = ST::string::from_wchar((const wchar_t *)ST_NULLPTR);
-    dont_crash = ST::string::from_utf16((const char16_t *)ST_NULLPTR);
-    dont_crash = ST::string::from_utf32((const char32_t *)ST_NULLPTR);
+    dont_crash = (const char *)nullptr;
+    dont_crash = ST::string::from_wchar((const wchar_t *)nullptr);
+    dont_crash = ST::string::from_utf16((const char16_t *)nullptr);
+    dont_crash = ST::string::from_utf32((const char32_t *)nullptr);
 }
 
 TEST(regress, allocate_fill)
