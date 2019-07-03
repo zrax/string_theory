@@ -103,7 +103,7 @@ namespace _ST_PRIVATE
 
 namespace ST { namespace literals
 {
-    _ST_PRIVATE::udl_formatter operator"" _sfmt(const char *fmt_str, size_t)
+    inline _ST_PRIVATE::udl_formatter operator"" _sfmt(const char *fmt_str, size_t)
     {
         return _ST_PRIVATE::udl_formatter(fmt_str);
     }
