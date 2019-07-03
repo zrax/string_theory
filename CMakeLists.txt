@@ -123,7 +123,6 @@ set(ST_HEADERS_PRIV
     include/st_format.h
     include/st_format_numeric.h
     include/st_formatter.h
-    include/st_formatter_util.h
     include/st_iostream.h
     include/st_stdio.h
     include/st_string.h

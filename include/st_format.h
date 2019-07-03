@@ -21,7 +21,7 @@
 #ifndef _ST_FORMAT_H
 #define _ST_FORMAT_H
 
-#include "st_formatter_util.h"
+#include "st_formatter.h"
 #include "st_stringstream.h"
 
 namespace _ST_PRIVATE

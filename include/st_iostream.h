@@ -22,7 +22,7 @@
 #define _ST_IOSTREAM_H
 
 #include "st_string.h"
-#include "st_formatter_util.h"
+#include "st_formatter.h"
 
 #include <ostream>
 #include <istream>

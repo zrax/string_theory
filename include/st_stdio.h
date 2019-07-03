@@ -21,7 +21,7 @@
 #ifndef _ST_STDIO_H
 #define _ST_STDIO_H
 
-#include "st_formatter_util.h"
+#include "st_formatter.h"
 
 #include <cstdio>
 

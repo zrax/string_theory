@@ -23,6 +23,8 @@
 
 #include "st_string.h"
 
+#include <functional>
+
 #if !defined(ST_NO_STL_STRINGS)
 #   include <string>
 #   include <complex>
@@ -236,6 +238,43 @@ namespace ST
                       size, default_alignment);
     }
 #endif
+
+    typedef std::function<void(const ST::format_spec &, ST::format_writer &)>
+        formatter_ref_t;
+
+    template <typename type_T>
+    formatter_ref_t make_formatter_ref(type_T value)
+    {
+        return [value](const ST::format_spec &format, ST::format_writer &output) {
+            format_type(format, output, value);
+        };
+    }
+
+    template <typename arg0_T, typename... args_T>
+    void apply_format(ST::format_writer &data, arg0_T &&arg0, args_T &&...args)
+    {
+        enum { num_formatters = 1 + sizeof...(args) };
+        formatter_ref_t formatters[num_formatters] = {
+            make_formatter_ref(std::forward<arg0_T>(arg0)),
+            make_formatter_ref(std::forward<args_T>(args))...
+        };
+        size_t index = 0;
+        while (data.next_format()) {
+            ST::format_spec format = data.parse_format();
+            size_t formatter_id = (format.arg_index >= 0)
+                                  ? format.arg_index - 1
+                                  : index++;
+            if (formatter_id >= num_formatters)
+                throw std::out_of_range("Parameter index out of range");
+            formatters[formatter_id](format, data);
+        }
+    }
+
+    inline void apply_format(ST::format_writer &data)
+    {
+        if (data.next_format())
+            throw std::out_of_range("Parameter index out of range");
+    }
 }
 
 namespace ST
