@@ -30,13 +30,12 @@
 size_t _ST_PRIVATE::format_double(char *buffer, size_t size, double value, char format)
 {
     char format_spec[] = { '%', format, 0 };
-    int format_size = snprintf(nullptr, 0, format_spec, double(value));
-    ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
-    auto fmt_size = static_cast<size_t>(format_size);
-    ST_ASSERT(fmt_size < size, "Format buffer too small");
 
-    snprintf(buffer, fmt_size + 1, format_spec, value);
-    return fmt_size;
+    int format_size = snprintf(buffer, size, format_spec, value);
+    ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
+    ST_ASSERT(static_cast<size_t>(format_size) < size, "Format buffer too small");
+
+    return static_cast<size_t>(format_size);
 }
 
 char ST::format_writer::fetch_prefix()
@@ -333,13 +332,17 @@ ST_FORMAT_TYPE(double)
         format_buffer[end++] = '+';
 
     if (format.precision >= 0) {
-        int count = snprintf(format_buffer + end, sizeof(format_buffer) - end,
-                             ".%d", format.precision);
+        format_buffer[end++] = '.';
+        if (format.precision < 0)
+            format_buffer[end++] = '-';
+        ST::uint_formatter<unsigned int> prec;
+        prec.format(std::abs(format.precision), 10);
+        std::char_traits<char>::move(format_buffer + end, prec.text(), prec.size());
 
         // Ensure one more space (excluding \0) is available for the format specifier
-        ST_ASSERT(count > 0 && count + end + 2 < sizeof(format_buffer),
+        ST_ASSERT(prec.size() > 0 && prec.size() + end + 2 < sizeof(format_buffer),
                   "Not enough space for format string");
-        end += count;
+        end += prec.size();
     }
 
     format_buffer[end++] =
@@ -348,26 +351,22 @@ ST_FORMAT_TYPE(double)
         (format.float_class == ST::float_fixed) ? 'f' : 'g';
     format_buffer[end] = 0;
 
-    int format_size = snprintf(nullptr, 0, format_buffer, value);
+    char out_buffer[64];
+    int format_size = snprintf(out_buffer, sizeof(out_buffer), format_buffer, value);
     ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
-    ST::char_buffer out_buffer;
+    ST_ASSERT(static_cast<size_t>(format_size) < sizeof(out_buffer), "Format buffer too small");
 
     if (format.minimum_length > format_size) {
-        out_buffer.allocate(format.minimum_length);
-        std::char_traits<char>::assign(out_buffer.data(), format.minimum_length, pad);
         if (format.alignment == ST::align_left) {
-            snprintf(out_buffer.data(), format_size + 1, format_buffer, value);
-            out_buffer[format_size] = pad;  // snprintf overwrites this
+            output.append(out_buffer, format_size);
+            output.append_char(pad, format.minimum_length - format_size);
         } else {
-            snprintf(&out_buffer[format.minimum_length - format_size], format_size + 1,
-                     format_buffer, value);
+            output.append_char(pad, format.minimum_length - format_size);
+            output.append(out_buffer, format_size);
         }
     } else {
-        out_buffer.allocate(format_size);
-        snprintf(out_buffer.data(), format_size + 1, format_buffer, value);
+        output.append(out_buffer, format_size);
     }
-
-    output.append(out_buffer.data(), out_buffer.size());
 }
 
 ST_FORMAT_TYPE(char)
