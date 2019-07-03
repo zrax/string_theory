@@ -102,12 +102,10 @@ namespace ST
             }
 
             char format_spec[] = { '%', format, 0 };
-            int format_size = snprintf(ST_NULLPTR, 0, format_spec, double(value));
+            int format_size = snprintf(m_buffer, sizeof(m_buffer), format_spec, double(value));
             ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
             m_size = static_cast<size_t>(format_size);
             ST_ASSERT(m_size < sizeof(m_buffer), "Format buffer too small");
-
-            snprintf(m_buffer, m_size + 1, format_spec, value);
         }
 
         const char *text() const ST_NOEXCEPT { return m_buffer; }
