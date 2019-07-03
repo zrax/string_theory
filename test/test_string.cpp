@@ -1711,3 +1711,16 @@ TEST(string, iterators)
     std::copy(source_short.rbegin(), source_short.rend(), std::back_inserter(result));
     EXPECT_EQ(x, result);
 }
+
+TEST(string, udls)
+{
+    using namespace ST::literals;
+
+    // Only need to test the UDL usage -- the rest is covered above
+    EXPECT_EQ(ST_LITERAL(""), ""_st);
+    EXPECT_EQ(ST_LITERAL("Test"), "Test"_st);
+    EXPECT_EQ(ST_LITERAL("Test"), L"Test"_st);
+    EXPECT_EQ(ST_LITERAL("Test"), u"Test"_st);
+    EXPECT_EQ(ST_LITERAL("Test"), U"Test"_st);
+    EXPECT_EQ(ST_LITERAL("Test"), u8"Test"_st);
+}

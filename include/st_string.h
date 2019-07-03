@@ -2428,31 +2428,34 @@ namespace std
 #define ST_LITERAL(str) \
     ST::string::from_literal("" str "", sizeof(str) - 1)
 
-inline ST::string operator"" _st(const char *str, size_t size)
+namespace ST { namespace literals
 {
-    return ST::string::from_literal(str, size);
-}
+    inline ST::string operator"" _st(const char *str, size_t size)
+    {
+        return ST::string::from_literal(str, size);
+    }
 
-inline ST::string operator"" _st(const wchar_t *str, size_t size)
-{
-    return ST::string::from_wchar(str, size, ST::assume_valid);
-}
+    inline ST::string operator"" _st(const wchar_t *str, size_t size)
+    {
+        return ST::string::from_wchar(str, size, ST::assume_valid);
+    }
 
-inline ST::string operator"" _st(const char16_t *str, size_t size)
-{
-    return ST::string::from_utf16(str, size, ST::assume_valid);
-}
+    inline ST::string operator"" _st(const char16_t *str, size_t size)
+    {
+        return ST::string::from_utf16(str, size, ST::assume_valid);
+    }
 
-inline ST::string operator"" _st(const char32_t *str, size_t size)
-{
-    return ST::string::from_utf32(str, size, ST::assume_valid);
-}
+    inline ST::string operator"" _st(const char32_t *str, size_t size)
+    {
+        return ST::string::from_utf32(str, size, ST::assume_valid);
+    }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-inline ST::string operator"" _st(const char8_t *str, size_t size)
-{
-    return ST::string::from_literal(str, size);
-}
+    inline ST::string operator"" _st(const char8_t *str, size_t size)
+    {
+        return ST::string::from_literal(str, size);
+    }
 #endif
+}}
 
 #endif // _ST_STRING_H
