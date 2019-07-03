@@ -971,3 +971,21 @@ TEST(format, udl_format)
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), "xx{}xx"_sfmt("TEST"));
     EXPECT_EQ(ST_LITERAL("xxTESTxx123xx"), "xx{}xx{}xx"_sfmt("TEST", 123));
 }
+
+struct TestStruct { int x; float y; };
+
+void format_type(const ST::format_spec &format, ST::format_writer &output,
+                 const TestStruct &value)
+{
+    output.append("TestStruct{");
+    ST::format_type(format, output, value.x);
+    output.append(",");
+    ST::format_type(format, output, value.y);
+    output.append("}");
+}
+
+TEST(format, custom_formatter)
+{
+    EXPECT_EQ(ST_LITERAL("xxTestStruct{3,1.5}xx"),
+              ST::format("xx{}xx", TestStruct{3, 1.5}));
+}

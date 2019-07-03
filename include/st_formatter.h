@@ -238,130 +238,155 @@ namespace ST
 #endif
 }
 
-#define ST_DECL_FORMAT_TYPE(type_T) \
-    void _ST_impl_format_data_handler(const ST::format_spec &, \
-                                      ST::format_writer &, type_T)
-
-#define ST_FORMAT_TYPE(type_T) \
-    void _ST_impl_format_data_handler(const ST::format_spec &format, \
-                                      ST::format_writer &output, type_T value)
-
-#define ST_FORMAT_FORWARD(fwd_value) \
-    _ST_impl_format_data_handler(format, output, (fwd_value))
-
-#define ST_INVOKE_FORMATTER _ST_impl_format_data_handler
-
-ST_EXPORT ST_DECL_FORMAT_TYPE(char);
-ST_EXPORT ST_DECL_FORMAT_TYPE(wchar_t);
-ST_EXPORT ST_DECL_FORMAT_TYPE(signed char);
-ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned char);
-ST_EXPORT ST_DECL_FORMAT_TYPE(short);
-ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned short);
-ST_EXPORT ST_DECL_FORMAT_TYPE(int);
-ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned int);
-ST_EXPORT ST_DECL_FORMAT_TYPE(long);
-ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned long);
-ST_EXPORT ST_DECL_FORMAT_TYPE(long long);
-ST_EXPORT ST_DECL_FORMAT_TYPE(unsigned long long);
-
-ST_EXPORT ST_DECL_FORMAT_TYPE(double);
-
-inline ST_FORMAT_TYPE(float)
+namespace ST
 {
-    ST_FORMAT_FORWARD(double(value));
-}
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, char);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, wchar_t);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, signed char);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned char);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, short);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned short);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, int);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned int);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, long);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned long);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, long long);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned long long);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, double);
 
-inline ST_FORMAT_TYPE(const char *)
-{
-    if (value)
-        ST::format_string(format, output, value, std::char_traits<char>::length(value));
-}
-
-inline ST_FORMAT_TYPE(const wchar_t *)
-{
-    if (value) {
-        ST::char_buffer utf8 = ST::string::from_wchar(value).to_utf8();
-        ST::format_string(format, output, utf8.data(), utf8.size());
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            float value)
+    {
+        format_type(format, output, double(value));
     }
-}
 
-inline ST_FORMAT_TYPE(const ST::string &)
-{
-    ST::format_string(format, output, value.c_str(), value.size());
-}
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const char *text)
+    {
+        if (text)
+            ST::format_string(format, output, text, std::char_traits<char>::length(text));
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const wchar_t *wtext)
+    {
+        if (wtext) {
+            ST::char_buffer utf8 = ST::string::from_wchar(wtext).to_utf8();
+            ST::format_string(format, output, utf8.data(), utf8.size());
+        }
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const ST::string &str)
+    {
+        ST::format_string(format, output, str.c_str(), str.size());
+    }
 
 #if !defined(ST_NO_STL_STRINGS)
 
-inline ST_FORMAT_TYPE(const std::string &)
-{
-    ST::format_string(format, output, value.c_str(), value.size());
-}
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::string &str)
+    {
+        ST::format_string(format, output, str.c_str(), str.size());
+    }
 
-inline ST_FORMAT_TYPE(const std::wstring &)
-{
-    ST::char_buffer utf8 = ST::string::from_wchar(value.c_str(), value.size()).to_utf8();
-    ST::format_string(format, output, utf8.data(), utf8.size());
-}
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::wstring &str)
+    {
+        ST::char_buffer utf8 = ST::string::from_wchar(str.c_str(), str.size()).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
 
-template <typename value_T>
-ST_FORMAT_TYPE(const std::complex<value_T> &)
-{
-    ST_FORMAT_FORWARD(value.real());
-    output.append_char('+');
-    ST_FORMAT_FORWARD(value.imag());
-    output.append_char('i');
-}
+    template<typename value_T>
+    void format_type(const ST::format_spec &format, ST::format_writer &output,
+                     const std::complex<value_T> &value)
+    {
+        format_type(format, output, value.real());
+        output.append_char('+');
+        format_type(format, output, value.imag());
+        output.append_char('i');
+    }
 
 #ifdef ST_HAVE_CXX17_FILESYSTEM
-inline ST_FORMAT_TYPE(const std::filesystem::path &)
-{
-    auto u8path = value.u8string();
-    ST::format_string(format, output, u8path.c_str(), u8path.size());
-}
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::filesystem::path &path)
+    {
+        auto u8path = path.u8string();
+        ST::format_string(format, output, u8path.c_str(), u8path.size());
+    }
+
 #endif
 
 #ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
-inline ST_FORMAT_TYPE(const std::experimental::filesystem::path &)
-{
-    auto u8path = value.u8string();
-    ST::format_string(format, output, u8path.c_str(), u8path.size());
-}
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::experimental::filesystem::path &path)
+    {
+        auto u8path = path.u8string();
+        ST::format_string(format, output, u8path.c_str(), u8path.size());
+    }
+
 #endif
 
 #ifdef ST_HAVE_CXX17_STRING_VIEW
-inline ST_FORMAT_TYPE(const std::string_view &)
-{
-    ST::format_string(format, output, value.data(), value.size());
-}
 
-inline ST_FORMAT_TYPE(const std::wstring_view &)
-{
-    ST::char_buffer utf8 = ST::string::from_wchar(value.data(), value.size()).to_utf8();
-    ST::format_string(format, output, utf8.data(), utf8.size());
-}
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::string_view &view)
+    {
+        ST::format_string(format, output, view.data(), view.size());
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::wstring_view &view)
+    {
+        ST::char_buffer utf8 = ST::string::from_wchar(view.data(), view.size()).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+
 #endif
 
 #ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-inline ST_FORMAT_TYPE(const std::experimental::string_view &)
-{
-    ST::format_string(format, output, value.data(), value.size());
-}
 
-inline ST_FORMAT_TYPE(const std::experimental::wstring_view &)
-{
-    ST::char_buffer utf8 = ST::string::from_wchar(value.data(), value.size()).to_utf8();
-    ST::format_string(format, output, utf8.data(), utf8.size());
-}
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::experimental::string_view &view)
+    {
+        ST::format_string(format, output, view.data(), view.size());
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::experimental::wstring_view &view)
+    {
+        ST::char_buffer utf8 = ST::string::from_wchar(view.data(), view.size()).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+
 #endif
 
 #endif // !defined(ST_NO_STL_STRINGS)
 
-inline ST_FORMAT_TYPE(bool)
-{
-    if (value)
-        ST::format_string(format, output, "true", 4);
-    else
-        ST::format_string(format, output, "false", 5);
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            bool value)
+    {
+        if (value)
+            ST::format_string(format, output, "true", 4);
+        else
+            ST::format_string(format, output, "false", 5);
+    }
 }
+
+/* These macros are maintained for backwards compatibility.  They should be
+   considered deprecated, and may be removed from a future version of
+   string_theory (4.0 or later) */
+#define ST_DECL_FORMAT_TYPE(type_T) \
+    void format_type(const ST::format_spec &, ST::format_writer &, type_T)
+
+#define ST_FORMAT_TYPE(type_T) \
+    void format_type(const ST::format_spec &format, ST::format_writer &output, type_T value)
+
+#define ST_FORMAT_FORWARD(fwd_value) \
+    format_type(format, output, (fwd_value))
+
+#define ST_INVOKE_FORMATTER format_type
 
 #endif // _ST_FORMATTER_H

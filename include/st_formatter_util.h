@@ -24,7 +24,7 @@
 #include "st_formatter.h"
 #include <functional>
 
-namespace _ST_PRIVATE
+namespace ST
 {
     typedef std::function<void(const ST::format_spec &, ST::format_writer &)>
         formatter_ref_t;
@@ -33,20 +33,17 @@ namespace _ST_PRIVATE
     formatter_ref_t make_formatter_ref(type_T value)
     {
         return [value](const ST::format_spec &format, ST::format_writer &output) {
-            ST_INVOKE_FORMATTER(format, output, value);
+            format_type(format, output, value);
         };
     }
-}
 
-namespace ST
-{
     template <typename arg0_T, typename... args_T>
     void apply_format(ST::format_writer &data, arg0_T &&arg0, args_T &&...args)
     {
         enum { num_formatters = 1 + sizeof...(args) };
-        _ST_PRIVATE::formatter_ref_t formatters[num_formatters] = {
-            _ST_PRIVATE::make_formatter_ref(std::forward<arg0_T>(arg0)),
-            _ST_PRIVATE::make_formatter_ref(std::forward<args_T>(args))...
+        formatter_ref_t formatters[num_formatters] = {
+            make_formatter_ref(std::forward<arg0_T>(arg0)),
+            make_formatter_ref(std::forward<args_T>(args))...
         };
         size_t index = 0;
         while (data.next_format()) {

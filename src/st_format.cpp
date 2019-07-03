@@ -296,7 +296,8 @@ static void _format_char(const ST::format_spec &format,
 }
 
 #define _ST_FORMAT_INT_TYPE(int_T, uint_T) \
-    ST_FORMAT_TYPE(int_T) \
+    void ST::format_type(const ST::format_spec &format, ST::format_writer &output, \
+                         int_T value) \
     { \
         if (format.digit_class == ST::digit_char) \
             _format_char(format, output, static_cast<int>(value)); \
@@ -304,7 +305,8 @@ static void _format_char(const ST::format_spec &format,
             _format_numeric_s<int_T>(format, output, value); \
     } \
     \
-    ST_FORMAT_TYPE(uint_T) \
+    void ST::format_type(const ST::format_spec &format, ST::format_writer &output, \
+                         uint_T value) \
     { \
         if (format.digit_class == ST::digit_char) \
             _format_char(format, output, static_cast<int>(value)); \
@@ -318,7 +320,8 @@ _ST_FORMAT_INT_TYPE(int, unsigned)
 _ST_FORMAT_INT_TYPE(long, unsigned long)
 _ST_FORMAT_INT_TYPE(long long, unsigned long long)
 
-ST_FORMAT_TYPE(double)
+void ST::format_type(const ST::format_spec &format, ST::format_writer &output,
+                     double value)
 {
     char pad = format.pad ? format.pad : ' ';
 
@@ -369,7 +372,8 @@ ST_FORMAT_TYPE(double)
     }
 }
 
-ST_FORMAT_TYPE(char)
+void ST::format_type(const ST::format_spec &format, ST::format_writer &output,
+                     char value)
 {
     if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
         _format_char(format, output, value);
@@ -377,7 +381,8 @@ ST_FORMAT_TYPE(char)
         _format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
 }
 
-ST_FORMAT_TYPE(wchar_t)
+void ST::format_type(const ST::format_spec &format, ST::format_writer &output,
+                     wchar_t value)
 {
     if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
         _format_char(format, output, value);
