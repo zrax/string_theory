@@ -1978,6 +1978,14 @@ namespace ST
             return result;
         }
 
+        ST_DEPRECATED_IN_3_0("validation parameter is not used in replace(ST::string, ST::string) override")
+        string replace(const string &from, const string &to,
+                       case_sensitivity_t cs, utf_validation_t validation) const
+        {
+            (void)validation;
+            return replace(from, to, cs);
+        }
+
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         string replace(const char8_t *from, const char8_t *to,
                        case_sensitivity_t cs = case_sensitive,
