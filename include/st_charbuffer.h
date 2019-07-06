@@ -98,17 +98,11 @@ namespace ST
         };
 
     public:
-        buffer() noexcept
-            : m_chars(m_data), m_size()
-        {
-            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
-        }
+        constexpr buffer() noexcept
+            : m_chars(m_data), m_size(), m_data() { }
 
-        buffer(const null_t &) noexcept
-            : m_chars(m_data), m_size()
-        {
-            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
-        }
+        constexpr buffer(const null_t &) noexcept
+            : m_chars(m_data), m_size(), m_data() { }
 
         buffer(const buffer<char_T> &copy)
             : m_size(copy.m_size)
@@ -132,18 +126,16 @@ namespace ST
         }
 
         buffer(const char_T *data, size_t size)
-            : m_size(size)
+            : m_size(size), m_data()
         {
-            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
             m_chars = is_reffed() ? new char_T[m_size + 1] : m_data;
             traits_t::move(m_chars, data, m_size);
             m_chars[m_size] = 0;
         }
 
         buffer(size_t count, char_T fill)
-            : m_size(count)
+            : m_size(count), m_data()
         {
-            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
             m_chars = is_reffed() ? new char_T[m_size + 1] : m_data;
             traits_t::assign(m_chars, m_size, fill);
             m_chars[m_size] = 0;
@@ -279,10 +271,12 @@ namespace ST
         {
             return reverse_iterator(end());
         }
+
         const_reverse_iterator rbegin() const noexcept
         {
             return const_reverse_iterator(end());
         }
+
         const_reverse_iterator crbegin() const noexcept
         {
             return const_reverse_iterator(cend());
@@ -292,10 +286,12 @@ namespace ST
         {
             return reverse_iterator(begin());
         }
+
         const_reverse_iterator rend() const noexcept
         {
             return const_reverse_iterator(begin());
         }
+
         const_reverse_iterator crend() const noexcept
         {
             return const_reverse_iterator(cbegin());
