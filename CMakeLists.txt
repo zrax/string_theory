@@ -139,7 +139,6 @@ set(ST_HEADERS_PUB
     include/string_theory/format
     include/string_theory/iostream
     include/string_theory/stdio
-    include/string_theory/stl_formatter
     include/string_theory/string
     include/string_theory/string_stream
 )
