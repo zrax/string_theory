@@ -94,7 +94,8 @@ size_t _ST_PRIVATE::cleanup_utf8(char *output, const char *buffer, size_t size)
         if (*sp < 0x80) {
             ++output_size;
             if (output)
-                *output++ = static_cast<char>(*sp++);
+                *output++ = static_cast<char>(*sp);
+            sp += 1;
         } else if ((*sp & 0xE0) == 0xC0) {
             // Two bytes
             if (sp + 2 > ep || (sp[1] & 0xC0) != 0x80)
@@ -124,6 +125,7 @@ size_t _ST_PRIVATE::cleanup_utf8(char *output, const char *buffer, size_t size)
             // Invalid sequence byte
             output_size += _append_chars(output, BADCHAR_SUBSTITUTE_UTF8,
                                          BADCHAR_SUBSTITUTE_UTF8_LEN);
+            sp += 1;
         }
     }
 
