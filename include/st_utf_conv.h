@@ -135,6 +135,11 @@ namespace ST
         return result;
     }
 
+    inline char_buffer utf16_to_utf8(const utf16_buffer &utf16, utf_validation_t validation)
+    {
+        return utf16_to_utf8(utf16.data(), utf16.size(), validation);
+    }
+
     inline char_buffer utf32_to_utf8(const char32_t *utf32, size_t size,
                                      utf_validation_t validation)
     {
@@ -153,6 +158,11 @@ namespace ST
         return result;
     }
 
+    inline char_buffer utf32_to_utf8(const utf32_buffer &utf32, utf_validation_t validation)
+    {
+        return utf32_to_utf8(utf32.data(), utf32.size(), validation);
+    }
+
     inline char_buffer wchar_to_utf8(const wchar_t *wstr, size_t size,
                                      utf_validation_t validation)
     {
@@ -161,6 +171,11 @@ namespace ST
 #else
         return utf32_to_utf8(reinterpret_cast<const char32_t *>(wstr), size, validation);
 #endif
+    }
+
+    inline char_buffer wchar_to_utf8(const wchar_buffer &wstr, utf_validation_t validation)
+    {
+        return wchar_to_utf8(wstr.data(), wstr.size(), validation);
     }
 
     inline char_buffer latin_1_to_utf8(const char *astr, size_t size)
@@ -176,6 +191,11 @@ namespace ST
         _ST_PRIVATE::utf8_convert_from_latin_1(result.data(), astr, size);
 
         return result;
+    }
+
+    inline char_buffer latin_1_to_utf8(const char_buffer &astr)
+    {
+        return latin_1_to_utf8(astr.data(), astr.size());
     }
 
     inline utf16_buffer utf8_to_utf16(const char *utf8, size_t size,
@@ -196,6 +216,19 @@ namespace ST
         return result;
     }
 
+    inline utf16_buffer utf8_to_utf16(const char_buffer &utf8, utf_validation_t validation)
+    {
+        return utf8_to_utf16(utf8.data(), utf8.size(), validation);
+    }
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    inline utf16_buffer utf8_to_utf16(const char8_t *utf8, size_t size,
+                                      utf_validation_t validation)
+    {
+        return utf8_to_utf16(reinterpret_cast<const char *>(utf8), size, validation);
+    }
+#endif
+
     inline utf32_buffer utf8_to_utf32(const char *utf8, size_t size,
                                       utf_validation_t validation)
     {
@@ -214,6 +247,19 @@ namespace ST
         return result;
     }
 
+    inline utf32_buffer utf8_to_utf32(const char_buffer &utf8, utf_validation_t validation)
+    {
+        return utf8_to_utf32(utf8.data(), utf8.size(), validation);
+    }
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    inline utf32_buffer utf8_to_utf32(const char8_t *utf8, size_t size,
+                                      utf_validation_t validation)
+    {
+        return utf8_to_utf32(reinterpret_cast<const char *>(utf8), size, validation);
+    }
+#endif
+
     inline wchar_buffer utf8_to_wchar(const char *utf8, size_t size,
                                       utf_validation_t validation)
     {
@@ -225,6 +271,19 @@ namespace ST
         return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32.data()), utf32.size());
 #endif
     }
+
+    inline wchar_buffer utf8_to_wchar(const char_buffer &utf8, utf_validation_t validation)
+    {
+        return utf8_to_wchar(utf8.data(), utf8.size(), validation);
+    }
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    inline wchar_buffer utf8_to_wchar(const char8_t *utf8, size_t size,
+                                      utf_validation_t validation)
+    {
+        return utf8_to_wchar(reinterpret_cast<const char *>(utf8), size, validation);
+    }
+#endif
 
     inline char_buffer utf8_to_latin_1(const char *utf8, size_t size,
                                        utf_validation_t validation,
@@ -245,6 +304,24 @@ namespace ST
 
         return result;
     }
+
+    inline char_buffer utf8_to_latin_1(const char_buffer &utf8,
+                                       utf_validation_t validation,
+                                       bool substitute_out_of_range = true)
+    {
+        return utf8_to_latin_1(utf8.data(), utf8.size(), validation,
+                               substitute_out_of_range);
+    }
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    inline char_buffer utf8_to_latin_1(const char8_t *utf8, size_t size,
+                                       utf_validation_t validation,
+                                       bool substitute_out_of_range = true)
+    {
+        return utf8_to_latin_1(reinterpret_cast<const char *>(utf8), size,
+                               validation, substitute_out_of_range);
+    }
+#endif
 }
 
 #endif // _ST_UTF_CONV_H

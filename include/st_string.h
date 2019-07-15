@@ -209,19 +209,19 @@ namespace ST
         string(const utf16_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            m_buffer = utf16_to_utf8(init.data(), init.size(), validation);
+            m_buffer = utf16_to_utf8(init, validation);
         }
 
         string(const utf32_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            m_buffer = utf32_to_utf8(init.data(), init.size(), validation);
+            m_buffer = utf32_to_utf8(init, validation);
         }
 
         string(const wchar_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            m_buffer = wchar_to_utf8(init.data(), init.size(), validation);
+            m_buffer = wchar_to_utf8(init, validation);
         }
 
 #if !defined(ST_NO_STL_STRINGS)
@@ -436,19 +436,19 @@ namespace ST
         void set(const utf16_buffer &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            m_buffer = utf16_to_utf8(init.data(), init.size(), validation);
+            m_buffer = utf16_to_utf8(init, validation);
         }
 
         void set(const utf32_buffer &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            m_buffer = utf32_to_utf8(init.data(), init.size(), validation);
+            m_buffer = utf32_to_utf8(init, validation);
         }
 
         void set(const wchar_buffer &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            m_buffer = wchar_to_utf8(init.data(), init.size(), validation);
+            m_buffer = wchar_to_utf8(init, validation);
         }
 
 #if !defined(ST_NO_STL_STRINGS)
@@ -902,24 +902,24 @@ namespace ST
         static string from_utf16(const utf16_buffer &utf16,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            return from_validated(utf16_to_utf8(utf16.data(), utf16.size(), validation));
+            return from_validated(utf16_to_utf8(utf16, validation));
         }
 
         static string from_utf32(const utf32_buffer &utf32,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            return from_validated(utf32_to_utf8(utf32.data(), utf32.size(), validation));
+            return from_validated(utf32_to_utf8(utf32, validation));
         }
 
         static string from_wchar(const wchar_buffer &wstr,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            return from_validated(wchar_to_utf8(wstr.data(), wstr.size(), validation));
+            return from_validated(wchar_to_utf8(wstr, validation));
         }
 
         static string from_latin_1(const char_buffer &astr)
         {
-            return from_validated(latin_1_to_utf8(astr.data(), astr.size()));
+            return from_validated(latin_1_to_utf8(astr));
         }
 
 #if !defined(ST_NO_STL_STRINGS)
@@ -1119,23 +1119,22 @@ namespace ST
 
         utf16_buffer to_utf16() const
         {
-            return utf8_to_utf16(m_buffer.data(), m_buffer.size(), assume_valid);
+            return utf8_to_utf16(m_buffer, assume_valid);
         }
 
         utf32_buffer to_utf32() const
         {
-            return utf8_to_utf32(m_buffer.data(), m_buffer.size(), assume_valid);
+            return utf8_to_utf32(m_buffer, assume_valid);
         }
 
         wchar_buffer to_wchar() const
         {
-            return utf8_to_wchar(m_buffer.data(), m_buffer.size(), assume_valid);
+            return utf8_to_wchar(m_buffer, assume_valid);
         }
 
         char_buffer to_latin_1(bool substitute_out_of_range = true) const
         {
-            return utf8_to_latin_1(m_buffer.data(), m_buffer.size(), assume_valid,
-                                   substitute_out_of_range);
+            return utf8_to_latin_1(m_buffer, assume_valid, substitute_out_of_range);
         }
 
         ST_DEPRECATED_IN_3_0("use to_latin_1(bool) instead")
