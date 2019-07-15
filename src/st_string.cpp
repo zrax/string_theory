@@ -138,6 +138,7 @@ static ST::char_buffer _cleanup_utf8_buffer(const ST::char_buffer &buffer)
         } else {
             // Invalid sequence byte
             ss_clean.append(BADCHAR_SUBSTITUTE_UTF8, BADCHAR_SUBSTITUTE_UTF8_LEN);
+            sp += 1;
         }
     }
 
