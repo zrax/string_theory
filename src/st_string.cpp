@@ -169,8 +169,9 @@ size_t _ST_PRIVATE::measure_from_utf16(const char16_t *utf16, size_t size)
     return u8len;
 }
 
-const char *_ST_PRIVATE::convert_from_utf16(char *dp, const char16_t *utf16, size_t size,
-                                            ST::utf_validation_t validation)
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::convert_from_utf16(char *dp, const char16_t *utf16, size_t size,
+                                ST::utf_validation_t validation)
 {
     const char16_t *sp = utf16;
     const char16_t *ep = sp + size;
@@ -185,7 +186,7 @@ const char *_ST_PRIVATE::convert_from_utf16(char *dp, const char16_t *utf16, siz
             if (sp + 1 >= ep) {
                 switch (validation) {
                 case ST::check_validity:
-                    return "Incomplete surrogate pair";
+                    return conversion_error_t::incomplete_surrogate_pair;
                 case ST::substitute_invalid:
                     std::char_traits<char>::copy(dp, BADCHAR_SUBSTITUTE_UTF8,
                                                  BADCHAR_SUBSTITUTE_UTF8_LEN);
@@ -211,7 +212,7 @@ const char *_ST_PRIVATE::convert_from_utf16(char *dp, const char16_t *utf16, siz
                 } else {
                     switch (validation) {
                     case ST::check_validity:
-                        return "Incomplete surrogate pair";
+                        return conversion_error_t::incomplete_surrogate_pair;
                     case ST::substitute_invalid:
                         std::char_traits<char>::copy(dp, BADCHAR_SUBSTITUTE_UTF8,
                                                      BADCHAR_SUBSTITUTE_UTF8_LEN);
@@ -238,7 +239,7 @@ const char *_ST_PRIVATE::convert_from_utf16(char *dp, const char16_t *utf16, siz
                 } else {
                     switch (validation) {
                     case ST::check_validity:
-                        return "Incomplete surrogate pair";
+                        return conversion_error_t::incomplete_surrogate_pair;
                     case ST::substitute_invalid:
                         std::char_traits<char>::copy(dp, BADCHAR_SUBSTITUTE_UTF8,
                                                      BADCHAR_SUBSTITUTE_UTF8_LEN);
@@ -262,7 +263,7 @@ const char *_ST_PRIVATE::convert_from_utf16(char *dp, const char16_t *utf16, siz
         }
     }
 
-    return nullptr;
+    return conversion_error_t::success;
 }
 
 size_t _ST_PRIVATE::measure(char32_t ch)
@@ -294,8 +295,9 @@ size_t _ST_PRIVATE::measure_from_utf32(const char32_t *utf32, size_t size)
     return u8len;
 }
 
-const char *_ST_PRIVATE::convert_from_utf32(char *dp, const char32_t *utf32, size_t size,
-                                            ST::utf_validation_t validation)
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::convert_from_utf32(char *dp, const char32_t *utf32, size_t size,
+                                ST::utf_validation_t validation)
 {
     const char32_t *sp = utf32;
     const char32_t *ep = sp + size;
@@ -316,14 +318,14 @@ const char *_ST_PRIVATE::convert_from_utf32(char *dp, const char32_t *utf32, siz
             *dp++ = 0x80 | ((*sp      ) & 0x3F);
         } else {
             if (validation == ST::check_validity)
-                return "Unicode character out of range";
+                return conversion_error_t::out_of_range;
             std::char_traits<char>::copy(dp, BADCHAR_SUBSTITUTE_UTF8,
                                          BADCHAR_SUBSTITUTE_UTF8_LEN);
             dp += BADCHAR_SUBSTITUTE_UTF8_LEN;
         }
     }
 
-    return nullptr;
+    return conversion_error_t::success;
 }
 
 size_t _ST_PRIVATE::measure_from_latin_1(const char *astr, size_t size)
@@ -481,8 +483,9 @@ size_t _ST_PRIVATE::measure_to_latin_1(const char *utf8, size_t size)
     return alen;
 }
 
-const char *_ST_PRIVATE::convert_to_latin_1(char *dp, const char *utf8, size_t size,
-                                            ST::utf_validation_t validation)
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::convert_to_latin_1(char *dp, const char *utf8, size_t size,
+                                ST::utf_validation_t validation)
 {
     const unsigned char *sp = reinterpret_cast<const unsigned char *>(utf8);
     const unsigned char *ep = sp + size;
@@ -506,14 +509,14 @@ const char *_ST_PRIVATE::convert_to_latin_1(char *dp, const char *utf8, size_t s
 
         if (bigch >= 0x100) {
             if (validation == ST::check_validity)
-                return "Latin-1 character out of range";
+                return conversion_error_t::latin1_out_of_range;
             else
                 bigch = '?';
         }
         *dp++ = static_cast<char>(bigch);
     }
 
-    return nullptr;
+    return conversion_error_t::success;
 }
 
 int ST::string::to_int(int base) const noexcept
@@ -898,7 +901,8 @@ size_t ST::hash_i::operator()(const string &str) const noexcept
     return hash;
 }
 
-const char *_ST_PRIVATE::append_utf8(char *dp, char32_t ch)
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::append_utf8(char *dp, char32_t ch)
 {
     if (ch < 0x80) {
         *dp++ = static_cast<char>(ch);
@@ -915,8 +919,8 @@ const char *_ST_PRIVATE::append_utf8(char *dp, char32_t ch)
         *dp++ = 0x80 | ((ch >>  6) & 0x3F);
         *dp++ = 0x80 | ((ch      ) & 0x3F);
     } else {
-        return "Unicode character out of range";
+        return conversion_error_t::out_of_range;
     }
 
-    return nullptr;
+    return conversion_error_t::success;
 }

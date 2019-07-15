@@ -139,8 +139,7 @@ namespace ST
 
             m_buffer.allocate(u8size);
             auto error = _ST_PRIVATE::convert_from_utf16(m_buffer.data(), utf16, size, validation);
-            if (error)
-                throw ST::unicode_error(error);
+            _ST_PRIVATE::raise_conversion_error(error);
         }
 
         void _convert_from_utf32(const char32_t *utf32, size_t size,
@@ -156,8 +155,7 @@ namespace ST
 
             m_buffer.allocate(u8size);
             auto error = _ST_PRIVATE::convert_from_utf32(m_buffer.data(), utf32, size, validation);
-            if (error)
-                throw ST::unicode_error(error);
+            _ST_PRIVATE::raise_conversion_error(error);
         }
 
         void _convert_from_wchar(const wchar_t *wstr, size_t size,
@@ -1269,8 +1267,7 @@ namespace ST
             result.allocate(asize);
             auto error = _ST_PRIVATE::convert_to_latin_1(result.data(), m_buffer.data(),
                                                          m_buffer.size(), validation);
-            if (error)
-                throw ST::unicode_error(error);
+            _ST_PRIVATE::raise_conversion_error(error);
 
             return result;
         }
@@ -2272,8 +2269,7 @@ namespace ST
         catp += left.size();
 
         auto error = _ST_PRIVATE::append_utf8(catp, right);
-        if (error)
-            throw ST::unicode_error(error);
+        _ST_PRIVATE::raise_conversion_error(error);
 
         return ST::string::from_validated(std::move(cat));
     }
@@ -2309,8 +2305,7 @@ namespace ST
         char *catp = cat.data();
 
         auto error = _ST_PRIVATE::append_utf8(catp, left);
-        if (error)
-            throw ST::unicode_error(error);
+        _ST_PRIVATE::raise_conversion_error(error);
 
         catp += addsize;
         std::char_traits<char>::copy(catp, right.c_str(), right.size());

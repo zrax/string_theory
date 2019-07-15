@@ -51,13 +51,37 @@ namespace _ST_PRIVATE
         return cb_clean;
     }
 
+    enum class conversion_error_t
+    {
+        success,
+        incomplete_surrogate_pair,
+        out_of_range,
+        latin1_out_of_range,
+    };
+
+    inline void raise_conversion_error(conversion_error_t err)
+    {
+        switch (err) {
+        case conversion_error_t::success:
+            break;
+        case conversion_error_t::incomplete_surrogate_pair:
+            throw ST::unicode_error("Incomplete surrogate pair");
+        case conversion_error_t::out_of_range:
+            throw ST::unicode_error("Unicode character out of range");
+        case conversion_error_t::latin1_out_of_range:
+            throw ST::unicode_error("Latin-1 character out of range");
+        }
+    }
+
     ST_EXPORT size_t measure_from_utf16(const char16_t *utf16, size_t size);
-    ST_EXPORT const char *convert_from_utf16(char *dest, const char16_t *utf16, size_t size,
-                                             ST::utf_validation_t validation);
+    ST_EXPORT conversion_error_t convert_from_utf16(char *dest,
+                    const char16_t *utf16, size_t size,
+                    ST::utf_validation_t validation);
 
     ST_EXPORT size_t measure_from_utf32(const char32_t *utf32, size_t size);
-    ST_EXPORT const char *convert_from_utf32(char *dest, const char32_t *utf32, size_t size,
-                                             ST::utf_validation_t validation);
+    ST_EXPORT conversion_error_t convert_from_utf32(char *dest,
+                    const char32_t *utf32, size_t size,
+                    ST::utf_validation_t validation);
 
     ST_EXPORT size_t measure(char32_t ch);
 
@@ -71,8 +95,9 @@ namespace _ST_PRIVATE
     ST_EXPORT void convert_to_utf32(char32_t *dest, const char *utf8, size_t size);
 
     ST_EXPORT size_t measure_to_latin_1(const char *utf8, size_t size);
-    ST_EXPORT const char *convert_to_latin_1(char *dest, const char *utf8, size_t size,
-                                             ST::utf_validation_t validation);
+    ST_EXPORT conversion_error_t convert_to_latin_1(char *dest,
+                    const char *utf8, size_t size,
+                    ST::utf_validation_t validation);
 
     inline char cl_fast_lower(char ch)
     {
@@ -147,7 +172,7 @@ namespace _ST_PRIVATE
         return result;
     }
 
-    ST_EXPORT const char *append_utf8(char *dest, char32_t ch);
+    ST_EXPORT conversion_error_t append_utf8(char *dest, char32_t ch);
 }
 
 #endif // _ST_STRING_HELPERS_H
