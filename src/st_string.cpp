@@ -37,10 +37,11 @@
     do { \
         ++cp; \
         if ((*cp & 0xC0) != 0x80) \
-            return false; \
+            return conversion_error_t::invalid_utf8_seq; \
     } while (false)
 
-bool _ST_PRIVATE::validate_utf8(const char *buffer, size_t size)
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::validate_utf8(const char *buffer, size_t size)
 {
     const unsigned char *cp = reinterpret_cast<const unsigned char *>(buffer);
     const unsigned char *ep = cp + size;
@@ -51,28 +52,28 @@ bool _ST_PRIVATE::validate_utf8(const char *buffer, size_t size)
         if ((*cp & 0xE0) == 0xC0) {
             // Two bytes
             if (cp + 2 > ep)
-                return false;
+                return conversion_error_t::incomplete_utf8_seq;
             _CHECK_NEXT_SEQ_BYTE();
         } else if ((*cp & 0xF0) == 0xE0) {
             // Three bytes
             if (cp + 3 > ep)
-                return false;
+                return conversion_error_t::incomplete_utf8_seq;
             _CHECK_NEXT_SEQ_BYTE();
             _CHECK_NEXT_SEQ_BYTE();
         } else if ((*cp & 0xF8) == 0xF0) {
             // Four bytes
             if (cp + 4 > ep)
-                return false;
+                return conversion_error_t::incomplete_utf8_seq;
             _CHECK_NEXT_SEQ_BYTE();
             _CHECK_NEXT_SEQ_BYTE();
             _CHECK_NEXT_SEQ_BYTE();
         } else {
             // Invalid sequence byte
-            return false;
+            return conversion_error_t::invalid_utf8_seq;
         }
     }
 
-    return true;
+    return conversion_error_t::success;
 }
 
 static size_t _append_chars(char *&output, const char *src, size_t count)
@@ -132,7 +133,7 @@ size_t _ST_PRIVATE::cleanup_utf8(char *output, const char *buffer, size_t size)
     return output_size;
 }
 
-size_t _ST_PRIVATE::measure_from_utf16(const char16_t *utf16, size_t size)
+size_t _ST_PRIVATE::utf8_measure_from_utf16(const char16_t *utf16, size_t size)
 {
     if (!utf16)
         return 0;
@@ -172,8 +173,8 @@ size_t _ST_PRIVATE::measure_from_utf16(const char16_t *utf16, size_t size)
 }
 
 _ST_PRIVATE::conversion_error_t
-_ST_PRIVATE::convert_from_utf16(char *dp, const char16_t *utf16, size_t size,
-                                ST::utf_validation_t validation)
+_ST_PRIVATE::utf8_convert_from_utf16(char *dp, const char16_t *utf16, size_t size,
+                                     ST::utf_validation_t validation)
 {
     const char16_t *sp = utf16;
     const char16_t *ep = sp + size;
@@ -268,7 +269,7 @@ _ST_PRIVATE::convert_from_utf16(char *dp, const char16_t *utf16, size_t size,
     return conversion_error_t::success;
 }
 
-size_t _ST_PRIVATE::measure(char32_t ch)
+size_t _ST_PRIVATE::utf8_measure(char32_t ch)
 {
     if (ch < 0x80) {
         return 1;
@@ -284,7 +285,7 @@ size_t _ST_PRIVATE::measure(char32_t ch)
     }
 }
 
-size_t _ST_PRIVATE::measure_from_utf32(const char32_t *utf32, size_t size)
+size_t _ST_PRIVATE::utf8_measure_from_utf32(const char32_t *utf32, size_t size)
 {
     if (!utf32)
         return 0;
@@ -293,13 +294,13 @@ size_t _ST_PRIVATE::measure_from_utf32(const char32_t *utf32, size_t size)
     const char32_t *sp = utf32;
     const char32_t *ep = sp + size;
     for (; sp < ep; ++sp)
-        u8len += _ST_PRIVATE::measure(*sp);
+        u8len += _ST_PRIVATE::utf8_measure(*sp);
     return u8len;
 }
 
 _ST_PRIVATE::conversion_error_t
-_ST_PRIVATE::convert_from_utf32(char *dp, const char32_t *utf32, size_t size,
-                                ST::utf_validation_t validation)
+_ST_PRIVATE::utf8_convert_from_utf32(char *dp, const char32_t *utf32, size_t size,
+                                     ST::utf_validation_t validation)
 {
     const char32_t *sp = utf32;
     const char32_t *ep = sp + size;
@@ -330,7 +331,7 @@ _ST_PRIVATE::convert_from_utf32(char *dp, const char32_t *utf32, size_t size,
     return conversion_error_t::success;
 }
 
-size_t _ST_PRIVATE::measure_from_latin_1(const char *astr, size_t size)
+size_t _ST_PRIVATE::utf8_measure_from_latin_1(const char *astr, size_t size)
 {
     if (!astr)
         return 0;
@@ -347,7 +348,7 @@ size_t _ST_PRIVATE::measure_from_latin_1(const char *astr, size_t size)
     return u8len;
 }
 
-void _ST_PRIVATE::convert_from_latin_1(char *dp, const char *astr, size_t size)
+void _ST_PRIVATE::utf8_convert_from_latin_1(char *dp, const char *astr, size_t size)
 {
     const char *sp = astr;
     const char *ep = sp + size;
@@ -361,7 +362,7 @@ void _ST_PRIVATE::convert_from_latin_1(char *dp, const char *astr, size_t size)
     }
 }
 
-size_t _ST_PRIVATE::measure_to_utf16(const char *utf8, size_t size)
+size_t _ST_PRIVATE::utf16_measure_from_utf8(const char *utf8, size_t size)
 {
     if (size == 0)
         return 0;
@@ -376,17 +377,27 @@ size_t _ST_PRIVATE::measure_to_utf16(const char *utf8, size_t size)
             sp += 2;
         } else if ((*sp & 0xF0) == 0xE0) {
             sp += 3;
-        } else {
-            // Encode with surrogate pair
-            ++u16len;
+        } else if ((*sp & 0xF8) == 0xF0) {
+            if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80
+                            || (sp[3] & 0xC0) != 0x80) {
+                // Invalid or incomplete sequence
+            } else {
+                // Encode with surrogate pair
+                ++u16len;
+            }
             sp += 4;
+        } else {
+            // Invalid UTF-8 sequence byte
+            sp += 1;
         }
         ++u16len;
     }
     return u16len;
 }
 
-void _ST_PRIVATE::convert_to_utf16(char16_t *dp, const char *utf8, size_t size)
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::utf16_convert_from_utf8(char16_t *dp, const char *utf8, size_t size,
+                                     ST::utf_validation_t validation)
 {
     const unsigned char *sp = reinterpret_cast<const unsigned char *>(utf8);
     const unsigned char *ep = sp + size;
@@ -395,28 +406,57 @@ void _ST_PRIVATE::convert_to_utf16(char16_t *dp, const char *utf8, size_t size)
         if (*sp < 0x80) {
             *dp++ = *sp++;
         } else if ((*sp & 0xE0) == 0xC0) {
-            bigch  = (*sp++ & 0x1F) << 6;
-            bigch |= (*sp++ & 0x3F);
-            *dp++ = static_cast<char16_t>(bigch);
+            if (sp + 2 > ep || (sp[1] & 0xC0) != 0x80) {
+                if (validation == ST::check_validity)
+                    return conversion_error_t::incomplete_utf8_seq;
+                *dp++ = BADCHAR_SUBSTITUTE;
+                sp += 2;
+            } else {
+                bigch = (*sp++ & 0x1F) << 6;
+                bigch |= (*sp++ & 0x3F);
+                *dp++ = static_cast<char16_t>(bigch);
+            }
         } else if ((*sp & 0xF0) == 0xE0) {
-            bigch  = (*sp++ & 0x0F) << 12;
-            bigch |= (*sp++ & 0x3F) << 6;
-            bigch |= (*sp++ & 0x3F);
-            *dp++ = static_cast<char16_t>(bigch);
-        } else {
-            bigch  = (*sp++ & 0x07) << 18;
-            bigch |= (*sp++ & 0x3F) << 12;
-            bigch |= (*sp++ & 0x3F) << 6;
-            bigch |= (*sp++ & 0x3F);
-            bigch -= 0x10000;
+            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80) {
+                if (validation == ST::check_validity)
+                    return conversion_error_t::incomplete_utf8_seq;
+                *dp++ = BADCHAR_SUBSTITUTE;
+                sp += 3;
+            } else {
+                bigch  = (*sp++ & 0x0F) << 12;
+                bigch |= (*sp++ & 0x3F) << 6;
+                bigch |= (*sp++ & 0x3F);
+                *dp++ = static_cast<char16_t>(bigch);
+            }
+        } else if ((*sp & 0xF8) == 0xF0) {
+            if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80
+                            || (sp[3] & 0xC0) != 0x80) {
+                if (validation == ST::check_validity)
+                    return conversion_error_t::incomplete_utf8_seq;
+                *dp++ = BADCHAR_SUBSTITUTE;
+                sp += 4;
+            } else {
+                bigch  = (*sp++ & 0x07) << 18;
+                bigch |= (*sp++ & 0x3F) << 12;
+                bigch |= (*sp++ & 0x3F) << 6;
+                bigch |= (*sp++ & 0x3F);
+                bigch -= 0x10000;
 
-            *dp++ = 0xD800 | ((bigch >> 10) & 0x3FF);
-            *dp++ = 0xDC00 | ((bigch      ) & 0x3FF);
+                *dp++ = 0xD800 | ((bigch >> 10) & 0x3FF);
+                *dp++ = 0xDC00 | ((bigch      ) & 0x3FF);
+            }
+        } else {
+            if (validation == ST::check_validity)
+                return conversion_error_t::invalid_utf8_seq;
+            *dp++ = BADCHAR_SUBSTITUTE;
+            sp += 1;
         }
     }
+
+    return conversion_error_t::success;
 }
 
-size_t _ST_PRIVATE::measure_to_utf32(const char *utf8, size_t size)
+size_t _ST_PRIVATE::utf32_measure_from_utf8(const char *utf8, size_t size)
 {
     if (size == 0)
         return 0;
@@ -431,14 +471,18 @@ size_t _ST_PRIVATE::measure_to_utf32(const char *utf8, size_t size)
             sp += 2;
         else if ((*sp & 0xF0) == 0xE0)
             sp += 3;
-        else
+        else if ((*sp & 0xF8) == 0xF0)
             sp += 4;
+        else
+            sp += 1;    // Invalid UTF-8 sequence byte
         ++u32len;
     }
     return u32len;
 }
 
-void _ST_PRIVATE::convert_to_utf32(char32_t *dp, const char *utf8, size_t size)
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::utf32_convert_from_utf8(char32_t *dp, const char *utf8, size_t size,
+                                     ST::utf_validation_t validation)
 {
     const unsigned char *sp = reinterpret_cast<const unsigned char *>(utf8);
     const unsigned char *ep = sp + size;
@@ -447,23 +491,52 @@ void _ST_PRIVATE::convert_to_utf32(char32_t *dp, const char *utf8, size_t size)
         if (*sp < 0x80) {
             bigch = *sp++;
         } else if ((*sp & 0xE0) == 0xC0) {
-            bigch  = (*sp++ & 0x1F) << 6;
-            bigch |= (*sp++ & 0x3F);
+            if (sp + 2 > ep || (sp[1] & 0xC0) != 0x80) {
+                if (validation == ST::check_validity)
+                    return conversion_error_t::incomplete_utf8_seq;
+                bigch = BADCHAR_SUBSTITUTE;
+                sp += 2;
+            } else {
+                bigch  = (*sp++ & 0x1F) << 6;
+                bigch |= (*sp++ & 0x3F);
+            }
         } else if ((*sp & 0xF0) == 0xE0) {
-            bigch  = (*sp++ & 0x0F) << 12;
-            bigch |= (*sp++ & 0x3F) << 6;
-            bigch |= (*sp++ & 0x3F);
+            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80) {
+                if (validation == ST::check_validity)
+                    return conversion_error_t::incomplete_utf8_seq;
+                bigch = BADCHAR_SUBSTITUTE;
+                sp += 3;
+            } else {
+                bigch  = (*sp++ & 0x0F) << 12;
+                bigch |= (*sp++ & 0x3F) << 6;
+                bigch |= (*sp++ & 0x3F);
+            }
+        } else if ((*sp & 0xF8) == 0xF0) {
+            if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80
+                            || (sp[3] & 0xC0) != 0x80) {
+                if (validation == ST::check_validity)
+                    return conversion_error_t::incomplete_utf8_seq;
+                bigch = BADCHAR_SUBSTITUTE;
+                sp += 4;
+            } else {
+                bigch  = (*sp++ & 0x07) << 18;
+                bigch |= (*sp++ & 0x3F) << 12;
+                bigch |= (*sp++ & 0x3F) << 6;
+                bigch |= (*sp++ & 0x3F);
+            }
         } else {
-            bigch  = (*sp++ & 0x07) << 18;
-            bigch |= (*sp++ & 0x3F) << 12;
-            bigch |= (*sp++ & 0x3F) << 6;
-            bigch |= (*sp++ & 0x3F);
+            if (validation == ST::check_validity)
+                return conversion_error_t::invalid_utf8_seq;
+            bigch = BADCHAR_SUBSTITUTE;
+            sp += 1;
         }
         *dp++ = bigch;
     }
+
+    return conversion_error_t::success;
 }
 
-size_t _ST_PRIVATE::measure_to_latin_1(const char *utf8, size_t size)
+size_t _ST_PRIVATE::latin_1_measure_from_utf8(const char *utf8, size_t size)
 {
     if (size == 0)
         return 0;
@@ -478,16 +551,19 @@ size_t _ST_PRIVATE::measure_to_latin_1(const char *utf8, size_t size)
             sp += 2;
         else if ((*sp & 0xF0) == 0xE0)
             sp += 3;
-        else
+        else if ((*sp & 0xF8) == 0xF0)
             sp += 4;
+        else
+            sp += 1;    // Invalid UTF-8 sequence byte
         ++alen;
     }
     return alen;
 }
 
 _ST_PRIVATE::conversion_error_t
-_ST_PRIVATE::convert_to_latin_1(char *dp, const char *utf8, size_t size,
-                                ST::utf_validation_t validation)
+_ST_PRIVATE::latin_1_convert_from_utf8(char *dp, const char *utf8, size_t size,
+                                       ST::utf_validation_t validation,
+                                       bool substitute_out_of_range)
 {
     const unsigned char *sp = reinterpret_cast<const unsigned char *>(utf8);
     const unsigned char *ep = sp + size;
@@ -496,24 +572,51 @@ _ST_PRIVATE::convert_to_latin_1(char *dp, const char *utf8, size_t size,
         if (*sp < 0x80) {
             bigch = *sp++;
         } else if ((*sp & 0xE0) == 0xC0) {
-            bigch  = (*sp++ & 0x1F) << 6;
-            bigch |= (*sp++ & 0x3F);
+            if (sp + 2 > ep || (sp[1] & 0xC0) != 0x80) {
+                if (validation == ST::check_validity)
+                    return conversion_error_t::incomplete_utf8_seq;
+                bigch = '?';
+                sp += 2;
+            } else {
+                bigch  = (*sp++ & 0x1F) << 6;
+                bigch |= (*sp++ & 0x3F);
+            }
         } else if ((*sp & 0xF0) == 0xE0) {
-            bigch  = (*sp++ & 0x0F) << 12;
-            bigch |= (*sp++ & 0x3F) << 6;
-            bigch |= (*sp++ & 0x3F);
+            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80) {
+                if (validation == ST::check_validity)
+                    return conversion_error_t::incomplete_utf8_seq;
+                bigch = '?';
+                sp += 3;
+            } else {
+                bigch  = (*sp++ & 0x0F) << 12;
+                bigch |= (*sp++ & 0x3F) << 6;
+                bigch |= (*sp++ & 0x3F);
+            }
+        } else if ((*sp & 0xF8) == 0xF0) {
+            if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80
+                            || (sp[3] & 0xC0) != 0x80) {
+                if (validation == ST::check_validity)
+                    return conversion_error_t::incomplete_utf8_seq;
+                bigch = '?';
+                sp += 4;
+            } else {
+                bigch  = (*sp++ & 0x07) << 18;
+                bigch |= (*sp++ & 0x3F) << 12;
+                bigch |= (*sp++ & 0x3F) << 6;
+                bigch |= (*sp++ & 0x3F);
+            }
         } else {
-            bigch  = (*sp++ & 0x07) << 18;
-            bigch |= (*sp++ & 0x3F) << 12;
-            bigch |= (*sp++ & 0x3F) << 6;
-            bigch |= (*sp++ & 0x3F);
+            if (validation == ST::check_validity)
+                return conversion_error_t::invalid_utf8_seq;
+            bigch = '?';
+            sp += 1;
         }
 
         if (bigch >= 0x100) {
-            if (validation == ST::check_validity)
-                return conversion_error_t::latin1_out_of_range;
-            else
+            if (substitute_out_of_range)
                 bigch = '?';
+            else
+                return conversion_error_t::latin1_out_of_range;
         }
         *dp++ = static_cast<char>(bigch);
     }

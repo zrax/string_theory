@@ -51,9 +51,6 @@
 
 #define ST_WHITESPACE   " \t\r\n"
 
-// This is 256MiB worth of UTF-8 string data
-#define ST_HUGE_BUFFER_SIZE 0x10000000
-
 namespace ST
 {
     enum class case_sensitivity_t
@@ -66,7 +63,7 @@ namespace ST
 
     enum class utf_validation_t
     {
-        assume_valid,       //! Don't do any checking
+        assume_valid,       //! Don't do any checking (when possible)
         substitute_invalid, //! Replace invalid sequences with a substitute
         check_validity,     //! Throw a ST::unicode_error for invalid sequences
     };
@@ -113,8 +110,7 @@ namespace ST
     private:
         char_buffer m_buffer;
 
-        void _convert_from_utf8(const char *utf8, size_t size,
-                                utf_validation_t validation)
+        void _set_utf8(const char *utf8, size_t size, utf_validation_t validation)
         {
             ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -126,68 +122,10 @@ namespace ST
             set(char_buffer(utf8, size), validation);
         }
 
-        void _convert_from_utf16(const char16_t *utf16, size_t size,
-                                 utf_validation_t validation)
-        {
-            ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
-
-            size_t u8size = _ST_PRIVATE::measure_from_utf16(utf16, size);
-            if (u8size == 0) {
-                m_buffer = char_buffer();
-                return;
-            }
-
-            m_buffer.allocate(u8size);
-            auto error = _ST_PRIVATE::convert_from_utf16(m_buffer.data(), utf16, size, validation);
-            _ST_PRIVATE::raise_conversion_error(error);
-        }
-
-        void _convert_from_utf32(const char32_t *utf32, size_t size,
-                                 utf_validation_t validation)
-        {
-            ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
-
-            size_t u8size = _ST_PRIVATE::measure_from_utf32(utf32, size);
-            if (u8size == 0) {
-                m_buffer = char_buffer();
-                return;
-            }
-
-            m_buffer.allocate(u8size);
-            auto error = _ST_PRIVATE::convert_from_utf32(m_buffer.data(), utf32, size, validation);
-            _ST_PRIVATE::raise_conversion_error(error);
-        }
-
-        void _convert_from_wchar(const wchar_t *wstr, size_t size,
-                                 utf_validation_t validation)
-        {
-#if ST_WCHAR_BYTES == 2
-            _convert_from_utf16(reinterpret_cast<const char16_t *>(wstr), size, validation);
-#else
-            _convert_from_utf32(reinterpret_cast<const char32_t *>(wstr), size, validation);
-#endif
-        }
-
-        void _convert_from_latin_1(const char *astr, size_t size)
-        {
-            ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
-
-            size_t u8size = _ST_PRIVATE::measure_from_latin_1(astr, size);
-            if (u8size == 0) {
-                m_buffer = char_buffer();
-                return;
-            }
-
-            m_buffer.allocate(u8size);
-            _ST_PRIVATE::convert_from_latin_1(m_buffer.data(), astr, size);
-        }
-
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        void _convert_from_utf8(const char8_t *utf8, size_t size,
-                                utf_validation_t validation)
+        void _set_utf8(const char8_t *utf8, size_t size, utf_validation_t validation)
         {
-            _convert_from_utf8(reinterpret_cast<const char *>(utf8),
-                               size, validation);
+            _set_utf8(reinterpret_cast<const char *>(utf8), size, validation);
         }
 #endif
 
@@ -222,7 +160,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = cstr ? std::char_traits<char>::length(cstr) : 0;
-            _convert_from_utf8(cstr, size, validation);
+            _set_utf8(cstr, size, validation);
         }
 
         string(const wchar_t *wstr, size_t size = ST_AUTO_SIZE,
@@ -230,7 +168,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = wstr ? std::char_traits<wchar_t>::length(wstr) : 0;
-            _convert_from_wchar(wstr, size, validation);
+            m_buffer = wchar_to_utf8(wstr, size, validation);
         }
 
         string(const char16_t *cstr, size_t size = ST_AUTO_SIZE,
@@ -238,7 +176,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = cstr ? std::char_traits<char16_t>::length(cstr) : 0;
-            _convert_from_utf16(cstr, size, validation);
+            m_buffer = utf16_to_utf8(cstr, size, validation);
         }
 
         string(const char32_t *cstr, size_t size = ST_AUTO_SIZE,
@@ -246,7 +184,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = cstr ? std::char_traits<char32_t>::length(cstr) : 0;
-            _convert_from_utf32(cstr, size, validation);
+            m_buffer = utf32_to_utf8(cstr, size, validation);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
@@ -255,7 +193,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = cstr ? std::char_traits<char8_t>::length(cstr) : 0;
-            _convert_from_utf8(cstr, size, validation);
+            _set_utf8(cstr, size, validation);
         }
 #endif
 
@@ -280,51 +218,51 @@ namespace ST
         string(const utf16_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf16(init.data(), init.size(), validation);
+            m_buffer = utf16_to_utf8(init.data(), init.size(), validation);
         }
 
         string(const utf32_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf32(init.data(), init.size(), validation);
+            m_buffer = utf32_to_utf8(init.data(), init.size(), validation);
         }
 
         string(const wchar_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_wchar(init.data(), init.size(), validation);
+            m_buffer = wchar_to_utf8(init.data(), init.size(), validation);
         }
 
 #if !defined(ST_NO_STL_STRINGS)
         string(const std::string &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(init.c_str(), init.size(), validation);
+            _set_utf8(init.c_str(), init.size(), validation);
         }
 
         string(const std::wstring &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_wchar(init.c_str(), init.size(), validation);
+            m_buffer = wchar_to_utf8(init.c_str(), init.size(), validation);
         }
 
         string(const std::u16string &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf16(init.c_str(), init.size(), validation);
+            m_buffer = utf16_to_utf8(init.c_str(), init.size(), validation);
         }
 
         string(const std::u32string &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf32(init.c_str(), init.size(), validation);
+            m_buffer = utf32_to_utf8(init.c_str(), init.size(), validation);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         string(const std::u8string &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(init.c_str(), init.size(), validation);
+            _set_utf8(init.c_str(), init.size(), validation);
         }
 #endif
 
@@ -332,25 +270,25 @@ namespace ST
         string(const std::string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(view.data(), view.size(), validation);
+            _set_utf8(view.data(), view.size(), validation);
         }
 
         string(const std::wstring_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_wchar(view.data(), view.size(), validation);
+            m_buffer = wchar_to_utf8(view.data(), view.size(), validation);
         }
 
         string(const std::u16string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf16(view.data(), view.size(), validation);
+            m_buffer = utf16_to_utf8(view.data(), view.size(), validation);
         }
 
         string(const std::u32string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf32(view.data(), view.size(), validation);
+            m_buffer = utf32_to_utf8(view.data(), view.size(), validation);
         }
 #endif
 
@@ -358,7 +296,7 @@ namespace ST
         string(const std::u8string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(view.data(), view.size(), validation);
+            _set_utf8(view.data(), view.size(), validation);
         }
 #endif
 
@@ -366,25 +304,25 @@ namespace ST
         string(const std::experimental::string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(view.data(), view.size(), validation);
+            _set_utf8(view.data(), view.size(), validation);
         }
 
         string(const std::experimental::wstring_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_wchar(view.data(), view.size(), validation);
+            m_buffer = wchar_to_utf8(view.data(), view.size(), validation);
         }
 
         string(const std::experimental::u16string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf16(view.data(), view.size(), validation);
+            m_buffer = utf16_to_utf8(view.data(), view.size(), validation);
         }
 
         string(const std::experimental::u32string_view &view,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf32(view.data(), view.size(), validation);
+            m_buffer = utf32_to_utf8(view.data(), view.size(), validation);
         }
 #endif
 
@@ -411,7 +349,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = cstr ? std::char_traits<char>::length(cstr) : 0;
-            _convert_from_utf8(cstr, size, validation);
+            _set_utf8(cstr, size, validation);
         }
 
         void set(const wchar_t *wstr, size_t size = ST_AUTO_SIZE,
@@ -419,7 +357,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = wstr ? std::char_traits<wchar_t>::length(wstr) : 0;
-            _convert_from_wchar(wstr, size, validation);
+            m_buffer = wchar_to_utf8(wstr, size, validation);
         }
 
         void set(const char16_t *cstr, size_t size = ST_AUTO_SIZE,
@@ -427,7 +365,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = cstr ? std::char_traits<char16_t>::length(cstr) : 0;
-            _convert_from_utf16(cstr, size, validation);
+            m_buffer = utf16_to_utf8(cstr, size, validation);
         }
 
         void set(const char32_t *cstr, size_t size = ST_AUTO_SIZE,
@@ -435,7 +373,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = cstr ? std::char_traits<char32_t>::length(cstr) : 0;
-            _convert_from_utf32(cstr, size, validation);
+            m_buffer = utf32_to_utf8(cstr, size, validation);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
@@ -444,7 +382,7 @@ namespace ST
         {
             if (size == ST_AUTO_SIZE)
                 size = cstr ? std::char_traits<char8_t>::length(cstr) : 0;
-            _convert_from_utf8(cstr, size, validation);
+            _set_utf8(cstr, size, validation);
         }
 #endif
 
@@ -463,8 +401,8 @@ namespace ST
         {
             switch (validation) {
             case check_validity:
-                if (!_ST_PRIVATE::validate_utf8_buffer(init))
-                    throw ST::unicode_error("Invalid UTF-8 sequence");
+                _ST_PRIVATE::raise_conversion_error(
+                    _ST_PRIVATE::validate_utf8(init.data(), init.size()));
                 m_buffer = init;
                 break;
 
@@ -486,8 +424,8 @@ namespace ST
         {
             switch (validation) {
             case check_validity:
-                if (!_ST_PRIVATE::validate_utf8_buffer(init))
-                    throw ST::unicode_error("Invalid UTF-8 sequence");
+                _ST_PRIVATE::raise_conversion_error(
+                    _ST_PRIVATE::validate_utf8(init.data(), init.size()));
                 m_buffer = std::move(init);
                 break;
 
@@ -507,51 +445,51 @@ namespace ST
         void set(const utf16_buffer &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf16(init.data(), init.size(), validation);
+            m_buffer = utf16_to_utf8(init.data(), init.size(), validation);
         }
 
         void set(const utf32_buffer &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf32(init.data(), init.size(), validation);
+            m_buffer = utf32_to_utf8(init.data(), init.size(), validation);
         }
 
         void set(const wchar_buffer &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_wchar(init.data(), init.size(), validation);
+            m_buffer = wchar_to_utf8(init.data(), init.size(), validation);
         }
 
 #if !defined(ST_NO_STL_STRINGS)
         void set(const std::string &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(init.c_str(), init.size(), validation);
+            _set_utf8(init.c_str(), init.size(), validation);
         }
 
         void set(const std::wstring &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_wchar(init.c_str(), init.size(), validation);
+            m_buffer = wchar_to_utf8(init.c_str(), init.size(), validation);
         }
 
         void set(const std::u16string &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf16(init.c_str(), init.size(), validation);
+            m_buffer = utf16_to_utf8(init.c_str(), init.size(), validation);
         }
 
         void set(const std::u32string &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf32(init.c_str(), init.size(), validation);
+            m_buffer = utf32_to_utf8(init.c_str(), init.size(), validation);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         void set(const std::u8string &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(init.c_str(), init.size(), validation);
+            _set_utf8(init.c_str(), init.size(), validation);
         }
 #endif
 
@@ -559,25 +497,25 @@ namespace ST
         void set(const std::string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(view.data(), view.size(), validation);
+            _set_utf8(view.data(), view.size(), validation);
         }
 
         void set(const std::wstring_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_wchar(view.data(), view.size(), validation);
+            m_buffer = wchar_to_utf8(view.data(), view.size(), validation);
         }
 
         void set(const std::u16string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf16(view.data(), view.size(), validation);
+            m_buffer = utf16_to_utf8(view.data(), view.size(), validation);
         }
 
         void set(const std::u32string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf32(view.data(), view.size(), validation);
+            m_buffer = utf32_to_utf8(view.data(), view.size(), validation);
         }
 #endif
 
@@ -585,7 +523,7 @@ namespace ST
         void set(const std::u8string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(view.data(), view.size(), validation);
+            _set_utf8(view.data(), view.size(), validation);
         }
 #endif
 
@@ -593,25 +531,25 @@ namespace ST
         void set(const std::experimental::string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf8(view.data(), view.size(), validation);
+            _set_utf8(view.data(), view.size(), validation);
         }
 
         void set(const std::experimental::wstring_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_wchar(view.data(), view.size(), validation);
+            m_buffer = wchar_to_utf8(view.data(), view.size(), validation);
         }
 
         void set(const std::experimental::u16string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf16(view.data(), view.size(), validation);
+            m_buffer = utf16_to_utf8(view.data(), view.size(), validation);
         }
 
         void set(const std::experimental::u32string_view &view,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            _convert_from_utf32(view.data(), view.size(), validation);
+            m_buffer = utf32_to_utf8(view.data(), view.size(), validation);
         }
 #endif
 
@@ -910,7 +848,7 @@ namespace ST
                 size = utf8 ? std::char_traits<char>::length(utf8) : 0;
 
             string str;
-            str._convert_from_utf8(utf8, size, validation);
+            str._set_utf8(utf8, size, validation);
             return str;
         }
 
@@ -922,7 +860,7 @@ namespace ST
                 size = utf8 ? std::char_traits<char8_t>::length(utf8) : 0;
 
             string str;
-            str._convert_from_utf8(utf8, size, validation);
+            str._set_utf8(utf8, size, validation);
             return str;
         }
 #endif
@@ -933,9 +871,7 @@ namespace ST
             if (size == ST_AUTO_SIZE)
                 size = utf16 ? std::char_traits<char16_t>::length(utf16) : 0;
 
-            string str;
-            str._convert_from_utf16(utf16, size, validation);
-            return str;
+            return from_validated(utf16_to_utf8(utf16, size, validation));
         }
 
         static string from_utf32(const char32_t *utf32, size_t size = ST_AUTO_SIZE,
@@ -944,9 +880,7 @@ namespace ST
             if (size == ST_AUTO_SIZE)
                 size = utf32 ? std::char_traits<char32_t>::length(utf32) : 0;
 
-            string str;
-            str._convert_from_utf32(utf32, size, validation);
-            return str;
+            return from_validated(utf32_to_utf8(utf32, size, validation));
         }
 
         static string from_wchar(const wchar_t *wstr, size_t size = ST_AUTO_SIZE,
@@ -955,9 +889,7 @@ namespace ST
             if (size == ST_AUTO_SIZE)
                 size = wstr ? std::char_traits<wchar_t>::length(wstr) : 0;
 
-            string str;
-            str._convert_from_wchar(wstr, size, validation);
-            return str;
+            return from_validated(wchar_to_utf8(wstr, size, validation));
         }
 
         static string from_latin_1(const char *astr, size_t size = ST_AUTO_SIZE)
@@ -965,48 +897,38 @@ namespace ST
             if (size == ST_AUTO_SIZE)
                 size = astr ? std::char_traits<char>::length(astr) : 0;
 
-            string str;
-            str._convert_from_latin_1(astr, size);
-            return str;
+            return from_validated(latin_1_to_utf8(astr, size));
         }
 
         static string from_utf8(const char_buffer &utf8,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
-            str._convert_from_utf8(utf8.data(), utf8.size(), validation);
+            str._set_utf8(utf8.data(), utf8.size(), validation);
             return str;
         }
 
         static string from_utf16(const utf16_buffer &utf16,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_utf16(utf16.data(), utf16.size(), validation);
-            return str;
+            return from_validated(utf16_to_utf8(utf16.data(), utf16.size(), validation));
         }
 
         static string from_utf32(const utf32_buffer &utf32,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_utf32(utf32.data(), utf32.size(), validation);
-            return str;
+            return from_validated(utf32_to_utf8(utf32.data(), utf32.size(), validation));
         }
 
         static string from_wchar(const wchar_buffer &wstr,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_wchar(wstr.data(), wstr.size(), validation);
-            return str;
+            return from_validated(wchar_to_utf8(wstr.data(), wstr.size(), validation));
         }
 
         static string from_latin_1(const char_buffer &astr)
         {
-            string str;
-            str._convert_from_latin_1(astr.data(), astr.size());
-            return str;
+            return from_validated(latin_1_to_utf8(astr.data(), astr.size()));
         }
 
 #if !defined(ST_NO_STL_STRINGS)
@@ -1014,16 +936,14 @@ namespace ST
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
-            str._convert_from_utf8(sstr.c_str(), sstr.size(), validation);
+            str._set_utf8(sstr.c_str(), sstr.size(), validation);
             return str;
         }
 
         static string from_std_string(const std::wstring &wstr,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_wchar(wstr.c_str(), wstr.size(), validation);
-            return str;
+            return from_validated(wchar_to_utf8(wstr.c_str(), wstr.size(), validation));
         }
 
         static string from_std_wstring(const std::wstring &wstr,
@@ -1035,17 +955,13 @@ namespace ST
         static string from_std_string(const std::u16string &ustr,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_utf16(ustr.c_str(), ustr.size(), validation);
-            return str;
+            return from_validated(utf16_to_utf8(ustr.c_str(), ustr.size(), validation));
         }
 
         static string from_std_string(const std::u32string &ustr,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_utf32(ustr.c_str(), ustr.size(), validation);
-            return str;
+            return from_validated(utf32_to_utf8(ustr.c_str(), ustr.size(), validation));
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
@@ -1053,7 +969,7 @@ namespace ST
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
-            str._convert_from_utf8(ustr.c_str(), ustr.size(), validation);
+            str._set_utf8(ustr.c_str(), ustr.size(), validation);
             return str;
         }
 #endif
@@ -1063,16 +979,14 @@ namespace ST
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
-            str._convert_from_utf8(view.data(), view.size(), validation);
+            str._set_utf8(view.data(), view.size(), validation);
             return str;
         }
 
         static string from_std_string(const std::wstring_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_wchar(view.data(), view.size(), validation);
-            return str;
+            return from_validated(wchar_to_utf8(view.data(), view.size(), validation));
         }
 
         static string from_std_wstring(const std::wstring_view &view,
@@ -1084,17 +998,13 @@ namespace ST
         static string from_std_string(const std::u16string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_utf16(view.data(), view.size(), validation);
-            return str;
+            return from_validated(utf16_to_utf8(view.data(), view.size(), validation));
         }
 
         static string from_std_string(const std::u32string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_utf32(view.data(), view.size(), validation);
-            return str;
+            return from_validated(utf32_to_utf8(view.data(), view.size(), validation));
         }
 #endif
 
@@ -1103,7 +1013,7 @@ namespace ST
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
-            str._convert_from_utf8(view.data(), view.size(), validation);
+            str._set_utf8(view.data(), view.size(), validation);
             return str;
         }
 #endif
@@ -1113,16 +1023,14 @@ namespace ST
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             string str;
-            str._convert_from_utf8(view.data(), view.size(), validation);
+            str._set_utf8(view.data(), view.size(), validation);
             return str;
         }
 
         static string from_std_string(const std::experimental::wstring_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_wchar(view.data(), view.size(), validation);
-            return str;
+            return from_validated(wchar_to_utf8(view.data(), view.size(), validation));
         }
 
         static string from_std_wstring(const std::experimental::wstring_view &view,
@@ -1134,17 +1042,13 @@ namespace ST
         static string from_std_string(const std::experimental::u16string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_utf16(view.data(), view.size(), validation);
-            return str;
+            return from_validated(utf16_to_utf8(view.data(), view.size(), validation));
         }
 
         static string from_std_string(const std::experimental::u32string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            string str;
-            str._convert_from_utf32(view.data(), view.size(), validation);
-            return str;
+            return from_validated(utf32_to_utf8(view.data(), view.size(), validation));
         }
 #endif
 
@@ -1224,68 +1128,58 @@ namespace ST
 
         utf16_buffer to_utf16() const
         {
-            size_t u16size = _ST_PRIVATE::measure_to_utf16(m_buffer.data(), m_buffer.size());
-            if (u16size == 0)
-                return null;
-
-            utf16_buffer result;
-            result.allocate(u16size);
-            _ST_PRIVATE::convert_to_utf16(result.data(), m_buffer.data(), m_buffer.size());
-            return result;
+            return utf8_to_utf16(m_buffer.data(), m_buffer.size(), assume_valid);
         }
 
         utf32_buffer to_utf32() const
         {
-            size_t u32size = _ST_PRIVATE::measure_to_utf32(m_buffer.data(), m_buffer.size());
-            if (u32size == 0)
-                return null;
-
-            utf32_buffer result;
-            result.allocate(u32size);
-            _ST_PRIVATE::convert_to_utf32(result.data(), m_buffer.data(), m_buffer.size());
-            return result;
+            return utf8_to_utf32(m_buffer.data(), m_buffer.size(), assume_valid);
         }
 
         wchar_buffer to_wchar() const
         {
-#if ST_WCHAR_BYTES == 2
-            utf16_buffer utf16 = to_utf16();
-            return wchar_buffer(reinterpret_cast<const wchar_t *>(utf16.data()), utf16.size());
-#else
-            utf32_buffer utf32 = to_utf32();
-            return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32.data()), utf32.size());
-#endif
+            return utf8_to_wchar(m_buffer.data(), m_buffer.size(), assume_valid);
         }
 
-        char_buffer to_latin_1(utf_validation_t validation = substitute_invalid) const
+        char_buffer to_latin_1(bool substitute_out_of_range = true) const
         {
-            size_t asize = _ST_PRIVATE::measure_to_latin_1(m_buffer.data(), m_buffer.size());
-            if (asize == 0)
-                return null;
+            return utf8_to_latin_1(m_buffer.data(), m_buffer.size(), assume_valid,
+                                   substitute_out_of_range);
+        }
 
-            char_buffer result;
-            result.allocate(asize);
-            auto error = _ST_PRIVATE::convert_to_latin_1(result.data(), m_buffer.data(),
-                                                         m_buffer.size(), validation);
-            _ST_PRIVATE::raise_conversion_error(error);
-
-            return result;
+        ST_DEPRECATED_IN_3_0("use to_latin_1(bool) instead")
+        char_buffer to_latin_1(utf_validation_t validation) const
+        {
+            return to_latin_1(validation == substitute_invalid);
         }
 
 #if !defined(ST_NO_STL_STRINGS)
         std::string to_std_string(bool utf8 = true,
-                                  utf_validation_t validation = substitute_invalid) const
+                                  bool substitute_out_of_range = true) const
         {
             if (utf8)
                 return std::string(c_str(), size());
 
-            return to_latin_1(validation).to_std_string();
+            return to_latin_1(substitute_out_of_range).to_std_string();
+        }
+
+        ST_DEPRECATED_IN_3_0("use to_std_string(bool, bool) instead")
+        std::string to_std_string(bool utf8, utf_validation_t validation) const
+        {
+            return to_std_string(utf8, validation == substitute_invalid);
         }
 
         void to_std_string(std::string &result, bool utf8 = true,
-                           utf_validation_t validation = substitute_invalid) const
+                           bool substitute_out_of_range = true) const
         {
-            result = to_std_string(utf8, validation);
+            result = to_std_string(utf8, substitute_out_of_range);
+        }
+
+        ST_DEPRECATED_IN_3_0("use to_std_string(std::string &, bool, bool) instead")
+        void to_std_string(std::string &result, bool utf8,
+                           utf_validation_t validation) const
+        {
+            return to_std_string(result, utf8, validation == substitute_invalid);
         }
 
         std::wstring to_std_wstring() const
@@ -2260,7 +2154,7 @@ namespace ST
 
     inline string operator+(const string &left, char32_t right)
     {
-        size_t addsize = _ST_PRIVATE::measure(right);
+        size_t addsize = _ST_PRIVATE::utf8_measure(right);
 
         ST::char_buffer cat;
         cat.allocate(left.size() + addsize);
@@ -2298,7 +2192,7 @@ namespace ST
 
     inline string operator+(char32_t left, const string &right)
     {
-        size_t addsize = _ST_PRIVATE::measure(left);
+        size_t addsize = _ST_PRIVATE::utf8_measure(left);
 
         ST::char_buffer cat;
         cat.allocate(right.size() + addsize);
