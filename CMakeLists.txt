@@ -128,6 +128,7 @@ set(ST_HEADERS_PRIV
     include/st_string.h
     include/st_string_helpers.h
     include/st_stringstream.h
+    include/st_utf_conv.h
     "${PROJECT_BINARY_DIR}/include/st_config.h"
 )
 set(ST_HEADERS_PUB
@@ -141,6 +142,7 @@ set(ST_HEADERS_PUB
     include/string_theory/stdio
     include/string_theory/string
     include/string_theory/string_stream
+    include/string_theory/utf_conversion
 )
 
 set(ST_SOURCES
@@ -148,6 +150,7 @@ set(ST_SOURCES
     src/st_codecs.cpp
     src/st_format.cpp
     src/st_string.cpp
+    src/st_utf_conv.cpp
 )
 
 set(ST_INSTALL_BIN_DIR "bin" CACHE PATH "Path to install DLLs on Windows")

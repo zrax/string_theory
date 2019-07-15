@@ -29,6 +29,7 @@
 #endif
 
 #include "st_string_helpers.h"
+#include "st_utf_conv.h"
 
 #if !defined(ST_NO_STL_STRINGS)
 #   if defined(ST_HAVE_CXX17_FILESYSTEM)
@@ -60,16 +61,6 @@ namespace ST
     };
     ST_ENUM_CONSTANT(case_sensitivity_t, case_sensitive);
     ST_ENUM_CONSTANT(case_sensitivity_t, case_insensitive);
-
-    enum class utf_validation_t
-    {
-        assume_valid,       //! Don't do any checking (when possible)
-        substitute_invalid, //! Replace invalid sequences with a substitute
-        check_validity,     //! Throw a ST::unicode_error for invalid sequences
-    };
-    ST_ENUM_CONSTANT(utf_validation_t, assume_valid);
-    ST_ENUM_CONSTANT(utf_validation_t, substitute_invalid);
-    ST_ENUM_CONSTANT(utf_validation_t, check_validity);
 
     class conversion_result
     {
