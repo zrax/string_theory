@@ -27,6 +27,7 @@
 #include <iterator>
 #include <string>       // Needed for char_traits
 #include <utility>      // For std::move
+#include <algorithm>    // For std::min
 
 #if !defined(ST_NO_STL_STRINGS)
 #   if defined(ST_HAVE_CXX17_STRING_VIEW)
@@ -181,6 +182,44 @@ namespace ST
             return *this;
         }
 
+        static int compare(const char_T *left, size_t lsize,
+                           const char_T *right, size_t rsize) noexcept
+        {
+            const size_t cmplen = std::min(lsize, rsize);
+            const int cmp = traits_t::compare(left, right, cmplen);
+            return cmp ? cmp : lsize - rsize;
+        }
+
+        static int compare(const char_T *left, size_t lsize,
+                           const char_T *right, size_t rsize, size_t maxlen) noexcept
+        {
+            lsize = std::min(lsize, maxlen);
+            rsize = std::min(rsize, maxlen);
+            return compare(left, lsize, right, rsize);
+        }
+
+        int compare(const buffer<char_T> &other) const noexcept
+        {
+            return compare(data(), size(), other.data(), other.size());
+        }
+
+        int compare(const char_T *str) const noexcept
+        {
+            const size_t rsize = str ? traits_t::length(str) : 0;
+            return compare(data(), size(), str ? str : "", rsize);
+        }
+
+        int compare_n(const buffer<char_T> &other, size_t count) const noexcept
+        {
+            return compare(data(), size(), other.data(), other.size(), count);
+        }
+
+        int compare_n(const char_T *str, size_t count) const noexcept
+        {
+            const size_t rsize = str ? std::char_traits<char>::length(str) : 0;
+            return compare(data(), size(), str ? str : "", rsize, count);
+        }
+
         bool operator==(const null_t &) const noexcept
         {
             return empty();
@@ -188,9 +227,7 @@ namespace ST
 
         bool operator==(const buffer<char_T> &other) const noexcept
         {
-            if (other.size() != size())
-                return false;
-            return traits_t::compare(data(), other.data(), size()) == 0;
+            return compare(other) == 0;
         }
 
         bool operator!=(const null_t &) const noexcept
@@ -200,7 +237,12 @@ namespace ST
 
         bool operator!=(const buffer<char_T> &other) const noexcept
         {
-            return !operator==(other);
+            return compare(other) != 0;
+        }
+
+        bool operator<(const buffer<char_T> &other) const noexcept
+        {
+            return compare(other) < 0;
         }
 
         char_T *data() noexcept { return m_chars; }

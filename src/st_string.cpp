@@ -20,7 +20,6 @@
 
 #include "st_string.h"
 
-#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 
@@ -155,28 +154,24 @@ uint64_t ST::string::to_uint64(ST::conversion_result &result, int base)
 }
 #endif
 
-static int _compare_cs(const char *left, const char *right, size_t fsize)
+static int _compare_cs(const char *left, const char *right, size_t fsize) noexcept
 {
     return std::char_traits<char>::compare(left, right, fsize);
 }
 
 static int _compare_cs(const char *left, size_t lsize,
-                       const char *right, size_t rsize)
+                       const char *right, size_t rsize) noexcept
 {
-    const size_t cmplen = std::min(lsize, rsize);
-    const int cmp = std::char_traits<char>::compare(left, right, cmplen);
-    return cmp ? cmp : lsize - rsize;
+    return ST::char_buffer::compare(left, lsize, right, rsize);
 }
 
 static int _compare_cs(const char *left, size_t lsize,
-                       const char *right, size_t rsize, size_t maxlen)
+                       const char *right, size_t rsize, size_t maxlen) noexcept
 {
-    lsize = std::min(lsize, maxlen);
-    rsize = std::min(rsize, maxlen);
-    return _compare_cs(left, lsize, right, rsize);
+    return ST::char_buffer::compare(left, lsize, right, rsize, maxlen);
 }
 
-static int _compare_ci(const char *left, const char *right, size_t fsize)
+static int _compare_ci(const char *left, const char *right, size_t fsize) noexcept
 {
     while (fsize--) {
         const char cl = _ST_PRIVATE::cl_fast_lower(*left++);
@@ -188,7 +183,7 @@ static int _compare_ci(const char *left, const char *right, size_t fsize)
 }
 
 static int _compare_ci(const char *left, size_t lsize,
-                       const char *right, size_t rsize)
+                       const char *right, size_t rsize) noexcept
 {
     const size_t cmplen = std::min(lsize, rsize);
     const int cmp = _compare_ci(left, right, cmplen);
@@ -196,7 +191,7 @@ static int _compare_ci(const char *left, size_t lsize,
 }
 
 static int _compare_ci(const char *left, size_t lsize,
-                       const char *right, size_t rsize, size_t maxlen)
+                       const char *right, size_t rsize, size_t maxlen) noexcept
 {
     lsize = std::min(lsize, maxlen);
     rsize = std::min(rsize, maxlen);
