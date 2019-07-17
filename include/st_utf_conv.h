@@ -66,6 +66,8 @@ namespace _ST_PRIVATE
             throw ST::unicode_error("Unicode character out of range");
         case conversion_error_t::latin1_out_of_range:
             throw ST::unicode_error("Latin-1 character out of range");
+        default:
+            ST_ASSERT(false, "Invalid conversion_error_t value");
         }
     }
 
