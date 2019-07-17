@@ -40,6 +40,9 @@ namespace ST
     }
 }
 
+template <typename T, size_t Size>
+constexpr size_t array_size(const T (&)[Size]) { return Size; }
+
 static const char32_t test_data[] = {
     0x20,       0x7f,       /* Normal ASCII chars */
     0xff,       0x100,      /* 8-bit boundary chars */
@@ -49,6 +52,7 @@ static const char32_t test_data[] = {
     0x10ffff,               /* Highest Unicode character */
     0                       /* Null terminator */
 };
+static const size_t test_data_length = array_size(test_data) - 1;
 
 /* UTF-8 version of above test data */
 static const char utf8_test_data[] =
@@ -58,7 +62,7 @@ static const char utf8_test_data[] =
     "\xef\xbf\xbf"      "\xf0\x90\x80\x80"
     "\xf0\x90\x80\xa0"  "\xf1\x80\x80\x80"
     "\xf4\x8f\xbf\xbf";
-static const size_t utf8_test_data_length = sizeof(utf8_test_data) - 1;
+static const size_t utf8_test_data_length = array_size(utf8_test_data) - 1;
 
 /* UTF-16 version of test data */
 static const char16_t utf16_test_data[] = {
@@ -73,6 +77,29 @@ static const char16_t utf16_test_data[] = {
     0xdbff, 0xdfff,
     0
 };
+static const size_t utf16_test_data_length = array_size(utf16_test_data) - 1;
+
+/* wide version of test data */
+static const wchar_t wide_test_data[] =
+    L"\x20"         L"\x7f"
+    L"\xff"         L"\u0100"
+    L"\u7fff"
+    L"\uffff"       L"\U00010000"
+    L"\U00010020"   L"\U00040000"
+    L"\U0010FFFF";
+static const size_t wide_test_data_length = array_size(wide_test_data) - 1;
+
+/* Latin-1 test data */
+static const char latin1_data[] = "\x20\x7e\xa0\xff";
+static const size_t latin1_data_length = array_size(latin1_data) - 1;
+static const char latin1_utf8[] = "\x20\x7e\xc2\xa0\xc3\xbf";
+static const size_t latin1_utf8_length = array_size(latin1_utf8) - 1;
+static const char16_t latin1_utf16[] = { 0x20, 0x7e, 0xa0, 0xff, 0 };
+static const size_t latin1_utf16_length = array_size(latin1_utf16) - 1;
+static const char32_t latin1_utf32[] = { 0x20, 0x7e, 0xa0, 0xff, 0 };
+static const size_t latin1_utf32_length = array_size(latin1_utf32) - 1;
+static const wchar_t latin1_wide[] = L"\x20\x7e\u00a0\u00ff";
+static const size_t latin1_wide_length = array_size(latin1_wide) - 1;
 
 /* Utility for comparing char16_t/char32_t buffers */
 template <typename char_T>
@@ -202,7 +229,33 @@ TEST(string, move)
     EXPECT_EQ(24U, dest2.size());
 }
 
-TEST(string, utf8)
+TEST(string, conv_utf8)
+{
+    // From UTF-16 to UTF-8
+    ST::char_buffer from_utf16 = ST::utf16_to_utf8(utf16_test_data, utf16_test_data_length,
+                                                   ST::check_validity);
+    EXPECT_EQ(utf8_test_data_length, from_utf16.size());
+    EXPECT_EQ(0, T_strcmp(utf8_test_data, from_utf16.data()));
+
+    // From UTF-32 to UTF-8
+    ST::char_buffer from_utf32 = ST::utf32_to_utf8(test_data, test_data_length,
+                                                   ST::check_validity);
+    EXPECT_EQ(utf8_test_data_length, from_utf32.size());
+    EXPECT_EQ(0, T_strcmp(utf8_test_data, from_utf32.data()));
+
+    // From Wide to UTF-8
+    ST::char_buffer from_wide = ST::wchar_to_utf8(wide_test_data, wide_test_data_length,
+                                                  ST::check_validity);
+    EXPECT_EQ(utf8_test_data_length, from_wide.size());
+    EXPECT_EQ(0, T_strcmp(utf8_test_data, from_wide.data()));
+
+    // From Latin-1 to UTF-8
+    ST::char_buffer from_latin_1 = ST::latin_1_to_utf8(latin1_data, latin1_data_length);
+    EXPECT_EQ(latin1_utf8_length, from_latin_1.size());
+    EXPECT_EQ(0, T_strcmp(latin1_utf8, from_latin_1.data()));
+}
+
+TEST(string, string_utf8)
 {
     // From UTF-8 to ST::string
     ST::string from_utf8 = ST::string::from_utf8(utf8_test_data);
@@ -226,7 +279,33 @@ TEST(string, utf8)
     EXPECT_EQ(0, T_strcmp(empty.c_str(), ""));
 }
 
-TEST(string, utf16)
+TEST(string, conv_utf16)
+{
+    // From UTF-8 to UTF-16
+    ST::utf16_buffer from_utf8 = ST::utf8_to_utf16(utf8_test_data, utf8_test_data_length,
+                                                   ST::check_validity);
+    EXPECT_EQ(utf16_test_data_length, from_utf8.size());
+    EXPECT_EQ(0, T_strcmp(utf16_test_data, from_utf8.data()));
+
+    // From UTF-32 to UTF-16
+    ST::utf16_buffer from_utf32 = ST::utf32_to_utf16(test_data, test_data_length,
+                                                     ST::check_validity);
+    EXPECT_EQ(utf16_test_data_length, from_utf32.size());
+    EXPECT_EQ(0, T_strcmp(utf16_test_data, from_utf32.data()));
+
+    // From Wide to UTF-16
+    ST::utf16_buffer from_wide = ST::wchar_to_utf16(wide_test_data, wide_test_data_length,
+                                                    ST::check_validity);
+    EXPECT_EQ(utf16_test_data_length, from_wide.size());
+    EXPECT_EQ(0, T_strcmp(utf16_test_data, from_wide.data()));
+
+    // From Latin-1 to UTF-16
+    //ST::utf16_buffer from_latin_1 = ST::latin_1_to_utf16(latin1_data, latin1_data_length);
+    //EXPECT_EQ(latin1_utf16_length, from_latin_1.size());
+    //EXPECT_EQ(0, T_strcmp(latin1_utf16, from_latin_1.data()));
+}
+
+TEST(string, string_utf16)
 {
     // From UTF-16 to ST::string
     ST::string from_utf16 = ST::string::from_utf16(utf16_test_data);
@@ -245,7 +324,60 @@ TEST(string, utf16)
     EXPECT_EQ(0, T_strcmp(empty.c_str(), ""));
 }
 
-TEST(string, latin_1)
+TEST(string, conv_utf32)
+{
+    // From UTF-8 to UTF-32
+    ST::utf32_buffer from_utf8 = ST::utf8_to_utf32(utf8_test_data, utf8_test_data_length,
+                                                   ST::check_validity);
+    EXPECT_EQ(test_data_length, from_utf8.size());
+    EXPECT_EQ(0, T_strcmp(test_data, from_utf8.data()));
+
+    // From UTF-16 to UTF-32
+    ST::utf32_buffer from_utf32 = ST::utf16_to_utf32(utf16_test_data, utf16_test_data_length,
+                                                     ST::check_validity);
+    EXPECT_EQ(test_data_length, from_utf32.size());
+    EXPECT_EQ(0, T_strcmp(test_data, from_utf32.data()));
+
+    // From Wide to UTF-32
+    ST::utf32_buffer from_wide = ST::wchar_to_utf32(wide_test_data, wide_test_data_length,
+                                                    ST::check_validity);
+    EXPECT_EQ(test_data_length, from_wide.size());
+    EXPECT_EQ(0, T_strcmp(test_data, from_wide.data()));
+
+    // From Latin-1 to UTF-32
+    //ST::utf32_buffer from_latin_1 = ST::latin_1_to_utf32(latin1_data, latin1_data_length);
+    //EXPECT_EQ(latin1_utf32_length, from_latin_1.size());
+    //EXPECT_EQ(0, T_strcmp(latin1_utf32, from_latin_1.data()));
+}
+
+TEST(string, conv_latin_1)
+{
+    // From UTF-8 to Latin-1
+    ST::char_buffer from_utf8 = ST::utf8_to_latin_1(latin1_utf8, latin1_utf8_length,
+                                                    ST::check_validity);
+    EXPECT_EQ(latin1_data_length, from_utf8.size());
+    EXPECT_EQ(0, T_strcmp(latin1_data, from_utf8.data()));
+
+    // From UTF-16 to Latin-1
+    //ST::char_buffer from_utf16 = ST::utf16_to_latin_1(latin1_utf16, latin1_utf16_length,
+    //                                                  ST::check_validity);
+    //EXPECT_EQ(latin1_data_length, from_utf16.size());
+    //EXPECT_EQ(0, T_strcmp(latin1_data, from_utf16.data()));
+
+    // From UTF-32 to Latin-1
+    //ST::char_buffer from_latin_1 = ST::utf32_to_latin_1(latin1_utf16, latin1_utf16_length,
+    //                                                    ST::check_validity);
+    //EXPECT_EQ(latin1_data_length, from_latin_1.size());
+    //EXPECT_EQ(0, T_strcmp(latin1_data, from_latin_1.data()));
+
+    // From Wide to Latin-1
+    //ST::char_buffer from_wide = ST::wchar_to_latin_1(latin1_wide, latin1_wide_length,
+    //                                                 ST::check_validity);
+    //EXPECT_EQ(latin1_data_length, from_wide.size());
+    //EXPECT_EQ(0, T_strcmp(latin1_data, from_wide.data()));
+}
+
+TEST(string, string_latin_1)
 {
     // From Latin-1 to ST::string
     const char latin1[] = "\x20\x7e\xa0\xff";
@@ -266,7 +398,33 @@ TEST(string, latin_1)
     EXPECT_EQ(0, T_strcmp(empty.c_str(), ""));
 }
 
-TEST(string, wchar)
+TEST(string, conv_wchar)
+{
+    // From UTF-8 to Wide
+    ST::wchar_buffer from_utf8 = ST::utf8_to_wchar(utf8_test_data, utf8_test_data_length,
+                                                   ST::check_validity);
+    EXPECT_EQ(wide_test_data_length, from_utf8.size());
+    EXPECT_EQ(0, T_strcmp(wide_test_data, from_utf8.data()));
+
+    // From UTF-16 to Wide
+    ST::wchar_buffer from_utf16 = ST::utf16_to_wchar(utf16_test_data, utf16_test_data_length,
+                                                     ST::check_validity);
+    EXPECT_EQ(wide_test_data_length, from_utf16.size());
+    EXPECT_EQ(0, T_strcmp(wide_test_data, from_utf16.data()));
+
+    // From UTF-32 to Wide
+    ST::wchar_buffer from_utf32 = ST::utf32_to_wchar(test_data, test_data_length,
+                                                     ST::check_validity);
+    EXPECT_EQ(wide_test_data_length, from_utf32.size());
+    EXPECT_EQ(0, T_strcmp(wide_test_data, from_utf32.data()));
+
+    // From Latin-1 to Wide
+    //ST::wchar_buffer from_latin_1 = ST::latin_1_to_wchar(latin1_data, latin1_data_length);
+    //EXPECT_EQ(latin1_wide_length, from_latin_1.size());
+    //EXPECT_EQ(0, T_strcmp(latin1_wide, from_latin_1.data()));
+}
+
+TEST(string, string_wchar)
 {
     // UTF-8 and UTF-16 are already tested, so just make sure we test
     // wchar_t and L"" conversions

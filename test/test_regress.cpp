@@ -88,6 +88,23 @@ TEST(regress, null_init)
     dont_crash = ST::string::from_wchar((const wchar_t *)nullptr);
     dont_crash = ST::string::from_utf16((const char16_t *)nullptr);
     dont_crash = ST::string::from_utf32((const char32_t *)nullptr);
+
+    ST::char_buffer cbuf;
+    ST::utf16_buffer u16buf;
+    ST::utf32_buffer u32buf;
+    ST::wchar_buffer wbuf;
+    u16buf = ST::utf8_to_utf16((const char *)nullptr, 0, ST::check_validity);
+    u32buf = ST::utf8_to_utf32((const char *)nullptr, 0, ST::check_validity);
+    wbuf = ST::utf8_to_wchar((const char *)nullptr, 0, ST::check_validity);
+    cbuf = ST::utf16_to_utf8((const char16_t *)nullptr, 0, ST::check_validity);
+    u32buf = ST::utf16_to_utf32((const char16_t *)nullptr, 0, ST::check_validity);
+    wbuf = ST::utf16_to_wchar((const char16_t *)nullptr, 0, ST::check_validity);
+    cbuf = ST::utf32_to_utf8((const char32_t *)nullptr, 0, ST::check_validity);
+    u16buf = ST::utf32_to_utf16((const char32_t *)nullptr, 0, ST::check_validity);
+    wbuf = ST::utf32_to_wchar((const char32_t *)nullptr, 0, ST::check_validity);
+    cbuf = ST::wchar_to_utf8((const wchar_t *)nullptr, 0, ST::check_validity);
+    u16buf = ST::wchar_to_utf16((const wchar_t *)nullptr, 0, ST::check_validity);
+    u32buf = ST::wchar_to_utf32((const wchar_t *)nullptr, 0, ST::check_validity);
 }
 
 TEST(regress, allocate_fill)

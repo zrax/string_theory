@@ -101,9 +101,19 @@ namespace _ST_PRIVATE
                     const char *utf8, size_t size,
                     ST::utf_validation_t validation);
 
+    ST_EXPORT size_t utf16_measure_from_utf32(const char32_t *utf32, size_t size);
+    ST_EXPORT conversion_error_t utf16_convert_from_utf32(char16_t *dest,
+                    const char32_t *utf32, size_t size,
+                    ST::utf_validation_t validation);
+
     ST_EXPORT size_t utf32_measure_from_utf8(const char *utf8, size_t size);
     ST_EXPORT conversion_error_t utf32_convert_from_utf8(char32_t *dest,
                     const char *utf8, size_t size,
+                    ST::utf_validation_t validation);
+
+    ST_EXPORT size_t utf32_measure_from_utf16(const char16_t *utf16, size_t size);
+    ST_EXPORT conversion_error_t utf32_convert_from_utf16(char32_t *dest,
+                    const char16_t *utf16, size_t size,
                     ST::utf_validation_t validation);
 
     ST_EXPORT size_t latin_1_measure_from_utf8(const char *utf8, size_t size);
@@ -229,6 +239,45 @@ namespace ST
     }
 #endif
 
+    inline utf16_buffer utf32_to_utf16(const char32_t *utf32, size_t size,
+                                       utf_validation_t validation)
+    {
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        size_t u16size = _ST_PRIVATE::utf16_measure_from_utf32(utf32, size);
+        if (u16size == 0)
+            return null;
+
+        utf16_buffer result;
+        result.allocate(u16size);
+        auto error = _ST_PRIVATE::utf16_convert_from_utf32(result.data(), utf32,
+                                                           size, validation);
+        _ST_PRIVATE::raise_conversion_error(error);
+
+        return result;
+    }
+
+    inline utf16_buffer utf32_to_utf16(const utf32_buffer &utf32, utf_validation_t validation)
+    {
+        return utf32_to_utf16(utf32.data(), utf32.size(), validation);
+    }
+
+    inline utf16_buffer wchar_to_utf16(const wchar_t *wstr, size_t size,
+                                       utf_validation_t validation)
+    {
+#if ST_WCHAR_BYTES == 2
+        (void)validation;
+        return utf16_buffer(reinterpret_cast<const char16_t *>(wstr), size);
+#else
+        return utf32_to_utf16(reinterpret_cast<const char32_t *>(wstr), size, validation);
+#endif
+    }
+
+    inline utf16_buffer wchar_to_utf16(const wchar_buffer &wstr, utf_validation_t validation)
+    {
+        return wchar_to_utf16(wstr.data(), wstr.size(), validation);
+    }
+
     inline utf32_buffer utf8_to_utf32(const char *utf8, size_t size,
                                       utf_validation_t validation)
     {
@@ -260,6 +309,45 @@ namespace ST
     }
 #endif
 
+    inline utf32_buffer utf16_to_utf32(const char16_t *utf16, size_t size,
+                                       utf_validation_t validation)
+    {
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        size_t u32size = _ST_PRIVATE::utf32_measure_from_utf16(utf16, size);
+        if (u32size == 0)
+            return null;
+
+        utf32_buffer result;
+        result.allocate(u32size);
+        auto error = _ST_PRIVATE::utf32_convert_from_utf16(result.data(), utf16,
+                                                           size, validation);
+        _ST_PRIVATE::raise_conversion_error(error);
+
+        return result;
+    }
+
+    inline utf32_buffer utf16_to_utf32(const utf16_buffer &utf16, utf_validation_t validation)
+    {
+        return utf16_to_utf32(utf16.data(), utf16.size(), validation);
+    }
+
+    inline utf32_buffer wchar_to_utf32(const wchar_t *wstr, size_t size,
+                                       utf_validation_t validation)
+    {
+#if ST_WCHAR_BYTES == 2
+        return utf16_to_utf32(reinterpret_cast<const char16_t *>(wstr), size, validation);
+#else
+        (void)validation;
+        return utf32_buffer(reinterpret_cast<const char32_t *>(wstr), size);
+#endif
+    }
+
+    inline utf32_buffer wchar_to_utf32(const wchar_buffer &wstr, utf_validation_t validation)
+    {
+        return wchar_to_utf32(wstr.data(), wstr.size(), validation);
+    }
+
     inline wchar_buffer utf8_to_wchar(const char *utf8, size_t size,
                                       utf_validation_t validation)
     {
@@ -284,6 +372,40 @@ namespace ST
         return utf8_to_wchar(reinterpret_cast<const char *>(utf8), size, validation);
     }
 #endif
+
+    inline wchar_buffer utf16_to_wchar(const char16_t *utf16, size_t size,
+                                       utf_validation_t validation)
+    {
+#if ST_WCHAR_BYTES == 2
+        (void)validation;
+        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf16), size);
+#else
+        utf32_buffer utf32 = utf16_to_utf32(utf16, size, validation);
+        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32.data()), utf32.size());
+#endif
+    }
+
+    inline wchar_buffer utf16_to_wchar(const utf16_buffer &utf16, utf_validation_t validation)
+    {
+        return utf16_to_wchar(utf16.data(), utf16.size(), validation);
+    }
+
+    inline wchar_buffer utf32_to_wchar(const char32_t *utf32, size_t size,
+                                       utf_validation_t validation)
+    {
+#if ST_WCHAR_BYTES == 2
+        utf16_buffer utf16 = utf32_to_utf16(utf32, size, validation);
+        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf16.data()), utf16.size());
+#else
+        (void)validation;
+        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32), size);
+#endif
+    }
+
+    inline wchar_buffer utf32_to_wchar(const utf32_buffer &utf32, utf_validation_t validation)
+    {
+        return utf32_to_wchar(utf32.data(), utf32.size(), validation);
+    }
 
     inline char_buffer utf8_to_latin_1(const char *utf8, size_t size,
                                        utf_validation_t validation,

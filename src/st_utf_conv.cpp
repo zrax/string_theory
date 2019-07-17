@@ -355,7 +355,7 @@ void _ST_PRIVATE::utf8_convert_from_latin_1(char *dp, const char *astr, size_t s
 
 size_t _ST_PRIVATE::utf16_measure_from_utf8(const char *utf8, size_t size)
 {
-    if (size == 0)
+    if (!utf8)
         return 0;
 
     size_t u16len = 0;
@@ -447,9 +447,51 @@ _ST_PRIVATE::utf16_convert_from_utf8(char16_t *dp, const char *utf8, size_t size
     return conversion_error_t::success;
 }
 
+size_t _ST_PRIVATE::utf16_measure_from_utf32(const char32_t *utf32, size_t size)
+{
+    if (!utf32)
+        return 0;
+
+    size_t u16len = 0;
+    const char32_t *sp = utf32;
+    const char32_t *ep = sp + size;
+    for (; sp < ep; ++sp) {
+        if (*sp >= 0x10000 && *sp <= 0x10FFFF) {
+            // Encode with surrogate pair
+            ++u16len;
+        }
+        ++u16len;
+    }
+    return u16len;
+}
+
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::utf16_convert_from_utf32(char16_t *dp, const char32_t *utf32, size_t size,
+                                      ST::utf_validation_t validation)
+{
+    const char32_t *sp = utf32;
+    const char32_t *ep = sp + size;
+    for (; sp < ep; ++sp) {
+        if (*sp < 0x10000) {
+            *dp++ = static_cast<char16_t>(*sp);
+        } else  if (*sp <= 0x10FFFF) {
+            // Encode with surrogate pair
+            char32_t bigch  = *sp - 0x10000;
+            *dp++ = 0xD800 | ((bigch >> 10) & 0x3FF);
+            *dp++ = 0xDC00 | ((bigch      ) & 0x3FF);
+        } else {
+            if (validation == ST::check_validity)
+                return conversion_error_t::out_of_range;
+            *dp++ = BADCHAR_SUBSTITUTE;
+        }
+    }
+
+    return conversion_error_t::success;
+}
+
 size_t _ST_PRIVATE::utf32_measure_from_utf8(const char *utf8, size_t size)
 {
-    if (size == 0)
+    if (!utf8)
         return 0;
 
     size_t u32len = 0;
@@ -527,9 +569,105 @@ _ST_PRIVATE::utf32_convert_from_utf8(char32_t *dp, const char *utf8, size_t size
     return conversion_error_t::success;
 }
 
+size_t _ST_PRIVATE::utf32_measure_from_utf16(const char16_t *utf16, size_t size)
+{
+    if (!utf16)
+        return 0;
+
+    size_t u32len = 0;
+    const char16_t *sp = utf16;
+    const char16_t *ep = sp + size;
+    for (; sp < ep; ++sp) {
+        if (*sp >= 0xD800 && *sp <= 0xDFFF) {
+            // Surrogate pair
+            if (sp + 1 >= ep) {
+                // Truncated surrogate pair
+            } else if (*sp < 0xDC00) {
+                if (sp[1] >= 0xDC00 && sp[1] <= 0xDFFF)
+                    ++sp;
+            } else {
+                if (sp[1] >= 0xD800 && sp[1] <= 0xDBFF)
+                    ++sp;
+            }
+        }
+        ++u32len;
+    }
+    return u32len;
+}
+
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::utf32_convert_from_utf16(char32_t *dp, const char16_t *utf16, size_t size,
+                                      ST::utf_validation_t validation)
+{
+    const char16_t *sp = utf16;
+    const char16_t *ep = sp + size;
+    for (; sp < ep; ++sp) {
+        if (*sp >= 0xD800 && *sp <= 0xDFFF) {
+            // Surrogate pair
+            if (sp + 1 >= ep) {
+                switch (validation) {
+                case ST::check_validity:
+                    return conversion_error_t::incomplete_surrogate_pair;
+                case ST::substitute_invalid:
+                    *dp++ = BADCHAR_SUBSTITUTE;
+                    break;
+                case ST::assume_valid:
+                    // Encode the bad surrogate char as a UTF-32 value
+                    *dp++ = *sp;
+                    break;
+                default:
+                    ST_ASSERT(false, "Invalid validation type");
+                }
+            } else if (*sp < 0xDC00) {
+                if (sp[1] >= 0xDC00 && sp[1] <= 0xDFFF) {
+                    *dp++ = 0x10000 + ((sp[0] & 0x3FF) << 10) + (sp[1] & 0x3FF);
+                    ++sp;
+                } else {
+                    switch (validation) {
+                    case ST::check_validity:
+                        return conversion_error_t::incomplete_surrogate_pair;
+                    case ST::substitute_invalid:
+                        *dp++ = BADCHAR_SUBSTITUTE;
+                        break;
+                    case ST::assume_valid:
+                        // Encode the bad surrogate char as a UTF-32 value
+                        *dp++ = *sp;
+                        break;
+                    default:
+                        ST_ASSERT(false, "Invalid validation type");
+                    }
+                }
+            } else {
+                if (sp[1] >= 0xD800 && sp[1] <= 0xDBFF) {
+                    *dp++ = 0x10000 + (sp[0] & 0x3FF) + ((sp[1] & 0x3FF) << 10);
+                    ++sp;
+                } else {
+                    switch (validation) {
+                    case ST::check_validity:
+                        return conversion_error_t::incomplete_surrogate_pair;
+                    case ST::substitute_invalid:
+                        *dp++ = BADCHAR_SUBSTITUTE;
+                        break;
+                    case ST::assume_valid:
+                        // Encode the bad surrogate char as a UTF-32 value
+                        *dp++ = *sp;
+                        break;
+                    default:
+                        ST_ASSERT(false, "Invalid validation type");
+                    }
+                }
+            }
+        } else {
+            *dp++ = *sp;
+        }
+    }
+
+    return conversion_error_t::success;
+}
+
 size_t _ST_PRIVATE::latin_1_measure_from_utf8(const char *utf8, size_t size)
 {
-    if (size == 0)
+    if (!utf8)
         return 0;
 
     size_t alen = 0;
