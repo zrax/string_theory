@@ -90,29 +90,35 @@ size_t _ST_PRIVATE::cleanup_utf8(char *output, const char *buffer, size_t size)
             sp += 1;
         } else if ((*sp & 0xE0) == 0xC0) {
             // Two bytes
-            if (sp + 2 > ep || (sp[1] & 0xC0) != 0x80)
+            if (sp + 2 > ep || (sp[1] & 0xC0) != 0x80) {
                 output_size += _append_chars(output, BADCHAR_SUBSTITUTE_UTF8,
                                              BADCHAR_SUBSTITUTE_UTF8_LEN);
-            else
+                sp += 1;
+            } else {
                 output_size += _append_chars(output, reinterpret_cast<const char *>(sp), 2);
-            sp += 2;
+                sp += 2;
+            }
         } else if ((*sp & 0xF0) == 0xE0) {
             // Three bytes
-            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80)
+            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80) {
                 output_size += _append_chars(output, BADCHAR_SUBSTITUTE_UTF8,
                                              BADCHAR_SUBSTITUTE_UTF8_LEN);
-            else
+                sp += 1;
+            } else {
                 output_size += _append_chars(output, reinterpret_cast<const char *>(sp), 3);
-            sp += 3;
+                sp += 3;
+            }
         } else if ((*sp & 0xF8) == 0xF0) {
             // Four bytes
             if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80
-                            || (sp[3] & 0xC0) != 0x80)
+                            || (sp[3] & 0xC0) != 0x80) {
                 output_size += _append_chars(output, BADCHAR_SUBSTITUTE_UTF8,
                                              BADCHAR_SUBSTITUTE_UTF8_LEN);
-            else
+                sp += 1;
+            } else {
                 output_size += _append_chars(output, reinterpret_cast<const char *>(sp), 4);
-            sp += 4;
+                sp += 4;
+            }
         } else {
             // Invalid sequence byte
             output_size += _append_chars(output, BADCHAR_SUBSTITUTE_UTF8,
@@ -365,18 +371,24 @@ size_t _ST_PRIVATE::utf16_measure_from_utf8(const char *utf8, size_t size)
         if (*sp < 0x80) {
             sp += 1;
         } else if ((*sp & 0xE0) == 0xC0) {
-            sp += 2;
+            if (sp + 2 > ep || (sp[1] & 0xC0) != 0x80)
+                sp += 1;
+            else
+                sp += 2;
         } else if ((*sp & 0xF0) == 0xE0) {
-            sp += 3;
+            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80)
+                sp += 1;
+            else
+                sp += 3;
         } else if ((*sp & 0xF8) == 0xF0) {
             if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80
                             || (sp[3] & 0xC0) != 0x80) {
-                // Invalid or incomplete sequence
+                sp += 1;
             } else {
                 // Encode with surrogate pair
                 ++u16len;
+                sp += 4;
             }
-            sp += 4;
         } else {
             // Invalid UTF-8 sequence byte
             sp += 1;
@@ -401,9 +413,9 @@ _ST_PRIVATE::utf16_convert_from_utf8(char16_t *dp, const char *utf8, size_t size
                 if (validation == ST::check_validity)
                     return conversion_error_t::incomplete_utf8_seq;
                 *dp++ = BADCHAR_SUBSTITUTE;
-                sp += 2;
+                sp += 1;
             } else {
-                bigch = (*sp++ & 0x1F) << 6;
+                bigch  = (*sp++ & 0x1F) << 6;
                 bigch |= (*sp++ & 0x3F);
                 *dp++ = static_cast<char16_t>(bigch);
             }
@@ -412,7 +424,7 @@ _ST_PRIVATE::utf16_convert_from_utf8(char16_t *dp, const char *utf8, size_t size
                 if (validation == ST::check_validity)
                     return conversion_error_t::incomplete_utf8_seq;
                 *dp++ = BADCHAR_SUBSTITUTE;
-                sp += 3;
+                sp += 1;
             } else {
                 bigch  = (*sp++ & 0x0F) << 12;
                 bigch |= (*sp++ & 0x3F) << 6;
@@ -425,7 +437,7 @@ _ST_PRIVATE::utf16_convert_from_utf8(char16_t *dp, const char *utf8, size_t size
                 if (validation == ST::check_validity)
                     return conversion_error_t::incomplete_utf8_seq;
                 *dp++ = BADCHAR_SUBSTITUTE;
-                sp += 4;
+                sp += 1;
             } else {
                 bigch  = (*sp++ & 0x07) << 18;
                 bigch |= (*sp++ & 0x3F) << 12;
@@ -498,16 +510,28 @@ size_t _ST_PRIVATE::utf32_measure_from_utf8(const char *utf8, size_t size)
     const unsigned char *sp = reinterpret_cast<const unsigned char *>(utf8);
     const unsigned char *ep = sp + size;
     while (sp < ep) {
-        if (*sp < 0x80)
+        if (*sp < 0x80) {
             sp += 1;
-        else if ((*sp & 0xE0) == 0xC0)
-            sp += 2;
-        else if ((*sp & 0xF0) == 0xE0)
-            sp += 3;
-        else if ((*sp & 0xF8) == 0xF0)
-            sp += 4;
-        else
-            sp += 1;    // Invalid UTF-8 sequence byte
+        } else if ((*sp & 0xE0) == 0xC0) {
+            if (sp + 2 > ep || (sp[1] & 0xC0) != 0x80)
+                sp += 1;
+            else
+                sp += 2;
+        } else if ((*sp & 0xF0) == 0xE0) {
+            if (sp + 3 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80)
+                sp += 1;
+            else
+                sp += 3;
+        } else if ((*sp & 0xF8) == 0xF0) {
+            if (sp + 4 > ep || (sp[1] & 0xC0) != 0x80 || (sp[2] & 0xC0) != 0x80
+                            || (sp[3] & 0xC0) != 0x80)
+                sp += 1;
+            else
+                sp += 4;
+        } else {
+            // Invalid UTF-8 sequence byte
+            sp += 1;
+        }
         ++u32len;
     }
     return u32len;
@@ -528,7 +552,7 @@ _ST_PRIVATE::utf32_convert_from_utf8(char32_t *dp, const char *utf8, size_t size
                 if (validation == ST::check_validity)
                     return conversion_error_t::incomplete_utf8_seq;
                 bigch = BADCHAR_SUBSTITUTE;
-                sp += 2;
+                sp += 1;
             } else {
                 bigch  = (*sp++ & 0x1F) << 6;
                 bigch |= (*sp++ & 0x3F);
@@ -538,7 +562,7 @@ _ST_PRIVATE::utf32_convert_from_utf8(char32_t *dp, const char *utf8, size_t size
                 if (validation == ST::check_validity)
                     return conversion_error_t::incomplete_utf8_seq;
                 bigch = BADCHAR_SUBSTITUTE;
-                sp += 3;
+                sp += 1;
             } else {
                 bigch  = (*sp++ & 0x0F) << 12;
                 bigch |= (*sp++ & 0x3F) << 6;
@@ -550,7 +574,7 @@ _ST_PRIVATE::utf32_convert_from_utf8(char32_t *dp, const char *utf8, size_t size
                 if (validation == ST::check_validity)
                     return conversion_error_t::incomplete_utf8_seq;
                 bigch = BADCHAR_SUBSTITUTE;
-                sp += 4;
+                sp += 1;
             } else {
                 bigch  = (*sp++ & 0x07) << 18;
                 bigch |= (*sp++ & 0x3F) << 12;
@@ -667,26 +691,8 @@ _ST_PRIVATE::utf32_convert_from_utf16(char32_t *dp, const char16_t *utf16, size_
 
 size_t _ST_PRIVATE::latin_1_measure_from_utf8(const char *utf8, size_t size)
 {
-    if (!utf8)
-        return 0;
-
-    size_t alen = 0;
-    const unsigned char *sp = reinterpret_cast<const unsigned char *>(utf8);
-    const unsigned char *ep = sp + size;
-    while (sp < ep) {
-        if (*sp < 0x80)
-            sp += 1;
-        else if ((*sp & 0xE0) == 0xC0)
-            sp += 2;
-        else if ((*sp & 0xF0) == 0xE0)
-            sp += 3;
-        else if ((*sp & 0xF8) == 0xF0)
-            sp += 4;
-        else
-            sp += 1;    // Invalid UTF-8 sequence byte
-        ++alen;
-    }
-    return alen;
+    // This always returns the same answer as UTF-32
+    return utf32_measure_from_utf8(utf8, size);
 }
 
 _ST_PRIVATE::conversion_error_t
@@ -705,7 +711,7 @@ _ST_PRIVATE::latin_1_convert_from_utf8(char *dp, const char *utf8, size_t size,
                 if (validation == ST::check_validity)
                     return conversion_error_t::incomplete_utf8_seq;
                 bigch = '?';
-                sp += 2;
+                sp += 1;
             } else {
                 bigch  = (*sp++ & 0x1F) << 6;
                 bigch |= (*sp++ & 0x3F);
@@ -715,7 +721,7 @@ _ST_PRIVATE::latin_1_convert_from_utf8(char *dp, const char *utf8, size_t size,
                 if (validation == ST::check_validity)
                     return conversion_error_t::incomplete_utf8_seq;
                 bigch = '?';
-                sp += 3;
+                sp += 1;
             } else {
                 bigch  = (*sp++ & 0x0F) << 12;
                 bigch |= (*sp++ & 0x3F) << 6;
@@ -727,7 +733,7 @@ _ST_PRIVATE::latin_1_convert_from_utf8(char *dp, const char *utf8, size_t size,
                 if (validation == ST::check_validity)
                     return conversion_error_t::incomplete_utf8_seq;
                 bigch = '?';
-                sp += 4;
+                sp += 1;
             } else {
                 bigch  = (*sp++ & 0x07) << 18;
                 bigch |= (*sp++ & 0x3F) << 12;

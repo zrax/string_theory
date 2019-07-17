@@ -450,13 +450,15 @@ TEST(string, validation)
     EXPECT_THROW(ST::string::from_utf8("\xF0\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
     EXPECT_THROW(ST::string::from_utf8("\xF0\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
 
-    const auto replacement = ST_LITERAL("\xef\xbf\xbd");
-    EXPECT_EQ(replacement, ST::string::from_utf8("\xC0", ST_AUTO_SIZE, ST::substitute_invalid));
-    EXPECT_EQ(replacement, ST::string::from_utf8("\xE0", ST_AUTO_SIZE, ST::substitute_invalid));
-    EXPECT_EQ(replacement, ST::string::from_utf8("\xE0\x80", ST_AUTO_SIZE, ST::substitute_invalid));
-    EXPECT_EQ(replacement, ST::string::from_utf8("\xF0", ST_AUTO_SIZE, ST::substitute_invalid));
-    EXPECT_EQ(replacement, ST::string::from_utf8("\xF0\x80", ST_AUTO_SIZE, ST::substitute_invalid));
-    EXPECT_EQ(replacement, ST::string::from_utf8("\xF0\x80\x80", ST_AUTO_SIZE, ST::substitute_invalid));
+    const auto replacement = ST_LITERAL("\xef\xbf\xbdx");
+    const auto replacement2 = ST_LITERAL("\xef\xbf\xbd\xef\xbf\xbdx");
+    const auto replacement3 = ST_LITERAL("\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbdx");
+    EXPECT_EQ(replacement, ST::string::from_utf8("\xC0x", ST_AUTO_SIZE, ST::substitute_invalid));
+    EXPECT_EQ(replacement, ST::string::from_utf8("\xE0x", ST_AUTO_SIZE, ST::substitute_invalid));
+    EXPECT_EQ(replacement2, ST::string::from_utf8("\xE0\x80x", ST_AUTO_SIZE, ST::substitute_invalid));
+    EXPECT_EQ(replacement, ST::string::from_utf8("\xF0x", ST_AUTO_SIZE, ST::substitute_invalid));
+    EXPECT_EQ(replacement2, ST::string::from_utf8("\xF0\x80x", ST_AUTO_SIZE, ST::substitute_invalid));
+    EXPECT_EQ(replacement3, ST::string::from_utf8("\xF0\x80\x80x", ST_AUTO_SIZE, ST::substitute_invalid));
 
     // Invalid sequences
     EXPECT_THROW(ST::string::from_utf8("\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
@@ -468,14 +470,16 @@ TEST(string, validation)
     EXPECT_THROW(ST::string::from_utf8("\xFE\x80\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
     EXPECT_THROW(ST::string::from_utf8("\xFF\x80\x80\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
 
-    const auto replacement5 = ST_LITERAL("\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd");
-    const auto replacement5x = ST_LITERAL("\xef\xbf\xbdxxxx");
-    EXPECT_EQ(replacement, ST::string::from_utf8("\x80", ST_AUTO_SIZE, ST::substitute_invalid));
+    const auto replacement2x = ST_LITERAL("\xef\xbf\xbdxx");
+    const auto replacement3x = ST_LITERAL("\xef\xbf\xbdxxx");
+    const auto replacement4 = ST_LITERAL("\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbdx");
+    const auto replacement4x = ST_LITERAL("\xef\xbf\xbdxxxx");
+    EXPECT_EQ(replacement, ST::string::from_utf8("\x80x", ST_AUTO_SIZE, ST::substitute_invalid));
     EXPECT_EQ(replacement, ST::string::from_utf8("\xC0x", ST_AUTO_SIZE, ST::substitute_invalid));
-    EXPECT_EQ(replacement, ST::string::from_utf8("\xE0xx", ST_AUTO_SIZE, ST::substitute_invalid));
-    EXPECT_EQ(replacement, ST::string::from_utf8("\xF0xxx", ST_AUTO_SIZE, ST::substitute_invalid));
-    EXPECT_EQ(replacement5, ST::string::from_utf8("\xF8\x80\x80\x80\x80", ST_AUTO_SIZE, ST::substitute_invalid));
-    EXPECT_EQ(replacement5x, ST::string::from_utf8("\xF8xxxx", ST_AUTO_SIZE, ST::substitute_invalid));
+    EXPECT_EQ(replacement2x, ST::string::from_utf8("\xE0xx", ST_AUTO_SIZE, ST::substitute_invalid));
+    EXPECT_EQ(replacement3x, ST::string::from_utf8("\xF0xxx", ST_AUTO_SIZE, ST::substitute_invalid));
+    EXPECT_EQ(replacement4, ST::string::from_utf8("\xF8\x80\x80\x80\x80x", ST_AUTO_SIZE, ST::substitute_invalid));
+    EXPECT_EQ(replacement4x, ST::string::from_utf8("\xF8xxxx", ST_AUTO_SIZE, ST::substitute_invalid));
 
     // Pass through bad data from ST_LITERAL and ST::assume_valid
     const char junk[] = "\xFCxx\x80xx";
