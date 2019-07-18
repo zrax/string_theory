@@ -525,6 +525,22 @@ _ST_PRIVATE::utf32_convert_from_utf16(char32_t *dp, const char16_t *utf16, size_
     return conversion_error_t::success;
 }
 
+void _ST_PRIVATE::utf16_convert_from_latin_1(char16_t *dp, const char *astr, size_t size)
+{
+    const char *sp = astr;
+    const char *ep = sp + size;
+    while (sp < ep)
+        *dp++ = static_cast<unsigned char>(*sp++);
+}
+
+void _ST_PRIVATE::utf32_convert_from_latin_1(char32_t *dp, const char *astr, size_t size)
+{
+    const char *sp = astr;
+    const char *ep = sp + size;
+    while (sp < ep)
+        *dp++ = static_cast<unsigned char>(*sp++);
+}
+
 size_t _ST_PRIVATE::latin_1_measure_from_utf8(const char *utf8, size_t size)
 {
     // This always returns the same answer as UTF-32
@@ -547,6 +563,66 @@ _ST_PRIVATE::latin_1_convert_from_utf8(char *dp, const char *utf8, size_t size,
                 return error;
             bigch = '?';
         }
+
+        if (bigch >= 0x100) {
+            if (substitute_out_of_range)
+                bigch = '?';
+            else
+                return conversion_error_t::latin1_out_of_range;
+        }
+        *dp++ = static_cast<char>(bigch);
+    }
+
+    return conversion_error_t::success;
+}
+
+size_t _ST_PRIVATE::latin_1_measure_from_utf16(const char16_t *utf16, size_t size)
+{
+    // This always returns the same answer as UTF-32
+    return utf32_measure_from_utf16(utf16, size);
+}
+
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::latin_1_convert_from_utf16(char *dp, const char16_t *utf16, size_t size,
+                                        ST::utf_validation_t validation,
+                                        bool substitute_out_of_range)
+{
+    const char16_t *sp = utf16;
+    const char16_t *ep = sp + size;
+    while (sp < ep) {
+        char32_t bigch = _extract_utf16(sp, ep);
+
+        const conversion_error_t error = _char_error(bigch);
+        if (error != conversion_error_t::success) {
+            if (validation == ST::check_validity)
+                return error;
+            bigch = '?';
+        }
+
+        if (bigch >= 0x100) {
+            if (substitute_out_of_range)
+                bigch = '?';
+            else
+                return conversion_error_t::latin1_out_of_range;
+        }
+        *dp++ = static_cast<char>(bigch);
+    }
+
+    return conversion_error_t::success;
+}
+
+_ST_PRIVATE::conversion_error_t
+_ST_PRIVATE::latin_1_convert_from_utf32(char *dp, const char32_t *utf32, size_t size,
+                                        ST::utf_validation_t validation,
+                                        bool substitute_out_of_range)
+{
+    const char32_t *sp = utf32;
+    const char32_t *ep = sp + size;
+    while (sp < ep) {
+        char32_t bigch = *sp++;
+
+        if (bigch > 0x10FFFF && validation == ST::check_validity)
+            return conversion_error_t::out_of_range;
 
         if (bigch >= 0x100) {
             if (substitute_out_of_range)

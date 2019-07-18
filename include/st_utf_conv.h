@@ -83,6 +83,8 @@ namespace _ST_PRIVATE
         return cb_clean;
     }
 
+    ST_EXPORT size_t utf8_measure(char32_t ch);
+
     ST_EXPORT size_t utf8_measure_from_utf16(const char16_t *utf16, size_t size);
     ST_EXPORT conversion_error_t utf8_convert_from_utf16(char *dest,
                     const char16_t *utf16, size_t size,
@@ -92,8 +94,6 @@ namespace _ST_PRIVATE
     ST_EXPORT conversion_error_t utf8_convert_from_utf32(char *dest,
                     const char32_t *utf32, size_t size,
                     ST::utf_validation_t validation);
-
-    ST_EXPORT size_t utf8_measure(char32_t ch);
 
     ST_EXPORT size_t utf8_measure_from_latin_1(const char *astr, size_t size);
     ST_EXPORT void utf8_convert_from_latin_1(char *dest, const char *astr, size_t size);
@@ -118,9 +118,23 @@ namespace _ST_PRIVATE
                     const char16_t *utf16, size_t size,
                     ST::utf_validation_t validation);
 
+    ST_EXPORT void utf16_convert_from_latin_1(char16_t *dest, const char *astr, size_t size);
+    ST_EXPORT void utf32_convert_from_latin_1(char32_t *dest, const char *astr, size_t size);
+
     ST_EXPORT size_t latin_1_measure_from_utf8(const char *utf8, size_t size);
     ST_EXPORT conversion_error_t latin_1_convert_from_utf8(char *dest,
                     const char *utf8, size_t size,
+                    ST::utf_validation_t validation,
+                    bool substitute_out_of_range);
+
+    ST_EXPORT size_t latin_1_measure_from_utf16(const char16_t *utf16, size_t size);
+    ST_EXPORT conversion_error_t latin_1_convert_from_utf16(char *dest,
+                    const char16_t *utf16, size_t size,
+                    ST::utf_validation_t validation,
+                    bool substitute_out_of_range);
+
+    ST_EXPORT conversion_error_t latin_1_convert_from_utf32(char *dest,
+                    const char32_t *utf32, size_t size,
                     ST::utf_validation_t validation,
                     bool substitute_out_of_range);
 
@@ -280,6 +294,25 @@ namespace ST
         return wchar_to_utf16(wstr.data(), wstr.size(), validation);
     }
 
+    inline utf16_buffer latin_1_to_utf16(const char *astr, size_t size)
+    {
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        utf16_buffer result;
+        if (!astr || size == 0)
+            return result;
+
+        result.allocate(size);
+        _ST_PRIVATE::utf16_convert_from_latin_1(result.data(), astr, size);
+
+        return result;
+    }
+
+    inline utf16_buffer latin_1_to_utf16(const char_buffer &astr)
+    {
+        return latin_1_to_utf16(astr.data(), astr.size());
+    }
+
     inline utf32_buffer utf8_to_utf32(const char *utf8, size_t size,
                                       utf_validation_t validation)
     {
@@ -350,6 +383,25 @@ namespace ST
         return wchar_to_utf32(wstr.data(), wstr.size(), validation);
     }
 
+    inline utf32_buffer latin_1_to_utf32(const char *astr, size_t size)
+    {
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        utf32_buffer result;
+        if (!astr || size == 0)
+            return result;
+
+        result.allocate(size);
+        _ST_PRIVATE::utf32_convert_from_latin_1(result.data(), astr, size);
+
+        return result;
+    }
+
+    inline utf32_buffer latin_1_to_utf32(const char_buffer &astr)
+    {
+        return latin_1_to_utf32(astr.data(), astr.size());
+    }
+
     inline wchar_buffer utf8_to_wchar(const char *utf8, size_t size,
                                       utf_validation_t validation)
     {
@@ -409,6 +461,22 @@ namespace ST
         return utf32_to_wchar(utf32.data(), utf32.size(), validation);
     }
 
+    inline wchar_buffer latin_1_to_wchar(const char *astr, size_t size)
+    {
+#if ST_WCHAR_BYTES == 2
+        utf16_buffer utf16 = latin_1_to_utf16(astr, size);
+        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf16.data()), utf16.size());
+#else
+        utf32_buffer utf32 = latin_1_to_utf32(astr, size);
+        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32.data()), utf32.size());
+#endif
+    }
+
+    inline wchar_buffer latin_1_to_wchar(const char_buffer &astr)
+    {
+        return latin_1_to_wchar(astr.data(), astr.size());
+    }
+
     inline char_buffer utf8_to_latin_1(const char *utf8, size_t size,
                                        utf_validation_t validation,
                                        bool substitute_out_of_range = true)
@@ -446,6 +514,79 @@ namespace ST
                                validation, substitute_out_of_range);
     }
 #endif
+
+    inline char_buffer utf16_to_latin_1(const char16_t *utf16, size_t size,
+                                        utf_validation_t validation,
+                                        bool substitute_out_of_range = true)
+    {
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        size_t asize = _ST_PRIVATE::latin_1_measure_from_utf16(utf16, size);
+        if (asize == 0)
+            return null;
+
+        char_buffer result;
+        result.allocate(asize);
+        auto error = _ST_PRIVATE::latin_1_convert_from_utf16(result.data(), utf16,
+                                                             size, validation,
+                                                             substitute_out_of_range);
+        _ST_PRIVATE::raise_conversion_error(error);
+
+        return result;
+    }
+
+    inline char_buffer utf16_to_latin_1(const utf16_buffer &utf16,
+                                        utf_validation_t validation,
+                                        bool substitute_out_of_range = true)
+    {
+        return utf16_to_latin_1(utf16.data(), utf16.size(), validation,
+                                substitute_out_of_range);
+    }
+
+    inline char_buffer utf32_to_latin_1(const char32_t *utf32, size_t size,
+                                        utf_validation_t validation,
+                                        bool substitute_out_of_range = true)
+    {
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        char_buffer result;
+        result.allocate(size);
+        auto error = _ST_PRIVATE::latin_1_convert_from_utf32(result.data(), utf32,
+                                                             size, validation,
+                                                             substitute_out_of_range);
+        _ST_PRIVATE::raise_conversion_error(error);
+
+        return result;
+    }
+
+    inline char_buffer utf32_to_latin_1(const utf32_buffer &utf32,
+                                        utf_validation_t validation,
+                                        bool substitute_out_of_range = true)
+    {
+        return utf32_to_latin_1(utf32.data(), utf32.size(), validation,
+                                substitute_out_of_range);
+    }
+
+    inline char_buffer wchar_to_latin_1(const wchar_t *wstr, size_t size,
+                                        utf_validation_t validation,
+                                        bool substitute_out_of_range = true)
+    {
+#if ST_WCHAR_BYTES == 2
+        return utf16_to_latin_1(reinterpret_cast<const char16_t *>(wstr), size,
+                                validation, substitute_out_of_range);
+#else
+        return utf32_to_latin_1(reinterpret_cast<const char32_t *>(wstr), size,
+                                validation, substitute_out_of_range);
+#endif
+    }
+
+    inline char_buffer wchar_to_latin_1(const wchar_buffer &wstr,
+                                        utf_validation_t validation,
+                                        bool substitute_out_of_range = true)
+    {
+        return wchar_to_latin_1(wstr.data(), wstr.size(), validation,
+                                substitute_out_of_range);
+    }
 }
 
 #endif // _ST_UTF_CONV_H

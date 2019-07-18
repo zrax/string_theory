@@ -96,15 +96,23 @@ TEST(regress, null_init)
     u16buf = ST::utf8_to_utf16((const char *)nullptr, 0, ST::check_validity);
     u32buf = ST::utf8_to_utf32((const char *)nullptr, 0, ST::check_validity);
     wbuf = ST::utf8_to_wchar((const char *)nullptr, 0, ST::check_validity);
+    cbuf = ST::utf8_to_latin_1((const char *)nullptr, 0, ST::check_validity);
     cbuf = ST::utf16_to_utf8((const char16_t *)nullptr, 0, ST::check_validity);
     u32buf = ST::utf16_to_utf32((const char16_t *)nullptr, 0, ST::check_validity);
     wbuf = ST::utf16_to_wchar((const char16_t *)nullptr, 0, ST::check_validity);
+    cbuf = ST::utf16_to_latin_1((const char16_t *)nullptr, 0, ST::check_validity);
     cbuf = ST::utf32_to_utf8((const char32_t *)nullptr, 0, ST::check_validity);
     u16buf = ST::utf32_to_utf16((const char32_t *)nullptr, 0, ST::check_validity);
     wbuf = ST::utf32_to_wchar((const char32_t *)nullptr, 0, ST::check_validity);
+    cbuf = ST::utf32_to_latin_1((const char32_t *)nullptr, 0, ST::check_validity);
     cbuf = ST::wchar_to_utf8((const wchar_t *)nullptr, 0, ST::check_validity);
     u16buf = ST::wchar_to_utf16((const wchar_t *)nullptr, 0, ST::check_validity);
     u32buf = ST::wchar_to_utf32((const wchar_t *)nullptr, 0, ST::check_validity);
+    cbuf = ST::wchar_to_latin_1((const wchar_t *)nullptr, 0, ST::check_validity);
+    cbuf = ST::latin_1_to_utf8((const char *)nullptr, 0);
+    u16buf = ST::latin_1_to_utf16((const char *)nullptr, 0);
+    u32buf = ST::latin_1_to_utf32((const char *)nullptr, 0);
+    wbuf = ST::latin_1_to_wchar((const char *)nullptr, 0);
 }
 
 TEST(regress, allocate_fill)
