@@ -392,4 +392,46 @@ namespace ST
     }
 }
 
+#define ST_CHAR_LITERAL(str) \
+    ST::char_buffer("" str "", sizeof(str) - 1)
+
+#define ST_WCHAR_LITERAL(str) \
+    ST::wchar_buffer(L"" str L"", (sizeof(str) / sizeof(wchar_t)) - 1)
+
+#define ST_UTF16_LITERAL(str) \
+    ST::utf16_buffer(u"" str u"", (sizeof(str) / sizeof(char16_t)) - 1)
+
+#define ST_UTF32_LITERAL(str) \
+    ST::utf32_buffer(U"" str U"", (sizeof(str) / sizeof(char32_t)) - 1)
+
+#ifdef ST_HAVE_USER_LITERALS
+inline ST::char_buffer operator"" _stbuf(const char *str, size_t size)
+{
+    return ST::char_buffer(str, size);
+}
+
+inline ST::utf16_buffer operator"" _stbuf(const char16_t *str, size_t size)
+{
+    return ST::utf16_buffer(str, size);
+}
+
+inline ST::utf32_buffer operator"" _stbuf(const char32_t *str, size_t size)
+{
+    return ST::utf32_buffer(str, size);
+}
+
+inline ST::wchar_buffer operator"" _stbuf(const wchar_t *str, size_t size)
+{
+    return ST::wchar_buffer(str, size);
+}
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+inline ST::char_buffer operator"" _stbuf(const char8_t *str, size_t size)
+{
+    return ST::char_buffer(reinterpret_cast<const char *>(str), size);
+}
+#endif
+
+#endif
+
 #endif // _ST_CHARBUFFER_H
