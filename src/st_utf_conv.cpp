@@ -286,11 +286,13 @@ _ST_PRIVATE::utf8_convert_from_utf16(char *dp, const char16_t *utf16, size_t siz
         if (error != conversion_error_t::success) {
             if (validation == ST::check_validity)
                 return error;
-            bigch = BADCHAR_SUBSTITUTE;
+            std::char_traits<char>::copy(dp, BADCHAR_SUBSTITUTE_UTF8,
+                                         BADCHAR_SUBSTITUTE_UTF8_LEN);
+            dp += BADCHAR_SUBSTITUTE_UTF8_LEN;
+        } else {
+            error = _write_utf8(dp, bigch);
+            ST_ASSERT(error == conversion_error_t::success, "Input character out of range");
         }
-
-        error = _write_utf8(dp, bigch);
-        ST_ASSERT(error == conversion_error_t::success, "Input character out of range");
     }
 
     return conversion_error_t::success;
@@ -330,8 +332,8 @@ size_t _ST_PRIVATE::utf8_measure_from_utf32(const char32_t *utf32, size_t size)
     size_t u8len = 0;
     const char32_t *sp = utf32;
     const char32_t *ep = sp + size;
-    for (; sp < ep; ++sp)
-        u8len += utf8_measure(*sp);
+    while (sp < ep)
+        u8len += utf8_measure(*sp++);
     return u8len;
 }
 
@@ -346,7 +348,9 @@ _ST_PRIVATE::utf8_convert_from_utf32(char *dp, const char32_t *utf32, size_t siz
         if (error != conversion_error_t::success) {
             if (validation == ST::check_validity)
                 return error;
-            _write_utf8(dp, BADCHAR_SUBSTITUTE);
+            std::char_traits<char>::copy(dp, BADCHAR_SUBSTITUTE_UTF8,
+                                         BADCHAR_SUBSTITUTE_UTF8_LEN);
+            dp += BADCHAR_SUBSTITUTE_UTF8_LEN;
         }
     }
 
@@ -410,11 +414,11 @@ _ST_PRIVATE::utf16_convert_from_utf8(char16_t *dp, const char *utf8, size_t size
         if (error != conversion_error_t::success) {
             if (validation == ST::check_validity)
                 return error;
-            bigch = BADCHAR_SUBSTITUTE;
+            *dp++ = BADCHAR_SUBSTITUTE;
+        } else {
+            error = _write_utf16(dp, bigch);
+            ST_ASSERT(error == conversion_error_t::success, "Input character out of range");
         }
-
-        error = _write_utf16(dp, bigch);
-        ST_ASSERT(error == conversion_error_t::success, "Input character out of range");
     }
 
     return conversion_error_t::success;
@@ -444,7 +448,7 @@ _ST_PRIVATE::utf16_convert_from_utf32(char16_t *dp, const char32_t *utf32, size_
         if (error != conversion_error_t::success) {
             if (validation == ST::check_validity)
                 return error;
-            _write_utf16(dp, BADCHAR_SUBSTITUTE);
+            *dp++ = BADCHAR_SUBSTITUTE;
         }
     }
 

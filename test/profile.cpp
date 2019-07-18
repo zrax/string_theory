@@ -24,6 +24,8 @@
 
 #include <chrono>
 #include <functional>
+#include <locale>
+#include <codecvt>
 #include <sstream>
 #include <fstream>
 #include <cmath>
@@ -42,6 +44,7 @@
 #endif
 #ifdef ST_PROFILE_HAVE_GLIBMM
 #   include <glibmm/ustring.h>
+#   include <glibmm/convert.h>
 #endif
 #ifdef ST_PROFILE_HAVE_FMT
 #   include <fmt/format.h>
@@ -58,14 +61,15 @@ volatile const char *V;
 volatile long L;
 #define NO_OPTIMIZE_L(x) L = x;
 
-static void _measure(const char *title, std::function<void()> fun)
+template <typename Code>
+void _measure(const char *title, const Code &fun)
 {
     auto clk = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < 100000; ++i)
         fun();
 
     auto dur = std::chrono::high_resolution_clock::now() - clk;
-    ST::printf("{32}: {6.2f} ms\n", title,
+    ST::printf("{36}: {6.2f} ms\n", title,
          std::chrono::duration<double, std::milli>(dur).count());
 }
 
@@ -439,6 +443,190 @@ int main(int, char **)
     _measure("Glib::ustring::substr", [&_gs4]() {
         Glib::ustring sub = _gs4.substr(8, 41);
         NO_OPTIMIZE(sub.c_str());
+    });
+#endif
+
+    ST::printf("\n");
+
+    std::string _ssu8("Some UTF-8 text: \u00ab\U0001f34c\u00bb");
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> _wsc_u8_u16;
+    _measure("std::wstring_convert utf8->utf16", [&_ssu8, &_wsc_u8_u16]() {
+        std::u16string buf = _wsc_u8_u16.from_bytes(_ssu8);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> _wsc_u8_u32;
+    _measure("std::wstring_convert utf8->utf32", [&_ssu8, &_wsc_u8_u32]() {
+        std::u32string buf = _wsc_u8_u32.from_bytes(_ssu8);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    std::u16string _ssu16(u"Some UTF-16 text: \u00ab\U0001f34c\u00bb");
+    _measure("std::wstring_convert utf16->utf8", [&_ssu16, &_wsc_u8_u16]() {
+        std::string buf = _wsc_u8_u16.to_bytes(_ssu16);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    std::u32string _ssu32(U"Some UTF-32 text: \u00ab\U0001f34c\u00bb");
+    _measure("std::wstring_convert utf32->utf8", [&_ssu32, &_wsc_u8_u32]() {
+        std::string buf = _wsc_u8_u32.to_bytes(_ssu32);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    ST::string _stu8("Some UTF-8 text: \u00ab\U0001f34c\u00bb");
+    _measure("ST::string::to_utf16", [&_stu8]() {
+        ST::utf16_buffer buf = _stu8.to_utf16();
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("ST::string::to_utf32", [&_stu8]() {
+        ST::utf32_buffer buf = _stu8.to_utf32();
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("ST::string::to_latin_1", [&_stu8]() {
+        ST::char_buffer buf = _stu8.to_latin_1();
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    ST::utf16_buffer _stu16 = ST_UTF16_LITERAL(u"Some UTF-16 text: \u00ab\U0001f34c\u00bb");
+    _measure("ST::string::from_utf16", [&_stu16]() {
+        ST::string buf = ST::string::from_utf16(_stu16);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    ST::utf32_buffer _stu32 = ST_UTF32_LITERAL(U"Some UTF-32 text: \u00ab\U0001f34c\u00bb");
+    _measure("ST::string::from_utf32", [&_stu32]() {
+        ST::string buf = ST::string::from_utf32(_stu32);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    ST::char_buffer _stl1 = ST_CHAR_LITERAL("Some Latin-1 text: \xab" "banana" "\xbb");
+    _measure("ST::string::from_latin_1", [&_stl1]() {
+        ST::string buf = ST::string::from_latin_1(_stl1);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("ST::utf16_to_utf32", [&_stu16]() {
+        ST::utf32_buffer buf = ST::utf16_to_utf32(_stu16, ST::substitute_invalid);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("ST::utf16_to_latin_1", [&_stu16]() {
+        ST::char_buffer buf = ST::utf16_to_latin_1(_stu16, ST::substitute_invalid);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("ST::utf32_to_utf16", [&_stu32]() {
+        ST::utf16_buffer buf = ST::utf32_to_utf16(_stu32, ST::substitute_invalid);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("ST::utf32_to_latin_1", [&_stu32]() {
+        ST::char_buffer buf = ST::utf32_to_latin_1(_stu32, ST::substitute_invalid);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("ST::latin_1_to_utf16", [&_stl1]() {
+        ST::utf16_buffer buf = ST::latin_1_to_utf16(_stl1);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("ST::latin_1_to_utf32", [&_stl1]() {
+        ST::utf32_buffer buf = ST::latin_1_to_utf32(_stl1);
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+#ifdef ST_PROFILE_HAVE_QSTRING
+    QByteArray _qu8("Some UTF-8 text: \u00ab\U0001f34c\u00bb");
+    _measure("QString::fromUtf8", [&_qu8]() {
+        QString str = QString::fromUtf8(_qu8);
+        NO_OPTIMIZE(str.constData());
+    });
+
+    _measure("QString::fromUcs4", [&_stu32]() {
+        QString str = QString::fromUcs4(
+                        reinterpret_cast<const uint *>(_stu32.data()), _stu32.size());
+        NO_OPTIMIZE(str.constData());
+    });
+
+    QByteArray _ql1("Some Latin-1 text: \xab" "banana" "\xbb");
+    _measure("QString::fromLatin1", [&_ql1]() {
+        QString str = QString::fromLatin1(_ql1);
+        NO_OPTIMIZE(str.constData());
+    });
+
+    QString _qu16 = QString::fromUtf16(u"Some UTF-16 text: \u00ab\U0001f34c\u00bb");
+    _measure("QString::toUtf8", [&_qu16]() {
+        QByteArray buf = _qu16.toUtf8();
+        NO_OPTIMIZE(buf.constData());
+    });
+
+    _measure("QString::toUcs4", [&_qu16]() {
+        QVector<uint> buf = _qu16.toUcs4();
+        NO_OPTIMIZE(buf.constData());
+    });
+
+    _measure("QString::toLatin1", [&_qu16]() {
+        QByteArray buf = _qu16.toLatin1();
+        NO_OPTIMIZE(buf.constData());
+    });
+#endif
+
+#ifdef ST_PROFILE_HAVE_GLIBMM
+    _measure("Glib::convert utf8->utf16", [&_ssu8]() {
+        std::string buf = Glib::convert(_ssu8, "UTF-16", "UTF-8");
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("Glib::convert utf8->utf32", [&_ssu8]() {
+        std::string buf = Glib::convert(_ssu8, "UTF-32", "UTF-8");
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("Glib::convert utf8->latin-1", [&_ssu8]() {
+        std::string buf = Glib::convert_with_fallback(_ssu8, "ISO-8859-1", "UTF-8");
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    std::string _ssu16_s(reinterpret_cast<const char *>(_ssu16.c_str()),
+                         _ssu16.size() * sizeof(char16_t));
+    _measure("Glib::convert utf16->utf8", [&_ssu16_s]() {
+        std::string buf = Glib::convert(_ssu16_s, "UTF-8", "UTF-16");
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("Glib::convert utf16->utf32", [&_ssu16_s]() {
+        std::string buf = Glib::convert(_ssu16_s, "UTF-32", "UTF-16");
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("Glib::convert utf16->latin-1", [&_ssu16_s]() {
+        std::string buf = Glib::convert_with_fallback(_ssu16_s, "ISO-8859-1", "UTF-16");
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    std::string _ssu32_s(reinterpret_cast<const char *>(_ssu32.c_str()),
+                         _ssu32.size() * sizeof(char32_t));
+    _measure("Glib::convert utf32->utf8", [&_ssu32_s]() {
+        std::string buf = Glib::convert(_ssu32_s, "UTF-8", "UTF-32");
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    std::string _ssl1("Some Latin-1 text: \xab" "banana" "\xbb");
+    _measure("Glib::convert latin-1->utf8", [&_ssl1]() {
+        std::string buf = Glib::convert(_ssl1, "UTF-8", "ISO-8859-1");
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("Glib::convert latin-1->utf16", [&_ssl1]() {
+        std::string buf = Glib::convert(_ssl1, "UTF-16", "ISO-8859-1");
+        NO_OPTIMIZE(buf.c_str());
+    });
+
+    _measure("Glib::convert latin-1->utf32", [&_ssl1]() {
+        std::string buf = Glib::convert(_ssl1, "UTF-32", "ISO-8859-1");
+        NO_OPTIMIZE(buf.c_str());
     });
 #endif
 
