@@ -40,10 +40,6 @@
 #   endif
 #endif
 
-#if !defined(ST_WCHAR_BYTES) || ((ST_WCHAR_BYTES != 2) && (ST_WCHAR_BYTES != 4))
-#   error ST_WCHAR_SIZE must either be 2 (16-bit) or 4 (32-bit)
-#endif
-
 /* This can be set globally for your project in order to change the default
  * behavior for verification of unicode data during string conversions. */
 #ifndef ST_DEFAULT_VALIDATION
@@ -2172,11 +2168,7 @@ namespace ST
 
     inline string operator+(const string &left, wchar_t right)
     {
-#if ST_WCHAR_BYTES == 2
-        const char32_t uchar = static_cast<unsigned short>(right);
-#else
         const char32_t uchar = static_cast<unsigned int>(right);
-#endif
         return operator+(left, uchar);
     }
 
@@ -2211,11 +2203,7 @@ namespace ST
 
     inline string operator+(wchar_t left, const string &right)
     {
-#if ST_WCHAR_BYTES == 2
-        const char32_t uchar = static_cast<unsigned short>(left);
-#else
         const char32_t uchar = static_cast<unsigned int>(left);
-#endif
         return operator+(uchar, right);
     }
 

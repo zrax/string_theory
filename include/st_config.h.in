@@ -79,7 +79,6 @@
 #   define ST_DEPRECATED_IN_3_0(message) ST_DEPRECATED(message)
 #endif
 
-#define ST_WCHAR_BYTES          (@ST_WCHAR_BYTES@)
 #define ST_SIZET_BYTES          (@ST_SIZET_BYTES@)
 #define ST_SHORT_STRING_LEN     (16)
 #define ST_STACK_STRING_LEN     (256)

@@ -382,10 +382,19 @@ void ST::format_type(const ST::format_spec &format, ST::format_writer &output,
 }
 
 void ST::format_type(const ST::format_spec &format, ST::format_writer &output,
-                     wchar_t value)
+                     char16_t value)
 {
     if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
-        _format_char(format, output, value);
+        _format_char(format, output, static_cast<int>(value));
+    else
+        _format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
+}
+
+void ST::format_type(const ST::format_spec &format, ST::format_writer &output,
+                     char32_t value)
+{
+    if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
+        _format_char(format, output, static_cast<int>(value));
     else
         _format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
 }

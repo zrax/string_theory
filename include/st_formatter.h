@@ -280,7 +280,8 @@ namespace ST
 namespace ST
 {
     ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, char);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, wchar_t);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, char16_t);
+    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, char32_t);
     ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, signed char);
     ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned char);
     ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, short);
@@ -292,6 +293,12 @@ namespace ST
     ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, long long);
     ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned long long);
     ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, double);
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            wchar_t value)
+    {
+        format_type(format, output, static_cast<char32_t>(value));
+    }
 
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             float value)

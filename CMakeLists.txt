@@ -85,14 +85,6 @@ try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
             LINK_LIBRARIES ${ST_CXXFS_LIBS})
 
 include(CheckTypeSize)
-if(NOT ST_WCHAR_BYTES)
-    check_type_size("wchar_t" ST_WCHAR_BYTES)
-    if(NOT ST_WCHAR_BYTES)
-        message(FATAL_ERROR "Could not determine sizeof(wchar_t)")
-        set(ST_WCHAR_BYTES 0)
-    endif()
-endif()
-
 if(NOT ST_SIZET_BYTES)
     check_type_size("size_t" ST_SIZET_BYTES)
     if(NOT ST_SIZET_BYTES)
