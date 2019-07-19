@@ -418,16 +418,38 @@ namespace ST
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), wchar_buffer>::type
     utf8_to_wchar(const char *utf8, size_t size, utf_validation_t validation)
     {
-        utf16_buffer utf16 = utf8_to_utf16(utf8, size, validation);
-        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf16.data()), utf16.size());
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        size_t u16size = _ST_PRIVATE::utf16_measure_from_utf8(utf8, size);
+        if (u16size == 0)
+            return null;
+
+        wchar_buffer result;
+        result.allocate(u16size);
+        auto error = _ST_PRIVATE::utf16_convert_from_utf8(reinterpret_cast<char16_t *>(result.data()),
+                                                          utf8, size, validation);
+        _ST_PRIVATE::raise_conversion_error(error);
+
+        return result;
     }
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), wchar_buffer>::type
     utf8_to_wchar(const char *utf8, size_t size, utf_validation_t validation)
     {
-        utf32_buffer utf32 = utf8_to_utf32(utf8, size, validation);
-        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32.data()), utf32.size());
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        size_t u32size = _ST_PRIVATE::utf32_measure_from_utf8(utf8, size);
+        if (u32size == 0)
+            return null;
+
+        wchar_buffer result;
+        result.allocate(u32size);
+        auto error = _ST_PRIVATE::utf32_convert_from_utf8(reinterpret_cast<char32_t *>(result.data()),
+                                                          utf8, size, validation);
+        _ST_PRIVATE::raise_conversion_error(error);
+
+        return result;
     }
 
     inline wchar_buffer utf8_to_wchar(const char_buffer &utf8, utf_validation_t validation)
@@ -455,8 +477,19 @@ namespace ST
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), wchar_buffer>::type
     utf16_to_wchar(const char16_t *utf16, size_t size, utf_validation_t validation)
     {
-        utf32_buffer utf32 = utf16_to_utf32(utf16, size, validation);
-        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32.data()), utf32.size());
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        size_t u32size = _ST_PRIVATE::utf32_measure_from_utf16(utf16, size);
+        if (u32size == 0)
+            return null;
+
+        wchar_buffer result;
+        result.allocate(u32size);
+        auto error = _ST_PRIVATE::utf32_convert_from_utf16(reinterpret_cast<char32_t *>(result.data()),
+                                                           utf16, size, validation);
+        _ST_PRIVATE::raise_conversion_error(error);
+
+        return result;
     }
 
     inline wchar_buffer utf16_to_wchar(const utf16_buffer &utf16, utf_validation_t validation)
@@ -468,8 +501,19 @@ namespace ST
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), wchar_buffer>::type
     utf32_to_wchar(const char32_t *utf32, size_t size, utf_validation_t validation)
     {
-        utf16_buffer utf16 = utf32_to_utf16(utf32, size, validation);
-        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf16.data()), utf16.size());
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        size_t u16size = _ST_PRIVATE::utf16_measure_from_utf32(utf32, size);
+        if (u16size == 0)
+            return null;
+
+        wchar_buffer result;
+        result.allocate(u16size);
+        auto error = _ST_PRIVATE::utf16_convert_from_utf32(reinterpret_cast<char16_t *>(result.data()),
+                                                           utf32, size, validation);
+        _ST_PRIVATE::raise_conversion_error(error);
+
+        return result;
     }
 
     template <typename WcType = wchar_t>
@@ -489,16 +533,34 @@ namespace ST
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), wchar_buffer>::type
     latin_1_to_wchar(const char *astr, size_t size)
     {
-        utf16_buffer utf16 = latin_1_to_utf16(astr, size);
-        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf16.data()), utf16.size());
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        wchar_buffer result;
+        if (!astr || size == 0)
+            return result;
+
+        result.allocate(size);
+        _ST_PRIVATE::utf16_convert_from_latin_1(reinterpret_cast<char16_t *>(result.data()),
+                                                astr, size);
+
+        return result;
     }
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), wchar_buffer>::type
     latin_1_to_wchar(const char *astr, size_t size)
     {
-        utf32_buffer utf32 = latin_1_to_utf32(astr, size);
-        return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32.data()), utf32.size());
+        ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
+
+        wchar_buffer result;
+        if (!astr || size == 0)
+            return result;
+
+        result.allocate(size);
+        _ST_PRIVATE::utf32_convert_from_latin_1(reinterpret_cast<char32_t *>(result.data()),
+                                                astr, size);
+
+        return result;
     }
 
     inline wchar_buffer latin_1_to_wchar(const char_buffer &astr)
