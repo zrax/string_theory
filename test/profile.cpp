@@ -55,6 +55,23 @@
 #   define M_PI (3.14159265358979)
 #endif
 
+// MSVC doesn't export codecvt specializations for char16_t/char32_t
+#if defined(_MSC_VER)
+    typedef int16_t codecvt_char16_t;
+    typedef int32_t codecvt_char32_t;
+    typedef std::basic_string<int16_t> codecvt_u16string;
+    typedef std::basic_string<int32_t> codecvt_u32string;
+#   define CODECVT_U16_LITERAL(text)    reinterpret_cast<const int16_t *>(text)
+#   define CODECVT_U32_LITERAL(text)    reinterpret_cast<const int32_t *>(text)
+#else
+    typedef char16_t codecvt_char16_t;
+    typedef char32_t codecvt_char32_t;
+    typedef std::u16string codecvt_u16string;
+    typedef std::u32string codecvt_u32string;
+#   define CODECVT_U16_LITERAL(text)    text
+#   define CODECVT_U32_LITERAL(text)    text
+#endif
+
 volatile const char *V;
 #define NO_OPTIMIZE(x) V = reinterpret_cast<const char *>(x)
 
@@ -448,32 +465,32 @@ int main(int, char **)
 
     ST::printf("\n");
 
-    std::string _ssu8("Some UTF-8 text: \u00ab\U0001f34c\u00bb");
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> _wsc_u8_u16;
+    std::string _ssu8("Some UTF-8 text: \xc2\xab\xf0\x9f\x8d\x8c\xc2\xbb");
+    std::wstring_convert<std::codecvt_utf8_utf16<codecvt_char16_t>, codecvt_char16_t> _wsc_u8_u16;
     _measure("std::wstring_convert utf8->utf16", [&_ssu8, &_wsc_u8_u16]() {
-        std::u16string buf = _wsc_u8_u16.from_bytes(_ssu8);
+        codecvt_u16string buf = _wsc_u8_u16.from_bytes(_ssu8);
         NO_OPTIMIZE(buf.c_str());
     });
 
-    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> _wsc_u8_u32;
+    std::wstring_convert<std::codecvt_utf8<codecvt_char32_t>, codecvt_char32_t> _wsc_u8_u32;
     _measure("std::wstring_convert utf8->utf32", [&_ssu8, &_wsc_u8_u32]() {
-        std::u32string buf = _wsc_u8_u32.from_bytes(_ssu8);
+        codecvt_u32string buf = _wsc_u8_u32.from_bytes(_ssu8);
         NO_OPTIMIZE(buf.c_str());
     });
 
-    std::u16string _ssu16(u"Some UTF-16 text: \u00ab\U0001f34c\u00bb");
+    codecvt_u16string _ssu16(CODECVT_U16_LITERAL(u"Some UTF-16 text: \u00ab\U0001f34c\u00bb"));
     _measure("std::wstring_convert utf16->utf8", [&_ssu16, &_wsc_u8_u16]() {
         std::string buf = _wsc_u8_u16.to_bytes(_ssu16);
         NO_OPTIMIZE(buf.c_str());
     });
 
-    std::u32string _ssu32(U"Some UTF-32 text: \u00ab\U0001f34c\u00bb");
+    codecvt_u32string _ssu32(CODECVT_U32_LITERAL(U"Some UTF-32 text: \u00ab\U0001f34c\u00bb"));
     _measure("std::wstring_convert utf32->utf8", [&_ssu32, &_wsc_u8_u32]() {
         std::string buf = _wsc_u8_u32.to_bytes(_ssu32);
         NO_OPTIMIZE(buf.c_str());
     });
 
-    ST::string _stu8("Some UTF-8 text: \u00ab\U0001f34c\u00bb");
+    ST::string _stu8("Some UTF-8 text: \xc2\xab\xf0\x9f\x8d\x8c\xc2\xbb");
     _measure("ST::string::to_utf16", [&_stu8]() {
         ST::utf16_buffer buf = _stu8.to_utf16();
         NO_OPTIMIZE(buf.c_str());
@@ -538,7 +555,7 @@ int main(int, char **)
     });
 
 #ifdef ST_PROFILE_HAVE_QSTRING
-    QByteArray _qu8("Some UTF-8 text: \u00ab\U0001f34c\u00bb");
+    QByteArray _qu8("Some UTF-8 text: \xc2\xab\xf0\x9f\x8d\x8c\xc2\xbb");
     _measure("QString::fromUtf8", [&_qu8]() {
         QString str = QString::fromUtf8(_qu8);
         NO_OPTIMIZE(str.constData());
