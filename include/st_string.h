@@ -2148,7 +2148,7 @@ namespace ST
         std::char_traits<char>::copy(catp, left.c_str(), left.size());
         catp += left.size();
 
-        auto error = _ST_PRIVATE::append_utf8(catp, right);
+        auto error = _ST_PRIVATE::write_utf8(catp, right);
         _ST_PRIVATE::raise_conversion_error(error);
 
         return ST::string::from_validated(std::move(cat));
@@ -2180,10 +2180,9 @@ namespace ST
         cat.allocate(right.size() + addsize);
         char *catp = cat.data();
 
-        auto error = _ST_PRIVATE::append_utf8(catp, left);
+        auto error = _ST_PRIVATE::write_utf8(catp, left);
         _ST_PRIVATE::raise_conversion_error(error);
 
-        catp += addsize;
         std::char_traits<char>::copy(catp, right.c_str(), right.size());
 
         return ST::string::from_validated(std::move(cat));

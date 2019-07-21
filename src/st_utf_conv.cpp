@@ -186,7 +186,7 @@ static inline char32_t _extract_utf8(const unsigned char *&utf8,
     return _error_char(conversion_error_t::invalid_utf8_seq);
 }
 
-static inline _ST_PRIVATE::conversion_error_t _write_utf8(char *&dp, char32_t ch)
+_ST_PRIVATE::conversion_error_t _ST_PRIVATE::write_utf8(char *&dp, char32_t ch)
 {
     using namespace _ST_PRIVATE;
 
@@ -290,7 +290,7 @@ _ST_PRIVATE::utf8_convert_from_utf16(char *dp, const char16_t *utf16, size_t siz
                                          BADCHAR_SUBSTITUTE_UTF8_LEN);
             dp += BADCHAR_SUBSTITUTE_UTF8_LEN;
         } else {
-            error = _write_utf8(dp, bigch);
+            error = write_utf8(dp, bigch);
             ST_ASSERT(error == conversion_error_t::success, "Input character out of range");
         }
     }
@@ -344,7 +344,7 @@ _ST_PRIVATE::utf8_convert_from_utf32(char *dp, const char32_t *utf32, size_t siz
     const char32_t *sp = utf32;
     const char32_t *ep = sp + size;
     while (sp < ep) {
-        const conversion_error_t error = _write_utf8(dp, *sp++);
+        const conversion_error_t error = write_utf8(dp, *sp++);
         if (error != conversion_error_t::success) {
             if (validation == ST::check_validity)
                 return error;
@@ -638,10 +638,4 @@ _ST_PRIVATE::latin_1_convert_from_utf32(char *dp, const char32_t *utf32, size_t 
     }
 
     return conversion_error_t::success;
-}
-
-_ST_PRIVATE::conversion_error_t
-_ST_PRIVATE::append_utf8(char *dp, char32_t ch)
-{
-    return _write_utf8(dp, ch);
 }

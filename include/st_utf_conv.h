@@ -84,6 +84,7 @@ namespace _ST_PRIVATE
     }
 
     ST_EXPORT size_t utf8_measure(char32_t ch);
+    ST_EXPORT conversion_error_t write_utf8(char *&dest, char32_t ch);
 
     ST_EXPORT size_t utf8_measure_from_utf16(const char16_t *utf16, size_t size);
     ST_EXPORT conversion_error_t utf8_convert_from_utf16(char *dest,
@@ -137,8 +138,6 @@ namespace _ST_PRIVATE
                     const char32_t *utf32, size_t size,
                     ST::utf_validation_t validation,
                     bool substitute_out_of_range);
-
-    ST_EXPORT conversion_error_t append_utf8(char *dest, char32_t ch);
 }
 
 namespace ST

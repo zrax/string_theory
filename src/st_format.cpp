@@ -261,38 +261,17 @@ static void _format_char(const ST::format_spec &format,
     if (format.minimum_length != 0 || format.pad != 0)
         ST_ASSERT(false, "Char formatting does not currently support padding");
 
-    // Don't need to nul-terminate this, since string_buffer's constructor fixes it
+    // Don't need to nul-terminate this, since we just write a fixed length
     char utf8[4];
-    size_t format_size;
-
-    // Roughly copied from ST::string
-    if (ch > 0x10FFFF) {
-        // Character out of range; Use U+FFFD instead
-        format_size = 3;
-        utf8[0] = 0xE0 | ((BADCHAR_SUBSTITUTE >> 12) & 0x0F);
-        utf8[1] = 0x80 | ((BADCHAR_SUBSTITUTE >>  6) & 0x3F);
-        utf8[2] = 0x80 | ((BADCHAR_SUBSTITUTE      ) & 0x3F);
-    } else if (ch > 0xFFFF) {
-        format_size = 4;
-        utf8[0] = 0xF0 | ((ch >> 18) & 0x07);
-        utf8[1] = 0x80 | ((ch >> 12) & 0x3F);
-        utf8[2] = 0x80 | ((ch >>  6) & 0x3F);
-        utf8[3] = 0x80 | ((ch      ) & 0x3F);
-    } else if (ch > 0x7FF) {
-        format_size = 3;
-        utf8[0] = 0xE0 | ((ch >> 12) & 0x0F);
-        utf8[1] = 0x80 | ((ch >>  6) & 0x3F);
-        utf8[2] = 0x80 | ((ch      ) & 0x3F);
-    } else if (ch > 0x7F) {
-        format_size = 2;
-        utf8[0] = 0xC0 | ((ch >>  6) & 0x1F);
-        utf8[1] = 0x80 | ((ch      ) & 0x3F);
-    } else {
-        format_size = 1;
-        utf8[0] = (char)ch;
+    char *dest = utf8;
+    _ST_PRIVATE::conversion_error_t error = _ST_PRIVATE::write_utf8(dest, ch);
+    if (error != _ST_PRIVATE::conversion_error_t::success) {
+        *dest++ = 0xE0 | ((BADCHAR_SUBSTITUTE >> 12) & 0x0F);
+        *dest++ = 0x80 | ((BADCHAR_SUBSTITUTE >>  6) & 0x3F);
+        *dest++ = 0x80 | ((BADCHAR_SUBSTITUTE      ) & 0x3F);
     }
 
-    output.append(utf8, format_size);
+    output.append(utf8, dest - utf8);
 }
 
 #define _ST_FORMAT_INT_TYPE(int_T, uint_T) \
