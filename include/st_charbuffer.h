@@ -387,20 +387,6 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_CXX17_STRING_VIEW
-        operator std::basic_string_view<char_T>() const
-        {
-            return std::basic_string_view<char_T>(data(), size());
-        }
-#endif
-
-#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-        operator std::experimental::basic_string_view<char_T>() const
-        {
-            return std::experimental::basic_string_view<char_T>(data(), size());
-        }
-#endif
-
 #endif  /* ST_NO_STL_STRINGS */
     };
 

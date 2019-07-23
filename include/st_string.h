@@ -1234,20 +1234,6 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_CXX17_STRING_VIEW
-        operator std::string_view() const
-        {
-            return (std::string_view)m_buffer;
-        }
-#endif
-
-#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-        operator std::experimental::string_view() const
-        {
-            return (std::experimental::string_view)m_buffer;
-        }
-#endif
-
 #endif // !defined(ST_NO_STL_STRINGS)
 
         size_t size() const noexcept { return m_buffer.size(); }
