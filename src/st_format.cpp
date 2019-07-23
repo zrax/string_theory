@@ -271,6 +271,8 @@ static void _format_char(const ST::format_spec &format,
         *dest++ = 0x80 | ((BADCHAR_SUBSTITUTE      ) & 0x3F);
     }
 
+    ST_ASSERT(size_t(dest - utf8) <= sizeof(utf8), "Destination buffer too small");
+
     output.append(utf8, dest - utf8);
 }
 
