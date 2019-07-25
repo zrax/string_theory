@@ -23,10 +23,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#if !defined(ST_SIZET_BYTES) || ((ST_SIZET_BYTES != 4) && (ST_SIZET_BYTES != 8))
-#   error Supported size_t sizes are 4 (32-bit) or 8 (64-bit) bytes
-#endif
-
 int ST::string::to_int(int base) const noexcept
 {
     return static_cast<int>(strtol(c_str(), nullptr, base));
@@ -363,23 +359,34 @@ bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const noex
             : _compare_ci(c_str() + start, suffix ? suffix : "", count) == 0;
 }
 
+template <size_t Size>
+struct _fnv_constants { };
+
+template <>
+struct _fnv_constants<4>
+{
+    static constexpr size_t offset_basis = 0x811c9dc5UL;
+    static constexpr size_t prime = 0x01000193UL;
+};
+
+template<>
+struct _fnv_constants<8>
+{
+    static constexpr size_t offset_basis = 0xcbf29ce484222325ULL;
+    static constexpr size_t prime = 0x00000100000001b3ULL;
+};
+
+typedef _fnv_constants<sizeof(size_t)> fnv_constants;
+
 size_t ST::hash::operator()(const string &str) const noexcept
 {
     /* FNV-1a hash.  See http://isthe.com/chongo/tech/comp/fnv/ for details */
-#if ST_SIZET_BYTES == 4
-#   define FNV_OFFSET_BASIS 0x811c9dc5UL
-#   define FNV_PRIME        0x01000193UL
-#elif ST_SIZET_BYTES == 8
-#   define FNV_OFFSET_BASIS 0xcbf29ce484222325ULL
-#   define FNV_PRIME        0x00000100000001b3ULL
-#endif
-
-    size_t hash = FNV_OFFSET_BASIS;
+    size_t hash = fnv_constants::offset_basis;
     const char *cp = str.c_str();
     const char *ep = cp + str.size();
     while (cp < ep) {
         hash ^= static_cast<size_t>(*cp++);
-        hash *= FNV_PRIME;
+        hash *= fnv_constants::prime;
     }
     return hash;
 }
@@ -387,20 +394,12 @@ size_t ST::hash::operator()(const string &str) const noexcept
 size_t ST::hash_i::operator()(const string &str) const noexcept
 {
     /* FNV-1a hash.  See http://isthe.com/chongo/tech/comp/fnv/ for details */
-#if ST_SIZET_BYTES == 4
-#   define FNV_OFFSET_BASIS 0x811c9dc5UL
-#   define FNV_PRIME        0x01000193UL
-#elif ST_SIZET_BYTES == 8
-#   define FNV_OFFSET_BASIS 0xcbf29ce484222325ULL
-#   define FNV_PRIME        0x00000100000001b3ULL
-#endif
-
-    size_t hash = FNV_OFFSET_BASIS;
+    size_t hash = fnv_constants::offset_basis;
     const char *cp = str.c_str();
     const char *ep = cp + str.size();
     while (cp < ep) {
         hash ^= static_cast<size_t>(_ST_PRIVATE::cl_fast_lower(*cp++));
-        hash *= FNV_PRIME;
+        hash *= fnv_constants::prime;
     }
     return hash;
 }

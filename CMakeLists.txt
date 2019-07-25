@@ -84,15 +84,6 @@ try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
             COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
             LINK_LIBRARIES ${ST_CXXFS_LIBS})
 
-include(CheckTypeSize)
-if(NOT ST_SIZET_BYTES)
-    check_type_size("size_t" ST_SIZET_BYTES)
-    if(NOT ST_SIZET_BYTES)
-        message(FATAL_ERROR "Could not determine sizeof(size_t)")
-        set(ST_SIZET_BYTES 0)
-    endif()
-endif()
-
 option(ST_BUILD_STATIC "Build string_theory as a static library" OFF)
 if(ST_BUILD_STATIC)
     set(ST_LIB_TYPE STATIC)
