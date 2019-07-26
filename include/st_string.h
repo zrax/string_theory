@@ -1213,7 +1213,11 @@ namespace ST
 #if defined(ST_HAVE_CXX17_FILESYSTEM)
         std::filesystem::path to_path() const
         {
+#if defined(ST_HAVE_CXX20_CHAR8_TYPES)
+            return std::filesystem::path(u8_str(), u8_str() + size());
+#else
             return std::filesystem::u8path(c_str(), c_str() + size());
+#endif
         }
 #elif defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
         std::experimental::filesystem::path to_path() const

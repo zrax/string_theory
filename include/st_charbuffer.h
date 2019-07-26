@@ -187,7 +187,7 @@ namespace ST
         {
             const size_t cmplen = std::min(lsize, rsize);
             const int cmp = traits_t::compare(left, right, cmplen);
-            return cmp ? cmp : lsize - rsize;
+            return cmp ? cmp : static_cast<int>(lsize - rsize);
         }
 
         static int compare(const char_T *left, size_t lsize,

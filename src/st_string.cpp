@@ -183,7 +183,7 @@ static int _compare_ci(const char *left, size_t lsize,
 {
     const size_t cmplen = std::min(lsize, rsize);
     const int cmp = _compare_ci(left, right, cmplen);
-    return cmp ? cmp : lsize - rsize;
+    return cmp ? cmp : static_cast<int>(lsize - rsize);
 }
 
 static int _compare_ci(const char *left, size_t lsize,
