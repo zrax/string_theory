@@ -359,24 +359,24 @@ bool ST::string::ends_with(const char *suffix, case_sensitivity_t cs) const noex
             : _compare_ci(c_str() + start, suffix ? suffix : "", count) == 0;
 }
 
-template <size_t Size>
+template <typename SizeType, size_t Size = sizeof(SizeType)>
 struct _fnv_constants { };
 
-template <>
-struct _fnv_constants<4>
+template <typename SizeType>
+struct _fnv_constants<SizeType, 4>
 {
-    static constexpr size_t offset_basis = 0x811c9dc5UL;
-    static constexpr size_t prime = 0x01000193UL;
+    static constexpr SizeType offset_basis = 0x811c9dc5UL;
+    static constexpr SizeType prime = 0x01000193UL;
 };
 
-template<>
-struct _fnv_constants<8>
+template <typename SizeType>
+struct _fnv_constants<SizeType, 8>
 {
-    static constexpr size_t offset_basis = 0xcbf29ce484222325ULL;
-    static constexpr size_t prime = 0x00000100000001b3ULL;
+    static constexpr SizeType offset_basis = 0xcbf29ce484222325ULL;
+    static constexpr SizeType prime = 0x00000100000001b3ULL;
 };
 
-typedef _fnv_constants<sizeof(size_t)> fnv_constants;
+typedef _fnv_constants<size_t> fnv_constants;
 
 size_t ST::hash::operator()(const string &str) const noexcept
 {
