@@ -343,6 +343,30 @@ namespace ST
         ST::format_string(format, output, utf8.data(), utf8.size());
     }
 
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::u16string &str)
+    {
+        ST::char_buffer utf8 = ST::string::from_utf16(str.c_str(), str.size()).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::u32string &str)
+    {
+        ST::char_buffer utf8 = ST::string::from_utf32(str.c_str(), str.size()).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::u8string &str)
+    {
+        ST::format_string(format, output, reinterpret_cast<const char*>(str.c_str()), str.size());
+    }
+
+#endif
+
     template<typename value_T>
     void format_type(const ST::format_spec &format, ST::format_writer &output,
                      const std::complex<value_T> &value)
@@ -390,6 +414,30 @@ namespace ST
         ST::format_string(format, output, utf8.data(), utf8.size());
     }
 
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::u16string_view &view)
+    {
+        ST::char_buffer utf8 = ST::string::from_utf16(view.data(), view.size()).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::u32string_view &view)
+    {
+        ST::char_buffer utf8 = ST::string::from_utf32(view.data(), view.size()).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+
+#endif
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::u8string_view &view)
+    {
+        ST::format_string(format, output, reinterpret_cast<const char*>(view.data()), view.size());
+    }
+
 #endif
 
 #ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
@@ -404,6 +452,20 @@ namespace ST
                             const std::experimental::wstring_view &view)
     {
         ST::char_buffer utf8 = ST::string::from_wchar(view.data(), view.size()).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::experimental::u16string_view &view)
+    {
+        ST::char_buffer utf8 = ST::string::from_utf16(view.data(), view.size()).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::experimental::u32string_view &view)
+    {
+        ST::char_buffer utf8 = ST::string::from_utf32(view.data(), view.size()).to_utf8();
         ST::format_string(format, output, utf8.data(), utf8.size());
     }
 
