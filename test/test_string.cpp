@@ -2171,5 +2171,7 @@ TEST(string, udls)
     EXPECT_EQ(ST_LITERAL("Test"), L"Test"_st);
     EXPECT_EQ(ST_LITERAL("Test"), u"Test"_st);
     EXPECT_EQ(ST_LITERAL("Test"), U"Test"_st);
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
     EXPECT_EQ(ST_LITERAL("Test"), u8"Test"_st);
+#endif
 }
