@@ -29,11 +29,6 @@ set(gtest_build_samples OFF CACHE INTERNAL "Override gtest default")
 set(gtest_build_tests OFF CACHE INTERNAL "Override gtest default")
 set(gtest_disable_pthreads OFF CACHE INTERNAL "Override gtest default")
 set(gtest_hide_internal_symbols ON CACHE INTERNAL "Override gtest default")
-if(ST_BUILD_STATIC)
-    set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Override gtest default")
-else()
-    set(BUILD_SHARED_LIBS ON  CACHE INTERNAL "Override gtest default")
-endif()
 
 add_subdirectory(gtest-1.8.0 EXCLUDE_FROM_ALL)
 
@@ -45,12 +40,7 @@ target_include_directories(st_gtests PRIVATE
     ${gtest_SOURCE_DIR}
 )
 
-if(WIN32 AND NOT ST_BUILD_STATIC)
-    add_custom_command(TARGET st_gtests POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:string_theory>"
-        "$<TARGET_FILE_DIR:st_gtests>"
-    )
+if(WIN32 AND BUILD_SHARED_LIBS)
     add_custom_command(TARGET st_gtests POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:gtest>"
