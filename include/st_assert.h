@@ -33,7 +33,7 @@
 
 namespace ST
 {
-    class ST_EXPORT unicode_error : public std::runtime_error
+    class unicode_error : public std::runtime_error
     {
     public:
         explicit unicode_error(const char *message) noexcept
@@ -41,7 +41,7 @@ namespace ST
         { }
     };
 
-    class ST_EXPORT codec_error : public std::runtime_error
+    class codec_error : public std::runtime_error
     {
     public:
         explicit codec_error(const char *message) noexcept
@@ -49,7 +49,7 @@ namespace ST
         { }
     };
 
-    class ST_EXPORT bad_format : public std::invalid_argument
+    class bad_format : public std::invalid_argument
     {
     public:
         explicit bad_format(const char *message) noexcept

@@ -222,12 +222,52 @@ namespace ST
     private:
         const char *m_format_str;
 
-        ST_EXPORT char fetch_prefix();
+        char fetch_prefix()
+        {
+            const char *next = m_format_str;
+            while (*next) {
+                if (*next == '{') {
+                    if (*(next + 1) != '{')
+                        break;
+
+                    append(m_format_str, next - m_format_str);
+                    m_format_str = ++next;
+                }
+                ++next;
+            }
+            if (next != m_format_str)
+                append(m_format_str, next - m_format_str);
+            m_format_str = next;
+
+            return *m_format_str;
+        }
     };
 
-    ST_EXPORT void format_string(const format_spec &format, format_writer &output,
-                                 const char *text, size_t size,
-                                 alignment_t default_alignment = align_left);
+    inline void format_string(const format_spec &format, format_writer &output,
+                              const char *text, size_t size,
+                              alignment_t default_alignment = align_left)
+    {
+        char pad = format.pad ? format.pad : ' ';
+
+        if (format.precision >= 0 && size > static_cast<size_t>(format.precision))
+            size = static_cast<size_t>(format.precision);
+
+        if (format.minimum_length > static_cast<int>(size)) {
+            ST::alignment_t align =
+                    (format.alignment == ST::align_default)
+                    ? default_alignment : format.alignment;
+
+            if (align == ST::align_right) {
+                output.append_char(pad, format.minimum_length - size);
+                output.append(text, size);
+            } else {
+                output.append(text, size);
+                output.append_char(pad, format.minimum_length - size);
+            }
+        } else {
+            output.append(text, size);
+        }
+    }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
     inline void format_string(const format_spec &format, format_writer &output,
@@ -277,22 +317,115 @@ namespace ST
     }
 }
 
+#include "st_format_priv.h"
+
 namespace ST
 {
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, char);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, char16_t);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, char32_t);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, signed char);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned char);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, short);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned short);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, int);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned int);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, long);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned long);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, long long);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, unsigned long long);
-    ST_EXPORT void format_type(const ST::format_spec &, ST::format_writer &, double);
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            char value)
+    {
+        if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
+            _ST_PRIVATE::format_char(format, output, value);
+        else
+            _ST_PRIVATE::format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            char16_t value)
+    {
+        if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
+            _ST_PRIVATE::format_char(format, output, static_cast<int>(value));
+        else
+            _ST_PRIVATE::format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            char32_t value)
+    {
+        if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
+            _ST_PRIVATE::format_char(format, output, static_cast<int>(value));
+        else
+            _ST_PRIVATE::format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
+    }
+
+#   define _ST_FORMAT_INT_TYPE(int_T, uint_T) \
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output, \
+                            int_T value) \
+    { \
+        if (format.digit_class == ST::digit_char) \
+            _ST_PRIVATE::format_char(format, output, static_cast<int>(value)); \
+        else \
+            _ST_PRIVATE::format_numeric_s<int_T>(format, output, value); \
+    } \
+    \
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output, \
+                            uint_T value) \
+    { \
+        if (format.digit_class == ST::digit_char) \
+            _ST_PRIVATE::format_char(format, output, static_cast<int>(value)); \
+        else \
+            _ST_PRIVATE::format_numeric_u<uint_T>(format, output, value); \
+    }
+
+    _ST_FORMAT_INT_TYPE(signed char, unsigned char)
+    _ST_FORMAT_INT_TYPE(short, unsigned short)
+    _ST_FORMAT_INT_TYPE(int, unsigned int)
+    _ST_FORMAT_INT_TYPE(long, unsigned long)
+    _ST_FORMAT_INT_TYPE(long long, unsigned long long)
+
+#   undef _ST_FORMAT_INT_TYPE
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            double value)
+    {
+        char pad = format.pad ? format.pad : ' ';
+
+        // Cheating a bit here -- just pass it along to cstdio
+        char format_buffer[32];
+        size_t end = 0;
+
+        format_buffer[end++] = '%';
+
+        if (format.always_signed)
+            format_buffer[end++] = '+';
+
+        if (format.precision >= 0) {
+            format_buffer[end++] = '.';
+            if (format.precision < 0)
+                format_buffer[end++] = '-';
+            ST::uint_formatter<unsigned int> prec;
+            prec.format(std::abs(format.precision), 10);
+            std::char_traits<char>::move(format_buffer + end, prec.text(), prec.size());
+
+            // Ensure one more space (excluding \0) is available for the format specifier
+            ST_ASSERT(prec.size() > 0 && prec.size() + end + 2 < sizeof(format_buffer),
+                      "Not enough space for format string");
+            end += prec.size();
+        }
+
+        format_buffer[end++] =
+            (format.float_class == ST::float_exp) ? 'e' :
+            (format.float_class == ST::float_exp_upper) ? 'E' :
+            (format.float_class == ST::float_fixed) ? 'f' : 'g';
+        format_buffer[end] = 0;
+
+        char out_buffer[64];
+        int format_size = snprintf(out_buffer, sizeof(out_buffer), format_buffer, value);
+        ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
+        ST_ASSERT(static_cast<size_t>(format_size) < sizeof(out_buffer), "Format buffer too small");
+
+        if (format.minimum_length > format_size) {
+            if (format.alignment == ST::align_left) {
+                output.append(out_buffer, format_size);
+                output.append_char(pad, format.minimum_length - format_size);
+            } else {
+                output.append_char(pad, format.minimum_length - format_size);
+                output.append(out_buffer, format_size);
+            }
+        } else {
+            output.append(out_buffer, format_size);
+        }
+    }
 
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             wchar_t value)

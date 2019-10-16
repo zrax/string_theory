@@ -84,15 +84,6 @@ try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
             COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
             LINK_LIBRARIES ${ST_CXXFS_LIBS})
 
-option(ST_BUILD_STATIC "Build string_theory as a static library" OFF)
-if(ST_BUILD_STATIC)
-    set(ST_LIB_TYPE STATIC)
-    set(ST_BUILD_SHARED FALSE)
-else()
-    set(ST_LIB_TYPE SHARED)
-    set(ST_BUILD_SHARED TRUE)
-endif()
-
 option(ST_NO_STL_STRINGS "Disable std::string and std::filesystem::path support" OFF)
 
 configure_file("${PROJECT_SOURCE_DIR}/include/st_config.h.in"
@@ -106,6 +97,7 @@ set(ST_HEADERS_PRIV
     include/st_codecs_priv.h
     include/st_format.h
     include/st_format_numeric.h
+    include/st_format_priv.h
     include/st_formatter.h
     include/st_iostream.h
     include/st_stdio.h
@@ -113,6 +105,7 @@ set(ST_HEADERS_PRIV
     include/st_string_priv.h
     include/st_stringstream.h
     include/st_utf_conv.h
+    include/st_utf_conv_priv.h
     "${PROJECT_BINARY_DIR}/include/st_config.h"
 )
 set(ST_HEADERS_PUB
@@ -139,34 +132,14 @@ set(ST_INSTALL_LIB_DIR "lib" CACHE PATH "Path to install shared libraries")
 set(ST_INSTALL_INCLUDE_DIR "include" CACHE PATH "Path to install headers")
 set(ST_INSTALL_CMAKE_DIR "${ST_INSTALL_LIB_DIR}/cmake" CACHE PATH "Path to install CMake files")
 
-add_library(string_theory ${ST_LIB_TYPE}
-            ${ST_HEADERS_PRIV} ${ST_SOURCES})
-target_compile_definitions(string_theory PRIVATE ST_BUILD_EXPORTS)
-if(WIN32)
-    set_target_properties(string_theory PROPERTIES DEBUG_POSTFIX "d")
-endif()
+add_library(string_theory INTERFACE)
 
-if(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
-    target_link_libraries(string_theory ${ST_CXXFS_LIBS})
-endif()
-
-# Note:  Using <major>.0 so the library name doens't change between minor
-# releases.  ABI incompatible changes are only allowed between major version
-# updates, starting with the 1.0 release.
-set_target_properties(string_theory PROPERTIES
-    VERSION ${ST_MAJOR_VERSION}.0
-    SOVERSION ${ST_MAJOR_VERSION}
-)
-
-target_include_directories(string_theory PUBLIC
+target_include_directories(string_theory INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 
 install(TARGETS string_theory
         EXPORT string_theory-targets
-        RUNTIME DESTINATION "${ST_INSTALL_BIN_DIR}" COMPONENT shlib
-        LIBRARY DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT shlib
-        ARCHIVE DESTINATION "${ST_INSTALL_LIB_DIR}" COMPONENT staticlib
 )
 install(FILES ${ST_HEADERS_PRIV} ${ST_HEADERS_PUB}
         DESTINATION "${ST_INSTALL_INCLUDE_DIR}/string_theory" COMPONENT devel)

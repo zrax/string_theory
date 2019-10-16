@@ -25,7 +25,16 @@
 
 namespace _ST_PRIVATE
 {
-    ST_EXPORT size_t format_double(char *buffer, size_t size, double value, char format);
+    inline size_t format_double(char *buffer, size_t size, double value, char format)
+    {
+        char format_spec[] = { '%', format, 0 };
+
+        int format_size = snprintf(buffer, size, format_spec, value);
+        ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");
+        ST_ASSERT(static_cast<size_t>(format_size) < size, "Format buffer too small");
+
+        return static_cast<size_t>(format_size);
+    }
 }
 
 namespace ST

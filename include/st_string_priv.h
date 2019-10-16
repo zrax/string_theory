@@ -18,8 +18,8 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
-#ifndef _ST_STRING_HELPERS_H
-#define _ST_STRING_HELPERS_H
+#ifndef _ST_STRING_PRIV_H
+#define _ST_STRING_PRIV_H
 
 #include "st_charbuffer.h"
 #include "st_format_numeric.h"
@@ -190,4 +190,4 @@ namespace _ST_PRIVATE
     };
 }
 
-#endif // _ST_STRING_HELPERS_H
+#endif // _ST_STRING_PRIV_H

@@ -40,8 +40,6 @@
 #cmakedefine ST_HAVE_CXX20_CHAR8_TYPES
 #endif
 
-#cmakedefine01 ST_BUILD_SHARED
-
 #define _ST_MACRO_JOIN(l, r)  l ## r
 #define ST_MACRO_JOIN(l, r)   _ST_MACRO_JOIN(l, r)
 
@@ -92,16 +90,6 @@
 #else
 #   include <sys/types.h>
     typedef ssize_t ST_ssize_t;
-#endif
-
-#if ST_BUILD_SHARED && defined(_WIN32)
-#   ifdef ST_BUILD_EXPORTS
-#       define ST_EXPORT __declspec(dllexport)
-#   else
-#       define ST_EXPORT __declspec(dllimport)
-#   endif
-#else
-#   define ST_EXPORT
 #endif
 
 #endif // _ST_CONFIG_H

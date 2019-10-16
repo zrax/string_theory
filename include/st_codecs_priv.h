@@ -18,7 +18,8 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
-#include <array>
+#ifndef _ST_CODECS_PRIV_H
+#define _ST_CODECS_PRIV_H
 
 namespace _ST_PRIVATE
 {
@@ -222,3 +223,5 @@ namespace _ST_PRIVATE
         return outp - reinterpret_cast<char *>(output);
     }
 }
+
+#endif // _ST_CODECS_PRIV_H
