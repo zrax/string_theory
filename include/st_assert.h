@@ -28,11 +28,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-#ifdef _MSC_VER
-#   pragma warning(push)
-#   pragma warning(disable: 4275)
-#endif
-
 namespace ST
 {
     class unicode_error : public std::runtime_error
@@ -74,9 +69,5 @@ namespace _ST_PRIVATE
         if (!(condition)) \
             _ST_PRIVATE::assert_handler(__FILE__, __LINE__, message); \
     } while (0)
-
-#ifdef _MSC_VER
-#   pragma warning(pop)
-#endif
 
 #endif // _ST_ASSERT_H
