@@ -25,6 +25,8 @@
 
 #include <functional>
 #include <stdexcept>
+#include <cstdio>
+#include <cstdlib>
 
 #ifdef _MSC_VER
 #   pragma warning(push)

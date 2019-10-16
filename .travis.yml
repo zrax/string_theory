@@ -68,11 +68,11 @@ matrix:
       compiler: clang
       env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
     - os: osx
-      osx_image: xcode10.2
+      osx_image: xcode10.3
       compiler: clang
       env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
     - os: osx
-      osx_image: xcode11
+      osx_image: xcode11.2
       compiler: clang
       env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
 
