@@ -60,7 +60,11 @@ namespace ST
 
 namespace _ST_PRIVATE
 {
-    ST_EXPORT void assert_handler(const char *filename, int line, const char *message);
+    inline void assert_handler(const char *filename, int line, const char *message)
+    {
+        std::fprintf(stderr, "%s:%d: %s\n", filename, line, message);
+        std::abort();
+    }
 }
 
 #define ST_ASSERT(condition, message) \

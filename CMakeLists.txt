@@ -103,13 +103,14 @@ set(ST_HEADERS_PRIV
     include/st_assert.h
     include/st_charbuffer.h
     include/st_codecs.h
+    include/st_codecs_priv.h
     include/st_format.h
     include/st_format_numeric.h
     include/st_formatter.h
     include/st_iostream.h
     include/st_stdio.h
     include/st_string.h
-    include/st_string_helpers.h
+    include/st_string_priv.h
     include/st_stringstream.h
     include/st_utf_conv.h
     "${PROJECT_BINARY_DIR}/include/st_config.h"
@@ -129,10 +130,7 @@ set(ST_HEADERS_PUB
 )
 
 set(ST_SOURCES
-    src/st_assert.cpp
-    src/st_codecs.cpp
     src/st_format.cpp
-    src/st_string.cpp
     src/st_utf_conv.cpp
 )
 

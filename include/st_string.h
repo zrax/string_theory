@@ -28,7 +28,7 @@
 #   include <cstdint>
 #endif
 
-#include "st_string_helpers.h"
+#include "st_string_priv.h"
 #include "st_utf_conv.h"
 
 #if !defined(ST_NO_STL_STRINGS)
@@ -1281,20 +1281,128 @@ namespace ST
                          : from_literal("false", 5);
         }
 
-        ST_EXPORT int to_int(int base = 0) const noexcept;
-        ST_EXPORT int to_int(conversion_result &result, int base = 0) const noexcept;
-        ST_EXPORT unsigned int to_uint(int base = 0) const noexcept;
-        ST_EXPORT unsigned int to_uint(conversion_result &result, int base = 0) const noexcept;
-        ST_EXPORT float to_float() const noexcept;
-        ST_EXPORT float to_float(conversion_result &result) const noexcept;
-        ST_EXPORT double to_double() const noexcept;
-        ST_EXPORT double to_double(conversion_result &result) const noexcept;
+        int to_int(int base = 0) const noexcept
+        {
+            return static_cast<int>(strtol(c_str(), nullptr, base));
+        }
+
+        int to_int(conversion_result &result, int base = 0) const noexcept
+        {
+            if (empty()) {
+                result.m_flags = ST::conversion_result::result_full_match;
+                return 0;
+            }
+
+            char *end;
+            int value = static_cast<int>(strtol(c_str(), &end, base));
+            result.m_flags = 0;
+            if (end != c_str())
+                result.m_flags |= ST::conversion_result::result_ok;
+            if (end == c_str() + size())
+                result.m_flags |= ST::conversion_result::result_full_match;
+            return value;
+        }
+
+        unsigned int to_uint(int base = 0) const noexcept
+        {
+            return static_cast<unsigned int>(strtoul(c_str(), nullptr, base));
+        }
+
+        unsigned int to_uint(conversion_result &result, int base = 0) const noexcept
+        {
+            if (empty()) {
+                result.m_flags = ST::conversion_result::result_full_match;
+                return 0;
+            }
+
+            char *end;
+            unsigned int value = static_cast<unsigned int>(strtoul(c_str(), &end, base));
+            result.m_flags = 0;
+            if (end != c_str())
+                result.m_flags |= ST::conversion_result::result_ok;
+            if (end == c_str() + size())
+                result.m_flags |= ST::conversion_result::result_full_match;
+            return value;
+        }
+
+        float to_float() const noexcept
+        {
+            return static_cast<float>(strtof(c_str(), nullptr));
+        }
+
+        float to_float(conversion_result &result) const noexcept
+        {
+            if (empty()) {
+                result.m_flags = ST::conversion_result::result_full_match;
+                return 0;
+            }
+
+            char *end;
+            float value = strtof(c_str(), &end);
+            result.m_flags = 0;
+            if (end != c_str())
+                result.m_flags |= ST::conversion_result::result_ok;
+            if (end == c_str() + size())
+                result.m_flags |= ST::conversion_result::result_full_match;
+            return value;
+        }
+
+        double to_double() const noexcept
+        {
+            return strtod(c_str(), nullptr);
+        }
+
+        double to_double(conversion_result &result) const noexcept
+        {
+            if (empty()) {
+                result.m_flags = ST::conversion_result::result_full_match;
+                return 0;
+            }
+
+            char *end;
+            double value = strtod(c_str(), &end);
+            result.m_flags = 0;
+            if (end != c_str())
+                result.m_flags |= ST::conversion_result::result_ok;
+            if (end == c_str() + size())
+                result.m_flags |= ST::conversion_result::result_full_match;
+            return value;
+        }
 
 #ifdef ST_HAVE_INT64
-        ST_EXPORT int64_t to_int64(int base = 0) const noexcept;
-        ST_EXPORT int64_t to_int64(conversion_result &result, int base = 0) const noexcept;
-        ST_EXPORT uint64_t to_uint64(int base = 0) const noexcept;
-        ST_EXPORT uint64_t to_uint64(conversion_result &result, int base = 0) const noexcept;
+        int64_t to_int64(int base = 0) const noexcept
+        {
+            return static_cast<int64_t>(strtoll(c_str(), nullptr, base));
+        }
+
+        int64_t to_int64(conversion_result &result, int base = 0) const noexcept
+        {
+            char *end;
+            int64_t value = static_cast<int64_t>(strtoll(c_str(), &end, base));
+            result.m_flags = 0;
+            if (end != c_str())
+                result.m_flags = ST::conversion_result::result_ok;
+            if (end == c_str() + size())
+                result.m_flags |= ST::conversion_result::result_full_match;
+            return value;
+        }
+
+        uint64_t to_uint64(int base = 0) const noexcept
+        {
+            return static_cast<uint64_t>(strtoull(c_str(), nullptr, base));
+        }
+
+        uint64_t to_uint64(conversion_result &result, int base = 0) const noexcept
+        {
+            char *end;
+            uint64_t value = static_cast<uint64_t>(strtoull(c_str(), &end, base));
+            result.m_flags = 0;
+            if (end != c_str())
+                result.m_flags = ST::conversion_result::result_ok;
+            if (end == c_str() + size())
+                result.m_flags |= ST::conversion_result::result_full_match;
+            return value;
+        }
 #endif
 
         bool to_bool() const noexcept
@@ -1320,10 +1428,22 @@ namespace ST
             return to_int(result) != 0;
         }
 
-        ST_EXPORT int compare(const string &str, case_sensitivity_t cs = case_sensitive)
-            const noexcept;
-        ST_EXPORT int compare(const char *str, case_sensitivity_t cs = case_sensitive)
-            const noexcept;
+        int compare(const string &str, case_sensitivity_t cs = case_sensitive)
+            const noexcept
+        {
+            return (cs == case_sensitive)
+                    ? _ST_PRIVATE::compare_cs(c_str(), size(), str.c_str(), str.size())
+                    : _ST_PRIVATE::compare_ci(c_str(), size(), str.c_str(), str.size());
+        }
+
+        int compare(const char *str, case_sensitivity_t cs = case_sensitive)
+            const noexcept
+        {
+            const size_t rsize = str ? std::char_traits<char>::length(str) : 0;
+            return (cs == case_sensitive)
+                    ? _ST_PRIVATE::compare_cs(c_str(), size(), str ? str : "", rsize)
+                    : _ST_PRIVATE::compare_ci(c_str(), size(), str ? str : "", rsize);
+        }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         int compare(const char8_t *str, case_sensitivity_t cs = case_sensitive)
@@ -1333,10 +1453,22 @@ namespace ST
         }
 #endif
 
-        ST_EXPORT int compare_n(const string &str, size_t count,
-                                case_sensitivity_t cs = case_sensitive) const noexcept;
-        ST_EXPORT int compare_n(const char *str, size_t count,
-                                case_sensitivity_t cs = case_sensitive) const noexcept;
+        int compare_n(const string &str, size_t count,
+                      case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            return (cs == case_sensitive)
+                    ? _ST_PRIVATE::compare_cs(c_str(), size(), str.c_str(), str.size(), count)
+                    : _ST_PRIVATE::compare_ci(c_str(), size(), str.c_str(), str.size(), count);
+        }
+
+        int compare_n(const char *str, size_t count,
+                      case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            const size_t rsize = str ? std::char_traits<char>::length(str) : 0;
+            return (cs == case_sensitive)
+                    ? _ST_PRIVATE::compare_cs(c_str(), size(), str ? str : "", rsize, count)
+                    : _ST_PRIVATE::compare_ci(c_str(), size(), str ? str : "", rsize, count);
+        }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         int compare_n(const char8_t *str, size_t count,
@@ -1455,11 +1587,29 @@ namespace ST
             return find(0, substr.c_str(), cs);
         }
 
-        ST_EXPORT ST_ssize_t find(size_t start, char ch, case_sensitivity_t cs = case_sensitive)
-            const noexcept;
+        ST_ssize_t find(size_t start, char ch, case_sensitivity_t cs = case_sensitive)
+            const noexcept
+        {
+            if (start >= size())
+                return -1;
 
-        ST_EXPORT ST_ssize_t find(size_t start, const char *substr, case_sensitivity_t cs = case_sensitive)
-            const noexcept;
+            const char *cp = (cs == case_sensitive)
+                    ? _ST_PRIVATE::find_cs(c_str() + start, size() - start, ch)
+                    : _ST_PRIVATE::find_ci(c_str() + start, size() - start, ch);
+            return cp ? (cp - c_str()) : -1;
+        }
+
+        ST_ssize_t find(size_t start, const char *substr, case_sensitivity_t cs = case_sensitive)
+            const noexcept
+        {
+            if (!substr || !substr[0] || start >= size())
+                return -1;
+
+            const char *cp = (cs == case_sensitive)
+                    ? _ST_PRIVATE::find_cs(c_str() + start, substr)
+                    : _ST_PRIVATE::find_ci(c_str() + start, substr);
+            return cp ? (cp - c_str()) : -1;
+        }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_ssize_t find(size_t start, const char8_t *substr, case_sensitivity_t cs = case_sensitive)
@@ -1501,11 +1651,49 @@ namespace ST
             return find_last(ST_AUTO_SIZE, substr.c_str(), cs);
         }
 
-        ST_EXPORT ST_ssize_t find_last(size_t max, char ch, case_sensitivity_t cs = case_sensitive)
-            const noexcept;
+        ST_ssize_t find_last(size_t max, char ch, case_sensitivity_t cs = case_sensitive)
+            const noexcept
+        {
+            if (empty())
+                return -1;
 
-        ST_EXPORT ST_ssize_t find_last(size_t max, const char *substr, case_sensitivity_t cs = case_sensitive)
-            const noexcept;
+            const char *endp = c_str() + (max > size() ? size() : max);
+
+            const char *start = c_str();
+            const char *found = nullptr;
+            for ( ;; ) {
+                const char *cp = (cs == case_sensitive)
+                        ? _ST_PRIVATE::find_cs(start, endp - start, ch)
+                        : _ST_PRIVATE::find_ci(start, endp - start, ch);
+                if (!cp || cp >= endp)
+                    break;
+                found = cp;
+                start = cp + 1;
+            }
+            return found ? (found - c_str()) : -1;
+        }
+
+        ST_ssize_t find_last(size_t max, const char *substr, case_sensitivity_t cs = case_sensitive)
+            const noexcept
+        {
+            if (!substr || !substr[0] || empty())
+                return -1;
+
+            const char *endp = c_str() + (max > size() ? size() : max);
+
+            const char *start = c_str();
+            const char *found = nullptr;
+            for ( ;; ) {
+                const char *cp = (cs == case_sensitive)
+                        ? _ST_PRIVATE::find_cs(start, substr)
+                        : _ST_PRIVATE::find_ci(start, substr);
+                if (!cp || cp >= endp)
+                    break;
+                found = cp;
+                start = cp + 1;
+            }
+            return found ? (found - c_str()) : -1;
+        }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_ssize_t find_last(size_t max, const char8_t *substr, case_sensitivity_t cs = case_sensitive)
@@ -1627,10 +1815,43 @@ namespace ST
             return substr(this->size() - size, size);
         }
 
-        ST_EXPORT bool starts_with(const string &prefix, case_sensitivity_t cs = case_sensitive) const noexcept;
-        ST_EXPORT bool starts_with(const char *prefix, case_sensitivity_t cs = case_sensitive) const noexcept;
-        ST_EXPORT bool ends_with(const string &suffix, case_sensitivity_t cs = case_sensitive) const noexcept;
-        ST_EXPORT bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const noexcept;
+        bool starts_with(const string &prefix, case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            if (prefix.size() > size())
+                return false;
+            return compare_n(prefix, prefix.size(), cs) == 0;
+        }
+
+        bool starts_with(const char *prefix, case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            size_t count = prefix ? std::char_traits<char>::length(prefix) : 0;
+            if (count > size())
+                return false;
+            return compare_n(prefix, count, cs) == 0;
+        }
+
+        bool ends_with(const string &suffix, case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            if (suffix.size() > size())
+                return false;
+
+            size_t start = size() - suffix.size();
+            return (cs == case_sensitive)
+                    ? _ST_PRIVATE::compare_cs(c_str() + start, suffix.c_str(), suffix.size()) == 0
+                    : _ST_PRIVATE::compare_ci(c_str() + start, suffix.c_str(), suffix.size()) == 0;
+        }
+
+        bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            size_t count = suffix ? std::char_traits<char>::length(suffix) : 0;
+            if (count > size())
+                return false;
+
+            size_t start = size() - count;
+            return (cs == case_sensitive)
+                    ? _ST_PRIVATE::compare_cs(c_str() + start, suffix ? suffix : "", count) == 0
+                    : _ST_PRIVATE::compare_ci(c_str() + start, suffix ? suffix : "", count) == 0;
+        }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         bool starts_with(const char8_t *prefix, case_sensitivity_t cs = case_sensitive)
@@ -2040,12 +2261,34 @@ namespace ST
 
     struct hash
     {
-        ST_EXPORT size_t operator()(const string &str) const noexcept;
+        size_t operator()(const string &str) const noexcept
+        {
+            /* FNV-1a hash.  See http://isthe.com/chongo/tech/comp/fnv/ for details */
+            size_t hash = _ST_PRIVATE::fnv_constants<size_t>::offset_basis;
+            const char *cp = str.c_str();
+            const char *ep = cp + str.size();
+            while (cp < ep) {
+                hash ^= static_cast<size_t>(*cp++);
+                hash *= _ST_PRIVATE::fnv_constants<size_t>::prime;
+            }
+            return hash;
+        }
     };
 
     struct hash_i
     {
-        ST_EXPORT size_t operator()(const string &str) const noexcept;
+        size_t operator()(const string &str) const noexcept
+        {
+            /* FNV-1a hash.  See http://isthe.com/chongo/tech/comp/fnv/ for details */
+            size_t hash = _ST_PRIVATE::fnv_constants<size_t>::offset_basis;
+            const char *cp = str.c_str();
+            const char *ep = cp + str.size();
+            while (cp < ep) {
+                hash ^= static_cast<size_t>(_ST_PRIVATE::cl_fast_lower(*cp++));
+                hash *= _ST_PRIVATE::fnv_constants<size_t>::prime;
+            }
+            return hash;
+        }
     };
 
     struct less_i

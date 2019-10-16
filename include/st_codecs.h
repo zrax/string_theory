@@ -25,18 +25,7 @@
 
 #include <cstddef>
 
-namespace _ST_PRIVATE
-{
-    ST_EXPORT void hex_encode(char *output, const void *data, size_t size) noexcept;
-    ST_EXPORT ST_ssize_t hex_decode(const char *hex, size_t hex_size, void *output,
-                                    size_t output_size) noexcept;
-
-    inline size_t b64_encode_size(size_t size);
-    inline ST_ssize_t b64_decode_size(size_t size, const char *data);
-    ST_EXPORT void b64_encode(char *output, const void *data, size_t size) noexcept;
-    ST_EXPORT ST_ssize_t b64_decode(const char *base64, size_t base64_size,
-                                    void *output, size_t output_size) noexcept;
-}
+#include "st_codecs_priv.h"
 
 namespace ST
 {
@@ -62,7 +51,7 @@ namespace ST
     inline ST_ssize_t hex_decode(const string &hex, void *output,
                                  size_t output_size) noexcept
     {
-        return _ST_PRIVATE::hex_decode(hex.c_str(), hex.size(), output, output_size);
+        return _ST_PRIVATE::hex_decode(hex, output, output_size);
     }
 
     inline char_buffer hex_decode(const string &hex)
@@ -73,8 +62,7 @@ namespace ST
         size_t decode_size = hex.size() / 2;
         ST::char_buffer result;
         result.allocate(decode_size);
-        ST_ssize_t written = _ST_PRIVATE::hex_decode(hex.c_str(), hex.size(),
-                                                     result.data(), decode_size);
+        ST_ssize_t written = _ST_PRIVATE::hex_decode(hex, result.data(), decode_size);
         if (written < 0)
             throw codec_error("Invalid character in hex input");
 
@@ -105,7 +93,7 @@ namespace ST
     inline ST_ssize_t base64_decode(const string &base64, void *output,
                                     size_t output_size) noexcept
     {
-        return _ST_PRIVATE::b64_decode(base64.c_str(), base64.size(), output, output_size);
+        return _ST_PRIVATE::b64_decode(base64, output, output_size);
     }
 
     inline char_buffer base64_decode(const string &base64)
@@ -116,33 +104,13 @@ namespace ST
 
         ST::char_buffer result;
         result.allocate(decode_size);
-        ST_ssize_t written = _ST_PRIVATE::b64_decode(base64.c_str(), base64.size(),
-                                                     result.data(), decode_size);
+        ST_ssize_t written = _ST_PRIVATE::b64_decode(base64, result.data(), decode_size);
         if (written < 0)
             throw codec_error("Invalid character in base64 input");
 
         ST_ASSERT(written == decode_size, "Conversion didn't match expected length");
         return result;
     }
-}
-
-size_t _ST_PRIVATE::b64_encode_size(size_t size)
-{
-    return ((size + 2) / 3) * 4;
-}
-
-ST_ssize_t _ST_PRIVATE::b64_decode_size(size_t size, const char *data)
-{
-    if ((size % 4) != 0)
-        return -1;
-
-    size_t result = (size / 4) * 3;
-    if (size > 0 && data[size - 1] == '=')
-        result -= 1;
-    if (size > 1 && data[size - 2] == '=')
-        result -= 1;
-
-    return static_cast<ST_ssize_t>(result);
 }
 
 #endif // _ST_CODECS_H
