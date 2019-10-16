@@ -23,45 +23,10 @@
 
 namespace _ST_PRIVATE
 {
-    template <typename _Ignored>
-    struct hex_constants
-    {
-        static constexpr const char chars[] = "0123456789abcdef";
-        static constexpr const int values[] = {
-            /* 00 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            /* 10 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            /* 20 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            /* 30 */  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,
-            /* 40 */ -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            /* 50 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            /* 60 */ -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            /* 70 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-        };
-    };
-    static_assert(sizeof(hex_constants<void>::chars) - 1 == 16, "Missing hex characters");
-    static_assert(sizeof(hex_constants<void>::values) / sizeof(int) == 0x80, "Missing hex values");
-
-    template <typename _Ignored>
-    struct b64_constants
-    {
-        static constexpr const char chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        static constexpr const int values[] = {
-            /* 00 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            /* 10 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            /* 20 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
-            /* 30 */ 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
-            /* 40 */ -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
-            /* 50 */ 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
-            /* 60 */ -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-            /* 70 */ 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1,
-        };
-    };
-    static_assert(sizeof(b64_constants<void>::chars) - 1 == 64, "Missing base64 characters");
-    static_assert(sizeof(b64_constants<void>::values) / sizeof(int) == 0x80, "Missing base64 values");
-
     inline void hex_encode(char *output, const void *data, size_t size) noexcept
     {
-        constexpr const char *hex_chars = hex_constants<void>::chars;
+        static constexpr const char hex_chars[] = "0123456789abcdef";
+        static_assert(sizeof(hex_chars) - 1 == 16, "Missing hex characters");
 
         auto sp = static_cast<const unsigned char *>(data);
         while (size) {
@@ -75,7 +40,25 @@ namespace _ST_PRIVATE
     inline ST_ssize_t hex_decode(const ST::string &hex, void *output,
                                  size_t output_size) noexcept
     {
-        constexpr const int *hex_values = hex_constants<void>::values;
+        static constexpr const int hex_values[] = {
+            /* 00 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 10 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 20 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 30 */  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,
+            /* 40 */ -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 50 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 60 */ -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 70 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 80 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 90 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* A0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* B0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* C0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* D0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* E0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* F0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+        };
+        static_assert(sizeof(hex_values) / sizeof(int) == 0x100, "Missing hex values");
 
         if ((hex.size() % 2) != 0)
             return -1;
@@ -92,10 +75,7 @@ namespace _ST_PRIVATE
         auto sp = reinterpret_cast<const unsigned char *>(hex.c_str());
 
         while (outp < endp) {
-            int bits[2] = {
-                (sp[0] < 0x80) ? hex_values[sp[0]] : -1,
-                (sp[1] < 0x80) ? hex_values[sp[1]] : -1
-            };
+            int bits[2] = { hex_values[sp[0]], hex_values[sp[1]] };
             if (bits[0] < 0 || bits[1] < 0)
                 return -1;
 
@@ -127,7 +107,9 @@ namespace _ST_PRIVATE
 
     inline void b64_encode(char *output, const void *data, size_t size) noexcept
     {
-        constexpr const char *b64_chars = b64_constants<void>::chars;
+        static constexpr const char b64_chars[] =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        static_assert(sizeof(b64_chars) - 1 == 64, "Missing base64 characters");
 
         auto sp = static_cast<const unsigned char *>(data);
         while (size > 2) {
@@ -164,7 +146,25 @@ namespace _ST_PRIVATE
     inline ST_ssize_t b64_decode(const ST::string &base64, void *output,
                                  size_t output_size) noexcept
     {
-        constexpr const int *b64_values = b64_constants<void>::values;
+        static constexpr const int b64_values[] = {
+            /* 00 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 10 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 20 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
+            /* 30 */ 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
+            /* 40 */ -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+            /* 50 */ 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
+            /* 60 */ -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+            /* 70 */ 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1,
+            /* 80 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* 90 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* A0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* B0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* C0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* D0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* E0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            /* F0 */ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+        };
+        static_assert(sizeof(b64_values) / sizeof(int) == 0x100, "Missing base64 values");
 
         ST_ssize_t decode_size = b64_decode_size(base64.size(), base64.c_str());
         if (!output)
@@ -182,10 +182,8 @@ namespace _ST_PRIVATE
 
         while (outp + 3 < endp) {
             int bits[4] = {
-                (sp[0] < 0x80) ? b64_values[sp[0]] : -1,
-                (sp[1] < 0x80) ? b64_values[sp[1]] : -1,
-                (sp[2] < 0x80) ? b64_values[sp[2]] : -1,
-                (sp[3] < 0x80) ? b64_values[sp[3]] : -1
+                b64_values[sp[0]], b64_values[sp[1]],
+                b64_values[sp[2]], b64_values[sp[3]]
             };
             if (bits[0] < 0 || bits[1] < 0 || bits[2] < 0 || bits[3] < 0)
                 return -1;
@@ -199,10 +197,8 @@ namespace _ST_PRIVATE
 
         // Final chars treated specially
         int bits[4] = {
-            (sp[0] < 0x80) ? b64_values[sp[0]] : -1,
-            (sp[1] < 0x80) ? b64_values[sp[1]] : -1,
-            (sp[2] < 0x80) ? b64_values[sp[2]] : -1,
-            (sp[3] < 0x80) ? b64_values[sp[3]] : -1
+            b64_values[sp[0]], b64_values[sp[1]],
+            b64_values[sp[2]], b64_values[sp[3]]
         };
 
         if (bits[0] < 0 || bits[1] < 0)
