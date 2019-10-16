@@ -214,7 +214,7 @@ namespace ST
         string_stream& operator<<(const std::experimental::filesystem::path& path)
         {
             auto u8path = path.u8string();
-            return append(u8path.c_str(), u8path.size());
+            return append(reinterpret_cast<const char *>(u8path.c_str()), u8path.size());
         }
 
 #endif
