@@ -185,7 +185,7 @@ namespace ST
         static int compare(const char_T *left, size_t lsize,
                            const char_T *right, size_t rsize) noexcept
         {
-            const size_t cmplen = std::min(lsize, rsize);
+            const size_t cmplen = std::min<size_t>(lsize, rsize);
             const int cmp = traits_t::compare(left, right, cmplen);
             return cmp ? cmp : static_cast<int>(lsize - rsize);
         }
@@ -193,8 +193,8 @@ namespace ST
         static int compare(const char_T *left, size_t lsize,
                            const char_T *right, size_t rsize, size_t maxlen) noexcept
         {
-            lsize = std::min(lsize, maxlen);
-            rsize = std::min(rsize, maxlen);
+            lsize = std::min<size_t>(lsize, maxlen);
+            rsize = std::min<size_t>(rsize, maxlen);
             return compare(left, lsize, right, rsize);
         }
 

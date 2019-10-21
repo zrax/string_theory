@@ -64,6 +64,10 @@ target_sources(st_gtests PRIVATE
     test_regress.cpp
 )
 
+if(WIN32)
+    target_sources(st_gtests PRIVATE test_winheaders.cpp)
+endif()
+
 option(ST_BUILD_PROFILE_TEST "Build string profile test application" OFF)
 if(ST_BUILD_PROFILE_TEST)
     find_package(Boost)
