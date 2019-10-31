@@ -57,9 +57,7 @@ static int T_strcmp(const char_T *left, const char_T *right)
         if (*left != *right)
             return *left - *right;
         if (*left == 0)
-            return (*right == 0) ? 0 : -1;
-        if (*right == 0)
-            return 1;
+            return 0;
 
         ++left;
         ++right;
