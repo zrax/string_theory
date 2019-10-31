@@ -117,9 +117,3 @@ if(${CMAKE_VERSION} VERSION_LESS "3.11" AND POLICY CMP0037)
 endif()
 add_custom_target(test "$<TARGET_FILE:st_gtests>")
 cmake_policy(POP)
-
-if(ST_BUILD_TEST_COVERAGE)
-    setup_target_for_coverage(test_coverage
-            "${CMAKE_COMMAND} --build \"${CMAKE_BINARY_DIR}\" --target test"
-            coverage)
-endif()
