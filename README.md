@@ -1,9 +1,9 @@
 String Theory
 =============
 
-<a href="https://travis-ci.org/zrax/string_theory">
-  <img alt="Travis Build Status"
-       src="https://travis-ci.org/zrax/string_theory.svg?branch=master"/>
+<a href="https://github.com/zrax/string_theory/actions">
+  <img alt="GitHub Build Status"
+       src="https://github.com/zrax/string_theory/workflows/CI-Build/badge.svg"/>
 </a>
 <a href="https://ci.appveyor.com/project/zrax/string-theory/branch/master">
   <img alt="AppVeyor Build Status"
