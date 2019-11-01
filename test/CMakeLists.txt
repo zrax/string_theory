@@ -30,7 +30,9 @@ set(gtest_build_tests OFF CACHE INTERNAL "Override gtest default")
 set(gtest_disable_pthreads OFF CACHE INTERNAL "Override gtest default")
 set(gtest_hide_internal_symbols ON CACHE INTERNAL "Override gtest default")
 
-add_subdirectory(gtest-1.8.0 EXCLUDE_FROM_ALL)
+set(GOOGLETEST_VERSION 1.10.0)
+set(INSTALL_GTEST OFF)
+add_subdirectory(gtest-${GOOGLETEST_VERSION} EXCLUDE_FROM_ALL)
 
 add_executable(st_gtests "")
 target_link_libraries(st_gtests PRIVATE gtest gtest_main string_theory)
