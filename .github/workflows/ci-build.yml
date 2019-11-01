@@ -20,21 +20,41 @@ jobs:
       - name: Install Compiler
         run: |
           if [[ "${{ matrix.cfg.compiler }}" =~ ^gcc.*$ ]]; then
-              gxx=$(echo "${{ matrix.cfg.compiler }}" | sed -e 's,gcc,g++,')
-              sudo apt install "$gxx"
+            gxx=$(echo "${{ matrix.cfg.compiler }}" | sed -e 's,gcc,g++,')
+            sudo apt install "$gxx"
           else
-              sudo apt install "${{ matrix.cfg.compiler }}"
+            sudo apt install "${{ matrix.cfg.compiler }}"
           fi
           if [[ "${{ matrix.cfg.stdlib }}" == "libc++" ]]; then
-              sudo apt install libc++-dev libc++abi-dev
+            sudo apt install libc++-dev libc++abi-dev
           fi
-      - name: Configure and Test
+      - name: Build and Test
         run: |
           export CC="${{ matrix.cfg.compiler }}"
           export CXX="$(echo "${{ matrix.cfg.compiler }}" | sed -e 's,gcc,g++,;s,clang,clang++,')"
           if [[ "${{ matrix.cfg.stdlib }}" == "libc++" ]]; then
-              export CXXFLAGS="-stdlib=libc++ -I/usr/include/libcxxabi"
+            export CXXFLAGS="-stdlib=libc++ -I/usr/include/libcxxabi"
           fi
+          mkdir -p build && cd build
+          cmake -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
+          make
+          make test
+
+  build-macos:
+    runs-on: macOS-latest
+    strategy:
+      matrix:
+        xcode:
+          #- Xcode_9.4.1    # Not working
+          - Xcode_10.3
+          - Xcode_11.2
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and Test
+        run: |
+          export PATH="/Applications/${{ matrix.xcode }}.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH"
+          export CC=clang
+          export CXX=clang++
           mkdir -p build && cd build
           cmake -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
           make
