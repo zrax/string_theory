@@ -2,55 +2,6 @@ language: cpp
 
 matrix:
   include:
-    - os: linux
-      dist: trusty
-      compiler: gcc
-      env: CMAKE_C_COMPILER=gcc CMAKE_CXX_COMPILER=g++
-      addons:
-        apt:
-          packages:
-            - cmake
-    - os: linux
-      dist: trusty
-      compiler: clang
-      env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
-      addons:
-        apt:
-          packages:
-            - cmake
-    - os: linux
-      dist: xenial
-      compiler: gcc
-      env: CMAKE_C_COMPILER=gcc CMAKE_CXX_COMPILER=g++
-      addons:
-        apt:
-          packages:
-            - cmake
-    - os: linux
-      dist: xenial
-      compiler: clang
-      env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
-      addons:
-        apt:
-          packages:
-            - cmake
-    - os: linux
-      dist: bionic
-      compiler: gcc
-      env: CMAKE_C_COMPILER=gcc CMAKE_CXX_COMPILER=g++
-      addons:
-        apt:
-          packages:
-            - cmake
-    ### Clang in bionic is currently the same version as xenial
-    #- os: linux
-    #  dist: bionic
-    #  compiler: clang
-    #  env: CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++
-    #  addons:
-    #    apt:
-    #      packages:
-    #        - cmake
     - os: osx
       osx_image: xcode6.4
       compiler: clang

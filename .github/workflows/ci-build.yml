@@ -1,0 +1,41 @@
+name: CI-Build
+on: [push, pull_request]
+
+jobs:
+  build-ubuntu:
+    runs-on: ${{ matrix.cfg.os }}
+    strategy:
+      matrix:
+        cfg:
+          - { os: ubuntu-16.04, compiler: gcc-4.8,    stdlib: default }
+          - { os: ubuntu-16.04, compiler: gcc,        stdlib: default }   # GCC 5
+          - { os: ubuntu-16.04, compiler: clang-3.5,  stdlib: libc++  }
+          - { os: ubuntu-16.04, compiler: clang,      stdlib: libc++  }   # Clang 3.8
+          - { os: ubuntu-18.04, compiler: gcc,        stdlib: default }   # GCC 7
+          - { os: ubuntu-18.04, compiler: clang,      stdlib: default }   # Clang 6.0
+          - { os: ubuntu-18.04, compiler: gcc-8,      stdlib: default }
+          - { os: ubuntu-18.04, compiler: clang-8,    stdlib: default }
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install Compiler
+        run: |
+          if [[ "${{ matrix.cfg.compiler }}" =~ ^gcc.*$ ]]; then
+              gxx=$(echo "${{ matrix.cfg.compiler }}" | sed -e 's,gcc,g++,')
+              sudo apt install "$gxx"
+          else
+              sudo apt install "${{ matrix.cfg.compiler }}"
+          fi
+          if [[ "${{ matrix.cfg.stdlib }}" == "libc++" ]]; then
+              sudo apt install libc++-dev libc++abi-dev
+          fi
+      - name: Configure and Test
+        run: |
+          export CC="${{ matrix.cfg.compiler }}"
+          export CXX="$(echo "${{ matrix.cfg.compiler }}" | sed -e 's,gcc,g++,;s,clang,clang++,')"
+          if [[ "${{ matrix.cfg.stdlib }}" == "libc++" ]]; then
+              export CXXFLAGS="-stdlib=libc++ -I/usr/include/libcxxabi"
+          fi
+          mkdir -p build && cd build
+          cmake -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
+          make
+          make test
