@@ -17,12 +17,12 @@ String Theory
 Introduction
 ------------
 
-String Theory is a flexible C++11 library for string manipulation and storage.
-It stores data internally as UTF-8, for ease of use with exiting C/C++ APIs.
-It can also handle conversion to and from UTF-16, UTF-32, and Latin-1, and has
-a variety of methods to simplify text manipulation.
+String Theory is a flexible modern C++ library for string manipulation and
+storage.  It stores data internally as UTF-8, for ease of use with existing
+C/C++ APIs.  It can also handle conversion to and from UTF-16, UTF-32, and
+Latin-1, and has a variety of methods to simplify text manipulation.
 
-In addition String Theory includes a powerful and fast type-safe string
+In addition, String Theory includes a powerful and fast type-safe string
 formatter (`ST::format`), which can be extended with custom type formatters
 by end-user code.
 
@@ -35,7 +35,7 @@ Why another string library?
 String Theory was originally developed to replace the half-dozen or so string
 types and string manipulation mini-libraries in the [Plasma game
 engine](http://github.com/H-uru/Plasma).  Because of the state of the code, it
-was designed primarily to reduce coding errors, provide an easy-to-use set of
+was designed primarily to reduce coding errors, provide an easy to use set of
 manipulation functionality with minimal surprises, handle Unicode text without
 a lot of overhead, and have reasonable performance.  Many existing string
 libraries provide some subset of those features, but were hard to integrate
