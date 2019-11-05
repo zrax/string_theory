@@ -137,8 +137,11 @@ namespace ST
             : m_buffer(data, size) { }
         string(const from_validated_t &, const char_buffer &buffer)
             : m_buffer(buffer) { }
+
+#ifdef ST_HAVE_RVALUE_MOVE
         string(const from_validated_t &, char_buffer &&buffer)
             : m_buffer(std::move(buffer)) { }
+#endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         string(const from_validated_t &, const char8_t *data, size_t size)
@@ -558,10 +561,12 @@ namespace ST
             m_buffer = buffer;
         }
 
+#ifdef ST_HAVE_RVALUE_MOVE
         inline void set_validated(char_buffer &&buffer)
         {
             m_buffer = std::move(buffer);
         }
+#endif
 
         string &operator=(const null_t &) ST_NOEXCEPT
         {
@@ -818,11 +823,13 @@ namespace ST
             return string(valid_tag, buffer);
         }
 
+#ifdef ST_HAVE_RVALUE_MOVE
         static inline string from_validated(char_buffer &&buffer)
         {
             from_validated_t valid_tag;
             return string(valid_tag, std::move(buffer));
         }
+#endif
 
         static inline string from_utf8(const char *utf8,
                                        size_t size = ST_AUTO_SIZE,

@@ -301,7 +301,7 @@ TEST(string, validation)
     EXPECT_THROW(ST::string::from_utf8("\xF0\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
     EXPECT_THROW(ST::string::from_utf8("\xF0\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
 
-    const auto replacement = ST_LITERAL("\xef\xbf\xbd");
+    const ST::string replacement = ST_LITERAL("\xef\xbf\xbd");
     EXPECT_EQ(replacement, ST::string::from_utf8("\xC0", ST_AUTO_SIZE, ST::substitute_invalid));
     EXPECT_EQ(replacement, ST::string::from_utf8("\xE0", ST_AUTO_SIZE, ST::substitute_invalid));
     EXPECT_EQ(replacement, ST::string::from_utf8("\xE0\x80", ST_AUTO_SIZE, ST::substitute_invalid));
@@ -319,8 +319,8 @@ TEST(string, validation)
     EXPECT_THROW(ST::string::from_utf8("\xFE\x80\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
     EXPECT_THROW(ST::string::from_utf8("\xFF\x80\x80\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
 
-    const auto replacement5 = ST_LITERAL("\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd");
-    const auto replacement5x = ST_LITERAL("\xef\xbf\xbdxxxx");
+    const ST::string replacement5 = ST_LITERAL("\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd\xef\xbf\xbd");
+    const ST::string replacement5x = ST_LITERAL("\xef\xbf\xbdxxxx");
     EXPECT_EQ(replacement, ST::string::from_utf8("\x80", ST_AUTO_SIZE, ST::substitute_invalid));
     EXPECT_EQ(replacement, ST::string::from_utf8("\xC0x", ST_AUTO_SIZE, ST::substitute_invalid));
     EXPECT_EQ(replacement, ST::string::from_utf8("\xE0xx", ST_AUTO_SIZE, ST::substitute_invalid));
@@ -469,7 +469,6 @@ TEST(string, char_concatenation)
     EXPECT_EQ(ST::string(L"\u0100xxxx"), char16_t(0x100) + input1);
     EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxx"), char16_t(0x100) + input2);
     EXPECT_EQ(ST::string(L"\u0100xxxxxxxxxxxxxxxx"), char16_t(0x100) + input3);
-#endif
 
     const char32_t expect_wide1[] = { 0x78, 0x78, 0x78, 0x78, 0x10FFFF, 0 };
     const char32_t expect_wide2[] = {
@@ -495,7 +494,6 @@ TEST(string, char_concatenation)
         0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0x78, 0
     };
 
-#ifdef ST_HAVE_CHAR_TYPES
     // ST::string + char32_t
     EXPECT_EQ(ST::string::from_utf32(expect_wide1), input1 + char32_t(0x10ffff));
     EXPECT_EQ(ST::string::from_utf32(expect_wide2), input2 + char32_t(0x10ffff));

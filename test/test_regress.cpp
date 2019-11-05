@@ -42,6 +42,7 @@ TEST(regress, github_5)
 }
 #endif
 
+#ifdef ST_HAVE_RVALUE_MOVE
 TEST(regress, string_stream_move)
 {
     ST::string_stream ss;
@@ -53,6 +54,7 @@ TEST(regress, string_stream_move)
     EXPECT_EQ(5U, ss2.size());
     EXPECT_EQ(ST_LITERAL("Hello"), ss2.to_string());
 }
+#endif
 
 TEST(regress, surrogate_replacement)
 {
