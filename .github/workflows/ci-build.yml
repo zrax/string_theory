@@ -19,6 +19,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Install Compiler
         run: |
+          sudo apt update
           if [[ "${{ matrix.cfg.compiler }}" =~ ^gcc.*$ ]]; then
             gxx=$(echo "${{ matrix.cfg.compiler }}" | sed -e 's,gcc,g++,')
             sudo apt install "$gxx"
