@@ -361,6 +361,24 @@ namespace ST
             _ST_PRIVATE::format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
     }
 
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            char8_t value)
+    {
+        // Special case:  This is a UTF-8 code unit, not a whole character.
+        // Therefore, if we're formatting it as a character, just leave it
+        // as-is in the output.
+        if (format.digit_class == ST::digit_char) {
+            if (format.minimum_length != 0 || format.pad != 0)
+                ST_ASSERT(false, "Char formatting does not currently support padding");
+
+            output.append_char(static_cast<char>(value));
+        } else {
+            _ST_PRIVATE::format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
+        }
+    }
+#endif
+
 #   define _ST_FORMAT_INT_TYPE(int_T, uint_T) \
     inline void format_type(const ST::format_spec &format, ST::format_writer &output, \
                             int_T value) \

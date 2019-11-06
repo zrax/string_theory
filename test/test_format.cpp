@@ -134,6 +134,13 @@ TEST(format, chars)
     EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (unsigned long long)0x10ffff));
     EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", U'\U0010ffff'));
 
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    // Leave UTF-8 code points alone
+    EXPECT_EQ(ST_LITERAL("xxAxx"), ST::format("xx{c}xx", u8'A'));
+    EXPECT_EQ(ST_LITERAL("xx\xef\xbf\xbexx"), ST::format("xx{c}{c}{c}xx",
+              u8'\xef', u8'\xbf', u8'\xbe'));
+#endif
+
     // char and wchar_t without the {c} format are now treated as integers!
     // See https://github.com/zrax/string_theory/issues/13 for details
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{}xx", (char)0));
@@ -150,6 +157,11 @@ TEST(format, chars)
     EXPECT_EQ(ST_LITERAL("xx123xx"), ST::format("xx{}xx", (char16_t)123));
     EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{}xx", (char32_t)0));
     EXPECT_EQ(ST_LITERAL("xx123xx"), ST::format("xx{}xx", (char32_t)123));
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{}xx", (char8_t)0));
+    EXPECT_EQ(ST_LITERAL("xx123xx"), ST::format("xx{}xx", (char8_t)123));
+#endif
 }
 
 TEST(format, decimal)
