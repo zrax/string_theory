@@ -324,8 +324,21 @@ namespace ST
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             char value)
     {
-        if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
+        if (format.digit_class == ST::digit_char)
             _ST_PRIVATE::format_char(format, output, value);
+        else if (std::numeric_limits<char>::is_signed)
+            _ST_PRIVATE::format_numeric_s<int>(format, output, static_cast<int>(value));
+        else
+            _ST_PRIVATE::format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            wchar_t value)
+    {
+        if (format.digit_class == ST::digit_char)
+            _ST_PRIVATE::format_char(format, output, static_cast<int>(value));
+        else if (std::numeric_limits<wchar_t>::is_signed)
+            _ST_PRIVATE::format_numeric_s<int>(format, output, static_cast<int>(value));
         else
             _ST_PRIVATE::format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
     }
@@ -333,7 +346,7 @@ namespace ST
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             char16_t value)
     {
-        if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
+        if (format.digit_class == ST::digit_char)
             _ST_PRIVATE::format_char(format, output, static_cast<int>(value));
         else
             _ST_PRIVATE::format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
@@ -342,7 +355,7 @@ namespace ST
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             char32_t value)
     {
-        if (format.digit_class == ST::digit_char || format.digit_class == ST::digit_default)
+        if (format.digit_class == ST::digit_char)
             _ST_PRIVATE::format_char(format, output, static_cast<int>(value));
         else
             _ST_PRIVATE::format_numeric_u<unsigned int>(format, output, static_cast<unsigned int>(value));
@@ -425,12 +438,6 @@ namespace ST
         } else {
             output.append(out_buffer, format_size);
         }
-    }
-
-    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
-                            wchar_t value)
-    {
-        format_type(format, output, static_cast<char32_t>(value));
     }
 
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,

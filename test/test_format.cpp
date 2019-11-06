@@ -113,14 +113,17 @@ TEST(format, string_classes)
 
 TEST(format, chars)
 {
-    EXPECT_EQ(ST_LITERAL("xxAxx"), ST::format("xx{}xx", 'A'));
+    EXPECT_EQ(ST_LITERAL("xxAxx"), ST::format("xx{c}xx", 'A'));
     EXPECT_EQ(ST_LITERAL("xxAxx"), ST::format("xx{c}xx", (signed char)'A'));
     EXPECT_EQ(ST_LITERAL("xxAxx"), ST::format("xx{c}xx", (unsigned char)'A'));
+    EXPECT_EQ(ST_LITERAL("xxAxx"), ST::format("xx{c}xx", u'A'));
+    EXPECT_EQ(ST_LITERAL("xxAxx"), ST::format("xx{c}xx", U'A'));
 
     // UTF-8 encoding of wide (16-bit) char
-    EXPECT_EQ(ST_LITERAL("xx\xef\xbf\xbexx"), ST::format("xx{}xx", L'\ufffe'));
+    EXPECT_EQ(ST_LITERAL("xx\xef\xbf\xbexx"), ST::format("xx{c}xx", L'\ufffe'));
     EXPECT_EQ(ST_LITERAL("xx\xe7\xbf\xbexx"), ST::format("xx{c}xx", (short)0x7ffe));
     EXPECT_EQ(ST_LITERAL("xx\xef\xbf\xbexx"), ST::format("xx{c}xx", (unsigned short)0xfffe));
+    EXPECT_EQ(ST_LITERAL("xx\xef\xbf\xbexx"), ST::format("xx{c}xx", u'\ufffe'));
 
     // UTF-8 encoding of UCS4 (32-bit) char
     EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (int)0x10ffff));
@@ -129,6 +132,24 @@ TEST(format, chars)
     EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (unsigned long)0x10ffff));
     EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (long long)0x10ffff));
     EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", (unsigned long long)0x10ffff));
+    EXPECT_EQ(ST_LITERAL("xx\xf4\x8f\xbf\xbfxx"), ST::format("xx{c}xx", U'\U0010ffff'));
+
+    // char and wchar_t without the {c} format are now treated as integers!
+    // See https://github.com/zrax/string_theory/issues/13 for details
+    EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{}xx", (char)0));
+    EXPECT_EQ(ST_LITERAL("xx123xx"), ST::format("xx{}xx", (char)123));
+    if (std::numeric_limits<char>::is_signed) {
+        EXPECT_EQ(ST_LITERAL("xx-123xx"), ST::format("xx{}xx", (char)-123));
+    }
+    EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{}xx", (wchar_t)0));
+    EXPECT_EQ(ST_LITERAL("xx123xx"), ST::format("xx{}xx", (wchar_t)123));
+    if (std::numeric_limits<wchar_t>::is_signed) {
+        EXPECT_EQ(ST_LITERAL("xx-123xx"), ST::format("xx{}xx", (wchar_t)-123));
+    }
+    EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{}xx", (char16_t)0));
+    EXPECT_EQ(ST_LITERAL("xx123xx"), ST::format("xx{}xx", (char16_t)123));
+    EXPECT_EQ(ST_LITERAL("xx0xx"), ST::format("xx{}xx", (char32_t)0));
+    EXPECT_EQ(ST_LITERAL("xx123xx"), ST::format("xx{}xx", (char32_t)123));
 }
 
 TEST(format, decimal)
@@ -950,7 +971,7 @@ TEST(format, references)
 {
     EXPECT_EQ(ST_LITERAL("2, one"), ST::format("{&2}, {&1}", "one", 2));
     EXPECT_EQ(ST_LITERAL("2, 2"), ST::format("{&2}, {&2}", "one", 2, 3.5));
-    EXPECT_EQ(ST_LITERAL("42|0042|0x2a"), ST::format("{&2}{&1}{04&2}{&1}{&2#x}", '|', 42));
+    EXPECT_EQ(ST_LITERAL("42|0042|0x2a"), ST::format("{&2}{&1c}{04&2}{&1c}{&2#x}", '|', 42));
 
     // Mixing ordered and referenced args -- references should not interfere
     // with ordered parameters
