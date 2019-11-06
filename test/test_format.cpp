@@ -138,7 +138,7 @@ TEST(format, chars)
     // Leave UTF-8 code points alone
     EXPECT_EQ(ST_LITERAL("xxAxx"), ST::format("xx{c}xx", u8'A'));
     EXPECT_EQ(ST_LITERAL("xx\xef\xbf\xbexx"), ST::format("xx{c}{c}{c}xx",
-              u8'\xef', u8'\xbf', u8'\xbe'));
+              (char8_t)0xef, (char8_t)0xbf, (char8_t)0xbe));
 #endif
 
     // char and wchar_t without the {c} format are now treated as integers!
