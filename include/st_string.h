@@ -1182,6 +1182,30 @@ namespace ST
         wchar_buffer to_wchar() const;
         char_buffer to_latin_1(utf_validation_t validation = substitute_invalid) const;
 
+        void to_buffer(char_buffer &result, bool utf8 = true,
+                       utf_validation_t validation = substitute_invalid) const
+        {
+            if (utf8)
+                result = to_utf8();
+
+            result = to_latin_1(validation);
+        }
+
+        void to_buffer(utf16_buffer &result) const
+        {
+            result = to_utf16();
+        }
+
+        void to_buffer(utf32_buffer &result) const
+        {
+            result = to_utf32();
+        }
+
+        void to_buffer(wchar_buffer &result) const
+        {
+            result = to_wchar();
+        }
+
 #if defined(ST_ENABLE_STL_STRINGS)
         std::string to_std_string(bool utf8 = true,
                                   utf_validation_t validation = substitute_invalid) const

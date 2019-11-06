@@ -110,9 +110,9 @@ template <class char_T, class traits_T>
 std::basic_ostream<char_T, traits_T> &operator<<(
         std::basic_ostream<char_T, traits_T> &stream, const ST::string &str)
 {
-    std::basic_string<char_T, traits_T> stl_string;
-    str.to_std_string(stl_string);
-    return stream << stl_string;
+    ST::buffer<char_T> buffer;
+    str.to_buffer(buffer);
+    return stream << std::basic_string<char_T, traits_T>(buffer.data(), buffer.size());
 }
 
 template <class char_T, class traits_T>
@@ -121,7 +121,7 @@ std::basic_istream<char_T, traits_T> &operator>>(
 {
     std::basic_string<char_T, traits_T> stl_string;
     stream >> stl_string;
-    str = ST::string::from_std_string(stl_string);
+    str.set(stl_string.c_str(), stl_string.size());
     return stream;
 }
 
