@@ -1155,6 +1155,40 @@ namespace ST
             return to_latin_1(validation == substitute_invalid);
         }
 
+        void to_buffer(char_buffer &result, bool utf8 = true,
+                       bool substitute_out_of_range = true) const
+        {
+            if (utf8)
+                result = to_utf8();
+
+            result = to_latin_1(substitute_out_of_range);
+        }
+
+        ST_DEPRECATED_IN_3_0("use to_buffer(char_buffer &, bool, bool) instead")
+        void to_buffer(char_buffer &result, bool utf8,
+                       utf_validation_t validation) const
+        {
+            if (utf8)
+                result = to_utf8();
+
+            result = to_latin_1(validation == substitute_invalid);
+        }
+
+        void to_buffer(utf16_buffer &result) const
+        {
+            result = to_utf16();
+        }
+
+        void to_buffer(utf32_buffer &result) const
+        {
+            result = to_utf32();
+        }
+
+        void to_buffer(wchar_buffer &result) const
+        {
+            result = to_wchar();
+        }
+
 #if defined(ST_ENABLE_STL_STRINGS)
         std::string to_std_string(bool utf8 = true,
                                   bool substitute_out_of_range = true) const
