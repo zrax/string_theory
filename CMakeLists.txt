@@ -87,6 +87,9 @@ if(ST_STDFLAGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ST_STDFLAGS}")
 endif()
 
+option(ST_ENABLE_STL_STRINGS "Enable std::*string and std::*string_view support" ON)
+option(ST_ENABLE_STL_FILESYSTEM "Enable std::filesystem::path support" ON)
+
 option(ST_BUILD_TEST_COVERAGE "Enable code coverage in string_theory and tests" OFF)
 if(ST_BUILD_TEST_COVERAGE)
     if(CMAKE_COMPILER_IS_GNUCXX)
@@ -143,16 +146,18 @@ try_compile(ST_HAVE_EXPERIMENTAL_STRING_VIEW "${PROJECT_BINARY_DIR}"
     "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp"
     COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_STRING_VIEW")
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-    set(ST_CXXFS_LIBS stdc++fs)
+if(ST_ENABLE_STL_FILESYSTEM)
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        set(ST_CXXFS_LIBS stdc++fs)
+    endif()
+    try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
+                "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
+                LINK_LIBRARIES ${ST_CXXFS_LIBS})
+    try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
+                "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
+                COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
+                LINK_LIBRARIES ${ST_CXXFS_LIBS})
 endif()
-try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
-            LINK_LIBRARIES ${ST_CXXFS_LIBS})
-try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
-            COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
-            LINK_LIBRARIES ${ST_CXXFS_LIBS})
 
 include(CheckTypeSize)
 if(NOT ST_WCHAR_BYTES)
@@ -179,8 +184,6 @@ else()
     set(ST_LIB_TYPE SHARED)
     set(ST_BUILD_SHARED TRUE)
 endif()
-
-option(ST_NO_STL_STRINGS "Disable std::string and std::filesystem::path support" OFF)
 
 if(ST_HAVE_VARARG_TEMPLATE AND ST_HAVE_TYPE_TRAITS AND ST_HAVE_LAMBDA_EXPR)
     set(ST_HAVE_FORMAT TRUE)
@@ -248,7 +251,7 @@ if(WIN32)
     set_target_properties(string_theory PROPERTIES DEBUG_POSTFIX "d")
 endif()
 
-if(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+if(ST_ENABLE_STL_FILESYSTEM AND ST_HAVE_EXPERIMENTAL_FILESYSTEM)
     target_link_libraries(string_theory ${ST_CXXFS_LIBS})
 endif()
 
