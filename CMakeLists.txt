@@ -48,6 +48,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
     set(CMAKE_CXX_FLAGS "-Wall -Wextra ${CMAKE_CXX_FLAGS}")
 endif()
 
+option(ST_ENABLE_STL_STRINGS "Enable std::*string and std::*string_view support" ON)
+option(ST_ENABLE_STL_FILESYSTEM "Enable std::filesystem::path support" ON)
+
 option(ST_BUILD_TEST_COVERAGE "Enable code coverage in string_theory and tests" OFF)
 if(ST_BUILD_TEST_COVERAGE)
     if(CMAKE_COMPILER_IS_GNUCXX)
@@ -78,18 +81,18 @@ try_compile(ST_HAVE_EXPERIMENTAL_STRING_VIEW "${PROJECT_BINARY_DIR}"
     "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp"
     COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_STRING_VIEW")
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-    set(ST_CXXFS_LIBS stdc++fs)
+if(ST_ENABLE_STL_FILESYSTEM)
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        set(ST_CXXFS_LIBS stdc++fs)
+    endif()
+    try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
+                "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
+                LINK_LIBRARIES ${ST_CXXFS_LIBS})
+    try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
+                "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
+                COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
+                LINK_LIBRARIES ${ST_CXXFS_LIBS})
 endif()
-try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
-            LINK_LIBRARIES ${ST_CXXFS_LIBS})
-try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
-            COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
-            LINK_LIBRARIES ${ST_CXXFS_LIBS})
-
-option(ST_NO_STL_STRINGS "Disable std::string and std::filesystem::path support" OFF)
 
 configure_file("${PROJECT_SOURCE_DIR}/include/st_config.h.in"
                "${PROJECT_BINARY_DIR}/include/st_config.h")

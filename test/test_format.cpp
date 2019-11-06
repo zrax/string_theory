@@ -97,7 +97,7 @@ TEST(format, string_classes)
     // (see above), so just need to test that the wrappers are working
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", L"TEST"));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", ST_LITERAL("TEST")));
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", std::string("TEST")));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", std::wstring(L"TEST")));
 #endif
@@ -105,7 +105,7 @@ TEST(format, string_classes)
     // Specifying precision on string formatting should truncate the string
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", L"TESTXX"));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", ST_LITERAL("TESTXX")));
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::string("TESTXX")));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::wstring(L"TESTXX")));
 #endif

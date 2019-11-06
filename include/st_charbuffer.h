@@ -29,7 +29,7 @@
 #include <utility>      // For std::move
 #include <algorithm>    // For std::min
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
 #   if defined(ST_HAVE_CXX17_STRING_VIEW)
 #       include <string_view>
 #   endif
@@ -363,7 +363,7 @@ namespace ST
             return traits_t::length(buffer);
         }
 
-#ifndef ST_NO_STL_STRINGS
+#if defined(ST_ENABLE_STL_STRINGS)
         std::basic_string<char_T> to_std_string() const
         {
             return std::basic_string<char_T>(data(), size());
@@ -387,7 +387,7 @@ namespace ST
         }
 #endif
 
-#endif  /* ST_NO_STL_STRINGS */
+#endif  /* defined(ST_ENABLE_STL_STRINGS) */
     };
 
     typedef buffer<char>        char_buffer;

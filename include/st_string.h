@@ -31,7 +31,7 @@
 #include "st_string_priv.h"
 #include "st_utf_conv.h"
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_FILESYSTEM)
 #   if defined(ST_HAVE_CXX17_FILESYSTEM)
 #       include <filesystem>
 #   endif
@@ -220,7 +220,7 @@ namespace ST
             m_buffer = wchar_to_utf8(init, validation);
         }
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
         string(const std::string &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -313,6 +313,10 @@ namespace ST
         }
 #endif
 
+#endif // defined(ST_ENABLE_STL_STRINGS)
+
+#if defined(ST_ENABLE_STL_FILESYSTEM)
+
 #ifdef ST_HAVE_CXX17_FILESYSTEM
         string(const std::filesystem::path &path)
         {
@@ -327,7 +331,7 @@ namespace ST
         }
 #endif
 
-#endif // !defined(ST_NO_STL_STRINGS)
+#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         void set(const null_t &) noexcept { m_buffer = null; }
 
@@ -447,7 +451,7 @@ namespace ST
             m_buffer = wchar_to_utf8(init, validation);
         }
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
         void set(const std::string &init,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -540,6 +544,10 @@ namespace ST
         }
 #endif
 
+#endif // defined(ST_ENABLE_STL_STRINGS)
+
+#if defined(ST_ENABLE_STL_FILESYSTEM)
+
 #ifdef ST_HAVE_CXX17_FILESYSTEM
         void set(const std::filesystem::path &path)
         {
@@ -556,7 +564,7 @@ namespace ST
         }
 #endif
 
-#endif // !defined(ST_NO_STL_STRINGS)
+#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         void set_validated(const char *text, size_t size)
         {
@@ -660,7 +668,7 @@ namespace ST
             return *this;
         }
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
         string &operator=(const std::string &init)
         {
             set(init);
@@ -753,6 +761,10 @@ namespace ST
         }
 #endif
 
+#endif // defined(ST_ENABLE_STL_STRINGS)
+
+#if defined(ST_ENABLE_STL_FILESYSTEM)
+
 #ifdef ST_HAVE_CXX17_FILESYSTEM
         string &operator=(const std::filesystem::path &path)
         {
@@ -769,7 +781,7 @@ namespace ST
         }
 #endif
 
-#endif // !defined(ST_NO_STL_STRINGS)
+#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         inline string &operator+=(const char *cstr);
         inline string &operator+=(const wchar_t *wstr);
@@ -918,7 +930,7 @@ namespace ST
             return from_validated(latin_1_to_utf8(astr));
         }
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
         static string from_std_string(const std::string &sstr,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -1039,6 +1051,10 @@ namespace ST
         }
 #endif
 
+#endif // defined(ST_ENABLE_STL_STRINGS)
+
+#if defined(ST_ENABLE_STL_FILESYSTEM)
+
 #if defined(ST_HAVE_CXX17_FILESYSTEM)
         static string from_path(const std::filesystem::path &path)
         {
@@ -1057,7 +1073,7 @@ namespace ST
         }
 #endif
 
-#endif // !defined(ST_NO_STL_STRINGS)
+#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         const char *c_str() const noexcept
         {
@@ -1139,7 +1155,7 @@ namespace ST
             return to_latin_1(validation == substitute_invalid);
         }
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
         std::string to_std_string(bool utf8 = true,
                                   bool substitute_out_of_range = true) const
         {
@@ -1210,22 +1226,6 @@ namespace ST
         }
 #endif
 
-#if defined(ST_HAVE_CXX17_FILESYSTEM)
-        std::filesystem::path to_path() const
-        {
-#if defined(ST_HAVE_CXX20_CHAR8_TYPES)
-            return std::filesystem::path(u8_str(), u8_str() + size());
-#else
-            return std::filesystem::u8path(c_str(), c_str() + size());
-#endif
-        }
-#elif defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
-        std::experimental::filesystem::path to_path() const
-        {
-            return std::experimental::filesystem::u8path(c_str(), c_str() + size());
-        }
-#endif
-
 #if defined(ST_HAVE_CXX17_STRING_VIEW)
         std::string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const
         {
@@ -1238,7 +1238,28 @@ namespace ST
         }
 #endif
 
-#endif // !defined(ST_NO_STL_STRINGS)
+#endif // defined(ST_ENABLE_STL_STRINGS)
+
+#if defined(ST_ENABLE_STL_FILESYSTEM)
+
+#if defined(ST_HAVE_CXX17_FILESYSTEM)
+        std::filesystem::path to_path() const
+        {
+#if defined(ST_HAVE_CXX20_CHAR8_TYPES)
+            return std::filesystem::path(u8_str(), u8_str() + size());
+#else
+            return std::filesystem::u8path(c_str(), c_str() + size());
+#endif
+        }
+
+#elif defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+        std::experimental::filesystem::path to_path() const
+        {
+            return std::experimental::filesystem::u8path(c_str(), c_str() + size());
+        }
+#endif
+
+#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         size_t size() const noexcept { return m_buffer.size(); }
         bool empty() const noexcept { return m_buffer.empty(); }

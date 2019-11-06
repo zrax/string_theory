@@ -165,7 +165,7 @@ namespace ST
             return append(text.c_str(), text.size());
         }
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
 
         string_stream &operator<<(const std::string &text)
         {
@@ -195,26 +195,6 @@ namespace ST
         string_stream &operator<<(const std::u8string &text)
         {
             return append(reinterpret_cast<const char*>(text.c_str()), text.size());
-        }
-
-#endif
-
-#ifdef ST_HAVE_CXX17_FILESYSTEM
-
-        string_stream &operator<<(const std::filesystem::path &path)
-        {
-            auto u8path = path.u8string();
-            return append(reinterpret_cast<const char*>(u8path.c_str()), u8path.size());
-        }
-
-#endif
-
-#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
-
-        string_stream& operator<<(const std::experimental::filesystem::path& path)
-        {
-            auto u8path = path.u8string();
-            return append(reinterpret_cast<const char *>(u8path.c_str()), u8path.size());
         }
 
 #endif
@@ -282,7 +262,31 @@ namespace ST
 
 #endif
 
-#endif // !defined(ST_NO_STL_STRINGS)
+#endif // defined(ST_ENABLE_STL_STRINGS)
+
+#if defined(ST_ENABLE_STL_FILESYSTEM)
+
+#ifdef ST_HAVE_CXX17_FILESYSTEM
+
+        string_stream &operator<<(const std::filesystem::path &path)
+        {
+            auto u8path = path.u8string();
+            return append(reinterpret_cast<const char*>(u8path.c_str()), u8path.size());
+        }
+
+#endif
+
+#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
+
+        string_stream& operator<<(const std::experimental::filesystem::path& path)
+        {
+            auto u8path = path.u8string();
+            return append(reinterpret_cast<const char *>(u8path.c_str()), u8path.size());
+        }
+
+#endif
+
+#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         const char *raw_buffer() const noexcept { return m_chars; }
         size_t size() const noexcept { return m_size; }

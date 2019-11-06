@@ -24,10 +24,10 @@
 #include "st_string.h"
 
 #include <functional>
+#include <complex>
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
 #   include <string>
-#   include <complex>
 #endif
 
 namespace ST
@@ -464,6 +464,16 @@ namespace ST
         format_type(format, output, double(value));
     }
 
+    template<typename value_T>
+    void format_type(const ST::format_spec &format, ST::format_writer &output,
+                     const std::complex<value_T> &value)
+    {
+        format_type(format, output, value.real());
+        output.append_char('+');
+        format_type(format, output, value.imag());
+        output.append_char('i');
+    }
+
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             const char *text)
     {
@@ -486,7 +496,7 @@ namespace ST
         ST::format_string(format, output, str.c_str(), str.size());
     }
 
-#if !defined(ST_NO_STL_STRINGS)
+#if defined(ST_ENABLE_STL_STRINGS)
 
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             const std::string &str)
@@ -521,38 +531,6 @@ namespace ST
                             const std::u8string &str)
     {
         ST::format_string(format, output, reinterpret_cast<const char*>(str.c_str()), str.size());
-    }
-
-#endif
-
-    template<typename value_T>
-    void format_type(const ST::format_spec &format, ST::format_writer &output,
-                     const std::complex<value_T> &value)
-    {
-        format_type(format, output, value.real());
-        output.append_char('+');
-        format_type(format, output, value.imag());
-        output.append_char('i');
-    }
-
-#ifdef ST_HAVE_CXX17_FILESYSTEM
-
-    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
-                            const std::filesystem::path &path)
-    {
-        auto u8path = path.u8string();
-        ST::format_string(format, output, u8path.c_str(), u8path.size());
-    }
-
-#endif
-
-#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
-
-    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
-                            const std::experimental::filesystem::path &path)
-    {
-        auto u8path = path.u8string();
-        ST::format_string(format, output, u8path.c_str(), u8path.size());
     }
 
 #endif
@@ -629,7 +607,29 @@ namespace ST
 
 #endif
 
-#endif // !defined(ST_NO_STL_STRINGS)
+#endif // defined(ST_ENABLE_STL_STRINGS)
+
+#if defined(ST_ENABLE_STL_FILESYSTEM)
+
+#ifdef ST_HAVE_CXX17_FILESYSTEM
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::filesystem::path &path)
+    {
+        auto u8path = path.u8string();
+        ST::format_string(format, output, u8path.c_str(), u8path.size());
+    }
+#endif
+
+#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const std::experimental::filesystem::path &path)
+    {
+        auto u8path = path.u8string();
+        ST::format_string(format, output, u8path.c_str(), u8path.size());
+    }
+#endif
+
+#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             bool value)
