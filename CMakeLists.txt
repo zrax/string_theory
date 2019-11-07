@@ -92,6 +92,9 @@ if(ST_ENABLE_STL_FILESYSTEM)
                 "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
                 COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
                 LINK_LIBRARIES ${ST_CXXFS_LIBS})
+    try_compile(ST_HAVE_CXX20_U8_FSPATH "${PROJECT_BINARY_DIR}"
+                "${PROJECT_SOURCE_DIR}/cmake/check_fs_path_u8_ctor.cpp"
+                LINK_LIBRARIES ${ST_CXXFS_LIBS})
 endif()
 
 configure_file("${PROJECT_SOURCE_DIR}/include/st_config.h.in"
