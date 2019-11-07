@@ -5,34 +5,38 @@ environment:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
       TARGET: MSVC
       VisualStudioVersion: 10.0
-      CMAKE_GENERATOR: Visual Studio 10 2010
+      CMAKE_GENERATOR_ARGS: -G "Visual Studio 10 2010"
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
       TARGET: MSVC
       VisualStudioVersion: 11.0
-      CMAKE_GENERATOR: Visual Studio 11 2012
+      CMAKE_GENERATOR_ARGS: -G "Visual Studio 11 2012"
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
       TARGET: MSVC
       VisualStudioVersion: 12.0
-      CMAKE_GENERATOR: Visual Studio 12 2013
+      CMAKE_GENERATOR_ARGS: -G "Visual Studio 12 2013"
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       TARGET: MSVC
       VisualStudioVersion: 14.0
-      CMAKE_GENERATOR: Visual Studio 14 2015
+      CMAKE_GENERATOR_ARGS: -G "Visual Studio 14 2015"
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       TARGET: MSVC
       VisualStudioVersion: 15.0
-      CMAKE_GENERATOR: Visual Studio 15 2017
+      CMAKE_GENERATOR_ARGS: -G "Visual Studio 15 2017"
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       TARGET: MSVC
       VisualStudioVersion: 15.0
-      CMAKE_GENERATOR: Visual Studio 15 2017 Win64
+      CMAKE_GENERATOR_ARGS: -G "Visual Studio 15 2017" -A x64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      TARGET: MSVC
+      VisualStudioVersion: 16.0
+      CMAKE_GENERATOR_ARGS: -G "Visual Studio 16 2019" -A x64
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       TARGET: MinGW
-      CMAKE_GENERATOR: MinGW Makefiles
+      CMAKE_GENERATOR_ARGS: -G "MinGW Makefiles"
       MINGW_PREFIX: C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       TARGET: MinGW
-      CMAKE_GENERATOR: MinGW Makefiles
+      CMAKE_GENERATOR_ARGS: -G "MinGW Makefiles"
       MINGW_PREFIX: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64
 
 install:
@@ -44,7 +48,7 @@ build_script:
   - cd build
   - if [%TARGET%]==[MinGW] (
       set "PATH=%MINGW_PREFIX%\bin;%PATH%" )
-  - cmake -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
+  - cmake %CMAKE_GENERATOR_ARGS% -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
   - if [%TARGET%]==[MSVC] (
       cmake --build . --config Debug &&
       cmake --build . --config Debug --target RUN_TESTS )
