@@ -80,24 +80,6 @@ namespace ST
             return m_size >= ST_SHORT_STRING_LEN;
         }
 
-        struct _scope_deleter
-        {
-            // Useful for deleting the buffer at the *end* of a function,
-            // even though we must capture it at the beginning, in case
-            // the user does something silly like assign a buffer to itself.
-            char_T *m_buffer;
-
-            _scope_deleter(buffer<char_T> *self)
-            {
-                m_buffer = self->is_reffed() ? self->m_chars : nullptr;
-            }
-
-            ~_scope_deleter()
-            {
-                delete[] m_buffer;
-            }
-        };
-
     public:
         constexpr buffer() noexcept
             : m_chars(m_data), m_size(), m_data() { }
@@ -150,7 +132,9 @@ namespace ST
 
         buffer<char_T> &operator=(const null_t &) noexcept
         {
-            _scope_deleter unref(this);
+            if (is_reffed())
+                delete[] m_chars;
+
             m_chars = m_data;
             m_size = 0;
             traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
@@ -159,7 +143,12 @@ namespace ST
 
         buffer<char_T> &operator=(const buffer<char_T> &copy)
         {
-            _scope_deleter unref(this);
+            if (this == &copy)
+                return *this;
+
+            if (is_reffed())
+                delete[] m_chars;
+
             m_size = copy.m_size;
             if (is_reffed()) {
                 m_chars = new char_T[m_size + 1];
@@ -174,11 +163,11 @@ namespace ST
 
         buffer<char_T> &operator=(buffer<char_T> &&move) noexcept
         {
-            _scope_deleter unref(this);
-            m_size = move.m_size;
-            m_chars = is_reffed() ? move.m_chars : m_data;
+            std::swap(m_chars, move.m_chars);
+            std::swap(m_size, move.m_size);
             traits_t::copy(m_data, move.m_data, ST_SHORT_STRING_LEN);
-            move.m_size = 0;
+            if (!is_reffed())
+                m_chars = m_data;
             return *this;
         }
 

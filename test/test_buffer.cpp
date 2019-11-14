@@ -265,6 +265,32 @@ TEST(char_buffer, move)
     EXPECT_EQ(24U, wdest2.size());
 }
 
+TEST(char_buffer, self_assign)
+{
+    // If this changes, this test may need to be updated to match
+    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+
+    ST::char_buffer sbuf;
+    sbuf = sbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), ""));
+
+    ST::char_buffer shortbuf("0123456789", 10);
+    sbuf = shortbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), "0123456789"));
+    sbuf = sbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), "0123456789"));
+    sbuf = std::move(sbuf);
+    // Content not guaranteed after self-move
+
+    ST::char_buffer longbuf("0123456789abcdefghij", 20);
+    sbuf = longbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), "0123456789abcdefghij"));
+    sbuf = sbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), "0123456789abcdefghij"));
+    sbuf = std::move(sbuf);
+    // Content not guaranteed after self-move
+}
+
 TEST(char_buffer, compare)
 {
     // Same length, chars
