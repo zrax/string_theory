@@ -269,6 +269,36 @@ TEST(char_buffer, move)
 }
 #endif
 
+TEST(char_buffer, self_assign)
+{
+    // If this changes, this test may need to be updated to match
+    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+
+    ST::char_buffer sbuf;
+    sbuf = sbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), ""));
+
+    ST::char_buffer shortbuf("0123456789", 10);
+    sbuf = shortbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), "0123456789"));
+    sbuf = sbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), "0123456789"));
+#ifdef ST_HAVE_RVALUE_MOVE
+    sbuf = std::move(sbuf);
+    // Content not guaranteed after self-move
+#endif
+
+    ST::char_buffer longbuf("0123456789abcdefghij", 20);
+    sbuf = longbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), "0123456789abcdefghij"));
+    sbuf = sbuf;
+    EXPECT_EQ(0, T_strcmp(sbuf.data(), "0123456789abcdefghij"));
+#ifdef ST_HAVE_RVALUE_MOVE
+    sbuf = std::move(sbuf);
+    // Content not guaranteed after self-move
+#endif
+}
+
 TEST(char_buffer, compare)
 {
     // Same length, chars
