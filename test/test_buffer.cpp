@@ -269,6 +269,14 @@ TEST(char_buffer, move)
 }
 #endif
 
+#if defined(__clang__) && ((__clang_major__ > 3) || (__clang_major__ == 3 && __clang_minor__ > 5))
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic ignored "-Wself-move"
+#   if defined(__clang__) && (__clang_major__ > 6)
+#       pragma GCC diagnostic ignored "-Wself-assign-overloaded"
+#   endif
+#endif
+
 TEST(char_buffer, self_assign)
 {
     // If this changes, this test may need to be updated to match
@@ -298,6 +306,10 @@ TEST(char_buffer, self_assign)
     // Content not guaranteed after self-move
 #endif
 }
+
+#if defined(__clang__) && ((__clang_major__ > 3) || (__clang_major__ == 3 && __clang_minor__ > 5))
+#   pragma GCC diagnostic pop
+#endif
 
 TEST(char_buffer, compare)
 {
