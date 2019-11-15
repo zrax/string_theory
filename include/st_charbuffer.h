@@ -88,16 +88,17 @@ namespace ST
             : m_chars(m_data), m_size(), m_data() { }
 
         buffer(const buffer<char_T> &copy)
-            : m_size(copy.m_size)
+            : m_size()
         {
-            if (is_reffed()) {
-                m_chars = new char_T[m_size + 1];
-                traits_t::copy(m_chars, copy.m_chars, m_size);
-                m_chars[m_size] = 0;
+            if (copy.is_reffed()) {
+                m_chars = new char_T[copy.m_size + 1];
+                traits_t::copy(m_chars, copy.m_chars, copy.m_size);
+                m_chars[copy.m_size] = 0;
             } else {
                 traits_t::copy(m_data, copy.m_data, ST_SHORT_STRING_LEN);
                 m_chars = m_data;
             }
+            m_size = copy.m_size;
         }
 
         buffer(buffer<char_T> &&move) noexcept
@@ -146,18 +147,20 @@ namespace ST
             if (this == &copy)
                 return *this;
 
-            if (is_reffed())
-                delete[] m_chars;
-
-            m_size = copy.m_size;
             if (is_reffed()) {
-                m_chars = new char_T[m_size + 1];
-                traits_t::copy(m_chars, copy.m_chars, m_size);
-                m_chars[m_size] = 0;
+                delete[] m_chars;
+                m_size = 0;
+            }
+
+            if (copy.is_reffed()) {
+                m_chars = new char_T[copy.m_size + 1];
+                traits_t::copy(m_chars, copy.m_chars, copy.m_size);
+                m_chars[copy.m_size] = 0;
             } else {
                 traits_t::copy(m_data, copy.m_data, ST_SHORT_STRING_LEN);
                 m_chars = m_data;
             }
+            m_size = copy.m_size;
             return *this;
         }
 
