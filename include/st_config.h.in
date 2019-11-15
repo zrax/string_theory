@@ -79,8 +79,9 @@
 #   define ST_DEPRECATED_IN_3_0(message) ST_DEPRECATED(message)
 #endif
 
-#define ST_SHORT_STRING_LEN     (16)
-#define ST_STACK_STRING_LEN     (256)
+#define ST_MAX_SSO_LENGTH       (16)
+#define ST_MAX_SSO_SIZE         (48)
+#define ST_STACK_STRING_SIZE    (256)
 
 // MSVC doesn't provide ssize_t
 #ifdef _MSC_VER

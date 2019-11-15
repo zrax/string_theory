@@ -32,7 +32,7 @@ namespace ST
 
     public:
         string_stream() noexcept
-            : m_chars(m_stack), m_alloc(ST_STACK_STRING_LEN), m_size() { }
+            : m_chars(m_stack), m_alloc(ST_STACK_STRING_SIZE), m_size() { }
 
         ~string_stream() noexcept
         {
@@ -44,7 +44,7 @@ namespace ST
             : m_alloc(move.m_alloc), m_size(move.m_size)
         {
             m_chars = is_heap() ? move.m_chars : m_stack;
-            std::char_traits<char>::copy(m_stack, move.m_stack, ST_STACK_STRING_LEN);
+            std::char_traits<char>::copy(m_stack, move.m_stack, ST_STACK_STRING_SIZE);
             move.m_alloc = 0;
         }
 
@@ -56,7 +56,7 @@ namespace ST
             m_alloc = move.m_alloc;
             m_size = move.m_size;
             m_chars = is_heap() ? move.m_chars : m_stack;
-            std::char_traits<char>::copy(m_stack, move.m_stack, ST_STACK_STRING_LEN);
+            std::char_traits<char>::copy(m_stack, move.m_stack, ST_STACK_STRING_SIZE);
             move.m_alloc = 0;
             return *this;
         }
@@ -317,11 +317,11 @@ namespace ST
     private:
         char  *m_chars;
         size_t m_alloc, m_size;
-        char   m_stack[ST_STACK_STRING_LEN];
+        char   m_stack[ST_STACK_STRING_SIZE];
 
         bool is_heap() const noexcept
         {
-            return m_alloc > ST_STACK_STRING_LEN;
+            return m_alloc > ST_STACK_STRING_SIZE;
         }
 
         void expand_buffer(size_t added_size)

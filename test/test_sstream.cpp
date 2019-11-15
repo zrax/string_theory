@@ -81,8 +81,8 @@ TEST(string_stream, append)
     EXPECT_EQ(ST_LITERAL("aaaaabbbbbbbbbb"), ss2.to_string());
 
     // Cause a heap allocation
-    ST::string s1 = ST::string::fill(ST_STACK_STRING_LEN / 2, 'x');
-    ST::string s2 = ST::string::fill(ST_STACK_STRING_LEN / 2, 'y');
+    ST::string s1 = ST::string::fill(ST_STACK_STRING_SIZE / 2, 'x');
+    ST::string s2 = ST::string::fill(ST_STACK_STRING_SIZE / 2, 'y');
     ST::string s3 = ST_LITERAL("z");
     ST::string_stream ss3;
     ss3.append(s1.c_str(), s1.size());
@@ -91,7 +91,7 @@ TEST(string_stream, append)
     EXPECT_EQ(s1.size() + s2.size() + s3.size(), ss3.size());
     EXPECT_EQ(s1 + s2 + s3, ss3.to_string());
 
-    ST::string s4 = ST::string::fill(ST_STACK_STRING_LEN * 4, 'x');
+    ST::string s4 = ST::string::fill(ST_STACK_STRING_SIZE * 4, 'x');
     ST::string_stream ss4;
     ss4.append(s3.c_str(), s3.size());
     ss4.append(s4.c_str(), s4.size());
@@ -112,19 +112,19 @@ TEST(string_stream, append_char)
 
     // Cause a heap allocation
     ST::string_stream ss2;
-    ss2.append_char('x', ST_STACK_STRING_LEN / 2);
-    ss2.append_char('y', ST_STACK_STRING_LEN / 2);
+    ss2.append_char('x', ST_STACK_STRING_SIZE / 2);
+    ss2.append_char('y', ST_STACK_STRING_SIZE / 2);
     ss2.append_char('z');
-    ST::string s1 = ST::string::fill(ST_STACK_STRING_LEN / 2, 'x');
-    ST::string s2 = ST::string::fill(ST_STACK_STRING_LEN / 2, 'y');
+    ST::string s1 = ST::string::fill(ST_STACK_STRING_SIZE / 2, 'x');
+    ST::string s2 = ST::string::fill(ST_STACK_STRING_SIZE / 2, 'y');
     ST::string s3 = ST_LITERAL("z");
     EXPECT_EQ(s1.size() + s2.size() + s3.size(), ss2.size());
     EXPECT_EQ(s1 + s2 + s3, ss2.to_string());
 
     ST::string_stream ss3;
     ss3.append_char('z');
-    ss3.append_char('x', ST_STACK_STRING_LEN * 4);
-    ST::string s4 = ST::string::fill(ST_STACK_STRING_LEN * 4, 'x');
+    ss3.append_char('x', ST_STACK_STRING_SIZE * 4);
+    ST::string s4 = ST::string::fill(ST_STACK_STRING_SIZE * 4, 'x');
     EXPECT_EQ(s3.size() + s4.size(), ss3.size());
     EXPECT_EQ(s3 + s4, ss3.to_string());
 }
@@ -180,15 +180,15 @@ TEST(string_stream, cat_strings)
     EXPECT_EQ(ST_LITERAL("aaaaabbbbbbbbbb"), ss2.to_string());
 
     // Cause a heap allocation
-    ST::string s1 = ST::string::fill(ST_STACK_STRING_LEN / 2, 'x');
-    ST::string s2 = ST::string::fill(ST_STACK_STRING_LEN / 2, 'y');
+    ST::string s1 = ST::string::fill(ST_STACK_STRING_SIZE / 2, 'x');
+    ST::string s2 = ST::string::fill(ST_STACK_STRING_SIZE / 2, 'y');
     ST::string s3 = ST_LITERAL("z");
     ST::string_stream ss3;
     ss3 << s1 << s2 << s3;
     EXPECT_EQ(s1.size() + s2.size() + s3.size(), ss3.size());
     EXPECT_EQ(s1 + s2 + s3, ss3.to_string());
 
-    ST::string s4 = ST::string::fill(ST_STACK_STRING_LEN * 4, 'x');
+    ST::string s4 = ST::string::fill(ST_STACK_STRING_SIZE * 4, 'x');
     ST::string_stream ss4;
     ss4 << s3 << s4;
     EXPECT_EQ(s3.size() + s4.size(), ss4.size());

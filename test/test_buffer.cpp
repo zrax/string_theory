@@ -97,8 +97,9 @@ TEST(char_buffer, utility)
 
 TEST(char_buffer, stack_construction)
 {
-    // If this changes, this test may need to be updated to match
-    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+    // If these change, this test may need to be updated to match
+    ASSERT_EQ(16, ST_MAX_SSO_LENGTH);
+    ASSERT_EQ(48, ST_MAX_SSO_SIZE);
 
     char empty[] = {0};
     wchar_t emptyw[] = {0};
@@ -175,8 +176,9 @@ TEST(char_buffer, stack_construction)
 // don't support utf-16 and utf-32 literals yet
 TEST(char_buffer, copy)
 {
-    // If this changes, this test may need to be updated to match
-    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+    // If these change, this test may need to be updated to match
+    ASSERT_EQ(16, ST_MAX_SSO_LENGTH);
+    ASSERT_EQ(48, ST_MAX_SSO_SIZE);
 
     ST::char_buffer cb1("Test", 4);
     ST::wchar_buffer wcb1(L"Test", 4);
@@ -221,8 +223,9 @@ TEST(char_buffer, copy)
 
 TEST(char_buffer, move)
 {
-    // If this changes, this test may need to be updated to match
-    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+    // If these change, this test may need to be updated to match
+    ASSERT_EQ(16, ST_MAX_SSO_LENGTH);
+    ASSERT_EQ(48, ST_MAX_SSO_SIZE);
 
     ST::char_buffer cb1("Test", 4);
     ST::wchar_buffer wcb1(L"Test", 4);
@@ -276,7 +279,7 @@ TEST(char_buffer, move)
 TEST(char_buffer, self_assign)
 {
     // If this changes, this test may need to be updated to match
-    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+    ASSERT_EQ(16, ST_MAX_SSO_LENGTH);
 
     ST::char_buffer sbuf;
     sbuf = sbuf;

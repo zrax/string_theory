@@ -171,7 +171,7 @@ TEST(string, stack_construction)
 TEST(string, copy)
 {
     // If this changes, this test may need to be updated to match
-    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+    ASSERT_EQ(16, ST_MAX_SSO_LENGTH);
 
     ST::string s1("Test");
     ST::string dest(s1);
@@ -197,7 +197,7 @@ TEST(string, copy)
 TEST(string, move)
 {
     // If this changes, this test may need to be updated to match
-    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+    ASSERT_EQ(16, ST_MAX_SSO_LENGTH);
 
     ST::string s1("Test");
     ST::string dest(std::move(s1));
@@ -792,7 +792,7 @@ TEST(string, conversion_errors)
 TEST(string, concatenation)
 {
     // If this changes, this test may need to be updated to match
-    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+    ASSERT_EQ(16, ST_MAX_SSO_LENGTH);
 
     ST::string expected_short = "xxxxyyy";
     ST::string input1 = "xxxx";
@@ -835,7 +835,7 @@ TEST(string, concatenation)
 TEST(string, char_concatenation)
 {
     // If this changes, this test may need to be updated to match
-    ASSERT_EQ(16, ST_SHORT_STRING_LEN);
+    ASSERT_EQ(16, ST_MAX_SSO_LENGTH);
 
     ST::string input1 = "xxxx";
     ST::string input2 = "xxxxxxxxxxxxxxx";

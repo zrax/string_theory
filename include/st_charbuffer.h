@@ -69,15 +69,22 @@ namespace ST
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
     private:
+        enum
+        {
+            local_length = (ST_MAX_SSO_LENGTH * sizeof(char_T)) > ST_MAX_SSO_SIZE
+                            ? (ST_MAX_SSO_SIZE / sizeof(char_T))
+                            : ST_MAX_SSO_LENGTH
+        };
+
         char_T *m_chars;
         size_t m_size;
-        char_T m_data[ST_SHORT_STRING_LEN];
+        char_T m_data[local_length];
 
         typedef std::char_traits<char_T> traits_t;
 
         inline bool is_reffed() const noexcept
         {
-            return m_size >= ST_SHORT_STRING_LEN;
+            return m_size >= local_length;
         }
 
     public:
@@ -95,7 +102,7 @@ namespace ST
                 traits_t::copy(m_chars, copy.m_chars, copy.m_size);
                 m_chars[copy.m_size] = 0;
             } else {
-                traits_t::copy(m_data, copy.m_data, ST_SHORT_STRING_LEN);
+                traits_t::copy(m_data, copy.m_data, local_length);
                 m_chars = m_data;
             }
             m_size = copy.m_size;
@@ -105,7 +112,7 @@ namespace ST
             : m_size(move.m_size)
         {
             m_chars = is_reffed() ? move.m_chars : m_data;
-            traits_t::copy(m_data, move.m_data, ST_SHORT_STRING_LEN);
+            traits_t::copy(m_data, move.m_data, local_length);
             move.m_size = 0;
         }
 
@@ -138,7 +145,7 @@ namespace ST
 
             m_chars = m_data;
             m_size = 0;
-            traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
+            traits_t::assign(m_data, local_length, 0);
             return *this;
         }
 
@@ -157,7 +164,7 @@ namespace ST
                 traits_t::copy(m_chars, copy.m_chars, copy.m_size);
                 m_chars[copy.m_size] = 0;
             } else {
-                traits_t::copy(m_data, copy.m_data, ST_SHORT_STRING_LEN);
+                traits_t::copy(m_data, copy.m_data, local_length);
                 m_chars = m_data;
             }
             m_size = copy.m_size;
@@ -168,7 +175,7 @@ namespace ST
         {
             std::swap(m_chars, move.m_chars);
             std::swap(m_size, move.m_size);
-            traits_t::copy(m_data, move.m_data, ST_SHORT_STRING_LEN);
+            traits_t::copy(m_data, move.m_data, local_length);
             if (!is_reffed())
                 m_chars = m_data;
             return *this;
@@ -336,7 +343,7 @@ namespace ST
             if (is_reffed())
                 delete[] m_chars;
             else
-                traits_t::assign(m_data, ST_SHORT_STRING_LEN, 0);
+                traits_t::assign(m_data, local_length, 0);
 
             m_size = size;
             m_chars = is_reffed() ? new char_T[m_size + 1] : m_data;
