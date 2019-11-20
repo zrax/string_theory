@@ -1000,9 +1000,9 @@ TEST(format, udl_format)
     using namespace ST::literals;
 
     // Only need to test the UDL usage -- formatting is identical
-    EXPECT_EQ(ST_LITERAL("xxxx"), "xxxx"_sfmt());
-    EXPECT_EQ(ST_LITERAL("xxTESTxx"), "xx{}xx"_sfmt("TEST"));
-    EXPECT_EQ(ST_LITERAL("xxTESTxx123xx"), "xx{}xx{}xx"_sfmt("TEST", 123));
+    EXPECT_EQ(ST_LITERAL("xxxx"), "xxxx"_stfmt());
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), "xx{}xx"_stfmt("TEST"));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx123xx"), "xx{}xx{}xx"_stfmt("TEST", 123));
 }
 
 struct TestStruct { int x; float y; };
