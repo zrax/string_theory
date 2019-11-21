@@ -69,7 +69,7 @@ namespace _ST_PRIVATE
             m_stream.write(utf32.data(), utf32.size());
         }
 
-        ostream_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) override
+        ostream_format_writer &append(const char *data, size_t size) override
         {
             write_data<char_T>(data, size);
             return *this;

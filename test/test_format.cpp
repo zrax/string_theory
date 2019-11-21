@@ -1062,9 +1062,9 @@ void format_type(const ST::format_spec &format, ST::format_writer &output,
 {
     output.append("TestStruct{");
     ST::format_type(format, output, value.x);
-    output.append(",");
+    output.append_char(',');
     ST::format_type(format, output, value.y);
-    output.append("}");
+    output.append_char('}');
 }
 
 TEST(format, custom_formatter)

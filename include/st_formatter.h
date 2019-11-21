@@ -107,8 +107,14 @@ namespace ST
 
         virtual ~format_writer() noexcept { }
 
-        virtual format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) = 0;
+        virtual format_writer &append(const char *data, size_t size) = 0;
         virtual format_writer &append_char(char ch, size_t count = 1) = 0;
+
+        template <size_t size>
+        format_writer &append(const char (&literal)[size])
+        {
+            return append(literal, size - 1);
+        }
 
         bool next_format()
         {
