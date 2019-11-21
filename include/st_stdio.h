@@ -33,7 +33,7 @@ namespace _ST_PRIVATE
         stdio_format_writer(const char *format_str, FILE *stream) ST_NOEXCEPT
             : ST::format_writer(format_str), m_stream(stream) { }
 
-        stdio_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
+        stdio_format_writer &append(const char *data, size_t size) ST_OVERRIDE
         {
             (void)fwrite(data, sizeof(char), size, m_stream);
             return *this;

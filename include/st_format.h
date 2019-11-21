@@ -32,7 +32,7 @@ namespace _ST_PRIVATE
         string_format_writer(const char *format_str) ST_NOEXCEPT
             : ST::format_writer(format_str) { }
 
-        string_format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) ST_OVERRIDE
+        string_format_writer &append(const char *data, size_t size) ST_OVERRIDE
         {
             m_output.append(data, size);
             return *this;

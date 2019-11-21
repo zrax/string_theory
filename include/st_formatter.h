@@ -98,8 +98,14 @@ namespace ST
         format_writer(const char *format) ST_NOEXCEPT : m_format_str(format) { }
         virtual ~format_writer() ST_NOEXCEPT { }
 
-        virtual format_writer &append(const char *data, size_t size = ST_AUTO_SIZE) = 0;
+        virtual format_writer &append(const char *data, size_t size) = 0;
         virtual format_writer &append_char(char ch, size_t count = 1) = 0;
+
+        template <size_t size>
+        format_writer &append(const char (&literal)[size])
+        {
+            return append(literal, size - 1);
+        }
 
         bool next_format();
         ST::format_spec parse_format();
