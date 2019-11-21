@@ -89,26 +89,76 @@ TEST(format, strings)
     EXPECT_EQ(ST_LITERAL("xxTEST  xx"), ST::format("xx{6.4}xx", "TESTXX"));
     EXPECT_EQ(ST_LITERAL("xxTESTXXxx"), ST::format("xx{4.6}xx", "TESTXX"));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{4.6}xx", "TEST"));
+
+    // Test other string literal types
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", L"TEST"));
+    EXPECT_EQ(ST_LITERAL("xxTEST-\xe8\x80\x81-\xf4\x8f\xbf\xbfxx"),
+              ST::format("xx{}xx", u"TEST-\u8001-\U0010ffff"));
+    EXPECT_EQ(ST_LITERAL("xxTEST-\xe8\x80\x81-\xf4\x8f\xbf\xbfxx"),
+              ST::format("xx{}xx", U"TEST-\u8001-\U0010ffff"));
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    EXPECT_EQ(ST_LITERAL("xxTEST-\xe8\x80\x81-\xf4\x8f\xbf\xbfxx"),
+              ST::format("xx{}xx", u8"TEST-\u8001-\U0010ffff"));
+#endif
+
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", L"TESTXX"));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", u"TESTXX"));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", U"TESTXX"));
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", u8"TESTXX"));
+#endif
 }
 
 TEST(format, string_classes)
 {
     // These should be handled just like normal const char* string params
     // (see above), so just need to test that the wrappers are working
-    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", L"TEST"));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", ST_LITERAL("TEST")));
+
 #if defined(ST_ENABLE_STL_STRINGS)
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", std::string("TEST")));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", std::wstring(L"TEST")));
+    EXPECT_EQ(ST_LITERAL("xxTEST-\xe8\x80\x81-\xf4\x8f\xbf\xbfxx"),
+              ST::format("xx{}xx", std::u16string(u"TEST-\u8001-\U0010ffff")));
+    EXPECT_EQ(ST_LITERAL("xxTEST-\xe8\x80\x81-\xf4\x8f\xbf\xbfxx"),
+              ST::format("xx{}xx", std::u32string(U"TEST-\u8001-\U0010ffff")));
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    EXPECT_EQ(ST_LITERAL("xxTEST-\xe8\x80\x81-\xf4\x8f\xbf\xbfxx"),
+              ST::format("xx{}xx", std::u8string(u8"TEST-\u8001-\U0010ffff")));
 #endif
 
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", std::string_view("TEST")));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{}xx", std::wstring_view(L"TEST")));
+    EXPECT_EQ(ST_LITERAL("xxTEST-\xe8\x80\x81-\xf4\x8f\xbf\xbfxx"),
+              ST::format("xx{}xx", std::u16string_view(u"TEST-\u8001-\U0010ffff")));
+    EXPECT_EQ(ST_LITERAL("xxTEST-\xe8\x80\x81-\xf4\x8f\xbf\xbfxx"),
+              ST::format("xx{}xx", std::u32string_view(U"TEST-\u8001-\U0010ffff")));
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    EXPECT_EQ(ST_LITERAL("xxTEST-\xe8\x80\x81-\xf4\x8f\xbf\xbfxx"),
+              ST::format("xx{}xx", std::u8string_view(u8"TEST-\u8001-\U0010ffff")));
+#endif
+#endif  // defined(ST_ENABLE_STL_STRINGS)
+
     // Specifying precision on string formatting should truncate the string
-    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", L"TESTXX"));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", ST_LITERAL("TESTXX")));
+
 #if defined(ST_ENABLE_STL_STRINGS)
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::string("TESTXX")));
     EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::wstring(L"TESTXX")));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::u16string(u"TESTXX")));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::u32string(U"TESTXX")));
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::u8string(u8"TESTXX")));
 #endif
+
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::string_view("TESTXX")));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::wstring_view(L"TESTXX")));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::u16string_view(u"TESTXX")));
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::u32string_view(U"TESTXX")));
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    EXPECT_EQ(ST_LITERAL("xxTESTxx"), ST::format("xx{.4}xx", std::u8string(u8"TESTXX")));
+#endif
+#endif  // defined(ST_ENABLE_STL_STRINGS)
 }
 
 TEST(format, chars)

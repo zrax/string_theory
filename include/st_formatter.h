@@ -491,6 +491,33 @@ namespace ST
     }
 
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const char16_t *text)
+    {
+        if (text) {
+            ST::char_buffer utf8 = ST::string::from_utf16(text).to_utf8();
+            ST::format_string(format, output, utf8.data(), utf8.size());
+        }
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const char32_t *text)
+    {
+        if (text) {
+            ST::char_buffer utf8 = ST::string::from_utf32(text).to_utf8();
+            ST::format_string(format, output, utf8.data(), utf8.size());
+        }
+    }
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const char8_t *text)
+    {
+        ST::format_string(format, output, reinterpret_cast<const char *>(text),
+                          std::char_traits<char8_t>::length(text));
+    }
+#endif
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             const ST::string &str)
     {
         ST::format_string(format, output, str.c_str(), str.size());
@@ -526,17 +553,14 @@ namespace ST
     }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             const std::u8string &str)
     {
         ST::format_string(format, output, reinterpret_cast<const char*>(str.c_str()), str.size());
     }
-
 #endif
 
 #ifdef ST_HAVE_CXX17_STRING_VIEW
-
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             const std::string_view &view)
     {
@@ -563,21 +587,17 @@ namespace ST
         ST::char_buffer utf8 = ST::string::from_utf32(view.data(), view.size()).to_utf8();
         ST::format_string(format, output, utf8.data(), utf8.size());
     }
-
 #endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             const std::u8string_view &view)
     {
         ST::format_string(format, output, reinterpret_cast<const char*>(view.data()), view.size());
     }
-
 #endif
 
 #ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             const std::experimental::string_view &view)
     {
@@ -604,7 +624,6 @@ namespace ST
         ST::char_buffer utf8 = ST::string::from_utf32(view.data(), view.size()).to_utf8();
         ST::format_string(format, output, utf8.data(), utf8.size());
     }
-
 #endif
 
 #endif // defined(ST_ENABLE_STL_STRINGS)
