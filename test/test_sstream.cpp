@@ -193,17 +193,6 @@ TEST(string_stream, cat_strings)
     ss4 << s3 << s4;
     EXPECT_EQ(s3.size() + s4.size(), ss4.size());
     EXPECT_EQ(s3 + s4, ss4.to_string());
-
-    // Append char
-    ST::string_stream ss5;
-    ss5 << s1 << s2 << 'z';
-    EXPECT_EQ(s1.size() + s2.size() + 1, ss5.size());
-    EXPECT_EQ(s1 + s2 + 'z', ss5.to_string());
-
-    ST::string_stream ss6;
-    ss6 << 'z' << s4;
-    EXPECT_EQ(1 + s4.size(), ss6.size());
-    EXPECT_EQ('z' + s4, ss6.to_string());
 }
 
 TEST(string_stream, cat_ints)

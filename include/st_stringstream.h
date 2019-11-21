@@ -155,11 +155,6 @@ namespace ST
             return append(formatter.text(), formatter.size());
         }
 
-        string_stream &operator<<(char ch)
-        {
-            return append_char(ch);
-        }
-
         string_stream &operator<<(const string &text)
         {
             return append(text.c_str(), text.size());
