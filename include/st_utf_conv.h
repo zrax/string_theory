@@ -39,12 +39,18 @@ namespace ST
     ST_ENUM_CONSTANT(utf_validation_t, check_validity);
 }
 
+/* This can be set globally for your project in order to change the default
+ * behavior for verification of unicode data during string conversions. */
+#ifndef ST_DEFAULT_VALIDATION
+#   define ST_DEFAULT_VALIDATION ST::check_validity
+#endif
+
 #include "st_utf_conv_priv.h"
 
 namespace ST
 {
     inline char_buffer utf16_to_utf8(const char16_t *utf16, size_t size,
-                                     utf_validation_t validation)
+                                     utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -61,13 +67,14 @@ namespace ST
         return result;
     }
 
-    inline char_buffer utf16_to_utf8(const utf16_buffer &utf16, utf_validation_t validation)
+    inline char_buffer utf16_to_utf8(const utf16_buffer &utf16,
+                                     utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf16_to_utf8(utf16.data(), utf16.size(), validation);
     }
 
     inline char_buffer utf32_to_utf8(const char32_t *utf32, size_t size,
-                                     utf_validation_t validation)
+                                     utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -84,26 +91,30 @@ namespace ST
         return result;
     }
 
-    inline char_buffer utf32_to_utf8(const utf32_buffer &utf32, utf_validation_t validation)
+    inline char_buffer utf32_to_utf8(const utf32_buffer &utf32,
+                                     utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf32_to_utf8(utf32.data(), utf32.size(), validation);
     }
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), char_buffer>::type
-    wchar_to_utf8(const wchar_t *wstr, size_t size, utf_validation_t validation)
+    wchar_to_utf8(const wchar_t *wstr, size_t size,
+                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf16_to_utf8(reinterpret_cast<const char16_t *>(wstr), size, validation);
     }
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), char_buffer>::type
-    wchar_to_utf8(const wchar_t *wstr, size_t size, utf_validation_t validation)
+    wchar_to_utf8(const wchar_t *wstr, size_t size,
+                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf32_to_utf8(reinterpret_cast<const char32_t *>(wstr), size, validation);
     }
 
-    inline char_buffer wchar_to_utf8(const wchar_buffer &wstr, utf_validation_t validation)
+    inline char_buffer wchar_to_utf8(const wchar_buffer &wstr,
+                                     utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return wchar_to_utf8(wstr.data(), wstr.size(), validation);
     }
@@ -129,7 +140,7 @@ namespace ST
     }
 
     inline utf16_buffer utf8_to_utf16(const char *utf8, size_t size,
-                                      utf_validation_t validation)
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -146,21 +157,22 @@ namespace ST
         return result;
     }
 
-    inline utf16_buffer utf8_to_utf16(const char_buffer &utf8, utf_validation_t validation)
+    inline utf16_buffer utf8_to_utf16(const char_buffer &utf8,
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf8_to_utf16(utf8.data(), utf8.size(), validation);
     }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
     inline utf16_buffer utf8_to_utf16(const char8_t *utf8, size_t size,
-                                      utf_validation_t validation)
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf8_to_utf16(reinterpret_cast<const char *>(utf8), size, validation);
     }
 #endif
 
     inline utf16_buffer utf32_to_utf16(const char32_t *utf32, size_t size,
-                                       utf_validation_t validation)
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -177,14 +189,16 @@ namespace ST
         return result;
     }
 
-    inline utf16_buffer utf32_to_utf16(const utf32_buffer &utf32, utf_validation_t validation)
+    inline utf16_buffer utf32_to_utf16(const utf32_buffer &utf32,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf32_to_utf16(utf32.data(), utf32.size(), validation);
     }
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), utf16_buffer>::type
-    wchar_to_utf16(const wchar_t *wstr, size_t size, utf_validation_t validation)
+    wchar_to_utf16(const wchar_t *wstr, size_t size,
+                   utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         (void)validation;
         return utf16_buffer(reinterpret_cast<const char16_t *>(wstr), size);
@@ -192,12 +206,14 @@ namespace ST
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), utf16_buffer>::type
-    wchar_to_utf16(const wchar_t *wstr, size_t size, utf_validation_t validation)
+    wchar_to_utf16(const wchar_t *wstr, size_t size,
+                   utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf32_to_utf16(reinterpret_cast<const char32_t *>(wstr), size, validation);
     }
 
-    inline utf16_buffer wchar_to_utf16(const wchar_buffer &wstr, utf_validation_t validation)
+    inline utf16_buffer wchar_to_utf16(const wchar_buffer &wstr,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return wchar_to_utf16(wstr.data(), wstr.size(), validation);
     }
@@ -222,7 +238,7 @@ namespace ST
     }
 
     inline utf32_buffer utf8_to_utf32(const char *utf8, size_t size,
-                                      utf_validation_t validation)
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -239,21 +255,22 @@ namespace ST
         return result;
     }
 
-    inline utf32_buffer utf8_to_utf32(const char_buffer &utf8, utf_validation_t validation)
+    inline utf32_buffer utf8_to_utf32(const char_buffer &utf8,
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf8_to_utf32(utf8.data(), utf8.size(), validation);
     }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
     inline utf32_buffer utf8_to_utf32(const char8_t *utf8, size_t size,
-                                      utf_validation_t validation)
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf8_to_utf32(reinterpret_cast<const char *>(utf8), size, validation);
     }
 #endif
 
     inline utf32_buffer utf16_to_utf32(const char16_t *utf16, size_t size,
-                                       utf_validation_t validation)
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -270,27 +287,31 @@ namespace ST
         return result;
     }
 
-    inline utf32_buffer utf16_to_utf32(const utf16_buffer &utf16, utf_validation_t validation)
+    inline utf32_buffer utf16_to_utf32(const utf16_buffer &utf16,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf16_to_utf32(utf16.data(), utf16.size(), validation);
     }
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), utf32_buffer>::type
-    wchar_to_utf32(const wchar_t *wstr, size_t size, utf_validation_t validation)
+    wchar_to_utf32(const wchar_t *wstr, size_t size,
+                   utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf16_to_utf32(reinterpret_cast<const char16_t *>(wstr), size, validation);
     }
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), utf32_buffer>::type
-    wchar_to_utf32(const wchar_t *wstr, size_t size, utf_validation_t validation)
+    wchar_to_utf32(const wchar_t *wstr, size_t size,
+                   utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         (void)validation;
         return utf32_buffer(reinterpret_cast<const char32_t *>(wstr), size);
     }
 
-    inline utf32_buffer wchar_to_utf32(const wchar_buffer &wstr, utf_validation_t validation)
+    inline utf32_buffer wchar_to_utf32(const wchar_buffer &wstr,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return wchar_to_utf32(wstr.data(), wstr.size(), validation);
     }
@@ -316,7 +337,8 @@ namespace ST
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), wchar_buffer>::type
-    utf8_to_wchar(const char *utf8, size_t size, utf_validation_t validation)
+    utf8_to_wchar(const char *utf8, size_t size,
+                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -335,7 +357,8 @@ namespace ST
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), wchar_buffer>::type
-    utf8_to_wchar(const char *utf8, size_t size, utf_validation_t validation)
+    utf8_to_wchar(const char *utf8, size_t size,
+                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -352,14 +375,15 @@ namespace ST
         return result;
     }
 
-    inline wchar_buffer utf8_to_wchar(const char_buffer &utf8, utf_validation_t validation)
+    inline wchar_buffer utf8_to_wchar(const char_buffer &utf8,
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf8_to_wchar(utf8.data(), utf8.size(), validation);
     }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
     inline wchar_buffer utf8_to_wchar(const char8_t *utf8, size_t size,
-                                      utf_validation_t validation)
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf8_to_wchar(reinterpret_cast<const char *>(utf8), size, validation);
     }
@@ -367,7 +391,8 @@ namespace ST
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), wchar_buffer>::type
-    utf16_to_wchar(const char16_t *utf16, size_t size, utf_validation_t validation)
+    utf16_to_wchar(const char16_t *utf16, size_t size,
+                   utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         (void)validation;
         return wchar_buffer(reinterpret_cast<const wchar_t *>(utf16), size);
@@ -375,7 +400,8 @@ namespace ST
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), wchar_buffer>::type
-    utf16_to_wchar(const char16_t *utf16, size_t size, utf_validation_t validation)
+    utf16_to_wchar(const char16_t *utf16, size_t size,
+                   utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -392,14 +418,16 @@ namespace ST
         return result;
     }
 
-    inline wchar_buffer utf16_to_wchar(const utf16_buffer &utf16, utf_validation_t validation)
+    inline wchar_buffer utf16_to_wchar(const utf16_buffer &utf16,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf16_to_wchar(utf16.data(), utf16.size(), validation);
     }
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), wchar_buffer>::type
-    utf32_to_wchar(const char32_t *utf32, size_t size, utf_validation_t validation)
+    utf32_to_wchar(const char32_t *utf32, size_t size,
+                   utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
 
@@ -418,13 +446,15 @@ namespace ST
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), wchar_buffer>::type
-    utf32_to_wchar(const char32_t *utf32, size_t size, utf_validation_t validation)
+    utf32_to_wchar(const char32_t *utf32, size_t size,
+                   utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         (void)validation;
         return wchar_buffer(reinterpret_cast<const wchar_t *>(utf32), size);
     }
 
-    inline wchar_buffer utf32_to_wchar(const utf32_buffer &utf32, utf_validation_t validation)
+    inline wchar_buffer utf32_to_wchar(const utf32_buffer &utf32,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
     {
         return utf32_to_wchar(utf32.data(), utf32.size(), validation);
     }
@@ -469,7 +499,7 @@ namespace ST
     }
 
     inline char_buffer utf8_to_latin_1(const char *utf8, size_t size,
-                                       utf_validation_t validation,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION,
                                        bool substitute_out_of_range = true)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
@@ -489,7 +519,7 @@ namespace ST
     }
 
     inline char_buffer utf8_to_latin_1(const char_buffer &utf8,
-                                       utf_validation_t validation,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION,
                                        bool substitute_out_of_range = true)
     {
         return utf8_to_latin_1(utf8.data(), utf8.size(), validation,
@@ -498,7 +528,7 @@ namespace ST
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
     inline char_buffer utf8_to_latin_1(const char8_t *utf8, size_t size,
-                                       utf_validation_t validation,
+                                       utf_validation_t validation = ST_DEFAULT_VALIDATION,
                                        bool substitute_out_of_range = true)
     {
         return utf8_to_latin_1(reinterpret_cast<const char *>(utf8), size,
@@ -507,7 +537,7 @@ namespace ST
 #endif
 
     inline char_buffer utf16_to_latin_1(const char16_t *utf16, size_t size,
-                                        utf_validation_t validation,
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION,
                                         bool substitute_out_of_range = true)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
@@ -527,7 +557,7 @@ namespace ST
     }
 
     inline char_buffer utf16_to_latin_1(const utf16_buffer &utf16,
-                                        utf_validation_t validation,
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION,
                                         bool substitute_out_of_range = true)
     {
         return utf16_to_latin_1(utf16.data(), utf16.size(), validation,
@@ -535,7 +565,7 @@ namespace ST
     }
 
     inline char_buffer utf32_to_latin_1(const char32_t *utf32, size_t size,
-                                        utf_validation_t validation,
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION,
                                         bool substitute_out_of_range = true)
     {
         ST_ASSERT(size < ST_HUGE_BUFFER_SIZE, "String data buffer is too large");
@@ -551,7 +581,7 @@ namespace ST
     }
 
     inline char_buffer utf32_to_latin_1(const utf32_buffer &utf32,
-                                        utf_validation_t validation,
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION,
                                         bool substitute_out_of_range = true)
     {
         return utf32_to_latin_1(utf32.data(), utf32.size(), validation,
@@ -560,7 +590,8 @@ namespace ST
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char16_t), char_buffer>::type
-    wchar_to_latin_1(const wchar_t *wstr, size_t size, utf_validation_t validation,
+    wchar_to_latin_1(const wchar_t *wstr, size_t size,
+                     utf_validation_t validation = ST_DEFAULT_VALIDATION,
                      bool substitute_out_of_range = true)
     {
         return utf16_to_latin_1(reinterpret_cast<const char16_t *>(wstr), size,
@@ -569,7 +600,8 @@ namespace ST
 
     template <typename WcType = wchar_t>
     typename std::enable_if<sizeof(WcType) == sizeof(char32_t), char_buffer>::type
-    wchar_to_latin_1(const wchar_t *wstr, size_t size, utf_validation_t validation,
+    wchar_to_latin_1(const wchar_t *wstr, size_t size,
+                     utf_validation_t validation = ST_DEFAULT_VALIDATION,
                      bool substitute_out_of_range = true)
     {
         return utf32_to_latin_1(reinterpret_cast<const char32_t *>(wstr), size,
@@ -577,7 +609,7 @@ namespace ST
     }
 
     inline char_buffer wchar_to_latin_1(const wchar_buffer &wstr,
-                                        utf_validation_t validation,
+                                        utf_validation_t validation = ST_DEFAULT_VALIDATION,
                                         bool substitute_out_of_range = true)
     {
         return wchar_to_latin_1(wstr.data(), wstr.size(), validation,

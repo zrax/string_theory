@@ -40,12 +40,6 @@
 #   endif
 #endif
 
-/* This can be set globally for your project in order to change the default
- * behavior for verification of unicode data during string conversions. */
-#ifndef ST_DEFAULT_VALIDATION
-#   define ST_DEFAULT_VALIDATION ST::check_validity
-#endif
-
 #define ST_WHITESPACE   " \t\r\n"
 
 namespace ST
