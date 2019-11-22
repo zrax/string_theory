@@ -93,6 +93,43 @@ namespace ST
             return append(text);
         }
 
+        string_stream &operator<<(const wchar_t *text)
+        {
+            if (text) {
+                const auto size = std::char_traits<wchar_t>::length(text);
+                ST::char_buffer utf8 = ST::wchar_to_utf8(text, size);
+                return append(utf8.data(), utf8.size());
+            }
+            return *this;
+        }
+
+        string_stream &operator<<(const char16_t *text)
+        {
+            if (text) {
+                const auto size = std::char_traits<char16_t>::length(text);
+                ST::char_buffer utf8 = ST::utf16_to_utf8(text, size);
+                return append(utf8.data(), utf8.size());
+            }
+            return *this;
+        }
+
+        string_stream &operator<<(const char32_t *text)
+        {
+            if (text) {
+                const auto size = std::char_traits<char32_t>::length(text);
+                ST::char_buffer utf8 = ST::utf32_to_utf8(text, size);
+                return append(utf8.data(), utf8.size());
+            }
+            return *this;
+        }
+
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        string_stream &operator<<(const char8_t *text)
+        {
+            return append(reinterpret_cast<const char *>(text));
+        }
+#endif
+
         string_stream &operator<<(int num)
         {
             ST::uint_formatter<unsigned int> formatter;
@@ -169,33 +206,30 @@ namespace ST
 
         string_stream &operator<<(const std::wstring &text)
         {
-            ST::char_buffer utf8 = ST::string::from_wchar(text.c_str(), text.size()).to_utf8();
+            ST::char_buffer utf8 = ST::wchar_to_utf8(text.c_str(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
         string_stream &operator<<(const std::u16string &text)
         {
-            ST::char_buffer utf8 = ST::string::from_utf16(text.c_str(), text.size()).to_utf8();
+            ST::char_buffer utf8 = ST::utf16_to_utf8(text.c_str(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
         string_stream &operator<<(const std::u32string &text)
         {
-            ST::char_buffer utf8 = ST::string::from_utf32(text.c_str(), text.size()).to_utf8();
+            ST::char_buffer utf8 = ST::utf32_to_utf8(text.c_str(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-
         string_stream &operator<<(const std::u8string &text)
         {
             return append(reinterpret_cast<const char*>(text.c_str()), text.size());
         }
-
 #endif
 
 #ifdef ST_HAVE_CXX17_STRING_VIEW
-
         string_stream &operator<<(const std::string_view &text)
         {
             return append(text.data(), text.size());
@@ -203,35 +237,31 @@ namespace ST
 
         string_stream &operator<<(const std::wstring_view &text)
         {
-            ST::char_buffer utf8 = ST::string::from_wchar(text.data(), text.size()).to_utf8();
+            ST::char_buffer utf8 = ST::wchar_to_utf8(text.data(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
         string_stream &operator<<(const std::u16string_view &text)
         {
-            ST::char_buffer utf8 = ST::string::from_utf16(text.data(), text.size()).to_utf8();
+            ST::char_buffer utf8 = ST::utf16_to_utf8(text.data(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
         string_stream &operator<<(const std::u32string_view &text)
         {
-            ST::char_buffer utf8 = ST::string::from_utf32(text.data(), text.size()).to_utf8();
+            ST::char_buffer utf8 = ST::utf32_to_utf8(text.data(), text.size());
             return append(utf8.data(), utf8.size());
         }
-
 #endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-
         string_stream &operator<<(const std::u8string_view &text)
         {
             return append(reinterpret_cast<const char*>(text.data()), text.size());
         }
-
 #endif
 
 #ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-
         string_stream &operator<<(const std::experimental::string_view &text)
         {
             return append(text.data(), text.size());
@@ -239,22 +269,21 @@ namespace ST
 
         string_stream &operator<<(const std::experimental::wstring_view &text)
         {
-            ST::char_buffer utf8 = ST::string::from_wchar(text.data(), text.size()).to_utf8();
+            ST::char_buffer utf8 = ST::wchar_to_utf8(text.data(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
         string_stream &operator<<(const std::experimental::u16string_view &text)
         {
-            ST::char_buffer utf8 = ST::string::from_utf16(text.data(), text.size()).to_utf8();
+            ST::char_buffer utf8 = ST::utf16_to_utf8(text.data(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
         string_stream &operator<<(const std::experimental::u32string_view &text)
         {
-            ST::char_buffer utf8 = ST::string::from_utf32(text.data(), text.size()).to_utf8();
+            ST::char_buffer utf8 = ST::utf32_to_utf8(text.data(), text.size());
             return append(utf8.data(), utf8.size());
         }
-
 #endif
 
 #endif // defined(ST_ENABLE_STL_STRINGS)
@@ -262,23 +291,19 @@ namespace ST
 #if defined(ST_ENABLE_STL_FILESYSTEM)
 
 #ifdef ST_HAVE_CXX17_FILESYSTEM
-
         string_stream &operator<<(const std::filesystem::path &path)
         {
             auto u8path = path.u8string();
             return append(reinterpret_cast<const char*>(u8path.c_str()), u8path.size());
         }
-
 #endif
 
 #ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
-
         string_stream& operator<<(const std::experimental::filesystem::path& path)
         {
             auto u8path = path.u8string();
             return append(reinterpret_cast<const char *>(u8path.c_str()), u8path.size());
         }
-
 #endif
 
 #endif // defined(ST_ENABLE_STL_FILESYSTEM)
