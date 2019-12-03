@@ -1,0 +1,70 @@
+#!/usr/bin/env groovy
+
+pipeline {
+  agent {
+    label 'solaris'
+  }
+
+  environment {
+    PATH = "/opt/local/bin:$PATH"
+    CC = 'gcc'
+    CXX = 'g++'
+  }
+
+  options {
+      timestamps()
+  }
+
+  stages {
+    stage('GitHub Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sh "mkdir -p build"
+
+        dir("build") {
+          sh "cmake -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX=${env.WORKSPACE}/artifacts .."
+          sh "make"
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        dir("build") {
+          sh "make test"
+        }
+      }
+    }
+
+    stage('Install') {
+      steps {
+        dir("build") {
+          sh "make install"
+        }
+      }
+
+      post {
+        success {
+          dir("artifacts") {
+            archiveArtifacts artifacts: '**/*', fingerprint: true, onlyIfSuccessful: true
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      emailext attachLog: true,
+               body: '''${JELLY_SCRIPT, template="html"}''',
+               recipientProviders: [developers(), requestor()],
+               to: "FoundryMaster@OpenUru.org",
+               subject: "${env.JOB_NAME} Build #${env.BUILD_NUMBER}: ${currentBuild.currentResult}"
+    }
+  }
+}
