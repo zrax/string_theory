@@ -47,8 +47,8 @@ jobs:
       matrix:
         xcode:
           #- Xcode_9.4.1    # Not working
-          - Xcode_10.3
-          - Xcode_11.2
+          #- Xcode_10.3     # GitHub removed :(
+          - Xcode_11.2.1
     steps:
       - uses: actions/checkout@v1
       - name: Build and Test
