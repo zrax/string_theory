@@ -64,6 +64,7 @@ namespace _ST_PRIVATE
             return conversion_error_t::invalid_utf8_seq; \
     } while (false)
 
+    ST_NODISCARD
     inline conversion_error_t validate_utf8(const char *buffer, size_t size)
     {
         const unsigned char *cp = reinterpret_cast<const unsigned char *>(buffer);
@@ -164,6 +165,7 @@ namespace _ST_PRIVATE
         return output_size;
     }
 
+    ST_NODISCARD
     inline ST::char_buffer cleanup_utf8_buffer(const ST::char_buffer &buffer)
     {
         size_t clean_size = cleanup_utf8(nullptr, buffer.data(), buffer.size());
@@ -173,11 +175,13 @@ namespace _ST_PRIVATE
         return cb_clean;
     }
 
+    ST_NODISCARD
     inline char32_t error_char(conversion_error_t value)
     {
         return static_cast<char32_t>(value) | 0x400000u;
     }
 
+    ST_NODISCARD
     inline conversion_error_t char_error(char32_t ch)
     {
         return (ch & 0x400000u) != 0
@@ -185,6 +189,7 @@ namespace _ST_PRIVATE
                : conversion_error_t::success;
     }
 
+    ST_NODISCARD
     inline char32_t extract_utf8(const unsigned char *&utf8, const unsigned char *end)
     {
         char32_t bigch;
@@ -224,6 +229,7 @@ namespace _ST_PRIVATE
         return error_char(conversion_error_t::invalid_utf8_seq);
     }
 
+    ST_NODISCARD
     inline size_t utf8_measure(char32_t ch)
     {
         if (ch < 0x80) {
@@ -240,6 +246,7 @@ namespace _ST_PRIVATE
         }
     }
 
+    ST_NODISCARD
     inline conversion_error_t write_utf8(char *&dest, char32_t ch)
     {
         if (ch < 0x80) {
@@ -264,6 +271,7 @@ namespace _ST_PRIVATE
 
     }
 
+    ST_NODISCARD
     inline char32_t extract_utf16(const char16_t *&utf16, const char16_t *end)
     {
         char32_t bigch;
@@ -294,6 +302,7 @@ namespace _ST_PRIVATE
         return static_cast<char32_t>(*utf16++);
     }
 
+    ST_NODISCARD
     inline size_t utf16_measure(char32_t ch)
     {
         // Out-of-range code point always gets replaced
@@ -304,6 +313,7 @@ namespace _ST_PRIVATE
         return 2;
     }
 
+    ST_NODISCARD
     inline conversion_error_t write_utf16(char16_t *&dest, char32_t ch)
     {
         if (ch < 0x10000) {
@@ -319,6 +329,7 @@ namespace _ST_PRIVATE
         return conversion_error_t::success;
     }
 
+    ST_NODISCARD
     inline size_t utf8_measure_from_utf16(const char16_t *utf16, size_t size)
     {
         if (!utf16)
@@ -332,6 +343,7 @@ namespace _ST_PRIVATE
         return u8len;
     }
 
+    ST_NODISCARD
     inline conversion_error_t utf8_convert_from_utf16(char *dest,
                     const char16_t *utf16, size_t size,
                     ST::utf_validation_t validation)
@@ -357,6 +369,7 @@ namespace _ST_PRIVATE
         return conversion_error_t::success;
     }
 
+    ST_NODISCARD
     inline size_t utf8_measure_from_utf32(const char32_t *utf32, size_t size)
     {
         if (!utf32)
@@ -370,6 +383,7 @@ namespace _ST_PRIVATE
         return u8len;
     }
 
+    ST_NODISCARD
     inline conversion_error_t utf8_convert_from_utf32(char *dest,
                     const char32_t *utf32, size_t size,
                     ST::utf_validation_t validation)
@@ -390,6 +404,7 @@ namespace _ST_PRIVATE
         return conversion_error_t::success;
     }
 
+    ST_NODISCARD
     inline size_t utf8_measure_from_latin_1(const char *astr, size_t size)
     {
         if (!astr)
@@ -421,6 +436,7 @@ namespace _ST_PRIVATE
         }
     }
 
+    ST_NODISCARD
     inline size_t utf16_measure_from_utf8(const char *utf8, size_t size)
     {
         if (!utf8)
@@ -434,6 +450,7 @@ namespace _ST_PRIVATE
         return u16len;
     }
 
+    ST_NODISCARD
     inline conversion_error_t utf16_convert_from_utf8(char16_t *dest,
                     const char *utf8, size_t size,
                     ST::utf_validation_t validation)
@@ -457,6 +474,7 @@ namespace _ST_PRIVATE
         return conversion_error_t::success;
     }
 
+    ST_NODISCARD
     inline size_t utf16_measure_from_utf32(const char32_t *utf32, size_t size)
     {
         if (!utf32)
@@ -470,6 +488,7 @@ namespace _ST_PRIVATE
         return u16len;
     }
 
+    ST_NODISCARD
     inline conversion_error_t utf16_convert_from_utf32(char16_t *dest,
                     const char32_t *utf32, size_t size,
                     ST::utf_validation_t validation)
@@ -488,6 +507,7 @@ namespace _ST_PRIVATE
         return conversion_error_t::success;
     }
 
+    ST_NODISCARD
     inline size_t utf32_measure_from_utf8(const char *utf8, size_t size)
     {
         if (!utf8)
@@ -503,6 +523,7 @@ namespace _ST_PRIVATE
         return u32len;
     }
 
+    ST_NODISCARD
     inline conversion_error_t utf32_convert_from_utf8(char32_t *dest,
                     const char *utf8, size_t size,
                     ST::utf_validation_t validation)
@@ -525,6 +546,7 @@ namespace _ST_PRIVATE
         return conversion_error_t::success;
     }
 
+    ST_NODISCARD
     inline size_t utf32_measure_from_utf16(const char16_t *utf16, size_t size)
     {
         if (!utf16)
@@ -540,6 +562,7 @@ namespace _ST_PRIVATE
         return u32len;
     }
 
+    ST_NODISCARD
     inline conversion_error_t utf32_convert_from_utf16(char32_t *dest,
                     const char16_t *utf16, size_t size,
                     ST::utf_validation_t validation)
@@ -578,12 +601,14 @@ namespace _ST_PRIVATE
             *dest++ = static_cast<unsigned char>(*sp++);
     }
 
+    ST_NODISCARD
     inline size_t latin_1_measure_from_utf8(const char *utf8, size_t size)
     {
         // This always returns the same answer as UTF-32
         return utf32_measure_from_utf8(utf8, size);
     }
 
+    ST_NODISCARD
     inline conversion_error_t latin_1_convert_from_utf8(char *dest,
                     const char *utf8, size_t size,
                     ST::utf_validation_t validation,
@@ -613,12 +638,14 @@ namespace _ST_PRIVATE
         return conversion_error_t::success;
     }
 
+    ST_NODISCARD
     inline size_t latin_1_measure_from_utf16(const char16_t *utf16, size_t size)
     {
         // This always returns the same answer as UTF-32
         return utf32_measure_from_utf16(utf16, size);
     }
 
+    ST_NODISCARD
     inline conversion_error_t latin_1_convert_from_utf16(char *dest,
                     const char16_t *utf16, size_t size,
                     ST::utf_validation_t validation,
@@ -648,6 +675,7 @@ namespace _ST_PRIVATE
         return conversion_error_t::success;
     }
 
+    ST_NODISCARD
     inline conversion_error_t latin_1_convert_from_utf32(char *dest,
                     const char32_t *utf32, size_t size,
                     ST::utf_validation_t validation,

@@ -29,6 +29,7 @@
 
 namespace _ST_PRIVATE
 {
+    ST_NODISCARD
     inline char cl_fast_lower(char ch)
     {
         // In the C locale, the only characters that get converted are ['A'..'Z']
@@ -37,6 +38,7 @@ namespace _ST_PRIVATE
         return ch;
     }
 
+    ST_NODISCARD
     inline char cl_fast_upper(char ch)
     {
         // In the C locale, the only characters that get converted are ['a'..'z']
@@ -45,23 +47,27 @@ namespace _ST_PRIVATE
         return ch;
     }
 
+    ST_NODISCARD
     inline int compare_cs(const char *left, const char *right, size_t fsize) noexcept
     {
         return std::char_traits<char>::compare(left, right, fsize);
     }
 
+    ST_NODISCARD
     inline int compare_cs(const char *left, size_t lsize,
                           const char *right, size_t rsize) noexcept
     {
         return ST::char_buffer::compare(left, lsize, right, rsize);
     }
 
+    ST_NODISCARD
     inline int compare_cs(const char *left, size_t lsize,
                            const char *right, size_t rsize, size_t maxlen) noexcept
     {
         return ST::char_buffer::compare(left, lsize, right, rsize, maxlen);
     }
 
+    ST_NODISCARD
     inline int compare_ci(const char *left, const char *right, size_t fsize) noexcept
     {
         while (fsize--) {
@@ -73,6 +79,7 @@ namespace _ST_PRIVATE
         return 0;
     }
 
+    ST_NODISCARD
     inline int compare_ci(const char *left, size_t lsize,
                           const char *right, size_t rsize) noexcept
     {
@@ -81,6 +88,7 @@ namespace _ST_PRIVATE
         return cmp ? cmp : static_cast<int>(lsize - rsize);
     }
 
+    ST_NODISCARD
     inline int compare_ci(const char *left, size_t lsize,
                           const char *right, size_t rsize, size_t maxlen) noexcept
     {
@@ -89,11 +97,13 @@ namespace _ST_PRIVATE
         return compare_ci(left, lsize, right, rsize);
     }
 
+    ST_NODISCARD
     inline const char *find_cs(const char *haystack, const char *needle)
     {
         return strstr(haystack, needle);
     }
 
+    ST_NODISCARD
     inline const char *find_ci(const char *haystack, const char *needle)
     {
         // The "easy" way
@@ -108,11 +118,13 @@ namespace _ST_PRIVATE
         return nullptr;
     }
 
+    ST_NODISCARD
     inline const char *find_cs(const char *haystack, size_t size, char ch)
     {
         return std::char_traits<char>::find(haystack, size, ch);
     }
 
+    ST_NODISCARD
     inline const char *find_ci(const char *haystack, size_t size, char ch)
     {
         const char *cp = haystack;
@@ -127,6 +139,7 @@ namespace _ST_PRIVATE
     }
 
     template <typename int_T>
+    ST_NODISCARD
     ST::char_buffer mini_format_int_s(int radix, bool upper_case, int_T value)
     {
         typedef typename std::make_unsigned<int_T>::type uint_T;
@@ -147,6 +160,7 @@ namespace _ST_PRIVATE
     }
 
     template <typename uint_T>
+    ST_NODISCARD
     ST::char_buffer mini_format_int_u(int radix, bool upper_case, uint_T value)
     {
         ST::uint_formatter<uint_T> formatter;
@@ -160,6 +174,7 @@ namespace _ST_PRIVATE
     }
 
     template <typename float_T>
+    ST_NODISCARD
     static ST::char_buffer mini_format_float(float_T value, char format)
     {
         ST::float_formatter<float_T> formatter;

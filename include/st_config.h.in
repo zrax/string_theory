@@ -27,9 +27,10 @@
 #define ST_VERSION_STR "@ST_VERSION@"
 
 #cmakedefine ST_HAVE_INT64
-#cmakedefine ST_HAVE_DEPRECATED_ATTR
 #cmakedefine ST_INT64_IS_LONG
+#cmakedefine ST_HAVE_DEPRECATED_ATTR
 #if (__cplusplus > 201402L) || (defined(_MSVC_LANG) && (_MSVC_LANG > 201402L))
+#cmakedefine ST_HAVE_NODISCARD_ATTR
 #cmakedefine ST_HAVE_CXX17_STRING_VIEW
 #cmakedefine ST_HAVE_EXPERIMENTAL_STRING_VIEW
 #cmakedefine ST_HAVE_CXX17_FILESYSTEM
@@ -77,6 +78,12 @@
 #   define ST_DEPRECATED_IN_3_0(message)
 #else
 #   define ST_DEPRECATED_IN_3_0(message) ST_DEPRECATED(message)
+#endif
+
+#if defined(ST_HAVE_NODISCARD_ATTR)
+#   define ST_NODISCARD [[nodiscard]]
+#else
+#   define ST_NODISCARD
 #endif
 
 #define ST_MAX_SSO_LENGTH       (16)

@@ -32,6 +32,7 @@ namespace _ST_PRIVATE
         numeric_zero
     };
 
+    ST_NODISCARD
     inline size_t pad_size(const ST::format_spec &format, size_t size,
                            numeric_type ntype)
     {

@@ -116,6 +116,7 @@ namespace ST
             return append(literal, size - 1);
         }
 
+        ST_NODISCARD
         bool next_format()
         {
             switch (fetch_prefix()) {
@@ -128,6 +129,7 @@ namespace ST
             }
         }
 
+        ST_NODISCARD
         ST::format_spec parse_format()
         {
             ST_ASSERT(*m_format_str == '{', "parse_format() called with no format");
@@ -228,6 +230,7 @@ namespace ST
     private:
         const char *m_format_str;
 
+        ST_NODISCARD
         char fetch_prefix()
         {
             const char *next = m_format_str;
@@ -289,6 +292,7 @@ namespace ST
         formatter_ref_t;
 
     template <typename type_T>
+    ST_NODISCARD
     formatter_ref_t make_formatter_ref(type_T value)
     {
         return [value](const ST::format_spec &format, ST::format_writer &output) {

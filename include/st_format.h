@@ -44,6 +44,7 @@ namespace _ST_PRIVATE
             return *this;
         }
 
+        ST_NODISCARD
         ST::string to_string(bool utf8_encoded, ST::utf_validation_t validation)
         {
             return m_output.to_string(utf8_encoded, validation);
@@ -57,6 +58,7 @@ namespace _ST_PRIVATE
 namespace ST
 {
     template <typename... args_T>
+    ST_NODISCARD
     string format(const char *fmt_str, args_T &&...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str);
@@ -65,6 +67,7 @@ namespace ST
     }
 
     template <typename... args_T>
+    ST_NODISCARD
     string format(utf_validation_t validation, const char *fmt_str,
                   args_T &&...args)
     {
@@ -74,6 +77,7 @@ namespace ST
     }
 
     template <typename... args_T>
+    ST_NODISCARD
     string format_latin_1(const char *fmt_str, args_T &&...args)
     {
         _ST_PRIVATE::string_format_writer data(fmt_str);
@@ -91,6 +95,7 @@ namespace _ST_PRIVATE
             : m_format(fmt_str) { }
 
         template <typename... args_T>
+        ST_NODISCARD
         ST::string operator()(args_T &&...args)
         {
             return ST::format(m_format, std::forward<args_T>(args)...);
@@ -103,6 +108,7 @@ namespace _ST_PRIVATE
 
 namespace ST { namespace literals
 {
+    ST_NODISCARD
     inline _ST_PRIVATE::udl_formatter operator"" _stfmt(const char *fmt_str, size_t)
     {
         return _ST_PRIVATE::udl_formatter(fmt_str);

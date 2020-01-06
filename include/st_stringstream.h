@@ -308,9 +308,13 @@ namespace ST
 
 #endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
+        ST_NODISCARD
         const char *raw_buffer() const noexcept { return m_chars; }
+
+        ST_NODISCARD
         size_t size() const noexcept { return m_size; }
 
+        ST_NODISCARD
         string to_string(bool utf8_encoded = true,
                          utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
@@ -339,6 +343,7 @@ namespace ST
         size_t m_alloc, m_size;
         char   m_stack[ST_STACK_STRING_SIZE];
 
+        ST_NODISCARD
         bool is_heap() const noexcept
         {
             return m_alloc > ST_STACK_STRING_SIZE;

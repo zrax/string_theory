@@ -181,6 +181,7 @@ namespace ST
             return *this;
         }
 
+        ST_NODISCARD
         static int compare(const char_T *left, size_t lsize,
                            const char_T *right, size_t rsize) noexcept
         {
@@ -189,6 +190,7 @@ namespace ST
             return cmp ? cmp : static_cast<int>(lsize - rsize);
         }
 
+        ST_NODISCARD
         static int compare(const char_T *left, size_t lsize,
                            const char_T *right, size_t rsize, size_t maxlen) noexcept
         {
@@ -197,65 +199,84 @@ namespace ST
             return compare(left, lsize, right, rsize);
         }
 
+        ST_NODISCARD
         int compare(const buffer<char_T> &other) const noexcept
         {
             return compare(data(), size(), other.data(), other.size());
         }
 
+        ST_NODISCARD
         int compare(const char_T *str) const noexcept
         {
             const size_t rsize = str ? traits_t::length(str) : 0;
             return compare(data(), size(), str ? str : "", rsize);
         }
 
+        ST_NODISCARD
         int compare_n(const buffer<char_T> &other, size_t count) const noexcept
         {
             return compare(data(), size(), other.data(), other.size(), count);
         }
 
+        ST_NODISCARD
         int compare_n(const char_T *str, size_t count) const noexcept
         {
             const size_t rsize = str ? std::char_traits<char>::length(str) : 0;
             return compare(data(), size(), str ? str : "", rsize, count);
         }
 
+        ST_NODISCARD
         bool operator==(const null_t &) const noexcept
         {
             return empty();
         }
 
+        ST_NODISCARD
         bool operator==(const buffer<char_T> &other) const noexcept
         {
             return compare(other) == 0;
         }
 
+        ST_NODISCARD
         bool operator!=(const null_t &) const noexcept
         {
             return !empty();
         }
 
+        ST_NODISCARD
         bool operator!=(const buffer<char_T> &other) const noexcept
         {
             return compare(other) != 0;
         }
 
+        ST_NODISCARD
         bool operator<(const buffer<char_T> &other) const noexcept
         {
             return compare(other) < 0;
         }
 
+        ST_NODISCARD
         char_T *data() noexcept { return m_chars; }
+
+        ST_NODISCARD
         const char_T *data() const noexcept { return m_chars; }
 
+        ST_NODISCARD
         const char_T *c_str() const noexcept { return m_chars; }
+
+        ST_NODISCARD
         const char_T *c_str(const char_T *substitute) const noexcept
         {
             return empty() ? substitute : m_chars;
         }
 
+        ST_NODISCARD
         size_t size() const noexcept { return m_size; }
+
+        ST_NODISCARD
         bool empty() const noexcept { return m_size == 0; }
 
+        ST_NODISCARD
         char_T &at(size_t index)
         {
             if (index >= size())
@@ -263,6 +284,7 @@ namespace ST
             return m_chars[index];
         }
 
+        ST_NODISCARD
         const char_T &at(size_t index) const
         {
             if (index >= size())
@@ -270,69 +292,91 @@ namespace ST
             return m_chars[index];
         }
 
+        ST_NODISCARD
         char_T &operator[](size_t index) noexcept
         {
             return m_chars[index];
         }
 
+        ST_NODISCARD
         const char_T &operator[](size_t index) const noexcept
         {
             return m_chars[index];
         }
 
+        ST_NODISCARD
         char_T &front() noexcept
         {
             return m_chars[0];
         }
 
+        ST_NODISCARD
         const char_T &front() const noexcept
         {
             return m_chars[0];
         }
 
+        ST_NODISCARD
         char_T &back() noexcept
         {
             return empty() ? m_chars[0] : m_chars[m_size - 1];
         }
 
+        ST_NODISCARD
         const char_T &back() const noexcept
         {
             return empty() ? m_chars[0] : m_chars[m_size - 1];
         }
 
+        ST_NODISCARD
         iterator begin() noexcept { return m_chars; }
+
+        ST_NODISCARD
         const_iterator begin() const noexcept { return m_chars; }
+
+        ST_NODISCARD
         const_iterator cbegin() const noexcept { return m_chars; }
 
+        ST_NODISCARD
         iterator end() noexcept { return m_chars + m_size; }
+
+        ST_NODISCARD
         const_iterator end() const noexcept { return m_chars + m_size; }
+
+        ST_NODISCARD
         const_iterator cend() const noexcept { return m_chars + m_size; }
 
+        ST_NODISCARD
         reverse_iterator rbegin() noexcept
         {
             return reverse_iterator(end());
         }
 
+        ST_NODISCARD
         const_reverse_iterator rbegin() const noexcept
         {
             return const_reverse_iterator(end());
         }
 
+        ST_NODISCARD
         const_reverse_iterator crbegin() const noexcept
         {
             return const_reverse_iterator(cend());
         }
 
+        ST_NODISCARD
         reverse_iterator rend() noexcept
         {
             return reverse_iterator(begin());
         }
 
+        ST_NODISCARD
         const_reverse_iterator rend() const noexcept
         {
             return const_reverse_iterator(begin());
         }
 
+        ST_NODISCARD
         const_reverse_iterator crend() const noexcept
         {
             return const_reverse_iterator(cbegin());
@@ -356,6 +400,7 @@ namespace ST
             traits_t::assign(m_chars, size, fill);
         }
 
+        ST_NODISCARD
         static inline size_t strlen(const char_T *buffer)
         {
             ST_ASSERT(buffer, "buffer<char_T>::strlen passed null buffer");
@@ -363,12 +408,14 @@ namespace ST
         }
 
 #if defined(ST_ENABLE_STL_STRINGS)
+        ST_NODISCARD
         std::basic_string<char_T> to_std_string() const
         {
             return std::basic_string<char_T>(data(), size());
         }
 
 #if defined(ST_HAVE_CXX17_STRING_VIEW)
+        ST_NODISCARD
         std::basic_string_view<char_T> view(size_t start = 0,
                                             size_t length = ST_AUTO_SIZE) const
         {
@@ -377,6 +424,7 @@ namespace ST
             return std::basic_string_view<char_T>(data() + start, length);
         }
 #elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
+        ST_NODISCARD
         std::experimental::basic_string_view<char_T> view(size_t start = 0,
                                                           size_t length = ST_AUTO_SIZE) const
         {
@@ -395,12 +443,14 @@ namespace ST
     typedef buffer<char32_t>    utf32_buffer;
 
     template <typename char_T>
+    ST_NODISCARD
     bool operator==(const null_t &, const buffer<char_T> &right) noexcept
     {
         return right.empty();
     }
 
     template <typename char_T>
+    ST_NODISCARD
     bool operator!=(const null_t &, const buffer<char_T> &right) noexcept
     {
         return !right.empty();
@@ -421,27 +471,32 @@ namespace ST
 
 namespace ST { namespace literals
 {
+    ST_NODISCARD
     inline ST::char_buffer operator"" _stbuf(const char *str, size_t size)
     {
         return ST::char_buffer(str, size);
     }
 
+    ST_NODISCARD
     inline ST::utf16_buffer operator"" _stbuf(const char16_t *str, size_t size)
     {
         return ST::utf16_buffer(str, size);
     }
 
+    ST_NODISCARD
     inline ST::utf32_buffer operator"" _stbuf(const char32_t *str, size_t size)
     {
         return ST::utf32_buffer(str, size);
     }
 
+    ST_NODISCARD
     inline ST::wchar_buffer operator"" _stbuf(const wchar_t *str, size_t size)
     {
         return ST::wchar_buffer(str, size);
     }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    ST_NODISCARD
     inline ST::char_buffer operator"" _stbuf(const char8_t *str, size_t size)
     {
         return ST::char_buffer(reinterpret_cast<const char *>(str), size);

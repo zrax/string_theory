@@ -25,6 +25,7 @@
 
 namespace _ST_PRIVATE
 {
+    ST_NODISCARD
     inline size_t format_double(char *buffer, size_t size, double value, char format)
     {
         char format_spec[] = { '%', format, 0 };
@@ -72,8 +73,10 @@ namespace ST
             }
         }
 
+        ST_NODISCARD
         const char *text() const noexcept { return m_start; }
 
+        ST_NODISCARD
         size_t size() const noexcept
         {
             return m_buffer + uint_limits::digits - m_start;
@@ -102,7 +105,10 @@ namespace ST
             m_size = _ST_PRIVATE::format_double(m_buffer, sizeof(m_buffer), value, format);
         }
 
+        ST_NODISCARD
         const char *text() const noexcept { return m_buffer; }
+
+        ST_NODISCARD
         size_t size() const noexcept { return m_size; }
 
     private:

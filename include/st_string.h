@@ -63,7 +63,10 @@ namespace ST
     public:
         explicit conversion_result() noexcept : m_flags() { }
 
+        ST_NODISCARD
         bool ok() const noexcept { return (m_flags & result_ok) != 0; }
+
+        ST_NODISCARD
         bool full_match() const noexcept { return (m_flags & result_full_match) != 0; }
 
     private:
@@ -794,6 +797,7 @@ namespace ST
         inline string &operator+=(char16_t ch);
         inline string &operator+=(char32_t ch);
 
+        ST_NODISCARD
         static string from_literal(const char *literal, size_t size)
         {
             from_literal_t lit_marker;
@@ -801,6 +805,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         static string from_literal(const char8_t *literal, size_t size)
         {
             from_literal_t lit_marker;
@@ -808,6 +813,7 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         static string from_validated(const char *text, size_t size)
         {
             from_validated_t valid_tag;
@@ -815,6 +821,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         static string from_validated(const char8_t *text, size_t size)
         {
             from_validated_t valid_tag;
@@ -822,18 +829,21 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         static string from_validated(const char_buffer &buffer)
         {
             from_validated_t valid_tag;
             return string(valid_tag, buffer);
         }
 
+        ST_NODISCARD
         static string from_validated(char_buffer &&buffer)
         {
             from_validated_t valid_tag;
             return string(valid_tag, std::move(buffer));
         }
 
+        ST_NODISCARD
         static string from_utf8(const char *utf8, size_t size = ST_AUTO_SIZE,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -846,6 +856,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         static string from_utf8(const char8_t *utf8, size_t size = ST_AUTO_SIZE,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -858,6 +869,7 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         static string from_utf16(const char16_t *utf16, size_t size = ST_AUTO_SIZE,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -867,6 +879,7 @@ namespace ST
             return from_validated(utf16_to_utf8(utf16, size, validation));
         }
 
+        ST_NODISCARD
         static string from_utf32(const char32_t *utf32, size_t size = ST_AUTO_SIZE,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -876,6 +889,7 @@ namespace ST
             return from_validated(utf32_to_utf8(utf32, size, validation));
         }
 
+        ST_NODISCARD
         static string from_wchar(const wchar_t *wstr, size_t size = ST_AUTO_SIZE,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -885,6 +899,7 @@ namespace ST
             return from_validated(wchar_to_utf8(wstr, size, validation));
         }
 
+        ST_NODISCARD
         static string from_latin_1(const char *astr, size_t size = ST_AUTO_SIZE)
         {
             if (size == ST_AUTO_SIZE)
@@ -893,6 +908,7 @@ namespace ST
             return from_validated(latin_1_to_utf8(astr, size));
         }
 
+        ST_NODISCARD
         static string from_utf8(const char_buffer &utf8,
                                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -901,30 +917,35 @@ namespace ST
             return str;
         }
 
+        ST_NODISCARD
         static string from_utf16(const utf16_buffer &utf16,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_validated(utf16_to_utf8(utf16, validation));
         }
 
+        ST_NODISCARD
         static string from_utf32(const utf32_buffer &utf32,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_validated(utf32_to_utf8(utf32, validation));
         }
 
+        ST_NODISCARD
         static string from_wchar(const wchar_buffer &wstr,
                                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_validated(wchar_to_utf8(wstr, validation));
         }
 
+        ST_NODISCARD
         static string from_latin_1(const char_buffer &astr)
         {
             return from_validated(latin_1_to_utf8(astr));
         }
 
 #if defined(ST_ENABLE_STL_STRINGS)
+        ST_NODISCARD
         static string from_std_string(const std::string &sstr,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -933,24 +954,28 @@ namespace ST
             return str;
         }
 
+        ST_NODISCARD
         static string from_std_string(const std::wstring &wstr,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_validated(wchar_to_utf8(wstr.c_str(), wstr.size(), validation));
         }
 
+        ST_NODISCARD
         static string from_std_wstring(const std::wstring &wstr,
                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_std_string(wstr, validation);
         }
 
+        ST_NODISCARD
         static string from_std_string(const std::u16string &ustr,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_validated(utf16_to_utf8(ustr.c_str(), ustr.size(), validation));
         }
 
+        ST_NODISCARD
         static string from_std_string(const std::u32string &ustr,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -958,6 +983,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         static string from_std_string(const std::u8string &ustr,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -968,6 +994,7 @@ namespace ST
 #endif
 
 #ifdef ST_HAVE_CXX17_STRING_VIEW
+        ST_NODISCARD
         static string from_std_string(const std::string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -976,24 +1003,28 @@ namespace ST
             return str;
         }
 
+        ST_NODISCARD
         static string from_std_string(const std::wstring_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_validated(wchar_to_utf8(view.data(), view.size(), validation));
         }
 
+        ST_NODISCARD
         static string from_std_wstring(const std::wstring_view &view,
                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_std_string(view, validation);
         }
 
+        ST_NODISCARD
         static string from_std_string(const std::u16string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_validated(utf16_to_utf8(view.data(), view.size(), validation));
         }
 
+        ST_NODISCARD
         static string from_std_string(const std::u32string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -1002,6 +1033,7 @@ namespace ST
 #endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         static string from_std_string(const std::u8string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -1012,6 +1044,7 @@ namespace ST
 #endif
 
 #ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
+        ST_NODISCARD
         static string from_std_string(const std::experimental::string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -1020,24 +1053,28 @@ namespace ST
             return str;
         }
 
+        ST_NODISCARD
         static string from_std_string(const std::experimental::wstring_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_validated(wchar_to_utf8(view.data(), view.size(), validation));
         }
 
+        ST_NODISCARD
         static string from_std_wstring(const std::experimental::wstring_view &view,
                                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_std_string(view, validation);
         }
 
+        ST_NODISCARD
         static string from_std_string(const std::experimental::u16string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
             return from_validated(utf16_to_utf8(view.data(), view.size(), validation));
         }
 
+        ST_NODISCARD
         static string from_std_string(const std::experimental::u32string_view &view,
                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
@@ -1050,6 +1087,7 @@ namespace ST
 #if defined(ST_ENABLE_STL_FILESYSTEM)
 
 #if defined(ST_HAVE_CXX17_FILESYSTEM)
+        ST_NODISCARD
         static string from_path(const std::filesystem::path &path)
         {
             string str;
@@ -1059,6 +1097,7 @@ namespace ST
 #endif
 
 #if defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+        ST_NODISCARD
         static string from_path(const std::experimental::filesystem::path &path)
         {
             string str;
@@ -1069,80 +1108,108 @@ namespace ST
 
 #endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
+        ST_NODISCARD
         const char *c_str() const noexcept
         {
             return m_buffer.c_str();
         }
 
+        ST_NODISCARD
         const char *c_str(const char *substitute) const noexcept
         {
             return m_buffer.c_str(substitute);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         const char8_t *u8_str() const noexcept
         {
             return reinterpret_cast<const char8_t *>(m_buffer.data());
         }
 
+        ST_NODISCARD
         const char8_t *u8_str(const char8_t *substitute) const noexcept
         {
             return empty() ? substitute : u8_str();
         }
 #endif
 
+        ST_NODISCARD
         const char &at(size_t position) const
         {
             return m_buffer.at(position);
         }
 
+        ST_NODISCARD
         const char &operator[](size_t position) const noexcept
         {
             return m_buffer.operator[](position);
         }
 
+        ST_NODISCARD
         const char &front() const noexcept
         {
             return m_buffer.front();
         }
 
+        ST_NODISCARD
         const char &back() const noexcept
         {
             return m_buffer.back();
         }
 
+        ST_NODISCARD
         const_iterator begin() const noexcept { return m_buffer.begin(); }
+
+        ST_NODISCARD
         const_iterator cbegin() const noexcept { return m_buffer.cbegin(); }
+
+        ST_NODISCARD
         const_iterator end() const noexcept { return m_buffer.end(); }
+
+        ST_NODISCARD
         const_iterator cend() const noexcept { return m_buffer.cend(); }
 
+        ST_NODISCARD
         const_reverse_iterator rbegin() const noexcept { return m_buffer.rbegin(); }
+
+        ST_NODISCARD
         const_reverse_iterator crbegin() const noexcept { return m_buffer.crbegin(); }
+
+        ST_NODISCARD
         const_reverse_iterator rend() const noexcept { return m_buffer.rend(); }
+
+        ST_NODISCARD
         const_reverse_iterator crend() const noexcept { return m_buffer.crend(); }
 
+        ST_NODISCARD
         char_buffer to_utf8() const noexcept { return m_buffer; }
 
+        ST_NODISCARD
         utf16_buffer to_utf16() const
         {
             return utf8_to_utf16(m_buffer, assume_valid);
         }
 
+        ST_NODISCARD
         utf32_buffer to_utf32() const
         {
             return utf8_to_utf32(m_buffer, assume_valid);
         }
 
+        ST_NODISCARD
         wchar_buffer to_wchar() const
         {
             return utf8_to_wchar(m_buffer, assume_valid);
         }
 
+        ST_NODISCARD
         char_buffer to_latin_1(bool substitute_out_of_range = true) const
         {
             return utf8_to_latin_1(m_buffer, assume_valid, substitute_out_of_range);
         }
 
+        ST_NODISCARD
         ST_DEPRECATED_IN_3_0("use to_latin_1(bool) instead")
         char_buffer to_latin_1(utf_validation_t validation) const
         {
@@ -1184,6 +1251,7 @@ namespace ST
         }
 
 #if defined(ST_ENABLE_STL_STRINGS)
+        ST_NODISCARD
         std::string to_std_string(bool utf8 = true,
                                   bool substitute_out_of_range = true) const
         {
@@ -1193,6 +1261,7 @@ namespace ST
             return to_latin_1(substitute_out_of_range).to_std_string();
         }
 
+        ST_NODISCARD
         ST_DEPRECATED_IN_3_0("use to_std_string(bool, bool) instead")
         std::string to_std_string(bool utf8, utf_validation_t validation) const
         {
@@ -1212,6 +1281,7 @@ namespace ST
             return to_std_string(result, utf8, validation == substitute_invalid);
         }
 
+        ST_NODISCARD
         std::wstring to_std_wstring() const
         {
             return to_wchar().to_std_string();
@@ -1222,6 +1292,7 @@ namespace ST
             result = to_std_wstring();
         }
 
+        ST_NODISCARD
         std::u16string to_std_u16string() const
         {
             return to_utf16().to_std_string();
@@ -1232,6 +1303,7 @@ namespace ST
             result = to_std_u16string();
         }
 
+        ST_NODISCARD
         std::u32string to_std_u32string() const
         {
             return to_utf32().to_std_string();
@@ -1243,6 +1315,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         std::u8string to_std_u8string() const
         {
             return std::u8string(u8_str(), size());
@@ -1255,11 +1328,13 @@ namespace ST
 #endif
 
 #if defined(ST_HAVE_CXX17_STRING_VIEW)
+        ST_NODISCARD
         std::string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const
         {
             return m_buffer.view(start, length);
         }
 #elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
+        ST_NODISCARD
         std::experimental::string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const
         {
             return m_buffer.view(start, length);
@@ -1271,6 +1346,7 @@ namespace ST
 #if defined(ST_ENABLE_STL_FILESYSTEM)
 
 #if defined(ST_HAVE_CXX17_FILESYSTEM)
+        ST_NODISCARD
         std::filesystem::path to_path() const
         {
 #if defined(ST_HAVE_CXX20_U8_FSPATH)
@@ -1281,6 +1357,7 @@ namespace ST
         }
 
 #elif defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
+        ST_NODISCARD
         std::experimental::filesystem::path to_path() const
         {
             return std::experimental::filesystem::u8path(c_str(), c_str() + size());
@@ -1289,52 +1366,64 @@ namespace ST
 
 #endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
+        ST_NODISCARD
         size_t size() const noexcept { return m_buffer.size(); }
+
+        ST_NODISCARD
         bool empty() const noexcept { return m_buffer.empty(); }
 
+        ST_NODISCARD
         static string from_int(int value, int base = 10, bool upper_case = false)
         {
             return from_validated(_ST_PRIVATE::mini_format_int_s<int>(base, upper_case, value));
         }
 
+        ST_NODISCARD
         static string from_uint(unsigned int value, int base = 10, bool upper_case = false)
         {
             return from_validated(_ST_PRIVATE::mini_format_int_u<unsigned int>(base, upper_case, value));
         }
 
+        ST_NODISCARD
         static string from_float(float value, char format='g')
         {
             return from_validated(_ST_PRIVATE::mini_format_float<float>(value, format));
         }
 
+        ST_NODISCARD
         static string from_double(double value, char format='g')
         {
             return from_validated(_ST_PRIVATE::mini_format_float<double>(value, format));
         }
 
 #ifdef ST_HAVE_INT64
+        ST_NODISCARD
         static string from_int64(int64_t value, int base = 10, bool upper_case = false)
         {
             return from_validated(_ST_PRIVATE::mini_format_int_s<int64_t>(base, upper_case, value));
         }
 
+        ST_NODISCARD
         static string from_uint64(uint64_t value, int base = 10, bool upper_case = false)
         {
             return from_validated(_ST_PRIVATE::mini_format_int_u<uint64_t>(base, upper_case, value));
         }
 #endif
 
+        ST_NODISCARD
         static string from_bool(bool value)
         {
             return value ? from_literal("true", 4)
                          : from_literal("false", 5);
         }
 
+        ST_NODISCARD
         int to_int(int base = 0) const noexcept
         {
             return static_cast<int>(strtol(c_str(), nullptr, base));
         }
 
+        ST_NODISCARD
         int to_int(conversion_result &result, int base = 0) const noexcept
         {
             if (empty()) {
@@ -1352,11 +1441,13 @@ namespace ST
             return value;
         }
 
+        ST_NODISCARD
         unsigned int to_uint(int base = 0) const noexcept
         {
             return static_cast<unsigned int>(strtoul(c_str(), nullptr, base));
         }
 
+        ST_NODISCARD
         unsigned int to_uint(conversion_result &result, int base = 0) const noexcept
         {
             if (empty()) {
@@ -1374,11 +1465,13 @@ namespace ST
             return value;
         }
 
+        ST_NODISCARD
         float to_float() const noexcept
         {
             return static_cast<float>(strtof(c_str(), nullptr));
         }
 
+        ST_NODISCARD
         float to_float(conversion_result &result) const noexcept
         {
             if (empty()) {
@@ -1396,11 +1489,13 @@ namespace ST
             return value;
         }
 
+        ST_NODISCARD
         double to_double() const noexcept
         {
             return strtod(c_str(), nullptr);
         }
 
+        ST_NODISCARD
         double to_double(conversion_result &result) const noexcept
         {
             if (empty()) {
@@ -1419,11 +1514,13 @@ namespace ST
         }
 
 #ifdef ST_HAVE_INT64
+        ST_NODISCARD
         int64_t to_int64(int base = 0) const noexcept
         {
             return static_cast<int64_t>(strtoll(c_str(), nullptr, base));
         }
 
+        ST_NODISCARD
         int64_t to_int64(conversion_result &result, int base = 0) const noexcept
         {
             char *end;
@@ -1436,11 +1533,13 @@ namespace ST
             return value;
         }
 
+        ST_NODISCARD
         uint64_t to_uint64(int base = 0) const noexcept
         {
             return static_cast<uint64_t>(strtoull(c_str(), nullptr, base));
         }
 
+        ST_NODISCARD
         uint64_t to_uint64(conversion_result &result, int base = 0) const noexcept
         {
             char *end;
@@ -1454,6 +1553,7 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         bool to_bool() const noexcept
         {
             if (compare_i("true") == 0)
@@ -1463,6 +1563,7 @@ namespace ST
             return to_int() != 0;
         }
 
+        ST_NODISCARD
         bool to_bool(conversion_result &result) const noexcept
         {
             if (compare_i("true") == 0) {
@@ -1477,6 +1578,7 @@ namespace ST
             return to_int(result) != 0;
         }
 
+        ST_NODISCARD
         int compare(const string &str, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1485,6 +1587,7 @@ namespace ST
                     : _ST_PRIVATE::compare_ci(c_str(), size(), str.c_str(), str.size());
         }
 
+        ST_NODISCARD
         int compare(const char *str, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1495,6 +1598,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         int compare(const char8_t *str, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1502,6 +1606,7 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         int compare_n(const string &str, size_t count,
                       case_sensitivity_t cs = case_sensitive) const noexcept
         {
@@ -1510,6 +1615,7 @@ namespace ST
                     : _ST_PRIVATE::compare_ci(c_str(), size(), str.c_str(), str.size(), count);
         }
 
+        ST_NODISCARD
         int compare_n(const char *str, size_t count,
                       case_sensitivity_t cs = case_sensitive) const noexcept
         {
@@ -1520,6 +1626,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         int compare_n(const char8_t *str, size_t count,
                       case_sensitivity_t cs = case_sensitive) const noexcept
         {
@@ -1527,95 +1634,112 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         int compare_i(const string &str) const noexcept
         {
             return compare(str, case_insensitive);
         }
 
+        ST_NODISCARD
         int compare_i(const char *str) const noexcept
         {
             return compare(str, case_insensitive);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         int compare_i(const char8_t *str) const noexcept
         {
             return compare(str, case_insensitive);
         }
 #endif
 
+        ST_NODISCARD
         int compare_ni(const string &str, size_t count) const noexcept
         {
             return compare_n(str, count, case_insensitive);
         }
 
+        ST_NODISCARD
         int compare_ni(const char *str, size_t count) const noexcept
         {
             return compare_n(str, count, case_insensitive);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         int compare_ni(const char8_t *str, size_t count) const noexcept
         {
             return compare_n(str, count ,case_insensitive);
         }
 #endif
 
+        ST_NODISCARD
         bool operator<(const string &other) const noexcept
         {
             return compare(other) < 0;
         }
 
+        ST_NODISCARD
         bool operator==(const null_t &) const noexcept
         {
             return empty();
         }
 
+        ST_NODISCARD
         bool operator==(const string &other) const noexcept
         {
             return compare(other) == 0;
         }
 
+        ST_NODISCARD
         bool operator==(const char *other) const noexcept
         {
             return compare(other) == 0;
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         bool operator==(const char8_t *other) const noexcept
         {
             return compare(other) == 0;
         }
 #endif
 
+        ST_NODISCARD
         bool operator!=(const null_t &) const noexcept
         {
             return !empty();
         }
 
+        ST_NODISCARD
         bool operator!=(const string &other) const noexcept
         {
             return compare(other) != 0;
         }
 
+        ST_NODISCARD
         bool operator!=(const char *other) const noexcept
         {
             return compare(other) != 0;
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         bool operator!=(const char8_t *other) const noexcept
         {
             return compare(other) != 0;
         }
 #endif
 
+        ST_NODISCARD
         ST_ssize_t find(char ch, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return find(0, ch, cs);
         }
 
+        ST_NODISCARD
         ST_ssize_t find(const char *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1623,6 +1747,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         ST_ssize_t find(const char8_t *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1630,12 +1755,14 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         ST_ssize_t find(const string &substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return find(0, substr.c_str(), cs);
         }
 
+        ST_NODISCARD
         ST_ssize_t find(size_t start, char ch, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1648,6 +1775,7 @@ namespace ST
             return cp ? (cp - c_str()) : -1;
         }
 
+        ST_NODISCARD
         ST_ssize_t find(size_t start, const char *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1661,6 +1789,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         ST_ssize_t find(size_t start, const char8_t *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1668,18 +1797,21 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         ST_ssize_t find(size_t start, const string &substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return find(start, substr.c_str(), cs);
         }
 
+        ST_NODISCARD
         ST_ssize_t find_last(char ch, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return find_last(ST_AUTO_SIZE, ch, cs);
         }
 
+        ST_NODISCARD
         ST_ssize_t find_last(const char *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1687,6 +1819,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         ST_ssize_t find_last(const char8_t *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1694,12 +1827,14 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         ST_ssize_t find_last(const string &substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return find_last(ST_AUTO_SIZE, substr.c_str(), cs);
         }
 
+        ST_NODISCARD
         ST_ssize_t find_last(size_t max, char ch, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1722,6 +1857,7 @@ namespace ST
             return found ? (found - c_str()) : -1;
         }
 
+        ST_NODISCARD
         ST_ssize_t find_last(size_t max, const char *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1745,6 +1881,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         ST_ssize_t find_last(size_t max, const char8_t *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1752,18 +1889,21 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         ST_ssize_t find_last(size_t max, const string &substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return find_last(max, substr.c_str(), cs);
         }
 
+        ST_NODISCARD
         bool contains(char ch, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return find(ch, cs) >= 0;
         }
 
+        ST_NODISCARD
         bool contains(const char *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1771,6 +1911,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         bool contains(const char8_t *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1778,12 +1919,14 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         bool contains(const string &substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return find(substr, cs) >= 0;
         }
 
+        ST_NODISCARD
         string trim_left(const char *charset = ST_WHITESPACE) const
         {
             if (empty())
@@ -1797,6 +1940,7 @@ namespace ST
             return substr(cp - c_str());
         }
 
+        ST_NODISCARD
         string trim_right(const char *charset = ST_WHITESPACE) const
         {
             if (empty())
@@ -1810,6 +1954,7 @@ namespace ST
             return substr(0, cp - c_str() + 1);
         }
 
+        ST_NODISCARD
         string trim(const char *charset = ST_WHITESPACE) const
         {
             if (empty())
@@ -1826,6 +1971,7 @@ namespace ST
             return substr(lp - c_str(), rp - lp + 1);
         }
 
+        ST_NODISCARD
         string substr(ST_ssize_t start, size_t count = ST_AUTO_SIZE) const
         {
             size_t max = size();
@@ -1854,16 +2000,19 @@ namespace ST
             return sub;
         }
 
+        ST_NODISCARD
         string left(size_t size) const
         {
             return substr(0, size);
         }
 
+        ST_NODISCARD
         string right(size_t size) const
         {
             return substr(this->size() - size, size);
         }
 
+        ST_NODISCARD
         bool starts_with(const string &prefix, case_sensitivity_t cs = case_sensitive) const noexcept
         {
             if (prefix.size() > size())
@@ -1871,6 +2020,7 @@ namespace ST
             return compare_n(prefix, prefix.size(), cs) == 0;
         }
 
+        ST_NODISCARD
         bool starts_with(const char *prefix, case_sensitivity_t cs = case_sensitive) const noexcept
         {
             size_t count = prefix ? std::char_traits<char>::length(prefix) : 0;
@@ -1879,6 +2029,7 @@ namespace ST
             return compare_n(prefix, count, cs) == 0;
         }
 
+        ST_NODISCARD
         bool ends_with(const string &suffix, case_sensitivity_t cs = case_sensitive) const noexcept
         {
             if (suffix.size() > size())
@@ -1890,6 +2041,7 @@ namespace ST
                     : _ST_PRIVATE::compare_ci(c_str() + start, suffix.c_str(), suffix.size()) == 0;
         }
 
+        ST_NODISCARD
         bool ends_with(const char *suffix, case_sensitivity_t cs = case_sensitive) const noexcept
         {
             size_t count = suffix ? std::char_traits<char>::length(suffix) : 0;
@@ -1903,12 +2055,14 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         bool starts_with(const char8_t *prefix, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return starts_with(reinterpret_cast<const char *>(prefix), cs);
         }
 
+        ST_NODISCARD
         bool ends_with(const char8_t *suffix, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
@@ -1916,6 +2070,7 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         string before_first(char sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t first = find(sep, cs);
@@ -1925,6 +2080,7 @@ namespace ST
                 return *this;
         }
 
+        ST_NODISCARD
         string before_first(const char *sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t first = find(sep, cs);
@@ -1934,6 +2090,7 @@ namespace ST
                 return *this;
         }
 
+        ST_NODISCARD
         string before_first(const string &sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t first = find(sep, cs);
@@ -1943,6 +2100,7 @@ namespace ST
                 return *this;
         }
 
+        ST_NODISCARD
         string after_first(char sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t first = find(sep, cs);
@@ -1952,6 +2110,7 @@ namespace ST
                 return null;
         }
 
+        ST_NODISCARD
         string after_first(const char *sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t first = find(sep, cs);
@@ -1961,6 +2120,7 @@ namespace ST
                 return null;
         }
 
+        ST_NODISCARD
         string after_first(const string &sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t first = find(sep, cs);
@@ -1970,6 +2130,7 @@ namespace ST
                 return null;
         }
 
+        ST_NODISCARD
         string before_last(char sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t last = find_last(sep, cs);
@@ -1979,6 +2140,7 @@ namespace ST
                 return null;
         }
 
+        ST_NODISCARD
         string before_last(const char *sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t last = find_last(sep, cs);
@@ -1988,6 +2150,7 @@ namespace ST
                 return null;
         }
 
+        ST_NODISCARD
         string before_last(const string &sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t last = find_last(sep, cs);
@@ -1997,6 +2160,7 @@ namespace ST
                 return null;
         }
 
+        ST_NODISCARD
         string after_last(char sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t last = find_last(sep, cs);
@@ -2006,6 +2170,7 @@ namespace ST
                 return *this;
         }
 
+        ST_NODISCARD
         string after_last(const char *sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t last = find_last(sep, cs);
@@ -2015,6 +2180,7 @@ namespace ST
                 return *this;
         }
 
+        ST_NODISCARD
         string after_last(const string &sep, case_sensitivity_t cs = case_sensitive) const
         {
             ST_ssize_t last = find_last(sep, cs);
@@ -2025,27 +2191,32 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         string before_first(const char8_t *sep, case_sensitivity_t cs = case_sensitive) const
         {
             return before_first(reinterpret_cast<const char *>(sep), cs);
         }
 
+        ST_NODISCARD
         string after_first(const char8_t *sep, case_sensitivity_t cs = case_sensitive) const
         {
             return after_first(reinterpret_cast<const char *>(sep), cs);
         }
 
+        ST_NODISCARD
         string before_last(const char8_t *sep, case_sensitivity_t cs = case_sensitive) const
         {
             return before_last(reinterpret_cast<const char *>(sep), cs);
         }
 
+        ST_NODISCARD
         string after_last(const char8_t *sep, case_sensitivity_t cs = case_sensitive) const
         {
             return after_last(reinterpret_cast<const char *>(sep), cs);
         }
 #endif
 
+        ST_NODISCARD
         string replace(const char *from, const char *to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
@@ -2054,6 +2225,7 @@ namespace ST
                            to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
         }
 
+        ST_NODISCARD
         string replace(const string &from, const char *to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
@@ -2061,6 +2233,7 @@ namespace ST
             return replace(from, to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
         }
 
+        ST_NODISCARD
         string replace(const char *from, const string &to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
@@ -2068,6 +2241,7 @@ namespace ST
             return replace(from ? string(from, ST_AUTO_SIZE, validation) : null, to, cs);
         }
 
+        ST_NODISCARD
         string replace(const string &from, const string &to,
                        case_sensitivity_t cs = case_sensitive) const
         {
@@ -2115,6 +2289,7 @@ namespace ST
             return result;
         }
 
+        ST_NODISCARD
         ST_DEPRECATED_IN_3_0("validation parameter is not used in replace(ST::string, ST::string) override")
         string replace(const string &from, const string &to,
                        case_sensitivity_t cs, utf_validation_t validation) const
@@ -2124,6 +2299,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         string replace(const char8_t *from, const char8_t *to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
@@ -2132,6 +2308,7 @@ namespace ST
                            to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
         }
 
+        ST_NODISCARD
         string replace(const string &from, const char8_t *to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
@@ -2139,6 +2316,7 @@ namespace ST
             return replace(from, to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
         }
 
+        ST_NODISCARD
         string replace(const char8_t *from, const string &to,
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
@@ -2147,6 +2325,7 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         string to_upper() const
         {
             string result;
@@ -2161,6 +2340,7 @@ namespace ST
             return result;
         }
 
+        ST_NODISCARD
         string to_lower() const
         {
             string result;
@@ -2175,6 +2355,7 @@ namespace ST
             return result;
         }
 
+        ST_NODISCARD
         std::vector<string> split(char split_char, size_t max_splits = ST_AUTO_SIZE,
                                   case_sensitivity_t cs = case_sensitive) const
         {
@@ -2201,6 +2382,7 @@ namespace ST
             return result;
         }
 
+        ST_NODISCARD
         std::vector<string> split(const char *splitter,
                                   size_t max_splits = ST_AUTO_SIZE,
                                   case_sensitivity_t cs = case_sensitive) const
@@ -2241,6 +2423,7 @@ namespace ST
             return result;
         }
 
+        ST_NODISCARD
         std::vector<string> split(const string &splitter,
                                   size_t max_splits = ST_AUTO_SIZE,
                                   case_sensitivity_t cs = case_sensitive) const
@@ -2266,6 +2449,7 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+        ST_NODISCARD
         std::vector<string> split(const char8_t *splitter,
                                   size_t max_splits = ST_AUTO_SIZE,
                                   case_sensitivity_t cs = case_sensitive) const
@@ -2274,6 +2458,7 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
         std::vector<string> tokenize(const char *delims = ST_WHITESPACE) const
         {
             std::vector<string> result;
@@ -2298,6 +2483,7 @@ namespace ST
             return result;
         }
 
+        ST_NODISCARD
         static string fill(size_t count, char c)
         {
             char_buffer result(count, c);
@@ -2310,6 +2496,7 @@ namespace ST
 
     struct hash
     {
+        ST_NODISCARD
         size_t operator()(const string &str) const noexcept
         {
             /* FNV-1a hash.  See http://isthe.com/chongo/tech/comp/fnv/ for details */
@@ -2326,6 +2513,7 @@ namespace ST
 
     struct hash_i
     {
+        ST_NODISCARD
         size_t operator()(const string &str) const noexcept
         {
             /* FNV-1a hash.  See http://isthe.com/chongo/tech/comp/fnv/ for details */
@@ -2342,6 +2530,7 @@ namespace ST
 
     struct less_i
     {
+        ST_NODISCARD
         bool operator()(const string &left, const string &right)
             const noexcept
         {
@@ -2351,6 +2540,7 @@ namespace ST
 
     struct equal_i
     {
+        ST_NODISCARD
         bool operator()(const string &left, const string &right)
             const noexcept
         {
@@ -2358,6 +2548,7 @@ namespace ST
         }
     };
 
+    ST_NODISCARD
     inline string operator+(const string &left, const string &right)
     {
         ST::char_buffer cat;
@@ -2368,58 +2559,69 @@ namespace ST
         return ST::string::from_validated(std::move(cat));
     }
 
+    ST_NODISCARD
     inline string operator+(const string &left, const char *right)
     {
         return operator+(left, string::from_utf8(right));
     }
 
+    ST_NODISCARD
     inline string operator+(const char *left, const string &right)
     {
         return operator+(string::from_utf8(left), right);
     }
 
+    ST_NODISCARD
     inline string operator+(const string &left, const wchar_t *right)
     {
         return operator+(left, string::from_wchar(right));
     }
 
+    ST_NODISCARD
     inline ST::string operator+(const wchar_t *left, const string &right)
     {
         return operator+(string::from_wchar(left), right);
     }
 
+    ST_NODISCARD
     inline string operator+(const string &left, const char16_t *right)
     {
         return operator+(left, string::from_utf16(right));
     }
 
+    ST_NODISCARD
     inline string operator+(const char16_t *left, const string &right)
     {
         return operator+(string::from_utf16(left), right);
     }
 
+    ST_NODISCARD
     inline string operator+(const string &left, const char32_t *right)
     {
         return operator+(left, string::from_utf32(right));
     }
 
+    ST_NODISCARD
     inline string operator+(const char32_t *left, const string &right)
     {
         return operator+(string::from_utf32(left), right);
     }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    ST_NODISCARD
     inline string operator+(const string &left, const char8_t *right)
     {
         return operator+(left, string::from_utf8(right));
     }
 
+    ST_NODISCARD
     inline string operator+(const char8_t *left, const string &right)
     {
         return operator+(string::from_utf8(left), right);
     }
 #endif
 
+    ST_NODISCARD
     inline string operator+(const string &left, char32_t right)
     {
         size_t addsize = _ST_PRIVATE::utf8_measure(right);
@@ -2436,24 +2638,28 @@ namespace ST
         return ST::string::from_validated(std::move(cat));
     }
 
+    ST_NODISCARD
     inline string operator+(const string &left, char16_t right)
     {
         const char32_t uchar = right;
         return operator+(left, uchar);
     }
 
+    ST_NODISCARD
     inline string operator+(const string &left, char right)
     {
         const char32_t uchar = static_cast<unsigned char>(right);
         return operator+(left, uchar);
     }
 
+    ST_NODISCARD
     inline string operator+(const string &left, wchar_t right)
     {
         const char32_t uchar = static_cast<unsigned int>(right);
         return operator+(left, uchar);
     }
 
+    ST_NODISCARD
     inline string operator+(char32_t left, const string &right)
     {
         size_t addsize = _ST_PRIVATE::utf8_measure(left);
@@ -2470,29 +2676,34 @@ namespace ST
         return ST::string::from_validated(std::move(cat));
     }
 
+    ST_NODISCARD
     inline string operator+(char16_t left, const string &right)
     {
         const char32_t uchar = left;
         return operator+(uchar, right);
     }
 
+    ST_NODISCARD
     inline string operator+(char left, const string &right)
     {
         const char32_t uchar = static_cast<unsigned char>(left);
         return operator+(uchar, right);
     }
 
+    ST_NODISCARD
     inline string operator+(wchar_t left, const string &right)
     {
         const char32_t uchar = static_cast<unsigned int>(left);
         return operator+(uchar, right);
     }
 
+    ST_NODISCARD
     inline bool operator==(const null_t &, const string &right) noexcept
     {
         return right.empty();
     }
 
+    ST_NODISCARD
     inline bool operator!=(const null_t &, const string &right) noexcept
     {
         return !right.empty();
@@ -2566,10 +2777,11 @@ namespace std
     template <>
     struct hash<ST::string>
     {
-         inline size_t operator()(const ST::string &str) const noexcept
-         {
-             return ST::hash()(str);
-         }
+        ST_NODISCARD
+        inline size_t operator()(const ST::string &str) const noexcept
+        {
+            return ST::hash()(str);
+        }
     };
 }
 
@@ -2578,27 +2790,32 @@ namespace std
 
 namespace ST { namespace literals
 {
+    ST_NODISCARD
     inline ST::string operator"" _st(const char *str, size_t size)
     {
         return ST::string::from_literal(str, size);
     }
 
+    ST_NODISCARD
     inline ST::string operator"" _st(const wchar_t *str, size_t size)
     {
         return ST::string::from_wchar(str, size, ST::assume_valid);
     }
 
+    ST_NODISCARD
     inline ST::string operator"" _st(const char16_t *str, size_t size)
     {
         return ST::string::from_utf16(str, size, ST::assume_valid);
     }
 
+    ST_NODISCARD
     inline ST::string operator"" _st(const char32_t *str, size_t size)
     {
         return ST::string::from_utf32(str, size, ST::assume_valid);
     }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    ST_NODISCARD
     inline ST::string operator"" _st(const char8_t *str, size_t size)
     {
         return ST::string::from_literal(str, size);
