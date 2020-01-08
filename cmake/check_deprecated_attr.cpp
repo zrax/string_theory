@@ -18,6 +18,10 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic error "-Wattributes"
+#endif
+
 struct Test
 {
     [[deprecated("Don't use this")]]
