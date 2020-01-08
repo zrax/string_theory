@@ -441,12 +441,12 @@ TEST(string, string_wchar)
 TEST(string, validation)
 {
     // Truncated sequences
-    EXPECT_THROW(ST::string::from_utf8("\xC0", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xE0", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xE0\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xF0", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xF0\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xF0\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xC0", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xE0", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xE0\x80", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xF0", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xF0\x80", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xF0\x80\x80", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
 
     const auto replacement = ST_LITERAL("\xef\xbf\xbdx");
     const auto replacement2 = ST_LITERAL("\xef\xbf\xbd\xef\xbf\xbdx");
@@ -459,14 +459,14 @@ TEST(string, validation)
     EXPECT_EQ(replacement3, ST::string::from_utf8("\xF0\x80\x80x", ST_AUTO_SIZE, ST::substitute_invalid));
 
     // Invalid sequences
-    EXPECT_THROW(ST::string::from_utf8("\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xC0x", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xE0xx", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xF0xxx", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xF8\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xFC\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xFE\x80\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::string::from_utf8("\xFF\x80\x80\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\x80", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xC0x", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xE0xx", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xF0xxx", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xF8\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xFC\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xFE\x80\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf8("\xFF\x80\x80\x80\x80\x80\x80\x80", ST_AUTO_SIZE, ST::check_validity); }, ST::unicode_error);
 
     const auto replacement2x = ST_LITERAL("\xef\xbf\xbdxx");
     const auto replacement3x = ST_LITERAL("\xef\xbf\xbdxxx");
@@ -489,10 +489,14 @@ TEST(string, conv_utf8_validation)
 {
     const char16_t truncL[] = { 0xd800, 'x', 0 };
     const char16_t truncH[] = { 0xdc00, 'x', 0 };
-    EXPECT_THROW(ST::utf16_to_utf8(truncL, text_size(truncL),
-                                   ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_utf8(truncH, text_size(truncH),
-                                   ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf8(truncL, text_size(truncL),
+                                ST::check_validity);
+    }, ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf8(truncH, text_size(truncH),
+                                ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("\xef\xbf\xbdx", ST::utf16_to_utf8(truncL, text_size(truncL),
                                                              ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp("\xef\xbf\xbdx", ST::utf16_to_utf8(truncH, text_size(truncH),
@@ -500,10 +504,14 @@ TEST(string, conv_utf8_validation)
 
     const char16_t incompleteL[] = { 0xd800, 'x', 'x', 0 };
     const char16_t incompleteH[] = { 0xdc00, 'x', 'x', 0 };
-    EXPECT_THROW(ST::utf16_to_utf8(incompleteL, text_size(incompleteL),
-                                   ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_utf8(incompleteH, text_size(incompleteH),
-                                   ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf8(incompleteL, text_size(incompleteL),
+                                ST::check_validity);
+    }, ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf8(incompleteH, text_size(incompleteH),
+                                ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("\xef\xbf\xbdxx", ST::utf16_to_utf8(incompleteL, text_size(incompleteL),
                                                               ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp("\xef\xbf\xbdxx", ST::utf16_to_utf8(incompleteH, text_size(incompleteH),
@@ -511,10 +519,14 @@ TEST(string, conv_utf8_validation)
 
     const char16_t doubleL[] = { 0xd800, 0xdbff, 'x', 0 };
     const char16_t doubleH[] = { 0xdc00, 0xdfff, 'x', 0 };
-    EXPECT_THROW(ST::utf16_to_utf8(doubleL, text_size(doubleL),
-                                   ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_utf8(doubleH, text_size(doubleH),
-                                   ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf8(doubleL, text_size(doubleL),
+                                ST::check_validity);
+    }, ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf8(doubleH, text_size(doubleH),
+                                ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("\xef\xbf\xbd\xef\xbf\xbdx",
                           ST::utf16_to_utf8(doubleL, text_size(doubleL),
                                             ST::substitute_invalid).c_str()));
@@ -524,8 +536,10 @@ TEST(string, conv_utf8_validation)
 
     // Out of range UTF-32
     const char32_t range32[] = { 0x110000, 'x', 0 };
-    EXPECT_THROW(ST::utf32_to_utf8(range32, text_size(range32),
-                                   ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf32_to_utf8(range32, text_size(range32),
+                                ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("\xef\xbf\xbdx", ST::utf32_to_utf8(range32, text_size(range32),
                                                              ST::substitute_invalid).c_str()));
 }
@@ -533,12 +547,12 @@ TEST(string, conv_utf8_validation)
 TEST(string, conv_utf16_validation)
 {
     // Truncated UTF-8 sequences
-    EXPECT_THROW(ST::utf8_to_utf16("\xC0", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xE0", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xE0\x80", 2, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xF0", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xF0\x80", 2, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xF0\x80\x80", 3, ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xC0", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xE0", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xE0\x80", 2, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xF0", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xF0\x80", 2, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xF0\x80\x80", 3, ST::check_validity); }, ST::unicode_error);
 
     EXPECT_EQ(0, T_strcmp(u"\ufffdx", ST::utf8_to_utf16("\xC0x", 2, ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp(u"\ufffdx", ST::utf8_to_utf16("\xE0x", 2, ST::substitute_invalid).c_str()));
@@ -548,14 +562,14 @@ TEST(string, conv_utf16_validation)
     EXPECT_EQ(0, T_strcmp(u"\ufffd\ufffd\ufffdx", ST::utf8_to_utf16("\xF0\x80\x80x", 4, ST::substitute_invalid).c_str()));
 
     // Invalid UTF-8 sequences
-    EXPECT_THROW(ST::utf8_to_utf16("\x80", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xC0x", 2, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xE0xx", 3, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xF0xxx", 4, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xF8\x80\x80\x80\x80", 5, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xFC\x80\x80\x80\x80\x80", 6, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xFE\x80\x80\x80\x80\x80\x80", 7, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf16("\xFF\x80\x80\x80\x80\x80\x80\x80", 8, ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\x80", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xC0x", 2, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xE0xx", 3, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xF0xxx", 4, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xF8\x80\x80\x80\x80", 5, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xFC\x80\x80\x80\x80\x80", 6, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xFE\x80\x80\x80\x80\x80\x80", 7, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf16("\xFF\x80\x80\x80\x80\x80\x80\x80", 8, ST::check_validity); }, ST::unicode_error);
 
     EXPECT_EQ(0, T_strcmp(u"\ufffdx", ST::utf8_to_utf16("\x80x", 2, ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp(u"\ufffdx", ST::utf8_to_utf16("\xC0x", 2, ST::substitute_invalid).c_str()));
@@ -567,8 +581,10 @@ TEST(string, conv_utf16_validation)
 
     // Out of range UTF-32
     const char32_t range32[] = { 0x110000, 'x', 0 };
-    EXPECT_THROW(ST::utf32_to_utf16(range32, text_size(range32),
-                                    ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf32_to_utf16(range32, text_size(range32),
+                                 ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp(u"\ufffdx", ST::utf32_to_utf16(range32, text_size(range32),
                                                           ST::substitute_invalid).c_str()));
 }
@@ -576,12 +592,12 @@ TEST(string, conv_utf16_validation)
 TEST(string, conv_utf32_validation)
 {
     // Truncated UTF-8 sequences
-    EXPECT_THROW(ST::utf8_to_utf32("\xC0", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xE0", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xE0\x80", 2, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xF0", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xF0\x80", 2, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xF0\x80\x80", 3, ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xC0", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xE0", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xE0\x80", 2, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xF0", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xF0\x80", 2, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xF0\x80\x80", 3, ST::check_validity); }, ST::unicode_error);
 
     EXPECT_EQ(0, T_strcmp(U"\ufffdx", ST::utf8_to_utf32("\xC0x", 2, ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp(U"\ufffdx", ST::utf8_to_utf32("\xE0x", 2, ST::substitute_invalid).c_str()));
@@ -591,14 +607,14 @@ TEST(string, conv_utf32_validation)
     EXPECT_EQ(0, T_strcmp(U"\ufffd\ufffd\ufffdx", ST::utf8_to_utf32("\xF0\x80\x80x", 4, ST::substitute_invalid).c_str()));
 
     // Invalid UTF-8 sequences
-    EXPECT_THROW(ST::utf8_to_utf32("\x80", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xC0x", 2, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xE0xx", 3, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xF0xxx", 4, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xF8\x80\x80\x80\x80", 5, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xFC\x80\x80\x80\x80\x80", 6, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xFE\x80\x80\x80\x80\x80\x80", 7, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_utf32("\xFF\x80\x80\x80\x80\x80\x80\x80", 8, ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\x80", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xC0x", 2, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xE0xx", 3, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xF0xxx", 4, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xF8\x80\x80\x80\x80", 5, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xFC\x80\x80\x80\x80\x80", 6, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xFE\x80\x80\x80\x80\x80\x80", 7, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_utf32("\xFF\x80\x80\x80\x80\x80\x80\x80", 8, ST::check_validity); }, ST::unicode_error);
 
     EXPECT_EQ(0, T_strcmp(U"\ufffdx", ST::utf8_to_utf32("\x80x", 2, ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp(U"\ufffdx", ST::utf8_to_utf32("\xC0x", 2, ST::substitute_invalid).c_str()));
@@ -611,10 +627,14 @@ TEST(string, conv_utf32_validation)
     // Bad UTF-16 sequences
     const char16_t truncL[] = { 0xd800, 'x', 0 };
     const char16_t truncH[] = { 0xdc00, 'x', 0 };
-    EXPECT_THROW(ST::utf16_to_utf32(truncL, text_size(truncL),
-                                    ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_utf32(truncH, text_size(truncH),
-                                    ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf32(truncL, text_size(truncL),
+                                 ST::check_validity);
+    }, ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf32(truncH, text_size(truncH),
+                                 ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp(U"\ufffdx", ST::utf16_to_utf32(truncL, text_size(truncL),
                                                          ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp(U"\ufffdx", ST::utf16_to_utf32(truncH, text_size(truncH),
@@ -622,10 +642,14 @@ TEST(string, conv_utf32_validation)
 
     const char16_t incompleteL[] = { 0xd800, 'x', 'x', 0 };
     const char16_t incompleteH[] = { 0xdc00, 'x', 'x', 0 };
-    EXPECT_THROW(ST::utf16_to_utf32(incompleteL, text_size(incompleteL),
-                                    ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_utf32(incompleteH, text_size(incompleteH),
-                                    ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf32(incompleteL, text_size(incompleteL),
+                                 ST::check_validity);
+    }, ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf32(incompleteH, text_size(incompleteH),
+                                 ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp(U"\ufffdxx", ST::utf16_to_utf32(incompleteL, text_size(incompleteL),
                                                           ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp(U"\ufffdxx", ST::utf16_to_utf32(incompleteH, text_size(incompleteH),
@@ -633,10 +657,14 @@ TEST(string, conv_utf32_validation)
 
     const char16_t doubleL[] = { 0xd800, 0xdbff, 'x', 0 };
     const char16_t doubleH[] = { 0xdc00, 0xdfff, 'x', 0 };
-    EXPECT_THROW(ST::utf16_to_utf32(doubleL, text_size(doubleL),
-                                    ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_utf32(doubleH, text_size(doubleH),
-                                    ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf32(doubleL, text_size(doubleL),
+                                 ST::check_validity);
+    }, ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_utf32(doubleH, text_size(doubleH),
+                                 ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp(U"\ufffd\ufffdx", ST::utf16_to_utf32(doubleL, text_size(doubleL),
                                                                ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp(U"\ufffd\ufffdx", ST::utf16_to_utf32(doubleH, text_size(doubleH),
@@ -646,12 +674,12 @@ TEST(string, conv_utf32_validation)
 TEST(string, conv_latin_1_validation)
 {
     // Truncated UTF-8 sequences
-    EXPECT_THROW(ST::utf8_to_latin_1("\xC0", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xE0", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xE0\x80", 2, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xF0", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xF0\x80", 2, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xF0\x80\x80", 3, ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xC0", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xE0", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xE0\x80", 2, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xF0", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xF0\x80", 2, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xF0\x80\x80", 3, ST::check_validity); }, ST::unicode_error);
 
     EXPECT_EQ(0, T_strcmp("?x", ST::utf8_to_latin_1("\xC0x", 2, ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp("?x", ST::utf8_to_latin_1("\xE0x", 2, ST::substitute_invalid).c_str()));
@@ -661,14 +689,14 @@ TEST(string, conv_latin_1_validation)
     EXPECT_EQ(0, T_strcmp("???x", ST::utf8_to_latin_1("\xF0\x80\x80x", 4, ST::substitute_invalid).c_str()));
 
     // Invalid UTF-8 sequences
-    EXPECT_THROW(ST::utf8_to_latin_1("\x80", 1, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xC0x", 2, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xE0xx", 3, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xF0xxx", 4, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xF8\x80\x80\x80\x80", 5, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xFC\x80\x80\x80\x80\x80", 6, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xFE\x80\x80\x80\x80\x80\x80", 7, ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xFF\x80\x80\x80\x80\x80\x80\x80", 8, ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\x80", 1, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xC0x", 2, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xE0xx", 3, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xF0xxx", 4, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xF8\x80\x80\x80\x80", 5, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xFC\x80\x80\x80\x80\x80", 6, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xFE\x80\x80\x80\x80\x80\x80", 7, ST::check_validity); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xFF\x80\x80\x80\x80\x80\x80\x80", 8, ST::check_validity); }, ST::unicode_error);
 
     EXPECT_EQ(0, T_strcmp("?x", ST::utf8_to_latin_1("\x80x", 2, ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp("?x", ST::utf8_to_latin_1("\xC0x", 2, ST::substitute_invalid).c_str()));
@@ -678,18 +706,22 @@ TEST(string, conv_latin_1_validation)
     EXPECT_EQ(0, T_strcmp("?xxxx", ST::utf8_to_latin_1("\xF8xxxx", 5, ST::substitute_invalid).c_str()));
 
     // Out of Latin-1 range
-    EXPECT_THROW(ST::utf8_to_latin_1("\xc4\x80", 2, ST::check_validity, false), ST::unicode_error);
-    EXPECT_THROW(ST::utf8_to_latin_1("\xf4\x8f\xbf\xbf", 4, ST::check_validity, false), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xc4\x80", 2, ST::check_validity, false); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf8_to_latin_1("\xf4\x8f\xbf\xbf", 4, ST::check_validity, false); }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("?x", ST::utf8_to_latin_1("\xc4\x80x", 3, ST::check_validity, true).c_str()));
     EXPECT_EQ(0, T_strcmp("?x", ST::utf8_to_latin_1("\xf4\x8f\xbf\xbfx", 5, ST::check_validity, true).c_str()));
 
     // Bad UTF-16 sequences
     const char16_t truncL[] = { 0xd800, 'x', 0 };
     const char16_t truncH[] = { 0xdc00, 'x', 0 };
-    EXPECT_THROW(ST::utf16_to_latin_1(truncL, text_size(truncL),
-                                      ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_latin_1(truncH, text_size(truncH),
-                                      ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_latin_1(truncL, text_size(truncL),
+                                   ST::check_validity);
+    }, ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_latin_1(truncH, text_size(truncH),
+                                   ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("?x", ST::utf16_to_latin_1(truncL, text_size(truncL),
                                                      ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp("?x", ST::utf16_to_latin_1(truncH, text_size(truncH),
@@ -697,10 +729,14 @@ TEST(string, conv_latin_1_validation)
 
     const char16_t incompleteL[] = { 0xd800, 'x', 'x', 0 };
     const char16_t incompleteH[] = { 0xdc00, 'x', 'x', 0 };
-    EXPECT_THROW(ST::utf16_to_latin_1(incompleteL, text_size(incompleteL),
-                                      ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_latin_1(incompleteH, text_size(incompleteH),
-                                      ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_latin_1(incompleteL, text_size(incompleteL),
+                                   ST::check_validity);
+    }, ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_latin_1(incompleteH, text_size(incompleteH),
+                                   ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("?xx", ST::utf16_to_latin_1(incompleteL, text_size(incompleteL),
                                                       ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp("?xx", ST::utf16_to_latin_1(incompleteH, text_size(incompleteH),
@@ -708,31 +744,37 @@ TEST(string, conv_latin_1_validation)
 
     const char16_t doubleL[] = { 0xd800, 0xdbff, 'x', 0 };
     const char16_t doubleH[] = { 0xdc00, 0xdfff, 'x', 0 };
-    EXPECT_THROW(ST::utf16_to_latin_1(doubleL, text_size(doubleL),
-                                      ST::check_validity), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_latin_1(doubleH, text_size(doubleH),
-                                      ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_latin_1(doubleL, text_size(doubleL),
+                                   ST::check_validity);
+    }, ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf16_to_latin_1(doubleH, text_size(doubleH),
+                                   ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("??x", ST::utf16_to_latin_1(doubleL, text_size(doubleL),
                                                       ST::substitute_invalid).c_str()));
     EXPECT_EQ(0, T_strcmp("??x", ST::utf16_to_latin_1(doubleH, text_size(doubleH),
                                                       ST::substitute_invalid).c_str()));
 
     // Out of Latin-1 range
-    EXPECT_THROW(ST::utf16_to_latin_1(u"\u0100", 1, ST::check_validity, false), ST::unicode_error);
-    EXPECT_THROW(ST::utf16_to_latin_1(u"\U0010ffff", 2, ST::check_validity, false), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf16_to_latin_1(u"\u0100", 1, ST::check_validity, false); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf16_to_latin_1(u"\U0010ffff", 2, ST::check_validity, false); }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("?x", ST::utf16_to_latin_1(u"\u0100x", 2, ST::check_validity, true).c_str()));
     EXPECT_EQ(0, T_strcmp("?x", ST::utf16_to_latin_1(u"\U0010ffffx", 3, ST::check_validity, true).c_str()));
 
     // Out of range UTF-32
     const char32_t range32[] = { 0x110000, 'x', 0 };
-    EXPECT_THROW(ST::utf32_to_latin_1(range32, text_size(range32),
-                                      ST::check_validity), ST::unicode_error);
+    EXPECT_THROW({
+        (void)ST::utf32_to_latin_1(range32, text_size(range32),
+                                   ST::check_validity);
+    }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("?x", ST::utf32_to_latin_1(range32, text_size(range32),
                                                      ST::substitute_invalid).c_str()));
 
     // Out of Latin-1 range
-    EXPECT_THROW(ST::utf32_to_latin_1(U"\u0100", 1, ST::check_validity, false), ST::unicode_error);
-    EXPECT_THROW(ST::utf32_to_latin_1(U"\U0010ffff", 1, ST::check_validity, false), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf32_to_latin_1(U"\u0100", 1, ST::check_validity, false); }, ST::unicode_error);
+    EXPECT_THROW({ (void)ST::utf32_to_latin_1(U"\U0010ffff", 1, ST::check_validity, false); }, ST::unicode_error);
     EXPECT_EQ(0, T_strcmp("?x", ST::utf32_to_latin_1(U"\u0100x", 2, ST::check_validity, true).c_str()));
     EXPECT_EQ(0, T_strcmp("?x", ST::utf32_to_latin_1(U"\U0010ffffx", 2, ST::check_validity, true).c_str()));
 }
@@ -745,7 +787,7 @@ TEST(string, conversion_errors)
 
     // Character outside of Unicode specification range
     const char32_t too_big_c[] = { 0xffffff, 0 };
-    EXPECT_THROW(ST::string::from_utf32(too_big_c, ST_AUTO_SIZE, ST::check_validity),
+    EXPECT_THROW({ (void)ST::string::from_utf32(too_big_c, ST_AUTO_SIZE, ST::check_validity); },
                  ST::unicode_error);
     ST::utf32_buffer too_big = ST::string::from_utf32(too_big_c, ST_AUTO_SIZE,
                                                       ST::substitute_invalid).to_utf32();
@@ -753,7 +795,7 @@ TEST(string, conversion_errors)
 
     // Invalid surrogate pairs
     const char16_t incomplete_surr_c[] = { 0xd800, 0 };
-    EXPECT_THROW(ST::string::from_utf16(incomplete_surr_c, ST_AUTO_SIZE, ST::check_validity),
+    EXPECT_THROW({ (void)ST::string::from_utf16(incomplete_surr_c, ST_AUTO_SIZE, ST::check_validity); },
                  ST::unicode_error);
     ST::string incomplete_surr = ST::string::from_utf16(incomplete_surr_c, ST_AUTO_SIZE,
                                                         ST::substitute_invalid);
@@ -761,14 +803,14 @@ TEST(string, conversion_errors)
 
     const char32_t unicode_replacement2[] = { 0xfffd, 0xfffd, 0 };
     const char16_t double_low_c[] = { 0xd800, 0xd801, 0 };
-    EXPECT_THROW(ST::string::from_utf16(double_low_c, ST_AUTO_SIZE, ST::check_validity),
+    EXPECT_THROW({ (void)ST::string::from_utf16(double_low_c, ST_AUTO_SIZE, ST::check_validity); },
                  ST::unicode_error);
     ST::string double_low = ST::string::from_utf16(double_low_c, ST_AUTO_SIZE,
                                                    ST::substitute_invalid);
     EXPECT_EQ(0, T_strcmp(unicode_replacement2, double_low.to_utf32().data()));
 
     const char16_t double_high_c[] = { 0xdc00, 0xdc01, 0 };
-    EXPECT_THROW(ST::string::from_utf16(double_high_c, ST_AUTO_SIZE, ST::check_validity),
+    EXPECT_THROW({ (void)ST::string::from_utf16(double_high_c, ST_AUTO_SIZE, ST::check_validity); },
                  ST::unicode_error);
     ST::string double_high = ST::string::from_utf16(double_high_c, ST_AUTO_SIZE,
                                                     ST::substitute_invalid);
@@ -776,7 +818,7 @@ TEST(string, conversion_errors)
 
     const char32_t unicode_replacement3[] = { 0xfffd, 0x20, 0 };
     const char16_t bad_combo_c[] = { 0xdc00, 0x20, 0 };
-    EXPECT_THROW(ST::string::from_utf16(bad_combo_c, ST_AUTO_SIZE, ST::check_validity),
+    EXPECT_THROW({ (void)ST::string::from_utf16(bad_combo_c, ST_AUTO_SIZE, ST::check_validity); },
                  ST::unicode_error);
     ST::string bad_combo = ST::string::from_utf16(bad_combo_c, ST_AUTO_SIZE,
                                                   ST::substitute_invalid);
@@ -784,7 +826,7 @@ TEST(string, conversion_errors)
 
     // Latin-1 doesn't have \ufffd, so it uses '?' instead
     const char32_t non_latin1_c[] = { 0x1ff, 0 };
-    EXPECT_THROW(ST::string::from_utf32(non_latin1_c).to_latin_1(false), ST::unicode_error);
+    EXPECT_THROW({ (void)ST::string::from_utf32(non_latin1_c).to_latin_1(false); }, ST::unicode_error);
     ST::char_buffer non_latin1 = ST::string::from_utf32(non_latin1_c).to_latin_1();
     EXPECT_STREQ(latin1_replacement, non_latin1.data());
 }

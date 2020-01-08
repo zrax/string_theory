@@ -46,20 +46,20 @@ TEST(format, escapes)
 
 TEST(format, errors)
 {
-    EXPECT_THROW(ST::format("{", 1), ST::bad_format);
-    EXPECT_THROW(ST::format("{.", 1), ST::bad_format);
-    EXPECT_THROW(ST::format("{_", 1), ST::bad_format);
-    EXPECT_THROW(ST::format("{&", 1), ST::bad_format);
-    EXPECT_THROW(ST::format("{\x7f", 1), ST::bad_format);
-    EXPECT_THROW(ST::format(nullptr, 1), std::invalid_argument);
+    EXPECT_THROW({ (void)ST::format("{", 1); }, ST::bad_format);
+    EXPECT_THROW({ (void)ST::format("{.", 1); }, ST::bad_format);
+    EXPECT_THROW({ (void)ST::format("{_", 1); }, ST::bad_format);
+    EXPECT_THROW({ (void)ST::format("{&", 1); }, ST::bad_format);
+    EXPECT_THROW({ (void)ST::format("{\x7f", 1); }, ST::bad_format);
+    EXPECT_THROW({ (void)ST::format(nullptr, 1); }, std::invalid_argument);
 
     // Too many actual parameters is no longer an error due to arg references
     // However, attempting to use a parameter number that is not provided
     // should still throw an exception
-    EXPECT_THROW(ST::format("{}{}", 1), std::out_of_range);
-    EXPECT_THROW(ST::format("{&0}", 1), std::out_of_range);
-    EXPECT_THROW(ST::format("{&2}", 1), std::out_of_range);
-    EXPECT_THROW(ST::format("{}"), std::out_of_range);
+    EXPECT_THROW({ (void)ST::format("{}{}", 1); }, std::out_of_range);
+    EXPECT_THROW({ (void)ST::format("{&0}", 1); }, std::out_of_range);
+    EXPECT_THROW({ (void)ST::format("{&2}", 1); }, std::out_of_range);
+    EXPECT_THROW({ (void)ST::format("{}"); }, std::out_of_range);
 }
 
 TEST(format, strings)
