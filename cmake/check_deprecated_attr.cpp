@@ -20,6 +20,8 @@
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic error "-Wattributes"
+#elif defined(_MSC_VER)
+#pragma warning(error: 5030)
 #endif
 
 struct Test
