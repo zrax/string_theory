@@ -197,6 +197,16 @@ namespace ST
             return append_char(ch);
         }
 
+        // Some systems alias int8_t as char rather than signed char.
+        // We don't want to remove the char overload since it's often better
+        // than streaming a string or calling .append_char(), so instead we
+        // can disable the use of these overloads on "sane" platforms to
+        // try to catch their misuse.
+        // HINT:  If you need to stream an int8_t or uint8_t, cast it to
+        // an int or unsigned int to get the correct behavior...
+        string_stream &operator<<(signed char) = delete;
+        string_stream &operator<<(unsigned char) = delete;
+
         string_stream &operator<<(const string &text)
         {
             return append(text.c_str(), text.size());
