@@ -1462,51 +1462,147 @@ namespace ST
         }
 
         ST_NODISCARD
+        long to_long(int base = 0) const noexcept
+        {
+            return strtol(c_str(), nullptr, base);
+        }
+
+        ST_NODISCARD
+        long to_long(conversion_result &result, int base = 0) const noexcept
+        {
+            if (empty()) {
+                result.m_flags = ST::conversion_result::result_full_match;
+                return 0;
+            }
+
+            char *end;
+            long value = strtol(c_str(), &end, base);
+            result.m_flags = 0;
+            if (end != c_str())
+                result.m_flags |= ST::conversion_result::result_ok;
+            if (end == c_str() + size())
+                result.m_flags |= ST::conversion_result::result_full_match;
+            return value;
+        }
+
+        ST_NODISCARD
+        long long to_long_long(int base = 0) const noexcept
+        {
+            return strtoll(c_str(), nullptr, base);
+        }
+
+        ST_NODISCARD
+        long long to_long_long(conversion_result &result, int base = 0) const noexcept
+        {
+            if (empty()) {
+                result.m_flags = ST::conversion_result::result_full_match;
+                return 0;
+            }
+
+            char *end;
+            long long value = strtoll(c_str(), &end, base);
+            result.m_flags = 0;
+            if (end != c_str())
+                result.m_flags |= ST::conversion_result::result_ok;
+            if (end == c_str() + size())
+                result.m_flags |= ST::conversion_result::result_full_match;
+            return value;
+        }
+
+        ST_NODISCARD
+        short to_short(int base = 0) const noexcept
+        {
+            return static_cast<short>(to_long(base));
+        }
+
+        ST_NODISCARD
+        short to_short(conversion_result &result, int base = 0) const noexcept
+        {
+            return static_cast<short>(to_long(result, base));
+        }
+
+        ST_NODISCARD
         int to_int(int base = 0) const noexcept
         {
-            return static_cast<int>(strtol(c_str(), nullptr, base));
+            return static_cast<int>(to_long(base));
         }
 
         ST_NODISCARD
         int to_int(conversion_result &result, int base = 0) const noexcept
         {
+            return static_cast<int>(to_long(result, base));
+        }
+
+        ST_NODISCARD
+        unsigned long to_ulong(int base = 0) const noexcept
+        {
+            return strtoul(c_str(), nullptr, base);
+        }
+
+        ST_NODISCARD
+        unsigned long to_ulong(conversion_result &result, int base = 0) const noexcept
+        {
             if (empty()) {
                 result.m_flags = ST::conversion_result::result_full_match;
                 return 0;
             }
 
             char *end;
-            int value = static_cast<int>(strtol(c_str(), &end, base));
+            unsigned long value = strtoul(c_str(), &end, base);
             result.m_flags = 0;
             if (end != c_str())
                 result.m_flags |= ST::conversion_result::result_ok;
             if (end == c_str() + size())
                 result.m_flags |= ST::conversion_result::result_full_match;
             return value;
+        }
+
+        ST_NODISCARD
+        unsigned long long to_ulong_long(int base = 0) const noexcept
+        {
+            return strtoull(c_str(), nullptr, base);
+        }
+
+        ST_NODISCARD
+        unsigned long long to_ulong_long(conversion_result &result, int base = 0) const noexcept
+        {
+            if (empty()) {
+                result.m_flags = ST::conversion_result::result_full_match;
+                return 0;
+            }
+
+            char *end;
+            unsigned long long value = strtoull(c_str(), &end, base);
+            result.m_flags = 0;
+            if (end != c_str())
+                result.m_flags |= ST::conversion_result::result_ok;
+            if (end == c_str() + size())
+                result.m_flags |= ST::conversion_result::result_full_match;
+            return value;
+        }
+
+        ST_NODISCARD
+        unsigned short to_ushort(int base = 0) const noexcept
+        {
+            return static_cast<unsigned short>(to_ulong(base));
+        }
+
+        ST_NODISCARD
+        unsigned short to_ushort(conversion_result &result, int base = 0) const noexcept
+        {
+            return static_cast<unsigned short>(to_ulong(result, base));
         }
 
         ST_NODISCARD
         unsigned int to_uint(int base = 0) const noexcept
         {
-            return static_cast<unsigned int>(strtoul(c_str(), nullptr, base));
+            return static_cast<unsigned int>(to_ulong(base));
         }
 
         ST_NODISCARD
         unsigned int to_uint(conversion_result &result, int base = 0) const noexcept
         {
-            if (empty()) {
-                result.m_flags = ST::conversion_result::result_full_match;
-                return 0;
-            }
-
-            char *end;
-            unsigned int value = static_cast<unsigned int>(strtoul(c_str(), &end, base));
-            result.m_flags = 0;
-            if (end != c_str())
-                result.m_flags |= ST::conversion_result::result_ok;
-            if (end == c_str() + size())
-                result.m_flags |= ST::conversion_result::result_full_match;
-            return value;
+            return static_cast<unsigned int>(to_ulong(result, base));
         }
 
         ST_NODISCARD
@@ -1559,41 +1655,31 @@ namespace ST
 
 #ifdef ST_HAVE_INT64
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("Use to_long() or to_long_long() instead")
         int64_t to_int64(int base = 0) const noexcept
         {
-            return static_cast<int64_t>(strtoll(c_str(), nullptr, base));
+            return static_cast<int64_t>(to_long_long(base));
         }
 
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("Use to_long() or to_long_long() instead")
         int64_t to_int64(conversion_result &result, int base = 0) const noexcept
         {
-            char *end;
-            int64_t value = static_cast<int64_t>(strtoll(c_str(), &end, base));
-            result.m_flags = 0;
-            if (end != c_str())
-                result.m_flags = ST::conversion_result::result_ok;
-            if (end == c_str() + size())
-                result.m_flags |= ST::conversion_result::result_full_match;
-            return value;
+            return static_cast<int64_t>(to_long_long(result, base));
         }
 
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("Use to_ulong() or to_ulong_long() instead")
         uint64_t to_uint64(int base = 0) const noexcept
         {
-            return static_cast<uint64_t>(strtoull(c_str(), nullptr, base));
+            return static_cast<uint64_t>(to_ulong_long(base));
         }
 
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("Use to_ulong() or to_ulong_long() instead")
         uint64_t to_uint64(conversion_result &result, int base = 0) const noexcept
         {
-            char *end;
-            uint64_t value = static_cast<uint64_t>(strtoull(c_str(), &end, base));
-            result.m_flags = 0;
-            if (end != c_str())
-                result.m_flags = ST::conversion_result::result_ok;
-            if (end == c_str() + size())
-                result.m_flags |= ST::conversion_result::result_full_match;
-            return value;
+            return static_cast<uint64_t>(to_ulong_long(result, base));
         }
 #endif
 

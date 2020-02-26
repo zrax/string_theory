@@ -964,15 +964,13 @@ TEST(string, from_int)
     EXPECT_EQ(ST_LITERAL("-234200"), ST::string::from_int(-80000, 8));
     EXPECT_EQ(ST_LITERAL("234200"), ST::string::from_int(80000, 8));
 
-#ifdef ST_HAVE_INT64
-    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_int64(0));
-    EXPECT_EQ(ST_LITERAL("-1000000000000"), ST::string::from_int64(-1000000000000LL));
-    EXPECT_EQ(ST_LITERAL("1000000000000"), ST::string::from_int64(1000000000000LL));
-    EXPECT_EQ(ST_LITERAL("-e8d4a51000"), ST::string::from_int64(-1000000000000LL, 16));
-    EXPECT_EQ(ST_LITERAL("e8d4a51000"), ST::string::from_int64(1000000000000LL, 16));
-    EXPECT_EQ(ST_LITERAL("-16432451210000"), ST::string::from_int64(-1000000000000LL, 8));
-    EXPECT_EQ(ST_LITERAL("16432451210000"), ST::string::from_int64(1000000000000LL, 8));
-#endif
+    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_int(0LL));
+    EXPECT_EQ(ST_LITERAL("-1000000000000"), ST::string::from_int(-1000000000000LL));
+    EXPECT_EQ(ST_LITERAL("1000000000000"), ST::string::from_int(1000000000000LL));
+    EXPECT_EQ(ST_LITERAL("-e8d4a51000"), ST::string::from_int(-1000000000000LL, 16));
+    EXPECT_EQ(ST_LITERAL("e8d4a51000"), ST::string::from_int(1000000000000LL, 16));
+    EXPECT_EQ(ST_LITERAL("-16432451210000"), ST::string::from_int(-1000000000000LL, 8));
+    EXPECT_EQ(ST_LITERAL("16432451210000"), ST::string::from_int(1000000000000LL, 8));
 
     static const int int32_min = std::numeric_limits<int>::min();
     static const int int32_max = std::numeric_limits<int>::max();
@@ -986,53 +984,47 @@ TEST(string, from_int)
     EXPECT_EQ(ST_LITERAL("-10000000000000000000000000000000"), ST::string::from_int(int32_min, 2));
     EXPECT_EQ(ST_LITERAL("1111111111111111111111111111111"), ST::string::from_int(int32_max, 2));
 
-#ifdef ST_HAVE_INT64
     static const long long int64_min = std::numeric_limits<long long>::min();
     static const long long int64_max = std::numeric_limits<long long>::max();
-    EXPECT_EQ(ST_LITERAL("-9223372036854775808"), ST::string::from_int64(int64_min));
-    EXPECT_EQ(ST_LITERAL("9223372036854775807"), ST::string::from_int64(int64_max));
-    EXPECT_EQ(ST_LITERAL("-8000000000000000"), ST::string::from_int64(int64_min, 16));
-    EXPECT_EQ(ST_LITERAL("7fffffffffffffff"), ST::string::from_int64(int64_max, 16, false));
-    EXPECT_EQ(ST_LITERAL("7FFFFFFFFFFFFFFF"), ST::string::from_int64(int64_max, 16, true));
-    EXPECT_EQ(ST_LITERAL("-1000000000000000000000"), ST::string::from_int64(int64_min, 8));
-    EXPECT_EQ(ST_LITERAL("777777777777777777777"), ST::string::from_int64(int64_max, 8));
+    EXPECT_EQ(ST_LITERAL("-9223372036854775808"), ST::string::from_int(int64_min));
+    EXPECT_EQ(ST_LITERAL("9223372036854775807"), ST::string::from_int(int64_max));
+    EXPECT_EQ(ST_LITERAL("-8000000000000000"), ST::string::from_int(int64_min, 16));
+    EXPECT_EQ(ST_LITERAL("7fffffffffffffff"), ST::string::from_int(int64_max, 16, false));
+    EXPECT_EQ(ST_LITERAL("7FFFFFFFFFFFFFFF"), ST::string::from_int(int64_max, 16, true));
+    EXPECT_EQ(ST_LITERAL("-1000000000000000000000"), ST::string::from_int(int64_min, 8));
+    EXPECT_EQ(ST_LITERAL("777777777777777777777"), ST::string::from_int(int64_max, 8));
     EXPECT_EQ(ST_LITERAL("-1000000000000000000000000000000000000000000000000000000000000000"),
-              ST::string::from_int64(int64_min, 2));
+              ST::string::from_int(int64_min, 2));
     EXPECT_EQ(ST_LITERAL("111111111111111111111111111111111111111111111111111111111111111"),
-              ST::string::from_int64(int64_max, 2));
-#endif
+              ST::string::from_int(int64_max, 2));
 }
 
 TEST(string, from_uint)
 {
-    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_uint(0));
-    EXPECT_EQ(ST_LITERAL("80000"), ST::string::from_uint(80000));
-    EXPECT_EQ(ST_LITERAL("13880"), ST::string::from_uint(80000, 16));
-    EXPECT_EQ(ST_LITERAL("234200"), ST::string::from_uint(80000, 8));
+    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_uint(0U));
+    EXPECT_EQ(ST_LITERAL("80000"), ST::string::from_uint(80000U));
+    EXPECT_EQ(ST_LITERAL("13880"), ST::string::from_uint(80000U, 16));
+    EXPECT_EQ(ST_LITERAL("234200"), ST::string::from_uint(80000U, 8));
 
-#ifdef ST_HAVE_INT64
-    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_uint64(0));
-    EXPECT_EQ(ST_LITERAL("1000000000000"), ST::string::from_uint64(1000000000000ULL));
-    EXPECT_EQ(ST_LITERAL("e8d4a51000"), ST::string::from_uint64(1000000000000ULL, 16));
-    EXPECT_EQ(ST_LITERAL("16432451210000"), ST::string::from_uint64(1000000000000ULL, 8));
-#endif
+    EXPECT_EQ(ST_LITERAL("0"), ST::string::from_uint(0ULL));
+    EXPECT_EQ(ST_LITERAL("1000000000000"), ST::string::from_uint(1000000000000ULL));
+    EXPECT_EQ(ST_LITERAL("e8d4a51000"), ST::string::from_uint(1000000000000ULL, 16));
+    EXPECT_EQ(ST_LITERAL("16432451210000"), ST::string::from_uint(1000000000000ULL, 8));
 
-    static const int uint32_max = std::numeric_limits<unsigned int>::max();
+    static const unsigned int uint32_max = std::numeric_limits<unsigned int>::max();
     EXPECT_EQ(ST_LITERAL("4294967295"), ST::string::from_uint(uint32_max));
     EXPECT_EQ(ST_LITERAL("ffffffff"), ST::string::from_uint(uint32_max, 16, false));
     EXPECT_EQ(ST_LITERAL("FFFFFFFF"), ST::string::from_uint(uint32_max, 16, true));
     EXPECT_EQ(ST_LITERAL("37777777777"), ST::string::from_uint(uint32_max, 8));
     EXPECT_EQ(ST_LITERAL("11111111111111111111111111111111"), ST::string::from_uint(uint32_max, 2));
 
-#ifdef ST_HAVE_INT64
     static const unsigned long long uint64_max = std::numeric_limits<unsigned long long>::max();
-    EXPECT_EQ(ST_LITERAL("18446744073709551615"), ST::string::from_uint64(uint64_max));
-    EXPECT_EQ(ST_LITERAL("ffffffffffffffff"), ST::string::from_uint64(uint64_max, 16, false));
-    EXPECT_EQ(ST_LITERAL("FFFFFFFFFFFFFFFF"), ST::string::from_uint64(uint64_max, 16, true));
-    EXPECT_EQ(ST_LITERAL("1777777777777777777777"), ST::string::from_uint64(uint64_max, 8));
+    EXPECT_EQ(ST_LITERAL("18446744073709551615"), ST::string::from_uint(uint64_max));
+    EXPECT_EQ(ST_LITERAL("ffffffffffffffff"), ST::string::from_uint(uint64_max, 16, false));
+    EXPECT_EQ(ST_LITERAL("FFFFFFFFFFFFFFFF"), ST::string::from_uint(uint64_max, 16, true));
+    EXPECT_EQ(ST_LITERAL("1777777777777777777777"), ST::string::from_uint(uint64_max, 8));
     EXPECT_EQ(ST_LITERAL("1111111111111111111111111111111111111111111111111111111111111111"),
-              ST::string::from_uint64(uint64_max, 2));
-#endif
+              ST::string::from_uint(uint64_max, 2));
 }
 
 TEST(string, from_float)
@@ -1077,11 +1069,9 @@ TEST(string, to_int)
     EXPECT_EQ(0, ST_LITERAL("+0").to_int());
     EXPECT_EQ(0, ST_LITERAL("-0").to_int());
 
-#ifdef ST_HAVE_INT64
-    EXPECT_EQ(0, ST_LITERAL("0").to_int64());
-    EXPECT_EQ(0, ST_LITERAL("+0").to_int64());
-    EXPECT_EQ(0, ST_LITERAL("-0").to_int64());
-#endif
+    EXPECT_EQ(0, ST_LITERAL("0").to_long_long());
+    EXPECT_EQ(0, ST_LITERAL("+0").to_long_long());
+    EXPECT_EQ(0, ST_LITERAL("-0").to_long_long());
 
     EXPECT_EQ(-80000, ST_LITERAL("-80000").to_int());
     EXPECT_EQ(80000, ST_LITERAL("80000").to_int());
@@ -1099,23 +1089,21 @@ TEST(string, to_int)
     EXPECT_EQ(80000, ST_LITERAL("234200").to_int(8));
     EXPECT_EQ(80000, ST_LITERAL("+234200").to_int(8));
 
-#ifdef ST_HAVE_INT64
-    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-1000000000000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("1000000000000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("+1000000000000").to_int64());
-    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-0xe8d4a51000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("0xe8d4a51000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("+0xe8d4a51000").to_int64());
-    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-016432451210000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("016432451210000").to_int64());
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("+016432451210000").to_int64());
-    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-e8d4a51000").to_int64(16));
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("e8d4a51000").to_int64(16));
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("+e8d4a51000").to_int64(16));
-    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-16432451210000").to_int64(8));
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("16432451210000").to_int64(8));
-    EXPECT_EQ(1000000000000LL, ST_LITERAL("+16432451210000").to_int64(8));
-#endif
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-1000000000000").to_long_long());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("1000000000000").to_long_long());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+1000000000000").to_long_long());
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-0xe8d4a51000").to_long_long());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("0xe8d4a51000").to_long_long());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+0xe8d4a51000").to_long_long());
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-016432451210000").to_long_long());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("016432451210000").to_long_long());
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+016432451210000").to_long_long());
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-e8d4a51000").to_long_long(16));
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("e8d4a51000").to_long_long(16));
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+e8d4a51000").to_long_long(16));
+    EXPECT_EQ(-1000000000000LL, ST_LITERAL("-16432451210000").to_long_long(8));
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("16432451210000").to_long_long(8));
+    EXPECT_EQ(1000000000000LL, ST_LITERAL("+16432451210000").to_long_long(8));
 
     static const int int32_min = std::numeric_limits<int>::min();
     static const int int32_max = std::numeric_limits<int>::max();
@@ -1135,31 +1123,27 @@ TEST(string, to_int)
     EXPECT_EQ(int32_max, ST_LITERAL("17777777777").to_int(8));
     EXPECT_EQ(int32_max, ST_LITERAL("+17777777777").to_int(8));
 
-#ifdef ST_HAVE_INT64
     static const long long int64_min = std::numeric_limits<long long>::min();
     static const long long int64_max = std::numeric_limits<long long>::max();
-    EXPECT_EQ(int64_min, ST_LITERAL("-9223372036854775808").to_int64());
-    EXPECT_EQ(int64_max, ST_LITERAL("9223372036854775807").to_int64());
-    EXPECT_EQ(int64_max, ST_LITERAL("+9223372036854775807").to_int64());
-    EXPECT_EQ(int64_min, ST_LITERAL("-0x8000000000000000").to_int64());
-    EXPECT_EQ(int64_max, ST_LITERAL("0x7FFFFFFFFFFFFFFF").to_int64());
-    EXPECT_EQ(int64_max, ST_LITERAL("+0x7FFFFFFFFFFFFFFF").to_int64());
-    EXPECT_EQ(int64_min, ST_LITERAL("-01000000000000000000000").to_int64());
-    EXPECT_EQ(int64_max, ST_LITERAL("0777777777777777777777").to_int64());
-    EXPECT_EQ(int64_max, ST_LITERAL("+0777777777777777777777").to_int64());
-    EXPECT_EQ(int64_min, ST_LITERAL("-8000000000000000").to_int64(16));
-    EXPECT_EQ(int64_max, ST_LITERAL("7FFFFFFFFFFFFFFF").to_int64(16));
-    EXPECT_EQ(int64_max, ST_LITERAL("+7FFFFFFFFFFFFFFF").to_int64(16));
-    EXPECT_EQ(int64_min, ST_LITERAL("-1000000000000000000000").to_int64(8));
-    EXPECT_EQ(int64_max, ST_LITERAL("777777777777777777777").to_int64(8));
-    EXPECT_EQ(int64_max, ST_LITERAL("+777777777777777777777").to_int64(8));
-#endif
+    EXPECT_EQ(int64_min, ST_LITERAL("-9223372036854775808").to_long_long());
+    EXPECT_EQ(int64_max, ST_LITERAL("9223372036854775807").to_long_long());
+    EXPECT_EQ(int64_max, ST_LITERAL("+9223372036854775807").to_long_long());
+    EXPECT_EQ(int64_min, ST_LITERAL("-0x8000000000000000").to_long_long());
+    EXPECT_EQ(int64_max, ST_LITERAL("0x7FFFFFFFFFFFFFFF").to_long_long());
+    EXPECT_EQ(int64_max, ST_LITERAL("+0x7FFFFFFFFFFFFFFF").to_long_long());
+    EXPECT_EQ(int64_min, ST_LITERAL("-01000000000000000000000").to_long_long());
+    EXPECT_EQ(int64_max, ST_LITERAL("0777777777777777777777").to_long_long());
+    EXPECT_EQ(int64_max, ST_LITERAL("+0777777777777777777777").to_long_long());
+    EXPECT_EQ(int64_min, ST_LITERAL("-8000000000000000").to_long_long(16));
+    EXPECT_EQ(int64_max, ST_LITERAL("7FFFFFFFFFFFFFFF").to_long_long(16));
+    EXPECT_EQ(int64_max, ST_LITERAL("+7FFFFFFFFFFFFFFF").to_long_long(16));
+    EXPECT_EQ(int64_min, ST_LITERAL("-1000000000000000000000").to_long_long(8));
+    EXPECT_EQ(int64_max, ST_LITERAL("777777777777777777777").to_long_long(8));
+    EXPECT_EQ(int64_max, ST_LITERAL("+777777777777777777777").to_long_long(8));
 
     // Empty string is treated as zero for compatibility with strtol
     EXPECT_EQ(0, ST::string().to_int());
-#ifdef ST_HAVE_INT64
-    EXPECT_EQ(0, ST::string().to_int64());
-#endif
+    EXPECT_EQ(0LL, ST::string().to_long_long());
 }
 
 TEST(string, to_int_check)
@@ -1234,11 +1218,9 @@ TEST(string, to_uint)
     EXPECT_EQ(0U, ST_LITERAL("+0").to_uint());
     EXPECT_EQ(0U, ST_LITERAL("-0").to_uint());
 
-#ifdef ST_HAVE_INT64
-    EXPECT_EQ(0U, ST_LITERAL("0").to_uint64());
-    EXPECT_EQ(0U, ST_LITERAL("+0").to_uint64());
-    EXPECT_EQ(0U, ST_LITERAL("-0").to_uint64());
-#endif
+    EXPECT_EQ(0ULL, ST_LITERAL("0").to_ulong_long());
+    EXPECT_EQ(0ULL, ST_LITERAL("+0").to_ulong_long());
+    EXPECT_EQ(0ULL, ST_LITERAL("-0").to_ulong_long());
 
     EXPECT_EQ(80000U, ST_LITERAL("80000").to_uint());
     EXPECT_EQ(80000U, ST_LITERAL("+80000").to_uint());
@@ -1251,18 +1233,16 @@ TEST(string, to_uint)
     EXPECT_EQ(80000U, ST_LITERAL("234200").to_uint(8));
     EXPECT_EQ(80000U, ST_LITERAL("+234200").to_uint(8));
 
-#ifdef ST_HAVE_INT64
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("1000000000000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+1000000000000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("0xe8d4a51000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+0xe8d4a51000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("016432451210000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+016432451210000").to_uint64());
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("e8d4a51000").to_uint64(16));
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+e8d4a51000").to_uint64(16));
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("16432451210000").to_uint64(8));
-    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+16432451210000").to_uint64(8));
-#endif
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("1000000000000").to_ulong_long());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+1000000000000").to_ulong_long());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("0xe8d4a51000").to_ulong_long());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+0xe8d4a51000").to_ulong_long());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("016432451210000").to_ulong_long());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+016432451210000").to_ulong_long());
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("e8d4a51000").to_ulong_long(16));
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+e8d4a51000").to_ulong_long(16));
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("16432451210000").to_ulong_long(8));
+    EXPECT_EQ(1000000000000ULL, ST_LITERAL("+16432451210000").to_ulong_long(8));
 
     static const unsigned int uint32_max = std::numeric_limits<unsigned int>::max();
     EXPECT_EQ(uint32_max, ST_LITERAL("4294967295").to_uint());
@@ -1272,21 +1252,17 @@ TEST(string, to_uint)
     EXPECT_EQ(uint32_max, ST_LITERAL("037777777777").to_uint());
     EXPECT_EQ(uint32_max, ST_LITERAL("+037777777777").to_uint());
 
-#ifdef ST_HAVE_INT64
     static const unsigned long long uint64_max = std::numeric_limits<unsigned long long>::max();
-    EXPECT_EQ(uint64_max, ST_LITERAL("18446744073709551615").to_uint64());
-    EXPECT_EQ(uint64_max, ST_LITERAL("+18446744073709551615").to_uint64());
-    EXPECT_EQ(uint64_max, ST_LITERAL("0xFFFFFFFFFFFFFFFF").to_uint64());
-    EXPECT_EQ(uint64_max, ST_LITERAL("+0xFFFFFFFFFFFFFFFF").to_uint64());
-    EXPECT_EQ(uint64_max, ST_LITERAL("01777777777777777777777").to_uint64());
-    EXPECT_EQ(uint64_max, ST_LITERAL("+01777777777777777777777").to_uint64());
-#endif
+    EXPECT_EQ(uint64_max, ST_LITERAL("18446744073709551615").to_ulong_long());
+    EXPECT_EQ(uint64_max, ST_LITERAL("+18446744073709551615").to_ulong_long());
+    EXPECT_EQ(uint64_max, ST_LITERAL("0xFFFFFFFFFFFFFFFF").to_ulong_long());
+    EXPECT_EQ(uint64_max, ST_LITERAL("+0xFFFFFFFFFFFFFFFF").to_ulong_long());
+    EXPECT_EQ(uint64_max, ST_LITERAL("01777777777777777777777").to_ulong_long());
+    EXPECT_EQ(uint64_max, ST_LITERAL("+01777777777777777777777").to_ulong_long());
 
     // Empty string is treated as zero for compatibility with strtoul
     EXPECT_EQ(0U, ST::string().to_uint());
-#ifdef ST_HAVE_INT64
-    EXPECT_EQ(0U, ST::string().to_uint64());
-#endif
+    EXPECT_EQ(0ULL, ST::string().to_ulong_long());
 }
 
 TEST(string, to_uint_check)
