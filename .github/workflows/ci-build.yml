@@ -9,8 +9,8 @@ jobs:
         cfg:
           - { os: ubuntu-16.04, compiler: gcc-4.8,    stdlib: default }
           - { os: ubuntu-16.04, compiler: gcc,        stdlib: default }   # GCC 5
-          - { os: ubuntu-16.04, compiler: clang-3.5,  stdlib: libc++  }
-          - { os: ubuntu-16.04, compiler: clang,      stdlib: libc++  }   # Clang 3.8
+          - { os: ubuntu-16.04, compiler: clang-3.5,  stdlib: default }
+          - { os: ubuntu-16.04, compiler: clang,      stdlib: default }   # Clang 3.8
           - { os: ubuntu-18.04, compiler: gcc,        stdlib: default }   # GCC 7
           - { os: ubuntu-18.04, compiler: clang,      stdlib: default }   # Clang 6.0
           - { os: ubuntu-18.04, compiler: gcc-8,      stdlib: default }
