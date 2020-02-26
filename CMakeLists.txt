@@ -71,12 +71,6 @@ try_compile(ST_HAVE_DEPRECATED_ATTR "${PROJECT_BINARY_DIR}"
 try_compile(ST_HAVE_NODISCARD_ATTR "${PROJECT_BINARY_DIR}"
             "${PROJECT_SOURCE_DIR}/cmake/check_nodiscard.cpp")
 
-try_compile(ST_INT64_IS_NOT_LONG "${PROJECT_BINARY_DIR}"
-            "${PROJECT_SOURCE_DIR}/cmake/check_int64_is_long.cpp")
-if(NOT ST_INT64_IS_NOT_LONG)
-    set(ST_INT64_IS_LONG TRUE)
-endif()
-
 try_compile(ST_HAVE_CXX17_STRING_VIEW "${PROJECT_BINARY_DIR}"
     "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp")
 try_compile(ST_HAVE_EXPERIMENTAL_STRING_VIEW "${PROJECT_BINARY_DIR}"

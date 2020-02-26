@@ -27,7 +27,6 @@
 #define ST_VERSION_STR "@ST_VERSION@"
 
 #cmakedefine ST_HAVE_INT64
-#cmakedefine ST_INT64_IS_LONG
 #cmakedefine ST_HAVE_DEPRECATED_ATTR
 #if (__cplusplus > 201402L) || (defined(_MSVC_LANG) && (_MSVC_LANG > 201402L))
 #cmakedefine ST_HAVE_NODISCARD_ATTR
