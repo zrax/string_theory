@@ -1373,15 +1373,51 @@ namespace ST
         bool empty() const noexcept { return m_buffer.empty(); }
 
         ST_NODISCARD
+        static string from_int(short value, int base = 10, bool upper_case = false)
+        {
+            return from_validated(_ST_PRIVATE::mini_format_int_s<short>(base, upper_case, value));
+        }
+
+        ST_NODISCARD
         static string from_int(int value, int base = 10, bool upper_case = false)
         {
             return from_validated(_ST_PRIVATE::mini_format_int_s<int>(base, upper_case, value));
         }
 
         ST_NODISCARD
+        static string from_int(long value, int base = 10, bool upper_case = false)
+        {
+            return from_validated(_ST_PRIVATE::mini_format_int_s<long>(base, upper_case, value));
+        }
+
+        ST_NODISCARD
+        static string from_int(long long value, int base = 10, bool upper_case = false)
+        {
+            return from_validated(_ST_PRIVATE::mini_format_int_s<long long>(base, upper_case, value));
+        }
+
+        ST_NODISCARD
+        static string from_uint(unsigned short value, int base = 10, bool upper_case = false)
+        {
+            return from_validated(_ST_PRIVATE::mini_format_int_u<unsigned short>(base, upper_case, value));
+        }
+
+        ST_NODISCARD
         static string from_uint(unsigned int value, int base = 10, bool upper_case = false)
         {
             return from_validated(_ST_PRIVATE::mini_format_int_u<unsigned int>(base, upper_case, value));
+        }
+
+        ST_NODISCARD
+        static string from_uint(unsigned long value, int base = 10, bool upper_case = false)
+        {
+            return from_validated(_ST_PRIVATE::mini_format_int_u<unsigned long>(base, upper_case, value));
+        }
+
+        ST_NODISCARD
+        static string from_uint(unsigned long long value, int base = 10, bool upper_case = false)
+        {
+            return from_validated(_ST_PRIVATE::mini_format_int_u<unsigned long long>(base, upper_case, value));
         }
 
         ST_NODISCARD
@@ -1396,14 +1432,22 @@ namespace ST
             return from_validated(_ST_PRIVATE::mini_format_float<double>(value, format));
         }
 
+        ST_NODISCARD
+        static string from_float(double value, char format='g')
+        {
+            return from_double(value, format);
+        }
+
 #ifdef ST_HAVE_INT64
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("use from_int(long / long long) instead")
         static string from_int64(int64_t value, int base = 10, bool upper_case = false)
         {
             return from_validated(_ST_PRIVATE::mini_format_int_s<int64_t>(base, upper_case, value));
         }
 
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("use from_uint(unsigned long / unsigned long long) instead")
         static string from_uint64(uint64_t value, int base = 10, bool upper_case = false)
         {
             return from_validated(_ST_PRIVATE::mini_format_int_u<uint64_t>(base, upper_case, value));

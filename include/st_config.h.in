@@ -77,6 +77,15 @@
 #   define ST_DEPRECATED_IN_3_0(message) ST_DEPRECATED(message)
 #endif
 
+#if !defined(ST_4_0_DEPRECATION)
+#   define ST_NO_4_0_DEPRECATION
+#endif
+#if defined(ST_NO_4_0_DEPRECATION)
+#   define ST_DEPRECATED_IN_4_0(message)
+#else
+#   define ST_DEPRECATED_IN_4_0(message) ST_DEPRECATED(message)
+#endif
+
 #if defined(ST_HAVE_NODISCARD_ATTR)
 #   define ST_NODISCARD [[nodiscard]]
 #else
