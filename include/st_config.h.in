@@ -43,9 +43,6 @@
 #cmakedefine ST_HAVE_CXX20_CHAR8_TYPES
 #endif
 
-#define _ST_MACRO_JOIN(l, r)  l ## r
-#define ST_MACRO_JOIN(l, r)   _ST_MACRO_JOIN(l, r)
-
 // Backwards compatibility for clients of string_theory
 #define ST_NOEXCEPT noexcept
 #define ST_OVERRIDE override
