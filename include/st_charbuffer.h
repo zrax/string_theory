@@ -29,13 +29,8 @@
 #include <utility>      // For std::move
 #include <algorithm>    // For std::min
 
-#if defined(ST_ENABLE_STL_STRINGS)
-#   if defined(ST_HAVE_CXX17_STRING_VIEW)
-#       include <string_view>
-#   endif
-#   if defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
-#       include <experimental/string_view>
-#   endif
+#if defined(ST_ENABLE_STL_STRINGS) && defined(ST_HAVE_CXX17_STRING_VIEW)
+#   include <string_view>
 #endif
 
 #define ST_AUTO_SIZE    (static_cast<size_t>(-1))
@@ -422,15 +417,6 @@ namespace ST
             if (length == ST_AUTO_SIZE)
                 length = size() - start;
             return std::basic_string_view<char_T>(data() + start, length);
-        }
-#elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
-        ST_NODISCARD
-        std::experimental::basic_string_view<char_T> view(size_t start = 0,
-                                                          size_t length = ST_AUTO_SIZE) const
-        {
-            if (length == ST_AUTO_SIZE)
-                length = size() - start;
-            return std::experimental::basic_string_view<char_T>(data() + start, length);
         }
 #endif
 

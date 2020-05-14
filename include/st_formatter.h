@@ -607,40 +607,9 @@ namespace ST
     }
 #endif
 
-#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
-                            const std::experimental::string_view &view)
-    {
-        ST::format_string(format, output, view.data(), view.size());
-    }
-
-    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
-                            const std::experimental::wstring_view &view)
-    {
-        ST::char_buffer utf8 = ST::string::from_wchar(view.data(), view.size()).to_utf8();
-        ST::format_string(format, output, utf8.data(), utf8.size());
-    }
-
-    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
-                            const std::experimental::u16string_view &view)
-    {
-        ST::char_buffer utf8 = ST::string::from_utf16(view.data(), view.size()).to_utf8();
-        ST::format_string(format, output, utf8.data(), utf8.size());
-    }
-
-    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
-                            const std::experimental::u32string_view &view)
-    {
-        ST::char_buffer utf8 = ST::string::from_utf32(view.data(), view.size()).to_utf8();
-        ST::format_string(format, output, utf8.data(), utf8.size());
-    }
-#endif
-
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
-#if defined(ST_ENABLE_STL_FILESYSTEM)
-
-#ifdef ST_HAVE_CXX17_FILESYSTEM
+#if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             const std::filesystem::path &path)
     {
@@ -648,17 +617,6 @@ namespace ST
         ST::format_string(format, output, u8path.c_str(), u8path.size());
     }
 #endif
-
-#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
-    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
-                            const std::experimental::filesystem::path &path)
-    {
-        auto u8path = path.u8string();
-        ST::format_string(format, output, u8path.c_str(), u8path.size());
-    }
-#endif
-
-#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             bool value)

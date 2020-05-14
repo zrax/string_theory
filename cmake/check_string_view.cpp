@@ -18,16 +18,10 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
-#ifdef TRY_EXPERIMENTAL_STRING_VIEW
-#   include <experimental/string_view>
-#   define STD_STRING_VIEW std::experimental::string_view
-#else
-#   include <string_view>
-#   define STD_STRING_VIEW std::string_view
-#endif
+#include <string_view>
 
 int main(int argc, char *argv[])
 {
-    STD_STRING_VIEW p(argv[0]);
+    std::string_view p(argv[0]);
     return 0;
 }

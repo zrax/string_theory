@@ -31,13 +31,8 @@
 #include "st_string_priv.h"
 #include "st_utf_conv.h"
 
-#if defined(ST_ENABLE_STL_FILESYSTEM)
-#   if defined(ST_HAVE_CXX17_FILESYSTEM)
-#       include <filesystem>
-#   endif
-#   if defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
-#       include <experimental/filesystem>
-#   endif
+#if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
+#   include <filesystem>
 #endif
 
 #define ST_WHITESPACE   " \t\r\n"
@@ -284,51 +279,14 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-        string(const std::experimental::string_view &view,
-               utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _set_utf8(view.data(), view.size(), validation);
-        }
-
-        string(const std::experimental::wstring_view &view,
-               utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            m_buffer = wchar_to_utf8(view.data(), view.size(), validation);
-        }
-
-        string(const std::experimental::u16string_view &view,
-               utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            m_buffer = utf16_to_utf8(view.data(), view.size(), validation);
-        }
-
-        string(const std::experimental::u32string_view &view,
-               utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            m_buffer = utf32_to_utf8(view.data(), view.size(), validation);
-        }
-#endif
-
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
-#if defined(ST_ENABLE_STL_FILESYSTEM)
-
-#ifdef ST_HAVE_CXX17_FILESYSTEM
+#if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
         string(const std::filesystem::path &path)
         {
             set(path);
         }
 #endif
-
-#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
-        string(const std::experimental::filesystem::path &path)
-        {
-            set(path);
-        }
-#endif
-
-#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         void set(const null_t &) noexcept { m_buffer = null; }
 
@@ -515,53 +473,15 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-        void set(const std::experimental::string_view &view,
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            _set_utf8(view.data(), view.size(), validation);
-        }
-
-        void set(const std::experimental::wstring_view &view,
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            m_buffer = wchar_to_utf8(view.data(), view.size(), validation);
-        }
-
-        void set(const std::experimental::u16string_view &view,
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            m_buffer = utf16_to_utf8(view.data(), view.size(), validation);
-        }
-
-        void set(const std::experimental::u32string_view &view,
-                 utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            m_buffer = utf32_to_utf8(view.data(), view.size(), validation);
-        }
-#endif
-
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
-#if defined(ST_ENABLE_STL_FILESYSTEM)
-
-#ifdef ST_HAVE_CXX17_FILESYSTEM
+#if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
         void set(const std::filesystem::path &path)
         {
             auto path_utf8 = path.u8string();
             set_validated(path_utf8.c_str(), path_utf8.size());
         }
 #endif
-
-#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
-        void set(const std::experimental::filesystem::path &path)
-        {
-            auto path_utf8 = path.u8string();
-            set_validated(path_utf8.c_str(), path_utf8.size());
-        }
-#endif
-
-#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         void set_validated(const char *text, size_t size)
         {
@@ -732,53 +652,15 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-        string &operator=(const std::experimental::string_view &view)
-        {
-            set(view);
-            return *this;
-        }
-
-        string &operator=(const std::experimental::wstring_view &view)
-        {
-            set(view);
-            return *this;
-        }
-
-        string &operator=(const std::experimental::u16string_view &view)
-        {
-            set(view);
-            return *this;
-        }
-
-        string &operator=(const std::experimental::u32string_view &view)
-        {
-            set(view);
-            return *this;
-        }
-#endif
-
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
-#if defined(ST_ENABLE_STL_FILESYSTEM)
-
-#ifdef ST_HAVE_CXX17_FILESYSTEM
+#if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
         string &operator=(const std::filesystem::path &path)
         {
             set(path);
             return *this;
         }
 #endif
-
-#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
-        string &operator=(const std::experimental::filesystem::path &path)
-        {
-            set(path);
-            return *this;
-        }
-#endif
-
-#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         inline string &operator+=(const char *cstr);
         inline string &operator+=(const wchar_t *wstr);
@@ -1043,50 +925,9 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-        ST_NODISCARD
-        static string from_std_string(const std::experimental::string_view &view,
-                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            string str;
-            str._set_utf8(view.data(), view.size(), validation);
-            return str;
-        }
-
-        ST_NODISCARD
-        static string from_std_string(const std::experimental::wstring_view &view,
-                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            return from_validated(wchar_to_utf8(view.data(), view.size(), validation));
-        }
-
-        ST_NODISCARD
-        static string from_std_wstring(const std::experimental::wstring_view &view,
-                                       utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            return from_std_string(view, validation);
-        }
-
-        ST_NODISCARD
-        static string from_std_string(const std::experimental::u16string_view &view,
-                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            return from_validated(utf16_to_utf8(view.data(), view.size(), validation));
-        }
-
-        ST_NODISCARD
-        static string from_std_string(const std::experimental::u32string_view &view,
-                                      utf_validation_t validation = ST_DEFAULT_VALIDATION)
-        {
-            return from_validated(utf32_to_utf8(view.data(), view.size(), validation));
-        }
-#endif
-
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
-#if defined(ST_ENABLE_STL_FILESYSTEM)
-
-#if defined(ST_HAVE_CXX17_FILESYSTEM)
+#if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
         ST_NODISCARD
         static string from_path(const std::filesystem::path &path)
         {
@@ -1095,18 +936,6 @@ namespace ST
             return str;
         }
 #endif
-
-#if defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
-        ST_NODISCARD
-        static string from_path(const std::experimental::filesystem::path &path)
-        {
-            string str;
-            str.set(path);
-            return str;
-        }
-#endif
-
-#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         ST_NODISCARD
         const char *c_str() const noexcept
@@ -1333,19 +1162,11 @@ namespace ST
         {
             return m_buffer.view(start, length);
         }
-#elif defined(ST_HAVE_EXPERIMENTAL_STRING_VIEW)
-        ST_NODISCARD
-        std::experimental::string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const
-        {
-            return m_buffer.view(start, length);
-        }
 #endif
 
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
-#if defined(ST_ENABLE_STL_FILESYSTEM)
-
-#if defined(ST_HAVE_CXX17_FILESYSTEM)
+#if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
         ST_NODISCARD
         std::filesystem::path to_path() const
         {
@@ -1355,16 +1176,7 @@ namespace ST
             return std::filesystem::u8path(c_str(), c_str() + size());
 #endif
         }
-
-#elif defined(ST_HAVE_EXPERIMENTAL_FILESYSTEM)
-        ST_NODISCARD
-        std::experimental::filesystem::path to_path() const
-        {
-            return std::experimental::filesystem::u8path(c_str(), c_str() + size());
-        }
-#endif
-
-#endif // defined(ST_ENABLE_STL_FILESYSTEM)
+#endif // defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
 
         ST_NODISCARD
         size_t size() const noexcept { return m_buffer.size(); }

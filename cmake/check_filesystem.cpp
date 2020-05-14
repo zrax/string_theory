@@ -18,16 +18,10 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE. */
 
-#ifdef TRY_EXPERIMENTAL_FILESYSTEM
-#   include <experimental/filesystem>
-#   define STD_FILESYSTEM std::experimental::filesystem
-#else
-#   include <filesystem>
-#   define STD_FILESYSTEM std::filesystem
-#endif
+#include <filesystem>
 
 int main(int argc, char *argv[])
 {
-    STD_FILESYSTEM::path p(argv[0]);
+    std::filesystem::path p(argv[0]);
     return 0;
 }

@@ -276,52 +276,15 @@ namespace ST
         }
 #endif
 
-#ifdef ST_HAVE_EXPERIMENTAL_STRING_VIEW
-        string_stream &operator<<(const std::experimental::string_view &text)
-        {
-            return append(text.data(), text.size());
-        }
-
-        string_stream &operator<<(const std::experimental::wstring_view &text)
-        {
-            ST::char_buffer utf8 = ST::wchar_to_utf8(text.data(), text.size());
-            return append(utf8.data(), utf8.size());
-        }
-
-        string_stream &operator<<(const std::experimental::u16string_view &text)
-        {
-            ST::char_buffer utf8 = ST::utf16_to_utf8(text.data(), text.size());
-            return append(utf8.data(), utf8.size());
-        }
-
-        string_stream &operator<<(const std::experimental::u32string_view &text)
-        {
-            ST::char_buffer utf8 = ST::utf32_to_utf8(text.data(), text.size());
-            return append(utf8.data(), utf8.size());
-        }
-#endif
-
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
-#if defined(ST_ENABLE_STL_FILESYSTEM)
-
-#ifdef ST_HAVE_CXX17_FILESYSTEM
+#if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
         string_stream &operator<<(const std::filesystem::path &path)
         {
             auto u8path = path.u8string();
             return append(reinterpret_cast<const char*>(u8path.c_str()), u8path.size());
         }
 #endif
-
-#ifdef ST_HAVE_EXPERIMENTAL_FILESYSTEM
-        string_stream& operator<<(const std::experimental::filesystem::path& path)
-        {
-            auto u8path = path.u8string();
-            return append(reinterpret_cast<const char *>(u8path.c_str()), u8path.size());
-        }
-#endif
-
-#endif // defined(ST_ENABLE_STL_FILESYSTEM)
 
         ST_NODISCARD
         const char *raw_buffer() const noexcept { return m_chars; }
