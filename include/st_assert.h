@@ -23,7 +23,6 @@
 
 #include "st_config.h"
 
-#include <functional>
 #include <stdexcept>
 #include <cstdio>
 #include <cstdlib>

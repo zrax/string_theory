@@ -23,8 +23,6 @@
 
 #include "st_string.h"
 
-#include <cstddef>
-
 #include "st_codecs_priv.h"
 
 namespace ST

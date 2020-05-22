@@ -23,7 +23,6 @@
 
 #include "st_assert.h"
 
-#include <cstddef>
 #include <iterator>
 #include <string>       // Needed for char_traits
 #include <utility>      // For std::move

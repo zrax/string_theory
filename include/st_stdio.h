@@ -23,8 +23,6 @@
 
 #include "st_formatter.h"
 
-#include <cstdio>
-
 namespace _ST_PRIVATE
 {
     class stdio_format_writer : public ST::format_writer
