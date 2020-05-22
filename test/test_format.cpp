@@ -42,6 +42,25 @@ TEST(format, escapes)
     EXPECT_EQ(ST_LITERAL("x{"), ST::format("{}{{", "x"));
     EXPECT_EQ(ST_LITERAL("{{{{"), ST::format("{{{}{{{{", "{"));
     EXPECT_EQ(ST_LITERAL("{xxx{{yyy{"), ST::format("{{{}{{{{{}{{", "xxx", "yyy"));
+
+    // Both single and double '}' are a valid escape for '}'
+    EXPECT_EQ(ST_LITERAL("}"), ST::format("}"));
+    EXPECT_EQ(ST_LITERAL("}"), ST::format("}}"));
+    EXPECT_EQ(ST_LITERAL("{}"), ST::format("{{}"));
+    EXPECT_EQ(ST_LITERAL("{}"), ST::format("{{}}"));
+    EXPECT_EQ(ST_LITERAL("x}"), ST::format("{}}", "x"));
+    EXPECT_EQ(ST_LITERAL("x}"), ST::format("{}}}", "x"));
+    EXPECT_EQ(ST_LITERAL("{x}"), ST::format("{{{}}", "x"));
+    EXPECT_EQ(ST_LITERAL("{x}"), ST::format("{{{}}}", "x"));
+    EXPECT_EQ(ST_LITERAL("}}}x}"), ST::format("{>4_}}}", "x"));
+    EXPECT_EQ(ST_LITERAL("}}}x}"), ST::format("{>4_}}}}", "x"));
+
+    EXPECT_EQ(ST_LITERAL("}x"), ST::format("}x"));
+    EXPECT_EQ(ST_LITERAL("}x"), ST::format("}}x"));
+    EXPECT_EQ(ST_LITERAL("{}x"), ST::format("{{}x"));
+    EXPECT_EQ(ST_LITERAL("{}x"), ST::format("{{}}x"));
+    EXPECT_EQ(ST_LITERAL("x}x"), ST::format("{}}x", "x"));
+    EXPECT_EQ(ST_LITERAL("x}x"), ST::format("{}}}x", "x"));
 }
 
 TEST(format, errors)

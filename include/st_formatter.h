@@ -241,6 +241,11 @@ namespace ST
 
                     append(m_format_str, next - m_format_str);
                     m_format_str = ++next;
+                } else if (*next == '}') {
+                    if (*(next + 1) == '}') {
+                        append(m_format_str, next - m_format_str);
+                        m_format_str = ++next;
+                    }
                 }
                 ++next;
             }
