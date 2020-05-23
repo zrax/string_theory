@@ -23,7 +23,8 @@
 
 #include "st_assert.h"
 
-#include <iterator>
+#include <cstddef>      // Needed for ptrdiff_t
+#include <iterator>     // Needed for reverse_iterator
 #include <string>       // Needed for char_traits
 #include <utility>      // For std::move
 #include <algorithm>    // For std::min
