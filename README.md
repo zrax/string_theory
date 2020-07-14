@@ -103,22 +103,23 @@ What String Theory is NOT
 Platform Support
 ----------------
 
-string_theory supports a variety of platforms and compilers.  As of June
-2019, string_theory is tested and working on:
-- GCC 9 (Arch Linux x86_64 and ARMv7)
+string_theory supports a variety of platforms and compilers.  As of July
+2020, string_theory is tested and working on:
+- GCC 10 (Arch Linux x86_64 and ARMv7)
+- GCC 9 (Ubuntu 20.04 x86_64)
 - GCC 7 (Ubuntu 18.04 x86_64)
 - GCC 5 (Ubuntu 16.04 x86_64)
 - GCC 4.8 (Ubuntu 14.04 i686)
-- Clang 8 (Arch Linux x86_64 and ARMv7)
+- Clang 10 (Arch Linux x86_64 and ARMv7)
+- Clang 10 (Ubuntu 20.04 x86_64)
 - Clang 6 (Ubuntu 18.04 x86_64)
 - Clang 3.8 (Ubuntu 16.04 x86_64)
-- Clang 3.4 (Ubuntu 14.04 i686)
-- AppleClang 8.0 (OSX El Capitan)
-- AppleClang 6.0 (OSX Mavericks)
+- AppleClang 11.0 (macOS Catalina)
+- AppleClang 10.0 (macOS Catalina)
 - MSVC 2019 (x64 and x86)
 - MSVC 2017 (x64 and x86)
-- MSVC 2015 (x64 and x86)
-- MinGW-w64 GCC 7 (x86_64 and i686)
+- MinGW-w64 GCC 10 (x86_64 and i686)
+- MinGW-w64 GCC 8 (x86_64)
 
 As of string_theory 3.0, support for some older compilers has been dropped.
 You'll need a compiler that supports most of C++11.
