@@ -38,7 +38,6 @@ jobs:
           fi
           mkdir -p build && cd build
           cmake -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
-          make
           make test
 
   build-macos:
@@ -58,5 +57,56 @@ jobs:
           export CXX=clang++
           mkdir -p build && cd build
           cmake -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
-          make
           make test
+
+  build-msvc:
+    runs-on: ${{ matrix.cfg.os }}
+    strategy:
+      matrix:
+        cfg:
+          - { os: windows-2016, msvc: Visual Studio 15 2017, arch: Win32 }
+          - { os: windows-2016, msvc: Visual Studio 15 2017, arch: x64 }
+          - { os: windows-2019, msvc: Visual Studio 16 2019, arch: Win32 }
+          - { os: windows-2019, msvc: Visual Studio 16 2019, arch: x64 }
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and Test
+        run: |
+          mkdir build
+          cd build
+          cmake -G "${{ matrix.cfg.msvc }}" -A ${{ matrix.cfg.arch }} -DST_BUILD_TESTS=ON ..
+          cmake --build . --config Debug --target test
+
+  build-mingw:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and Test
+        run: |
+          mkdir build
+          cd build
+          cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
+          mingw32-make test
+
+  build-msys2:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        cfg:
+          - { mingw: mingw32, arch: i686 }
+          - { mingw: mingw64, arch: x86_64 }
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install compiler and tools
+        run: |
+          $Env:Path = "C:\msys64\usr\bin;$Env:Path"
+          pacman -Sy --noconfirm mingw-w64-${{ matrix.cfg.arch }}-gcc `
+                                 mingw-w64-${{ matrix.cfg.arch }}-ninja `
+                                 mingw-w64-${{ matrix.cfg.arch }}-cmake
+      - name: Build and Test
+        run: |
+          mkdir build
+          cd build
+          $Env:Path = "C:\msys64\${{ matrix.cfg.mingw }}\bin;C:\msys64\usr\bin;$Env:Path"
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
+          ninja test
