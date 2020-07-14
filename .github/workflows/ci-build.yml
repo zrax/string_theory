@@ -12,9 +12,9 @@ jobs:
           - { os: ubuntu-16.04, compiler: clang-3.5,  stdlib: libc++  }
           - { os: ubuntu-16.04, compiler: clang,      stdlib: libc++  }   # Clang 3.8
           - { os: ubuntu-18.04, compiler: gcc,        stdlib: default }   # GCC 7
-          - { os: ubuntu-18.04, compiler: clang,      stdlib: default }   # Clang 6.0
-          - { os: ubuntu-18.04, compiler: gcc-8,      stdlib: default }
-          - { os: ubuntu-18.04, compiler: clang-8,    stdlib: default }
+          - { os: ubuntu-18.04, compiler: clang,      stdlib: default }   # Clang 6
+          - { os: ubuntu-20.04, compiler: gcc,        stdlib: default }   # GCC 9
+          - { os: ubuntu-20.04, compiler: clang,      stdlib: default }   # Clang 10
     steps:
       - uses: actions/checkout@v1
       - name: Install Compiler
@@ -46,9 +46,9 @@ jobs:
     strategy:
       matrix:
         xcode:
-          #- Xcode_9.4.1    # Not working
-          #- Xcode_10.3     # GitHub removed :(
-          - Xcode_11.2.1
+          - Xcode_10.3
+          - Xcode_11.3.1
+          - Xcode_11.5
     steps:
       - uses: actions/checkout@v1
       - name: Build and Test
