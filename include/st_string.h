@@ -196,20 +196,20 @@ namespace ST
 
         string(const utf16_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+            : m_buffer(utf16_to_utf8(init, validation))
         {
-            m_buffer = utf16_to_utf8(init, validation);
         }
 
         string(const utf32_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+            : m_buffer(utf32_to_utf8(init, validation))
         {
-            m_buffer = utf32_to_utf8(init, validation);
         }
 
         string(const wchar_buffer &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+            : m_buffer(wchar_to_utf8(init, validation))
         {
-            m_buffer = wchar_to_utf8(init, validation);
         }
 
 #if defined(ST_ENABLE_STL_STRINGS)
@@ -221,20 +221,20 @@ namespace ST
 
         string(const std::wstring &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+            : m_buffer(wchar_to_utf8(init.c_str(), init.size(), validation))
         {
-            m_buffer = wchar_to_utf8(init.c_str(), init.size(), validation);
         }
 
         string(const std::u16string &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+            : m_buffer(utf16_to_utf8(init.c_str(), init.size(), validation))
         {
-            m_buffer = utf16_to_utf8(init.c_str(), init.size(), validation);
         }
 
         string(const std::u32string &init,
                utf_validation_t validation = ST_DEFAULT_VALIDATION)
+            : m_buffer(utf32_to_utf8(init.c_str(), init.size(), validation))
         {
-            m_buffer = utf32_to_utf8(init.c_str(), init.size(), validation);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
