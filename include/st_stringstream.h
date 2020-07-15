@@ -28,11 +28,12 @@ namespace ST
 {
     class string_stream
     {
-        ST_DISABLE_COPY(string_stream)
-
     public:
         string_stream() noexcept
             : m_chars(m_stack), m_alloc(ST_STACK_STRING_SIZE), m_size() { }
+
+        string_stream(const string_stream&) = delete;
+        string_stream& operator=(const string_stream&) = delete;
 
         ~string_stream() noexcept
         {

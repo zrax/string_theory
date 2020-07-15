@@ -96,14 +96,18 @@ namespace ST
 
     class format_writer
     {
-        ST_DISABLE_COPY(format_writer);
-
     public:
         format_writer(const char *format) : m_format_str(format)
         {
             if (!m_format_str)
                 throw std::invalid_argument("Passed a null format string!");
         }
+
+        format_writer(const format_writer&) = delete;
+        format_writer& operator=(const format_writer&) = delete;
+
+        format_writer(format_writer&&) = default;
+        format_writer& operator=(format_writer&&) = default;
 
         virtual ~format_writer() noexcept { }
 
