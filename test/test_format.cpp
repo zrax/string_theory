@@ -1006,7 +1006,7 @@ TEST(format, floating_point)
     EXPECT_EQ(ST_LITERAL("xx3.14xx"), ST::format("xx{.2f}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx3.141590xx"), ST::format("xx{.6f}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx16384.00xx"), ST::format("xx{.2f}xx", 16384.0));
-    EXPECT_EQ(ST_LITERAL("xx0.01xx"), ST::format("xx{.2f}xx", 1.0 / 128));
+    EXPECT_EQ(ST_LITERAL("xx0.02xx"), ST::format("xx{.2f}xx", 0.0234));
 
 #if defined(__MINGW32__)
     // MSVC uses 3 digits for the exponent by default, up to VC 2013.
@@ -1019,19 +1019,19 @@ TEST(format, floating_point)
     EXPECT_EQ(ST_LITERAL("xx3.14e+00xx"), ST::format("xx{.2e}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx3.141590e+00xx"), ST::format("xx{.6e}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx1.64e+04xx"), ST::format("xx{.2e}xx", 16384.0));
-    EXPECT_EQ(ST_LITERAL("xx7.81e-03xx"), ST::format("xx{.2e}xx", 1.0 / 128));
+    EXPECT_EQ(ST_LITERAL("xx2.34e-02xx"), ST::format("xx{.2e}xx", 0.0234));
 
     // Scientific notation (upper-case E)
     EXPECT_EQ(ST_LITERAL("xx3.14E+00xx"), ST::format("xx{.2E}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx3.141590E+00xx"), ST::format("xx{.6E}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx1.64E+04xx"), ST::format("xx{.2E}xx", 16384.0));
-    EXPECT_EQ(ST_LITERAL("xx7.81E-03xx"), ST::format("xx{.2E}xx", 1.0 / 128));
+    EXPECT_EQ(ST_LITERAL("xx2.34E-02xx"), ST::format("xx{.2E}xx", 0.0234));
 
     // Automatic (based on input)
-    EXPECT_EQ(ST_LITERAL("xx3.1xx"), ST::format("xx{.2}xx", 3.14159));
-    EXPECT_EQ(ST_LITERAL("xx3.14159xx"), ST::format("xx{.6}xx", 3.14159));
+    EXPECT_EQ(ST_LITERAL("xx3.14xx"), ST::format("xx{.3}xx", 3.14159));
+    EXPECT_EQ(ST_LITERAL("xx3.14159xx"), ST::format("xx{.7}xx", 3.14159));
     EXPECT_EQ(ST_LITERAL("xx1.6e+04xx"), ST::format("xx{.2}xx", 16384.0));
-    EXPECT_EQ(ST_LITERAL("xx0.0078xx"), ST::format("xx{.2}xx", 1.0 / 128));
+    EXPECT_EQ(ST_LITERAL("xx0.0234xx"), ST::format("xx{.3}xx", 0.0234f));
 
     // Special values (Different CRTs have very different ways of representing
     // infinity and NaN textually :( )
