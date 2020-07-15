@@ -1287,12 +1287,12 @@ namespace ST
                 return 0;
             }
 
-            char *end;
-            long value = strtol(c_str(), &end, base);
+            char *endp;
+            long value = strtol(c_str(), &endp, base);
             result.m_flags = 0;
-            if (end != c_str())
+            if (endp != c_str())
                 result.m_flags |= ST::conversion_result::result_ok;
-            if (end == c_str() + size())
+            if (endp == c_str() + size())
                 result.m_flags |= ST::conversion_result::result_full_match;
             return value;
         }
@@ -1311,12 +1311,12 @@ namespace ST
                 return 0;
             }
 
-            char *end;
-            long long value = strtoll(c_str(), &end, base);
+            char *endp;
+            long long value = strtoll(c_str(), &endp, base);
             result.m_flags = 0;
-            if (end != c_str())
+            if (endp != c_str())
                 result.m_flags |= ST::conversion_result::result_ok;
-            if (end == c_str() + size())
+            if (endp == c_str() + size())
                 result.m_flags |= ST::conversion_result::result_full_match;
             return value;
         }
@@ -1359,12 +1359,12 @@ namespace ST
                 return 0;
             }
 
-            char *end;
-            unsigned long value = strtoul(c_str(), &end, base);
+            char *endp;
+            unsigned long value = strtoul(c_str(), &endp, base);
             result.m_flags = 0;
-            if (end != c_str())
+            if (endp != c_str())
                 result.m_flags |= ST::conversion_result::result_ok;
-            if (end == c_str() + size())
+            if (endp == c_str() + size())
                 result.m_flags |= ST::conversion_result::result_full_match;
             return value;
         }
@@ -1383,12 +1383,12 @@ namespace ST
                 return 0;
             }
 
-            char *end;
-            unsigned long long value = strtoull(c_str(), &end, base);
+            char *endp;
+            unsigned long long value = strtoull(c_str(), &endp, base);
             result.m_flags = 0;
-            if (end != c_str())
+            if (endp != c_str())
                 result.m_flags |= ST::conversion_result::result_ok;
-            if (end == c_str() + size())
+            if (endp == c_str() + size())
                 result.m_flags |= ST::conversion_result::result_full_match;
             return value;
         }
@@ -1431,12 +1431,12 @@ namespace ST
                 return 0;
             }
 
-            char *end;
-            float value = strtof(c_str(), &end);
+            char *endp;
+            float value = strtof(c_str(), &endp);
             result.m_flags = 0;
-            if (end != c_str())
+            if (endp != c_str())
                 result.m_flags |= ST::conversion_result::result_ok;
-            if (end == c_str() + size())
+            if (endp == c_str() + size())
                 result.m_flags |= ST::conversion_result::result_full_match;
             return value;
         }
@@ -1455,12 +1455,12 @@ namespace ST
                 return 0;
             }
 
-            char *end;
-            double value = strtod(c_str(), &end);
+            char *endp;
+            double value = strtod(c_str(), &endp);
             result.m_flags = 0;
-            if (end != c_str())
+            if (endp != c_str())
                 result.m_flags |= ST::conversion_result::result_ok;
-            if (end == c_str() + size())
+            if (endp == c_str() + size())
                 result.m_flags |= ST::conversion_result::result_full_match;
             return value;
         }
@@ -2307,11 +2307,11 @@ namespace ST
             std::vector<string> result;
 
             const char *next = c_str();
-            const char *end = next + size();
+            const char *endp = next + size();
             while (max_splits) {
                 const char *sp = (cs == case_sensitive)
-                        ? _ST_PRIVATE::find_cs(next, end - next, split_char)
-                        : _ST_PRIVATE::find_ci(next, end - next, split_char);
+                        ? _ST_PRIVATE::find_cs(next, endp - next, split_char)
+                        : _ST_PRIVATE::find_ci(next, endp - next, split_char);
                 if (!sp)
                     break;
 
@@ -2320,7 +2320,7 @@ namespace ST
                 --max_splits;
             }
 
-            result.emplace_back(string::from_validated(next, end - next));
+            result.emplace_back(string::from_validated(next, endp - next));
             return result;
         }
 
@@ -2347,7 +2347,7 @@ namespace ST
             }
 
             const char *next = c_str();
-            const char *end = next + size();
+            const char *endp = next + size();
             size_t splitlen = std::char_traits<char>::length(splitter);
             while (max_splits) {
                 const char *sp = (cs == case_sensitive)
@@ -2361,7 +2361,7 @@ namespace ST
                 --max_splits;
             }
 
-            result.emplace_back(next, end - next, validation);
+            result.emplace_back(next, endp - next, validation);
             return result;
         }
 
@@ -2373,7 +2373,7 @@ namespace ST
             std::vector<string> result;
 
             const char *next = c_str();
-            const char *end = next + size();
+            const char *endp = next + size();
             while (max_splits) {
                 const char *sp = (cs == case_sensitive)
                         ? _ST_PRIVATE::find_cs(next, splitter.c_str())
@@ -2386,7 +2386,7 @@ namespace ST
                 --max_splits;
             }
 
-            result.push_back(string::from_validated(next, end - next));
+            result.push_back(string::from_validated(next, endp - next));
             return result;
         }
 
@@ -2406,11 +2406,11 @@ namespace ST
             std::vector<string> result;
 
             const char *next = c_str();
-            const char *end = next + size();
+            const char *endp = next + size();
             size_t dsize = std::char_traits<char>::length(delims);
-            while (next != end) {
+            while (next != endp) {
                 const char *cur = next;
-                while (cur != end && !_ST_PRIVATE::find_cs(delims, dsize, *cur))
+                while (cur != endp && !_ST_PRIVATE::find_cs(delims, dsize, *cur))
                     ++cur;
 
                 // Found a delimiter
@@ -2418,7 +2418,7 @@ namespace ST
                     result.emplace_back(string::from_validated(next, cur - next));
 
                 next = cur;
-                while (next != end && _ST_PRIVATE::find_cs(delims, dsize, *next))
+                while (next != endp && _ST_PRIVATE::find_cs(delims, dsize, *next))
                     ++next;
             }
 

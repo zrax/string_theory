@@ -29,7 +29,7 @@ namespace _ST_PRIVATE
     class string_format_writer : public ST::format_writer
     {
     public:
-        string_format_writer(const char *format_str)
+        explicit string_format_writer(const char *format_str)
             : ST::format_writer(format_str) { }
 
         string_format_writer &append(const char *data, size_t size) override

@@ -97,8 +97,8 @@ namespace ST
         string_stream &operator<<(const wchar_t *text)
         {
             if (text) {
-                const auto size = std::char_traits<wchar_t>::length(text);
-                ST::char_buffer utf8 = ST::wchar_to_utf8(text, size);
+                const auto length = std::char_traits<wchar_t>::length(text);
+                ST::char_buffer utf8 = ST::wchar_to_utf8(text, length);
                 return append(utf8.data(), utf8.size());
             }
             return *this;
@@ -107,8 +107,8 @@ namespace ST
         string_stream &operator<<(const char16_t *text)
         {
             if (text) {
-                const auto size = std::char_traits<char16_t>::length(text);
-                ST::char_buffer utf8 = ST::utf16_to_utf8(text, size);
+                const auto length = std::char_traits<char16_t>::length(text);
+                ST::char_buffer utf8 = ST::utf16_to_utf8(text, length);
                 return append(utf8.data(), utf8.size());
             }
             return *this;
@@ -117,8 +117,8 @@ namespace ST
         string_stream &operator<<(const char32_t *text)
         {
             if (text) {
-                const auto size = std::char_traits<char32_t>::length(text);
-                ST::char_buffer utf8 = ST::utf32_to_utf8(text, size);
+                const auto length = std::char_traits<char32_t>::length(text);
+                ST::char_buffer utf8 = ST::utf32_to_utf8(text, length);
                 return append(utf8.data(), utf8.size());
             }
             return *this;
