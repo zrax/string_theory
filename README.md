@@ -5,10 +5,6 @@ String Theory
   <img alt="GitHub Build Status"
        src="https://github.com/zrax/string_theory/workflows/CI-Build/badge.svg"/>
 </a>
-<a href="https://ci.appveyor.com/project/zrax/string-theory/branch/master">
-  <img alt="AppVeyor Build Status"
-       src="https://ci.appveyor.com/api/projects/status/48di5o8n0btl58c7/branch/master?svg=true"/>
-</a>
 <a href="https://scan.coverity.com/projects/zrax-string_theory">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/8580/badge.svg"/>
