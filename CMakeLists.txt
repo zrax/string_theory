@@ -73,21 +73,21 @@ try_compile(ST_HAVE_NODISCARD_ATTR "${PROJECT_BINARY_DIR}"
 
 try_compile(ST_HAVE_CXX17_STRING_VIEW "${PROJECT_BINARY_DIR}"
     "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp")
-try_compile(ST_HAVE_EXPERIMENTAL_STRING_VIEW "${PROJECT_BINARY_DIR}"
-    "${PROJECT_SOURCE_DIR}/cmake/check_string_view.cpp"
-    COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_STRING_VIEW")
 
 if(ST_ENABLE_STL_FILESYSTEM)
-    if(CMAKE_COMPILER_IS_GNUCXX)
-        set(ST_CXXFS_LIBS stdc++fs)
+    try_compile(ST_HAVE_CXX17_FILESYSTEM_NOLIBS "${PROJECT_BINARY_DIR}"
+                "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp")
+    if(ST_HAVE_CXX17_FILESYSTEM_NOLIBS)
+        set(ST_HAVE_CXX17_FILESYSTEM 1)
+    else()
+        if(CMAKE_COMPILER_IS_GNUCXX)
+            set(ST_CXXFS_LIBS stdc++fs)
+        endif()
+        try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
+                    "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
+                    LINK_LIBRARIES ${ST_CXXFS_LIBS})
     endif()
-    try_compile(ST_HAVE_CXX17_FILESYSTEM "${PROJECT_BINARY_DIR}"
-                "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
-                LINK_LIBRARIES ${ST_CXXFS_LIBS})
-    try_compile(ST_HAVE_EXPERIMENTAL_FILESYSTEM "${PROJECT_BINARY_DIR}"
-                "${PROJECT_SOURCE_DIR}/cmake/check_filesystem.cpp"
-                COMPILE_DEFINITIONS "-DTRY_EXPERIMENTAL_FILESYSTEM"
-                LINK_LIBRARIES ${ST_CXXFS_LIBS})
+
     try_compile(ST_HAVE_CXX20_U8_FSPATH "${PROJECT_BINARY_DIR}"
                 "${PROJECT_SOURCE_DIR}/cmake/check_fs_path_u8_ctor.cpp"
                 LINK_LIBRARIES ${ST_CXXFS_LIBS})
