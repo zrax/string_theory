@@ -441,10 +441,8 @@ namespace ST
 
         if (format.precision >= 0) {
             format_buffer[end++] = '.';
-            if (format.precision < 0)
-                format_buffer[end++] = '-';
             ST::uint_formatter<unsigned int> prec;
-            prec.format(std::abs(format.precision), 10);
+            prec.format(format.precision, 10);
             std::char_traits<char>::move(format_buffer + end, prec.text(), prec.size());
 
             // Ensure one more space (excluding \0) is available for the format specifier
