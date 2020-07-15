@@ -70,7 +70,7 @@ if(WIN32)
     target_sources(st_gtests PRIVATE test_winheaders.cpp)
 endif()
 
-if(ST_CXXFS_LIBS)
+if(ST_HAVE_CXX17_FILESYSTEM AND ST_CXXFS_LIBS)
     target_link_libraries(st_gtests PRIVATE ${ST_CXXFS_LIBS})
 endif()
 
@@ -113,7 +113,7 @@ if(ST_BUILD_PROFILE_TEST)
         target_link_libraries(string_profile PRIVATE Fmt::Fmt)
     endif()
 
-    if(ST_CXXFS_LIBS)
+    if(ST_HAVE_CXX17_FILESYSTEM AND ST_CXXFS_LIBS)
         target_link_libraries(string_profile PRIVATE ${ST_CXXFS_LIBS})
     endif()
 endif()
