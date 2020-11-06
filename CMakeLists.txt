@@ -129,11 +129,6 @@ set(ST_HEADERS_PUB
     include/string_theory/utf_conversion
 )
 
-set(ST_SOURCES
-    src/st_format.cpp
-    src/st_utf_conv.cpp
-)
-
 set(ST_INSTALL_BIN_DIR "bin" CACHE PATH "Path to install DLLs on Windows")
 set(ST_INSTALL_LIB_DIR "lib" CACHE PATH "Path to install shared libraries")
 set(ST_INSTALL_INCLUDE_DIR "include" CACHE PATH "Path to install headers")

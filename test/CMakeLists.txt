@@ -23,7 +23,7 @@
 # use the static MSVC CRT
 set(gtest_force_shared_crt ON CACHE INTERNAL "Override gtest default")
 
-# Force other gtest settings to line up correclty -- we're compiling
+# Force other gtest settings to line up correctly -- we're compiling
 # string_theory, not gtest...
 set(gtest_build_samples OFF CACHE INTERNAL "Override gtest default")
 set(gtest_build_tests OFF CACHE INTERNAL "Override gtest default")
