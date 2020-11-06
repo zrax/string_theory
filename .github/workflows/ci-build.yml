@@ -1,5 +1,8 @@
 name: CI-Build
-on: [push, pull_request]
+on:
+  push:
+    branches: [master]
+  pull_request:
 
 jobs:
   build-ubuntu:
@@ -12,7 +15,7 @@ jobs:
           - { os: ubuntu-16.04, compiler: clang-3.5,  stdlib: libc++  }
           - { os: ubuntu-16.04, compiler: clang,      stdlib: libc++  }   # Clang 3.8
           - { os: ubuntu-18.04, compiler: gcc,        stdlib: default }   # GCC 7
-          - { os: ubuntu-18.04, compiler: clang,      stdlib: default }   # Clang 6
+          - { os: ubuntu-18.04, compiler: clang,      stdlib: libc++  }   # Clang 6
           - { os: ubuntu-20.04, compiler: gcc,        stdlib: default }   # GCC 9
           - { os: ubuntu-20.04, compiler: clang,      stdlib: default }   # Clang 10
     steps:
@@ -100,9 +103,9 @@ jobs:
       - name: Install compiler and tools
         run: |
           $Env:Path = "C:\msys64\usr\bin;$Env:Path"
-          pacman -Sy --noconfirm mingw-w64-${{ matrix.cfg.arch }}-gcc `
-                                 mingw-w64-${{ matrix.cfg.arch }}-ninja `
-                                 mingw-w64-${{ matrix.cfg.arch }}-cmake
+          # Already installed: mingw-w64-${{ matrix.cfg.arch }}-gcc
+          #                    mingw-w64-${{ matrix.cfg.arch }}-cmake
+          pacman -Sy --noconfirm mingw-w64-${{ matrix.cfg.arch }}-ninja
       - name: Build and Test
         run: |
           mkdir build
