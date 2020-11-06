@@ -133,7 +133,7 @@ namespace ST
     public:
         string() noexcept { }
 
-        ST_DEPRECATED_IN_4_0("Use empty initializer {} instead")
+        ST_DEPRECATED_IN_3_4("Use empty initializer {} instead")
         string(const null_t &) noexcept { }
 
         string(const char *cstr, size_t size = ST_AUTO_SIZE,
@@ -290,7 +290,7 @@ namespace ST
         }
 #endif
 
-        ST_DEPRECATED_IN_4_0("Use clear() instead")
+        ST_DEPRECATED_IN_3_4("Use clear() instead")
         void set(const null_t &) noexcept { m_buffer.clear(); }
 
         void set(const char *cstr, size_t size = ST_AUTO_SIZE,
@@ -513,7 +513,7 @@ namespace ST
             m_buffer.clear();
         }
 
-        ST_DEPRECATED_IN_4_0("Use clear() instead")
+        ST_DEPRECATED_IN_3_4("Use clear() instead")
         string &operator=(const null_t &) noexcept
         {
             m_buffer.clear();
@@ -1632,7 +1632,7 @@ namespace ST
         }
 
         ST_NODISCARD
-        ST_DEPRECATED_IN_4_0("Use empty() instead")
+        ST_DEPRECATED_IN_3_4("Use empty() instead")
         bool operator==(const null_t &) const noexcept
         {
             return empty();
@@ -1659,7 +1659,7 @@ namespace ST
 #endif
 
         ST_NODISCARD
-        ST_DEPRECATED_IN_4_0("Use !empty() instead")
+        ST_DEPRECATED_IN_3_4("Use !empty() instead")
         bool operator!=(const null_t &) const noexcept
         {
             return !empty();
@@ -2651,14 +2651,14 @@ namespace ST
     }
 
     ST_NODISCARD
-    ST_DEPRECATED_IN_4_0("Use string::empty() instead")
+    ST_DEPRECATED_IN_3_4("Use string::empty() instead")
     inline bool operator==(const null_t &, const string &right) noexcept
     {
         return right.empty();
     }
 
     ST_NODISCARD
-    ST_DEPRECATED_IN_4_0("Use !string::empty() instead")
+    ST_DEPRECATED_IN_3_4("Use !string::empty() instead")
     inline bool operator!=(const null_t &, const string &right) noexcept
     {
         return !right.empty();

@@ -57,19 +57,30 @@
 #   define ST_DEPRECATED(message)
 #endif
 
-#if defined(ST_NO_3_0_DEPRECATION)
-#   define ST_DEPRECATED_IN_3_0(message)
-#else
-#   define ST_DEPRECATED_IN_3_0(message) ST_DEPRECATED(message)
+#ifndef ST_DEPRECATED_VERSION
+#   if defined(ST_NO_3_0_DEPRECATION)
+#       define ST_DEPRECATED_VERSION    299
+#   else
+#       define ST_DEPRECATED_VERSION    ST_VERSION
+#   endif
 #endif
 
-#if !defined(ST_4_0_DEPRECATION)
-#   define ST_NO_4_0_DEPRECATION
-#endif
-#if defined(ST_NO_4_0_DEPRECATION)
-#   define ST_DEPRECATED_IN_4_0(message)
+#if ST_DEPRECATED_VERSION >= 300
+#   define ST_DEPRECATED_IN_3_0(message) ST_DEPRECATED(message)
 #else
+#   define ST_DEPRECATED_IN_3_0(message)
+#endif
+
+#if ST_DEPRECATED_VERSION >= 304
+#   define ST_DEPRECATED_IN_3_4(message) ST_DEPRECATED(message)
+#else
+#   define ST_DEPRECATED_IN_3_4(message)
+#endif
+
+#if ST_DEPRECATED_VERSION >= 400
 #   define ST_DEPRECATED_IN_4_0(message) ST_DEPRECATED(message)
+#else
+#   define ST_DEPRECATED_IN_4_0(message)
 #endif
 
 #if defined(ST_HAVE_NODISCARD_ATTR)
