@@ -460,13 +460,13 @@ namespace ST
     ST::char_buffer("" str "", sizeof(str) - 1)
 
 #define ST_WCHAR_LITERAL(str) \
-    ST::wchar_buffer(L"" str L"", (sizeof(str) / sizeof(wchar_t)) - 1)
+    ST::wchar_buffer(L"" str L"", (sizeof(L"" str L"") / sizeof(wchar_t)) - 1)
 
 #define ST_UTF16_LITERAL(str) \
-    ST::utf16_buffer(u"" str u"", (sizeof(str) / sizeof(char16_t)) - 1)
+    ST::utf16_buffer(u"" str u"", (sizeof(u"" str u"") / sizeof(char16_t)) - 1)
 
 #define ST_UTF32_LITERAL(str) \
-    ST::utf32_buffer(U"" str U"", (sizeof(str) / sizeof(char32_t)) - 1)
+    ST::utf32_buffer(U"" str U"", (sizeof(U"" str U"") / sizeof(char32_t)) - 1)
 
 namespace ST { namespace literals
 {

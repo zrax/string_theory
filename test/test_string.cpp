@@ -122,6 +122,9 @@ TEST(string, helpers)
 
 TEST(string, utility)
 {
+    // Literal constructors
+    EXPECT_EQ(ST::string(), ST_LITERAL(""));
+    EXPECT_EQ(ST::string("abc"), ST_LITERAL("abc"));
 
     EXPECT_EQ(0U, ST::string().size());
     EXPECT_TRUE(ST::string().empty());

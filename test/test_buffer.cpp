@@ -79,6 +79,15 @@ TEST(char_buffer, helpers)
 
 TEST(char_buffer, utility)
 {
+    // Literal constructors
+    EXPECT_EQ(ST::char_buffer(), ST_CHAR_LITERAL(""));
+    EXPECT_EQ(ST::wchar_buffer(), ST_WCHAR_LITERAL(""));
+    EXPECT_EQ(ST::utf16_buffer(), ST_UTF16_LITERAL(""));
+    EXPECT_EQ(ST::utf32_buffer(), ST_UTF32_LITERAL(""));
+    EXPECT_EQ(ST::char_buffer("abc", 3), ST_CHAR_LITERAL("abc"));
+    EXPECT_EQ(ST::wchar_buffer(L"abc", 3), ST_WCHAR_LITERAL("abc"));
+    EXPECT_EQ(ST::utf16_buffer(u"abc", 3), ST_UTF16_LITERAL("abc"));
+    EXPECT_EQ(ST::utf32_buffer(U"abc", 3), ST_UTF32_LITERAL("abc"));
 
     EXPECT_EQ(0U, ST::char_buffer().size());
     EXPECT_TRUE(ST::char_buffer().empty());
