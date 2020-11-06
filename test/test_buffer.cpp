@@ -340,3 +340,18 @@ TEST(char_buffer, compare)
     EXPECT_NE(ST::wchar_buffer(L"abc", 3), ST::wchar_buffer(L"", 0));
     EXPECT_NE(ST::wchar_buffer(), ST::wchar_buffer(L"abc", 3));
 }
+
+TEST(char_buffer, udls)
+{
+    using namespace ST::literals;
+
+    // Only need to test the UDL usage -- the rest is covered above
+    EXPECT_EQ(ST_CHAR_LITERAL(""), ""_stbuf);
+    EXPECT_EQ(ST_CHAR_LITERAL("Test"), "Test"_stbuf);
+    EXPECT_EQ(ST_WCHAR_LITERAL("Test"), L"Test"_stbuf);
+    EXPECT_EQ(ST_UTF16_LITERAL("Test"), u"Test"_stbuf);
+    EXPECT_EQ(ST_UTF32_LITERAL("Test"), U"Test"_stbuf);
+#ifdef ST_HAVE_CXX20_CHAR8_TYPES
+    EXPECT_EQ(ST_CHAR_LITERAL("Test"), u8"Test"_stbuf);
+#endif
+}
