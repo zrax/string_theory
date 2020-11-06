@@ -42,6 +42,8 @@ namespace ST
     {
         constexpr null_t() noexcept { }
     };
+
+    ST_DEPRECATED_IN_4_0("Use empty initializer {} instead.")
     static constexpr null_t null;
 
     template <typename char_T>
@@ -86,6 +88,7 @@ namespace ST
         constexpr buffer() noexcept
             : m_chars(m_data), m_size(), m_data() { }
 
+        ST_DEPRECATED_IN_4_0("Use empty initializer {} instead.")
         constexpr buffer(const null_t &) noexcept
             : m_chars(m_data), m_size(), m_data() { }
 
@@ -133,7 +136,7 @@ namespace ST
                 delete[] m_chars;
         }
 
-        buffer<char_T> &operator=(const null_t &) noexcept
+        void clear() noexcept
         {
             if (is_reffed())
                 delete[] m_chars;
@@ -141,6 +144,12 @@ namespace ST
             m_chars = m_data;
             m_size = 0;
             traits_t::assign(m_data, local_length, 0);
+        }
+
+        ST_DEPRECATED_IN_4_0("Use clear() instead")
+        buffer<char_T> &operator=(const null_t &) noexcept
+        {
+            clear();
             return *this;
         }
 
@@ -221,6 +230,7 @@ namespace ST
         }
 
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("Use empty() instead")
         bool operator==(const null_t &) const noexcept
         {
             return empty();
@@ -233,6 +243,7 @@ namespace ST
         }
 
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("Use !empty() instead")
         bool operator!=(const null_t &) const noexcept
         {
             return !empty();
@@ -430,6 +441,7 @@ namespace ST
 
     template <typename char_T>
     ST_NODISCARD
+    ST_DEPRECATED_IN_4_0("Use buffer<T>::empty() instead")
     bool operator==(const null_t &, const buffer<char_T> &right) noexcept
     {
         return right.empty();
@@ -437,6 +449,7 @@ namespace ST
 
     template <typename char_T>
     ST_NODISCARD
+    ST_DEPRECATED_IN_4_0("Use !buffer<T>::empty() instead")
     bool operator!=(const null_t &, const buffer<char_T> &right) noexcept
     {
         return !right.empty();

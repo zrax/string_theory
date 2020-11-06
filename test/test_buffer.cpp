@@ -79,11 +79,6 @@ TEST(char_buffer, helpers)
 
 TEST(char_buffer, utility)
 {
-    // Special string null constant
-    EXPECT_EQ(ST::null, ST::char_buffer());
-    EXPECT_EQ(ST::null, ST::wchar_buffer());
-    EXPECT_EQ(ST::null, ST::utf16_buffer());
-    EXPECT_EQ(ST::null, ST::utf32_buffer());
 
     EXPECT_EQ(0U, ST::char_buffer().size());
     EXPECT_TRUE(ST::char_buffer().empty());

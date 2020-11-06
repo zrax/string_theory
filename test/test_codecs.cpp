@@ -80,8 +80,8 @@ static const unsigned char data_17[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x0
 
 TEST(codecs, hex_encode)
 {
-    EXPECT_EQ(ST::null, ST::hex_encode(data_empty, 0));
-    EXPECT_EQ(ST::null, ST::hex_encode(nullptr, 0));
+    EXPECT_EQ(ST::string(), ST::hex_encode(data_empty, 0));
+    EXPECT_EQ(ST::string(), ST::hex_encode(nullptr, 0));
     EXPECT_EQ(ST_LITERAL("000102030405060708090a0b0c0d0e0f10f0ff"),
               ST::hex_encode(data_hex_ranges, sizeof(data_hex_ranges)));
 
@@ -98,7 +98,7 @@ TEST(codecs, hex_encode)
 
 TEST(codecs, hex_decode)
 {
-    EXPECT_EQ(empty_buf, ST::hex_decode(ST::null));
+    EXPECT_EQ(empty_buf, ST::hex_decode(ST::string()));
     EXPECT_EQ(cbuf(data_hex_ranges),
               ST::hex_decode(ST_LITERAL("000102030405060708090A0B0C0D0E0F10F0FF")));
     EXPECT_EQ(cbuf(data_hex_ranges),
@@ -119,8 +119,8 @@ TEST(codecs, hex_decode_buffer)
 {
     char buffer[64];
 
-    EXPECT_EQ(0, ST::hex_decode(ST::null, nullptr, 0));
-    EXPECT_EQ(0, ST::hex_decode(ST::null, buffer, sizeof(buffer)));
+    EXPECT_EQ(0, ST::hex_decode(ST::string(), nullptr, 0));
+    EXPECT_EQ(0, ST::hex_decode(ST::string(), buffer, sizeof(buffer)));
     EXPECT_EQ(empty_buf, ST::char_buffer(buffer, 0));
 
     EXPECT_EQ(static_cast<ST_ssize_t>(sizeof(data_hex_ranges)),
@@ -197,8 +197,8 @@ TEST(codecs, hex_codec_errors)
 
 TEST(codecs, base64_encode)
 {
-    EXPECT_EQ(ST::null, ST::base64_encode(data_empty, 0));
-    EXPECT_EQ(ST::null, ST::base64_encode(nullptr, 0));
+    EXPECT_EQ(ST::string(), ST::base64_encode(data_empty, 0));
+    EXPECT_EQ(ST::string(), ST::base64_encode(nullptr, 0));
     EXPECT_EQ(ST_LITERAL("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"),
               ST::base64_encode(data_base64_ranges, sizeof(data_base64_ranges)));
 
@@ -215,7 +215,7 @@ TEST(codecs, base64_encode)
 
 TEST(codecs, base64_decode)
 {
-    EXPECT_EQ(empty_buf, ST::base64_decode(ST::null));
+    EXPECT_EQ(empty_buf, ST::base64_decode(ST::string()));
     EXPECT_EQ(cbuf(data_base64_ranges), ST::base64_decode(
         ST_LITERAL("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")));
 
@@ -234,8 +234,8 @@ TEST(codecs, base64_decode_buffer)
 {
     char buffer[64];
 
-    EXPECT_EQ(0, ST::base64_decode(ST::null, nullptr, 0));
-    EXPECT_EQ(0, ST::base64_decode(ST::null, buffer, sizeof(buffer)));
+    EXPECT_EQ(0, ST::base64_decode(ST::string(), nullptr, 0));
+    EXPECT_EQ(0, ST::base64_decode(ST::string(), buffer, sizeof(buffer)));
     EXPECT_EQ(empty_buf, ST::char_buffer(buffer, 0));
 
     EXPECT_EQ(static_cast<ST_ssize_t>(sizeof(data_base64_ranges)),

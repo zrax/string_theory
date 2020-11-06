@@ -122,9 +122,6 @@ TEST(string, helpers)
 
 TEST(string, utility)
 {
-    // Special string null constant
-    EXPECT_EQ(ST::null, ST_LITERAL(""));
-    EXPECT_EQ(ST::null, ST::string());
 
     EXPECT_EQ(0U, ST::string().size());
     EXPECT_TRUE(ST::string().empty());
@@ -2063,7 +2060,7 @@ TEST(string, split)
 
     // split never provides an empty vector, even for empty input
     std::vector<ST::string> expected9;
-    expected9.push_back(ST::null);
+    expected9.push_back(ST::string());
     EXPECT_EQ(expected9, ST_LITERAL("").split("-"));
     EXPECT_EQ(expected9, ST_LITERAL("").split("-", 4));
 }
@@ -2125,7 +2122,7 @@ TEST(string, split_char)
 
     // split never provides an empty vector, even for empty input
     std::vector<ST::string> expected9;
-    expected9.push_back(ST::null);
+    expected9.push_back(ST::string());
     EXPECT_EQ(expected9, ST_LITERAL("").split('-'));
     EXPECT_EQ(expected9, ST_LITERAL("").split('-', 4));
 }

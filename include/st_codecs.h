@@ -30,7 +30,7 @@ namespace ST
     inline string hex_encode(const void *data, size_t size)
     {
         if (size == 0)
-            return ST::null;
+            return ST::string();
 
         if (!data)
             throw std::invalid_argument("null data pointer passed to hex_encode");
@@ -72,7 +72,7 @@ namespace ST
     inline string base64_encode(const void *data, size_t size)
     {
         if (size == 0)
-            return ST::null;
+            return ST::string();
 
         if (!data)
             throw std::invalid_argument("null data pointer passed to base64_encode");

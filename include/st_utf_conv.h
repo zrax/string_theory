@@ -156,7 +156,7 @@ namespace ST
 
         size_t u16size = _ST_PRIVATE::utf16_measure_from_utf8(utf8, size);
         if (u16size == 0)
-            return null;
+            return utf16_buffer();
 
         utf16_buffer result;
         result.allocate(u16size);
@@ -191,7 +191,7 @@ namespace ST
 
         size_t u16size = _ST_PRIVATE::utf16_measure_from_utf32(utf32, size);
         if (u16size == 0)
-            return null;
+            return utf16_buffer();
 
         utf16_buffer result;
         result.allocate(u16size);
@@ -264,7 +264,7 @@ namespace ST
 
         size_t u32size = _ST_PRIVATE::utf32_measure_from_utf8(utf8, size);
         if (u32size == 0)
-            return null;
+            return utf32_buffer();
 
         utf32_buffer result;
         result.allocate(u32size);
@@ -299,7 +299,7 @@ namespace ST
 
         size_t u32size = _ST_PRIVATE::utf32_measure_from_utf16(utf16, size);
         if (u32size == 0)
-            return null;
+            return utf32_buffer();
 
         utf32_buffer result;
         result.allocate(u32size);
@@ -374,7 +374,7 @@ namespace ST
 
         size_t u16size = _ST_PRIVATE::utf16_measure_from_utf8(utf8, size);
         if (u16size == 0)
-            return null;
+            return wchar_buffer();
 
         wchar_buffer result;
         result.allocate(u16size);
@@ -395,7 +395,7 @@ namespace ST
 
         size_t u32size = _ST_PRIVATE::utf32_measure_from_utf8(utf8, size);
         if (u32size == 0)
-            return null;
+            return wchar_buffer();
 
         wchar_buffer result;
         result.allocate(u32size);
@@ -442,7 +442,7 @@ namespace ST
 
         size_t u32size = _ST_PRIVATE::utf32_measure_from_utf16(utf16, size);
         if (u32size == 0)
-            return null;
+            return wchar_buffer();
 
         wchar_buffer result;
         result.allocate(u32size);
@@ -470,7 +470,7 @@ namespace ST
 
         size_t u16size = _ST_PRIVATE::utf16_measure_from_utf32(utf32, size);
         if (u16size == 0)
-            return null;
+            return wchar_buffer();
 
         wchar_buffer result;
         result.allocate(u16size);
@@ -549,7 +549,7 @@ namespace ST
 
         size_t asize = _ST_PRIVATE::latin_1_measure_from_utf8(utf8, size);
         if (asize == 0)
-            return null;
+            return char_buffer();
 
         char_buffer result;
         result.allocate(asize);
@@ -590,7 +590,7 @@ namespace ST
 
         size_t asize = _ST_PRIVATE::latin_1_measure_from_utf16(utf16, size);
         if (asize == 0)
-            return null;
+            return char_buffer();
 
         char_buffer result;
         result.allocate(asize);

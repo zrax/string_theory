@@ -132,6 +132,8 @@ namespace ST
 
     public:
         string() noexcept { }
+
+        ST_DEPRECATED_IN_4_0("Use empty initializer {} instead")
         string(const null_t &) noexcept { }
 
         string(const char *cstr, size_t size = ST_AUTO_SIZE,
@@ -288,7 +290,8 @@ namespace ST
         }
 #endif
 
-        void set(const null_t &) noexcept { m_buffer = null; }
+        ST_DEPRECATED_IN_4_0("Use clear() instead")
+        void set(const null_t &) noexcept { m_buffer.clear(); }
 
         void set(const char *cstr, size_t size = ST_AUTO_SIZE,
                  utf_validation_t validation = ST_DEFAULT_VALIDATION)
@@ -505,9 +508,15 @@ namespace ST
             m_buffer = std::move(buffer);
         }
 
+        void clear() noexcept
+        {
+            m_buffer.clear();
+        }
+
+        ST_DEPRECATED_IN_4_0("Use clear() instead")
         string &operator=(const null_t &) noexcept
         {
-            m_buffer = null;
+            m_buffer.clear();
             return *this;
         }
 
@@ -1623,6 +1632,7 @@ namespace ST
         }
 
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("Use empty() instead")
         bool operator==(const null_t &) const noexcept
         {
             return empty();
@@ -1649,6 +1659,7 @@ namespace ST
 #endif
 
         ST_NODISCARD
+        ST_DEPRECATED_IN_4_0("Use !empty() instead")
         bool operator!=(const null_t &) const noexcept
         {
             return !empty();
@@ -1872,7 +1883,7 @@ namespace ST
         string trim_left(const char *charset = ST_WHITESPACE) const
         {
             if (empty())
-                return null;
+                return string();
 
             const char *cp = c_str();
             size_t cssize = std::char_traits<char>::length(charset);
@@ -1886,7 +1897,7 @@ namespace ST
         string trim_right(const char *charset = ST_WHITESPACE) const
         {
             if (empty())
-                return null;
+                return string();
 
             const char *cp = c_str() + size();
             size_t cssize = std::char_traits<char>::length(charset);
@@ -1900,7 +1911,7 @@ namespace ST
         string trim(const char *charset = ST_WHITESPACE) const
         {
             if (empty())
-                return null;
+                return string();
 
             const char *lp = c_str();
             const char *rp = lp + size();
@@ -1927,7 +1938,7 @@ namespace ST
                 if (start < 0)
                     start = 0;
             } else if (static_cast<size_t>(start) > max) {
-                return null;
+                return string();
             }
             if (start + count > max)
                 count = max - start;
@@ -2049,7 +2060,7 @@ namespace ST
             if (first >= 0)
                 return substr(first + 1);
             else
-                return null;
+                return string();
         }
 
         ST_NODISCARD
@@ -2059,7 +2070,7 @@ namespace ST
             if (first >= 0)
                 return substr(first + std::char_traits<char>::length(sep));
             else
-                return null;
+                return string();
         }
 
         ST_NODISCARD
@@ -2069,7 +2080,7 @@ namespace ST
             if (first >= 0)
                 return substr(first + 1);
             else
-                return null;
+                return string();
         }
 
         ST_NODISCARD
@@ -2079,7 +2090,7 @@ namespace ST
             if (last >= 0)
                 return left(last);
             else
-                return null;
+                return string();
         }
 
         ST_NODISCARD
@@ -2089,7 +2100,7 @@ namespace ST
             if (last >= 0)
                 return left(last);
             else
-                return null;
+                return string();
         }
 
         ST_NODISCARD
@@ -2099,7 +2110,7 @@ namespace ST
             if (last >= 0)
                 return left(last);
             else
-                return null;
+                return string();
         }
 
         ST_NODISCARD
@@ -2163,8 +2174,8 @@ namespace ST
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from ? string(from, ST_AUTO_SIZE, validation) : null,
-                           to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
+            return replace(from ? string(from, ST_AUTO_SIZE, validation) : string(),
+                           to ? string(to, ST_AUTO_SIZE, validation) : string(), cs);
         }
 
         ST_NODISCARD
@@ -2172,7 +2183,7 @@ namespace ST
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from, to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
+            return replace(from, to ? string(to, ST_AUTO_SIZE, validation) : string(), cs);
         }
 
         ST_NODISCARD
@@ -2180,7 +2191,7 @@ namespace ST
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from ? string(from, ST_AUTO_SIZE, validation) : null, to, cs);
+            return replace(from ? string(from, ST_AUTO_SIZE, validation) : string(), to, cs);
         }
 
         ST_NODISCARD
@@ -2246,8 +2257,8 @@ namespace ST
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from ? string(from, ST_AUTO_SIZE, validation) : null,
-                           to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
+            return replace(from ? string(from, ST_AUTO_SIZE, validation) : string(),
+                           to ? string(to, ST_AUTO_SIZE, validation) : string(), cs);
         }
 
         ST_NODISCARD
@@ -2255,7 +2266,7 @@ namespace ST
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION) const
         {
-            return replace(from, to ? string(to, ST_AUTO_SIZE, validation) : null, cs);
+            return replace(from, to ? string(to, ST_AUTO_SIZE, validation) : string(), cs);
         }
 
         ST_NODISCARD
@@ -2263,7 +2274,7 @@ namespace ST
                        case_sensitivity_t cs = case_sensitive,
                        utf_validation_t validation = ST_DEFAULT_VALIDATION)
         {
-            return replace(from ? string(from, ST_AUTO_SIZE, validation) : null, to, cs);
+            return replace(from ? string(from, ST_AUTO_SIZE, validation) : string(), to, cs);
         }
 #endif
 
@@ -2640,12 +2651,14 @@ namespace ST
     }
 
     ST_NODISCARD
+    ST_DEPRECATED_IN_4_0("Use string::empty() instead")
     inline bool operator==(const null_t &, const string &right) noexcept
     {
         return right.empty();
     }
 
     ST_NODISCARD
+    ST_DEPRECATED_IN_4_0("Use !string::empty() instead")
     inline bool operator!=(const null_t &, const string &right) noexcept
     {
         return !right.empty();
