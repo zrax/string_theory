@@ -1490,6 +1490,7 @@ TEST(string, compare)
     EXPECT_GT(0, ST_LITERAL("abC").compare("abc", ST::case_sensitive));
     EXPECT_GT(0, ST_LITERAL("Abc").compare("abc", ST::case_sensitive));
     EXPECT_EQ(0, ST::string().compare("", ST::case_sensitive));
+    EXPECT_EQ(0, ST::string().compare((const char *)nullptr, ST::case_sensitive));
 
     // Same length, case insensitive
     EXPECT_EQ(0, ST_LITERAL("abc").compare("abc", ST::case_insensitive));
@@ -1497,17 +1498,20 @@ TEST(string, compare)
     EXPECT_GT(0, ST_LITERAL("abc").compare("abD", ST::case_insensitive));
     EXPECT_LT(0, ST_LITERAL("abc").compare("abB", ST::case_insensitive));
     EXPECT_EQ(0, ST::string().compare("", ST::case_insensitive));
+    EXPECT_EQ(0, ST::string().compare((const char *)nullptr, ST::case_insensitive));
 
     // Mismatched length, case sensitive
     EXPECT_LT(0, ST_LITERAL("abc").compare("ab", ST::case_sensitive));
     EXPECT_GT(0, ST_LITERAL("abc").compare("abcd", ST::case_sensitive));
     EXPECT_LT(0, ST_LITERAL("abc").compare("", ST::case_sensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare((const char *)nullptr, ST::case_sensitive));
     EXPECT_GT(0, ST_LITERAL("").compare("abc", ST::case_sensitive));
 
     // Mismatched length, case insensitive
     EXPECT_LT(0, ST_LITERAL("abc").compare("Ab", ST::case_insensitive));
     EXPECT_GT(0, ST_LITERAL("abc").compare("Abcd", ST::case_insensitive));
     EXPECT_LT(0, ST_LITERAL("abc").compare("", ST::case_insensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare((const char *)nullptr, ST::case_insensitive));
     EXPECT_GT(0, ST::string().compare("abc", ST::case_insensitive));
 }
 
@@ -1530,12 +1534,14 @@ TEST(string, compare_n)
     EXPECT_LT(0, ST_LITERAL("abc").compare_n("ab", 3, ST::case_sensitive));
     EXPECT_GT(0, ST_LITERAL("abc").compare_n("abcd", 4, ST::case_sensitive));
     EXPECT_LT(0, ST_LITERAL("abc").compare_n("", 3, ST::case_sensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare_n((const char *)nullptr, 3, ST::case_sensitive));
     EXPECT_GT(0, ST_LITERAL("").compare_n("abc", 3, ST::case_sensitive));
 
     // Mismatched length, case insensitive
     EXPECT_LT(0, ST_LITERAL("abc").compare_n("Ab", 3, ST::case_insensitive));
     EXPECT_GT(0, ST_LITERAL("abc").compare_n("Abcd", 4, ST::case_insensitive));
     EXPECT_LT(0, ST_LITERAL("abc").compare_n("", 3, ST::case_insensitive));
+    EXPECT_LT(0, ST_LITERAL("abc").compare_n((const char *)nullptr, 3, ST::case_insensitive));
     EXPECT_GT(0, ST::string().compare_n("abc", 3, ST::case_insensitive));
 }
 

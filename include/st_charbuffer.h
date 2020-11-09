@@ -213,7 +213,8 @@ namespace ST
         int compare(const char_T *str) const noexcept
         {
             const size_t rsize = str ? traits_t::length(str) : 0;
-            return compare(data(), size(), str ? str : "", rsize);
+            const char_T empty[] = {0};
+            return compare(data(), size(), str ? str : empty, rsize);
         }
 
         ST_NODISCARD
@@ -225,8 +226,9 @@ namespace ST
         ST_NODISCARD
         int compare_n(const char_T *str, size_t count) const noexcept
         {
-            const size_t rsize = str ? std::char_traits<char>::length(str) : 0;
-            return compare(data(), size(), str ? str : "", rsize, count);
+            const size_t rsize = str ? traits_t::length(str) : 0;
+            const char_T empty[] = {0};
+            return compare(data(), size(), str ? str : empty, rsize, count);
         }
 
         ST_NODISCARD

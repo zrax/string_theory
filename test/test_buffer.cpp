@@ -313,6 +313,72 @@ TEST(char_buffer, self_assign)
 TEST(char_buffer, compare)
 {
     // Same length, chars
+    EXPECT_EQ(0, ST_CHAR_LITERAL("abc").compare("abc"));
+    EXPECT_GT(0, ST_CHAR_LITERAL("abc").compare("abd"));
+    EXPECT_LT(0, ST_CHAR_LITERAL("abc").compare("abb"));
+    EXPECT_GT(0, ST_CHAR_LITERAL("abC").compare("abc"));
+    EXPECT_GT(0, ST_CHAR_LITERAL("Abc").compare("abc"));
+    EXPECT_EQ(0, ST::char_buffer().compare(""));
+    EXPECT_EQ(0, ST::char_buffer().compare(nullptr));
+
+    // Same length, wchars
+    EXPECT_EQ(0, ST_WCHAR_LITERAL(L"abc").compare(L"abc"));
+    EXPECT_GT(0, ST_WCHAR_LITERAL(L"abc").compare(L"abd"));
+    EXPECT_LT(0, ST_WCHAR_LITERAL(L"abc").compare(L"abb"));
+    EXPECT_GT(0, ST_WCHAR_LITERAL(L"abC").compare(L"abc"));
+    EXPECT_GT(0, ST_WCHAR_LITERAL(L"Abc").compare(L"abc"));
+    EXPECT_EQ(0, ST::wchar_buffer().compare(L""));
+    EXPECT_EQ(0, ST::wchar_buffer().compare(nullptr));
+
+    // Mismatched length, chars
+    EXPECT_LT(0, ST_CHAR_LITERAL("abc").compare("ab"));
+    EXPECT_GT(0, ST_CHAR_LITERAL("abc").compare("abcd"));
+    EXPECT_LT(0, ST_CHAR_LITERAL("abc").compare(""));
+    EXPECT_LT(0, ST_CHAR_LITERAL("abc").compare(nullptr));
+    EXPECT_GT(0, ST::char_buffer().compare("abc"));
+
+    // Mismatched length, wchars
+    EXPECT_LT(0, ST_WCHAR_LITERAL(L"abc").compare(L"ab"));
+    EXPECT_GT(0, ST_WCHAR_LITERAL(L"abc").compare(L"abcd"));
+    EXPECT_LT(0, ST_WCHAR_LITERAL(L"abc").compare(L""));
+    EXPECT_LT(0, ST_WCHAR_LITERAL(L"abc").compare(nullptr));
+    EXPECT_GT(0, ST::wchar_buffer().compare(L"abc"));
+}
+
+TEST(char_buffer, compare_n)
+{
+    // Same length, chars
+    EXPECT_EQ(0, ST_CHAR_LITERAL("abcXX").compare_n("abcYY", 3));
+    EXPECT_GT(0, ST_CHAR_LITERAL("abcXX").compare_n("abdYY", 3));
+    EXPECT_LT(0, ST_CHAR_LITERAL("abcXX").compare_n("abbYY", 3));
+    EXPECT_GT(0, ST_CHAR_LITERAL("abCXX").compare_n("abcYY", 3));
+    EXPECT_GT(0, ST_CHAR_LITERAL("AbcXX").compare_n("abcYY", 3));
+
+    // Same length, wchars
+    EXPECT_EQ(0, ST_WCHAR_LITERAL(L"abcXX").compare_n(L"abcYY", 3));
+    EXPECT_GT(0, ST_WCHAR_LITERAL(L"abcXX").compare_n(L"abdYY", 3));
+    EXPECT_LT(0, ST_WCHAR_LITERAL(L"abcXX").compare_n(L"abbYY", 3));
+    EXPECT_GT(0, ST_WCHAR_LITERAL(L"abCXX").compare_n(L"abcYY", 3));
+    EXPECT_GT(0, ST_WCHAR_LITERAL(L"AbcXX").compare_n(L"abcYY", 3));
+
+    // Mismatched length, chars
+    EXPECT_LT(0, ST_CHAR_LITERAL("abc").compare_n("ab", 3));
+    EXPECT_GT(0, ST_CHAR_LITERAL("abc").compare_n("abcd", 4));
+    EXPECT_LT(0, ST_CHAR_LITERAL("abc").compare_n("", 3));
+    EXPECT_LT(0, ST_CHAR_LITERAL("abc").compare_n(nullptr, 3));
+    EXPECT_GT(0, ST::char_buffer().compare_n("abc", 3));
+
+    // Mismatched length, wchars
+    EXPECT_LT(0, ST_WCHAR_LITERAL(L"abc").compare_n(L"ab", 3));
+    EXPECT_GT(0, ST_WCHAR_LITERAL(L"abc").compare_n(L"abcd", 4));
+    EXPECT_LT(0, ST_WCHAR_LITERAL(L"abc").compare_n(L"", 3));
+    EXPECT_LT(0, ST_WCHAR_LITERAL(L"abc").compare_n(nullptr, 3));
+    EXPECT_GT(0, ST::wchar_buffer().compare_n(L"abc", 3));
+}
+
+TEST(char_buffer, compare_op)
+{
+    // Same length, chars
     EXPECT_EQ(ST::char_buffer("abc", 3), ST::char_buffer("abc", 3));
     EXPECT_NE(ST::char_buffer("abc", 3), ST::char_buffer("abd", 3));
     EXPECT_NE(ST::char_buffer("abc", 3), ST::char_buffer("abb", 3));
