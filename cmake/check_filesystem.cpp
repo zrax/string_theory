@@ -20,8 +20,10 @@
 
 #include <filesystem>
 
-int main(int argc, char *argv[])
+int main(int, char *argv[])
 {
     std::filesystem::path p(argv[0]);
+    (void)p;
+
     return 0;
 }

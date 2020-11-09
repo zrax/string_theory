@@ -20,9 +20,13 @@
 
 #include <string>
 
-int main(int, char **)
+int main()
 {
     char8_t foo = u8'x';
+    (void)foo;
+
     std::u8string bar = u8"foo";
+    (void)bar;
+
     return 0;
 }

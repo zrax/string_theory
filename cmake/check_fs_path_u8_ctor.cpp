@@ -21,9 +21,11 @@
 #include <string>
 #include <filesystem>
 
-int main(int argc, char *argv[])
+int main()
 {
     const std::u8string pathname(u8"/path/to/file.txt");
     std::filesystem::path p(pathname.c_str(), pathname.c_str() + pathname.size());
+    (void)p;
+
     return 0;
 }

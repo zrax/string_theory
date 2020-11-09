@@ -20,8 +20,10 @@
 
 #include <string_view>
 
-int main(int argc, char *argv[])
+int main(int, char *argv[])
 {
     std::string_view p(argv[0]);
+    (void)p;
+
     return 0;
 }

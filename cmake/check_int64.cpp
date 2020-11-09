@@ -20,10 +20,12 @@
 
 #include <cstdint>
 
-int main(int, char **)
+int main()
 {
     int64_t x = -1LL;
     uint64_t y = 1ULL;
+    (void)x;
+    (void)y;
 
     return 0;
 }

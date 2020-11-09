@@ -30,7 +30,7 @@ struct Test
     int answer() { return 42; }
 };
 
-int main(int, char **)
+int main()
 {
     return 0;
 }

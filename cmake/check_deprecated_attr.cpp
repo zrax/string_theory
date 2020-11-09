@@ -33,7 +33,7 @@ struct Test
 [[deprecated("Don't use this either")]]
 int foo() { return 5; }
 
-int main(int, char **)
+int main()
 {
     return 0;
 }
