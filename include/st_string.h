@@ -1744,8 +1744,8 @@ namespace ST
                 return -1;
 
             const char *cp = (cs == case_sensitive)
-                    ? _ST_PRIVATE::find_cs(c_str() + start, substr)
-                    : _ST_PRIVATE::find_ci(c_str() + start, substr);
+                    ? _ST_PRIVATE::find_cs(c_str() + start, size() - start, substr)
+                    : _ST_PRIVATE::find_ci(c_str() + start, size() - start, substr);
             return cp ? (cp - c_str()) : -1;
         }
 
@@ -1831,8 +1831,8 @@ namespace ST
             const char *found = nullptr;
             for ( ;; ) {
                 const char *cp = (cs == case_sensitive)
-                        ? _ST_PRIVATE::find_cs(start, substr)
-                        : _ST_PRIVATE::find_ci(start, substr);
+                        ? _ST_PRIVATE::find_cs(start, endp - start, substr)
+                        : _ST_PRIVATE::find_ci(start, endp - start, substr);
                 if (!cp || cp >= endp)
                     break;
                 found = cp;
@@ -2216,8 +2216,8 @@ namespace ST
             if (from.size() != to.size()) {
                 for ( ;; ) {
                     pnext = (cs == case_sensitive)
-                            ? _ST_PRIVATE::find_cs(pstart, from.c_str())
-                            : _ST_PRIVATE::find_ci(pstart, from.c_str());
+                            ? _ST_PRIVATE::find_cs(pstart, pend - pstart, from.c_str())
+                            : _ST_PRIVATE::find_ci(pstart, pend - pstart, from.c_str());
                     if (!pnext)
                         break;
 
@@ -2232,8 +2232,8 @@ namespace ST
             pstart = c_str();
             for ( ;; ) {
                 pnext = (cs == case_sensitive)
-                        ? _ST_PRIVATE::find_cs(pstart, from.c_str())
-                        : _ST_PRIVATE::find_ci(pstart, from.c_str());
+                        ? _ST_PRIVATE::find_cs(pstart, pend - pstart, from.c_str())
+                        : _ST_PRIVATE::find_ci(pstart, pend - pstart, from.c_str());
                 if (!pnext)
                     break;
 
@@ -2370,8 +2370,8 @@ namespace ST
             size_t splitlen = std::char_traits<char>::length(splitter);
             while (max_splits) {
                 const char *sp = (cs == case_sensitive)
-                        ? _ST_PRIVATE::find_cs(next, splitter)
-                        : _ST_PRIVATE::find_ci(next, splitter);
+                        ? _ST_PRIVATE::find_cs(next, endp - next, splitter)
+                        : _ST_PRIVATE::find_ci(next, endp - next, splitter);
                 if (!sp)
                     break;
 
@@ -2395,8 +2395,8 @@ namespace ST
             const char *endp = next + size();
             while (max_splits) {
                 const char *sp = (cs == case_sensitive)
-                        ? _ST_PRIVATE::find_cs(next, splitter.c_str())
-                        : _ST_PRIVATE::find_ci(next, splitter.c_str());
+                        ? _ST_PRIVATE::find_cs(next, endp - next, splitter.c_str())
+                        : _ST_PRIVATE::find_ci(next, endp - next, splitter.c_str());
                 if (!sp)
                     break;
 

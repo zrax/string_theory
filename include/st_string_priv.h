@@ -24,9 +24,6 @@
 #include "st_charbuffer.h"
 #include "st_format_numeric.h"
 
-#include <cstdlib>
-#include <cstring>
-
 namespace _ST_PRIVATE
 {
     ST_NODISCARD
@@ -98,27 +95,6 @@ namespace _ST_PRIVATE
     }
 
     ST_NODISCARD
-    inline const char *find_cs(const char *haystack, const char *needle)
-    {
-        return strstr(haystack, needle);
-    }
-
-    ST_NODISCARD
-    inline const char *find_ci(const char *haystack, const char *needle)
-    {
-        // The "easy" way
-        size_t sublen = std::char_traits<char>::length(needle);
-        const char *cp = haystack;
-        const char *ep = cp + std::char_traits<char>::length(haystack);
-        while (cp + sublen <= ep) {
-            if (compare_ci(cp, needle, sublen) == 0)
-                return cp;
-            ++cp;
-        }
-        return nullptr;
-    }
-
-    ST_NODISCARD
     inline const char *find_cs(const char *haystack, size_t size, char ch)
     {
         return std::char_traits<char>::find(haystack, size, ch);
@@ -136,6 +112,46 @@ namespace _ST_PRIVATE
             ++cp;
         }
         return nullptr;
+    }
+
+    ST_NODISCARD
+    inline const char *find_cs(const char *haystack, size_t size, const char *needle)
+    {
+        size_t sublen = std::char_traits<char>::length(needle);
+        if (sublen == 0)
+            return haystack;
+
+        const char *cp = haystack;
+        const char *ep = haystack + size;
+        for ( ;; ) {
+            cp = find_cs(cp, ep - cp, needle[0]);
+            if (!cp)
+                return nullptr;
+            if (compare_cs(cp, needle, sublen) == 0)
+                return cp;
+            if (++cp + sublen > ep)
+                return nullptr;
+        }
+    }
+
+    ST_NODISCARD
+    inline const char *find_ci(const char *haystack, size_t size, const char *needle)
+    {
+        size_t sublen = std::char_traits<char>::length(needle);
+        if (sublen == 0)
+            return haystack;
+
+        const char *cp = haystack;
+        const char *ep = haystack + size;
+        for ( ;; ) {
+            cp = find_ci(cp, ep - cp, needle[0]);
+            if (!cp)
+                return nullptr;
+            if (compare_ci(cp, needle, sublen) == 0)
+                return cp;
+            if (++cp + sublen > ep)
+                return nullptr;
+        }
     }
 
     template <typename int_T>
