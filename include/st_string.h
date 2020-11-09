@@ -947,6 +947,12 @@ namespace ST
 #endif
 
         ST_NODISCARD
+        const char *data() const noexcept
+        {
+            return m_buffer.data();
+        }
+
+        ST_NODISCARD
         const char *c_str() const noexcept
         {
             return m_buffer.c_str();
