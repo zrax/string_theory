@@ -1167,10 +1167,12 @@ namespace ST
 
 #if defined(ST_HAVE_CXX17_STRING_VIEW)
         ST_NODISCARD
-        std::string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const
+        std::string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const &
         {
             return m_buffer.view(start, length);
         }
+
+        void view(size_t start = 0, size_t length = ST_AUTO_SIZE) const && = delete;
 #endif
 
 #endif // defined(ST_ENABLE_STL_STRINGS)

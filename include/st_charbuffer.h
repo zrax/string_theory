@@ -425,12 +425,14 @@ namespace ST
 #if defined(ST_HAVE_CXX17_STRING_VIEW)
         ST_NODISCARD
         std::basic_string_view<char_T> view(size_t start = 0,
-                                            size_t length = ST_AUTO_SIZE) const
+                                            size_t length = ST_AUTO_SIZE) const &
         {
             if (length == ST_AUTO_SIZE)
                 length = size() - start;
             return std::basic_string_view<char_T>(data() + start, length);
         }
+
+        void view(size_t start = 0, size_t length = ST_AUTO_SIZE) const && = delete;
 #endif
 
 #endif  /* defined(ST_ENABLE_STL_STRINGS) */
