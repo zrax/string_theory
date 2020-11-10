@@ -48,8 +48,7 @@ namespace _ST_PRIVATE
         typename std::enable_if<std::is_same<write_char_T, wchar_t>::value, void>::type
         write_data(const char *data, size_t size)
         {
-            // TODO: There may be a more efficient way to do this...
-            ST::wchar_buffer wide = ST::string(data, size).to_wchar();
+            ST::wchar_buffer wide = ST::utf8_to_wchar(data, size);
             m_stream.write(wide.data(), wide.size());
         }
 
@@ -57,7 +56,7 @@ namespace _ST_PRIVATE
         typename std::enable_if<std::is_same<write_char_T, char16_t>::value, void>::type
         write_data(const char *data, size_t size)
         {
-            ST::utf16_buffer utf16 = ST::string(data, size).to_utf16();
+            ST::utf16_buffer utf16 = ST::utf8_to_utf16(data, size);
             m_stream.write(utf16.data(), utf16.size());
         }
 
@@ -65,7 +64,7 @@ namespace _ST_PRIVATE
         typename std::enable_if<std::is_same<write_char_T, char32_t>::value, void>::type
         write_data(const char *data, size_t size)
         {
-            ST::utf32_buffer utf32 = ST::string(data, size).to_utf32();
+            ST::utf32_buffer utf32 = ST::utf8_to_utf32(data, size);
             m_stream.write(utf32.data(), utf32.size());
         }
 
