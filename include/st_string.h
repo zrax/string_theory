@@ -108,6 +108,36 @@ namespace ST
         }
 #endif
 
+        ST_NODISCARD
+        ST_ssize_t _find(size_t start, const char *substr, size_t count,
+                         case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            const char *cp = (cs == case_sensitive)
+                    ? _ST_PRIVATE::find_cs(c_str() + start, size() - start, substr, count)
+                    : _ST_PRIVATE::find_ci(c_str() + start, size() - start, substr, count);
+            return cp ? (cp - c_str()) : -1;
+        }
+
+        ST_NODISCARD
+        ST_ssize_t _find_last(size_t max, const char *substr, size_t count,
+                              case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            const char *endp = c_str() + (max > size() ? size() : max);
+
+            const char *start = c_str();
+            const char *found = nullptr;
+            for ( ;; ) {
+                const char *cp = (cs == case_sensitive)
+                        ? _ST_PRIVATE::find_cs(start, endp - start, substr, count)
+                        : _ST_PRIVATE::find_ci(start, endp - start, substr, count);
+                if (!cp || cp >= endp)
+                    break;
+                found = cp;
+                start = cp + 1;
+            }
+            return found ? (found - c_str()) : -1;
+        }
+
         struct from_literal_t {};
         string(const from_literal_t &, const char *data, size_t size)
             : m_buffer(data, size) { }
@@ -1707,6 +1737,13 @@ namespace ST
             return find(0, substr, cs);
         }
 
+        ST_NODISCARD
+        ST_ssize_t find(const char *substr, size_t count,
+                        case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            return find(0, substr, count, cs);
+        }
+
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_NODISCARD
         ST_ssize_t find(const char8_t *substr, case_sensitivity_t cs = case_sensitive)
@@ -1714,13 +1751,20 @@ namespace ST
         {
             return find(0, substr, cs);
         }
+
+        ST_NODISCARD
+        ST_ssize_t find(const char8_t *substr, size_t count,
+                        case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            return find(0, substr, count, cs);
+        }
 #endif
 
         ST_NODISCARD
         ST_ssize_t find(const string &substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
-            return find(0, substr.c_str(), cs);
+            return find(0, substr.c_str(), substr.size(), cs);
         }
 
         ST_NODISCARD
@@ -1743,10 +1787,18 @@ namespace ST
             if (!substr || !substr[0] || start >= size())
                 return -1;
 
-            const char *cp = (cs == case_sensitive)
-                    ? _ST_PRIVATE::find_cs(c_str() + start, size() - start, substr)
-                    : _ST_PRIVATE::find_ci(c_str() + start, size() - start, substr);
-            return cp ? (cp - c_str()) : -1;
+            const size_t sublen = std::char_traits<char>::length(substr);
+            return _find(start, substr, sublen, cs);
+        }
+
+        ST_NODISCARD
+        ST_ssize_t find(size_t start, const char *substr, size_t count,
+                        case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            if (!substr || !count || start >= size())
+                return -1;
+
+            return _find(start, substr, count, cs);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
@@ -1756,13 +1808,20 @@ namespace ST
         {
             return find(start, reinterpret_cast<const char *>(substr), cs);
         }
+
+        ST_NODISCARD
+        ST_ssize_t find(size_t start, const char8_t *substr, size_t count,
+                        case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            return find(start, reinterpret_cast<const char *>(substr), count, cs);
+        }
 #endif
 
         ST_NODISCARD
         ST_ssize_t find(size_t start, const string &substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
-            return find(start, substr.c_str(), cs);
+            return find(start, substr.c_str(), substr.size(), cs);
         }
 
         ST_NODISCARD
@@ -1779,6 +1838,13 @@ namespace ST
             return find_last(ST_AUTO_SIZE, substr, cs);
         }
 
+        ST_NODISCARD
+        ST_ssize_t find_last(const char *substr, size_t count,
+                             case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            return find_last(ST_AUTO_SIZE, substr, count, cs);
+        }
+
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_NODISCARD
         ST_ssize_t find_last(const char8_t *substr, case_sensitivity_t cs = case_sensitive)
@@ -1786,13 +1852,20 @@ namespace ST
         {
             return find_last(ST_AUTO_SIZE, substr, cs);
         }
+
+        ST_NODISCARD
+        ST_ssize_t find_last(const char8_t *substr, size_t count,
+                             case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            return find_last(ST_AUTO_SIZE, substr, count, cs);
+        }
 #endif
 
         ST_NODISCARD
         ST_ssize_t find_last(const string &substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
-            return find_last(ST_AUTO_SIZE, substr.c_str(), cs);
+            return find_last(ST_AUTO_SIZE, substr.c_str(), substr.size(), cs);
         }
 
         ST_NODISCARD
@@ -1819,26 +1892,24 @@ namespace ST
         }
 
         ST_NODISCARD
-        ST_ssize_t find_last(size_t max, const char *substr, case_sensitivity_t cs = case_sensitive)
-            const noexcept
+        ST_ssize_t find_last(size_t max, const char *substr,
+                             case_sensitivity_t cs = case_sensitive) const noexcept
         {
             if (!substr || !substr[0] || empty())
                 return -1;
 
-            const char *endp = c_str() + (max > size() ? size() : max);
+            const size_t sublen = std::char_traits<char>::length(substr);
+            return _find_last(max, substr, sublen, cs);
+        }
 
-            const char *start = c_str();
-            const char *found = nullptr;
-            for ( ;; ) {
-                const char *cp = (cs == case_sensitive)
-                        ? _ST_PRIVATE::find_cs(start, endp - start, substr)
-                        : _ST_PRIVATE::find_ci(start, endp - start, substr);
-                if (!cp || cp >= endp)
-                    break;
-                found = cp;
-                start = cp + 1;
-            }
-            return found ? (found - c_str()) : -1;
+        ST_NODISCARD
+        ST_ssize_t find_last(size_t max, const char *substr, size_t count,
+                             case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            if (!substr || !count || empty())
+                return -1;
+
+            return _find_last(max, substr, count, cs);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
@@ -1848,13 +1919,20 @@ namespace ST
         {
             return find_last(max, reinterpret_cast<const char *>(substr), cs);
         }
+
+        ST_NODISCARD
+        ST_ssize_t find_last(size_t max, const char8_t *substr, size_t count,
+                             case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            return find_last(max, reinterpret_cast<const char *>(substr), count, cs);
+        }
 #endif
 
         ST_NODISCARD
-        ST_ssize_t find_last(size_t max, const string &substr, case_sensitivity_t cs = case_sensitive)
-            const noexcept
+        ST_ssize_t find_last(size_t max, const string &substr,
+                             case_sensitivity_t cs = case_sensitive) const noexcept
         {
-            return find_last(max, substr.c_str(), cs);
+            return find_last(max, substr.c_str(), substr.size(), cs);
         }
 
         ST_NODISCARD
@@ -1871,12 +1949,26 @@ namespace ST
             return find(substr, cs) >= 0;
         }
 
+        ST_NODISCARD
+        bool contains(const char *substr, size_t count, case_sensitivity_t cs = case_sensitive)
+            const noexcept
+        {
+            return find(substr, count, cs) >= 0;
+        }
+
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_NODISCARD
         bool contains(const char8_t *substr, case_sensitivity_t cs = case_sensitive)
             const noexcept
         {
             return find(substr, cs) >= 0;
+        }
+
+        ST_NODISCARD
+        bool contains(const char8_t *substr, size_t count,
+                      case_sensitivity_t cs = case_sensitive) const noexcept
+        {
+            return find(substr, count, cs) >= 0;
         }
 #endif
 
@@ -2216,8 +2308,8 @@ namespace ST
             if (from.size() != to.size()) {
                 for ( ;; ) {
                     pnext = (cs == case_sensitive)
-                            ? _ST_PRIVATE::find_cs(pstart, pend - pstart, from.c_str())
-                            : _ST_PRIVATE::find_ci(pstart, pend - pstart, from.c_str());
+                            ? _ST_PRIVATE::find_cs(pstart, pend - pstart, from.c_str(), from.size())
+                            : _ST_PRIVATE::find_ci(pstart, pend - pstart, from.c_str(), from.size());
                     if (!pnext)
                         break;
 
@@ -2232,8 +2324,8 @@ namespace ST
             pstart = c_str();
             for ( ;; ) {
                 pnext = (cs == case_sensitive)
-                        ? _ST_PRIVATE::find_cs(pstart, pend - pstart, from.c_str())
-                        : _ST_PRIVATE::find_ci(pstart, pend - pstart, from.c_str());
+                        ? _ST_PRIVATE::find_cs(pstart, pend - pstart, from.c_str(), from.size())
+                        : _ST_PRIVATE::find_ci(pstart, pend - pstart, from.c_str(), from.size());
                 if (!pnext)
                     break;
 
@@ -2370,8 +2462,8 @@ namespace ST
             size_t splitlen = std::char_traits<char>::length(splitter);
             while (max_splits) {
                 const char *sp = (cs == case_sensitive)
-                        ? _ST_PRIVATE::find_cs(next, endp - next, splitter)
-                        : _ST_PRIVATE::find_ci(next, endp - next, splitter);
+                        ? _ST_PRIVATE::find_cs(next, endp - next, splitter, splitlen)
+                        : _ST_PRIVATE::find_ci(next, endp - next, splitter, splitlen);
                 if (!sp)
                     break;
 
@@ -2395,8 +2487,8 @@ namespace ST
             const char *endp = next + size();
             while (max_splits) {
                 const char *sp = (cs == case_sensitive)
-                        ? _ST_PRIVATE::find_cs(next, endp - next, splitter.c_str())
-                        : _ST_PRIVATE::find_ci(next, endp - next, splitter.c_str());
+                        ? _ST_PRIVATE::find_cs(next, endp - next, splitter.c_str(), splitter.size())
+                        : _ST_PRIVATE::find_ci(next, endp - next, splitter.c_str(), splitter.size());
                 if (!sp)
                     break;
 

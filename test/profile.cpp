@@ -22,6 +22,10 @@
 // a rough idea of how ST::string and ST::format hold up against other string
 // and formatting APIs performance-wise.
 
+// We need these for testing...
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <chrono>
 #include <functional>
 #include <locale>
@@ -74,6 +78,9 @@
 
 volatile const char *V;
 #define NO_OPTIMIZE(x) V = reinterpret_cast<const char *>(x)
+
+volatile int I;
+#define NO_OPTIMIZE_I(x) I = x;
 
 volatile long L;
 #define NO_OPTIMIZE_L(x) L = x;
@@ -296,34 +303,34 @@ int main(int, char **)
     const char _cs2[] = "This is a long string.  Testing the excessively long long string.";
     _measure("strcmp", [&_cs2]() {
         int cmp = strcmp(_cs2, "This is a long string.  Testing the excessively long long string.");
-        NO_OPTIMIZE(cmp);
+        NO_OPTIMIZE_I(cmp);
     });
 
     _measure("std::string::compare", [&_ss2]() {
         int cmp = _ss2.compare("This is a long string.  Testing the excessively long long string.");
-        NO_OPTIMIZE(cmp);
+        NO_OPTIMIZE_I(cmp);
     });
 
     _measure("ST::string::compare", [&_st2]() {
         int cmp = _st2.compare("This is a long string.  Testing the excessively long long string.");
-        NO_OPTIMIZE(cmp);
+        NO_OPTIMIZE_I(cmp);
     });
 
     _measure("ST::string::compare CI", [&_st2]() {
         int cmp = _st2.compare_i("this is a long string.  testing the excessively long long string.");
-        NO_OPTIMIZE(cmp);
+        NO_OPTIMIZE_I(cmp);
     });
 
 #ifdef ST_PROFILE_HAVE_QSTRING
     _measure("QString::compare", [&_qs2]() {
         int cmp = _qs2.compare("This is a long string.  Testing the excessively long long string.");
-        NO_OPTIMIZE(cmp);
+        NO_OPTIMIZE_I(cmp);
     });
 
     _measure("QString::compare CI", [&_qs2]() {
         int cmp = _qs2.compare("this is a long string.  testing the excessively long long string.",
                                Qt::CaseInsensitive);
-        NO_OPTIMIZE(cmp);
+        NO_OPTIMIZE_I(cmp);
     });
 #endif
 
@@ -331,7 +338,7 @@ int main(int, char **)
     _measure("Glib::ustring::compare", [&_gs2]() {
         // Glib::ustring::compare is actually case insensitive!
         int cmp = _gs2.compare("this is a long string.  testing the excessively long long string.");
-        NO_OPTIMIZE(cmp);
+        NO_OPTIMIZE_I(cmp);
     });
 #endif
 
@@ -563,7 +570,7 @@ int main(int, char **)
 
     _measure("QString::fromUcs4", [&_stu32]() {
         QString str = QString::fromUcs4(
-                        reinterpret_cast<const uint *>(_stu32.data()), _stu32.size());
+                        reinterpret_cast<const uint *>(_stu32.data()), (int)_stu32.size());
         NO_OPTIMIZE(str.constData());
     });
 

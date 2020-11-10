@@ -115,41 +115,35 @@ namespace _ST_PRIVATE
     }
 
     ST_NODISCARD
-    inline const char *find_cs(const char *haystack, size_t size, const char *needle)
+    inline const char *find_cs(const char *haystack, size_t size,
+                               const char *needle, size_t needle_size)
     {
-        size_t sublen = std::char_traits<char>::length(needle);
-        if (sublen == 0)
-            return haystack;
-
         const char *cp = haystack;
         const char *ep = haystack + size;
         for ( ;; ) {
             cp = find_cs(cp, ep - cp, needle[0]);
             if (!cp)
                 return nullptr;
-            if (compare_cs(cp, needle, sublen) == 0)
+            if (compare_cs(cp, needle, needle_size) == 0)
                 return cp;
-            if (++cp + sublen > ep)
+            if (++cp + needle_size > ep)
                 return nullptr;
         }
     }
 
     ST_NODISCARD
-    inline const char *find_ci(const char *haystack, size_t size, const char *needle)
+    inline const char *find_ci(const char *haystack, size_t size,
+                               const char *needle, size_t needle_size)
     {
-        size_t sublen = std::char_traits<char>::length(needle);
-        if (sublen == 0)
-            return haystack;
-
         const char *cp = haystack;
         const char *ep = haystack + size;
         for ( ;; ) {
             cp = find_ci(cp, ep - cp, needle[0]);
             if (!cp)
                 return nullptr;
-            if (compare_ci(cp, needle, sublen) == 0)
+            if (compare_ci(cp, needle, needle_size) == 0)
                 return cp;
-            if (++cp + sublen > ep)
+            if (++cp + needle_size > ep)
                 return nullptr;
         }
     }
