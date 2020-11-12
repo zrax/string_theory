@@ -23,9 +23,9 @@
 
 #include "st_config.h"
 
-#include <stdexcept>
-#include <cstdio>
-#include <cstdlib>
+#include <stdexcept>    // For std::runtime_error
+#include <cstdio>       // For std::fprintf
+#include <cstdlib>      // For std::abort
 
 namespace ST
 {

@@ -28,7 +28,7 @@ namespace _ST_PRIVATE
     ST_NODISCARD
     inline size_t format_double(char *buffer, size_t size, double value, char format)
     {
-        char format_spec[] = { '%', format, 0 };
+        const char format_spec[] = { '%', format, 0 };
 
         int format_size = snprintf(buffer, size, format_spec, value);
         ST_ASSERT(format_size > 0, "Your libc doesn't support reporting format size");

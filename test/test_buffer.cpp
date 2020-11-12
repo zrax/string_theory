@@ -145,35 +145,73 @@ TEST(char_buffer, stack_construction)
     EXPECT_EQ(0, T_strcmp(cb_short.data(), shortstr));
     EXPECT_EQ(5U, cb_short.size());
     EXPECT_FALSE(cb_short.empty());
+    cb_short.clear();
+    EXPECT_EQ(0, T_strcmp(cb_short.data(), empty));
+    EXPECT_EQ(0U, cb_short.size());
+    EXPECT_TRUE(cb_short.empty());
+
     ST::wchar_buffer wcb_short(shortw, 5);
     EXPECT_EQ(0, T_strcmp(wcb_short.data(), shortw));
     EXPECT_EQ(5U, wcb_short.size());
     EXPECT_FALSE(wcb_short.empty());
+    wcb_short.clear();
+    EXPECT_EQ(0, T_strcmp(wcb_short.data(), emptyw));
+    EXPECT_EQ(0U, wcb_short.size());
+    EXPECT_TRUE(wcb_short.empty());
+
     ST::utf16_buffer cb16_short(short16, 5);
     EXPECT_EQ(0, T_strcmp(cb16_short.data(), short16));
     EXPECT_EQ(5U, cb16_short.size());
-    EXPECT_FALSE(cb_short.empty());
+    EXPECT_FALSE(cb16_short.empty());
+    cb16_short.clear();
+    EXPECT_EQ(0, T_strcmp(cb16_short.data(), empty16));
+    EXPECT_EQ(0U, cb16_short.size());
+    EXPECT_TRUE(cb16_short.empty());
+
     ST::utf32_buffer cb32_short(short32, 5);
     EXPECT_EQ(0, T_strcmp(cb32_short.data(), short32));
     EXPECT_EQ(5U, cb32_short.size());
     EXPECT_FALSE(cb32_short.empty());
+    cb32_short.clear();
+    EXPECT_EQ(0, T_strcmp(cb32_short.data(), empty32));
+    EXPECT_EQ(0U, cb32_short.size());
+    EXPECT_TRUE(cb32_short.empty());
 
     ST::char_buffer cb_long(longstr, 20);
     EXPECT_EQ(0, T_strcmp(cb_long.data(), longstr));
     EXPECT_EQ(20U, cb_long.size());
     EXPECT_FALSE(cb_long.empty());
+    cb_long.clear();
+    EXPECT_EQ(0, T_strcmp(cb_long.data(), empty));
+    EXPECT_EQ(0U, cb_long.size());
+    EXPECT_TRUE(cb_long.empty());
+
     ST::wchar_buffer wcb_long(longw, 20);
     EXPECT_EQ(0, T_strcmp(wcb_long.data(), longw));
     EXPECT_EQ(20U, wcb_long.size());
     EXPECT_FALSE(wcb_long.empty());
+    wcb_long.clear();
+    EXPECT_EQ(0, T_strcmp(wcb_long.data(), emptyw));
+    EXPECT_EQ(0U, wcb_long.size());
+    EXPECT_TRUE(wcb_long.empty());
+
     ST::utf16_buffer cb16_long(long16, 20);
     EXPECT_EQ(0, T_strcmp(cb16_long.data(), long16));
     EXPECT_EQ(20U, cb16_long.size());
-    EXPECT_FALSE(cb_long.empty());
+    EXPECT_FALSE(cb16_long.empty());
+    cb16_long.clear();
+    EXPECT_EQ(0, T_strcmp(cb16_long.data(), empty16));
+    EXPECT_EQ(0U, cb16_long.size());
+    EXPECT_TRUE(cb16_long.empty());
+
     ST::utf32_buffer cb32_long(long32, 20);
     EXPECT_EQ(0, T_strcmp(cb32_long.data(), long32));
     EXPECT_EQ(20U, cb32_long.size());
     EXPECT_FALSE(cb32_long.empty());
+    cb32_long.clear();
+    EXPECT_EQ(0, T_strcmp(cb32_long.data(), empty32));
+    EXPECT_EQ(0U, cb32_long.size());
+    EXPECT_TRUE(cb32_long.empty());
 }
 
 // Only testing char and wchar_t for simplicity on compilers that
