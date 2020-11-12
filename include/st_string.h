@@ -138,15 +138,6 @@ namespace ST
             return found ? (found - c_str()) : -1;
         }
 
-        struct from_literal_t {};
-        string(const from_literal_t &, const char *data, size_t size)
-            : m_buffer(data, size) { }
-
-#ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        string(const from_literal_t &, const char8_t *data, size_t size)
-            : m_buffer(reinterpret_cast<const char *>(data), size) { }
-#endif
-
         struct from_validated_t {};
         string(const from_validated_t &, const char *data, size_t size)
             : m_buffer(data, size) { }
@@ -717,22 +708,6 @@ namespace ST
         inline string &operator+=(wchar_t ch);
         inline string &operator+=(char16_t ch);
         inline string &operator+=(char32_t ch);
-
-        ST_NODISCARD
-        static string from_literal(const char *literal, size_t size)
-        {
-            from_literal_t lit_marker;
-            return string(lit_marker, literal, size);
-        }
-
-#ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        ST_NODISCARD
-        static string from_literal(const char8_t *literal, size_t size)
-        {
-            from_literal_t lit_marker;
-            return string(lit_marker, literal, size);
-        }
-#endif
 
         ST_NODISCARD
         static string from_validated(const char *text, size_t size)
@@ -1316,8 +1291,8 @@ namespace ST
         ST_NODISCARD
         static string from_bool(bool value)
         {
-            return value ? from_literal("true", 4)
-                         : from_literal("false", 5);
+            return value ? from_validated("true", 4)
+                         : from_validated("false", 5);
         }
 
         ST_NODISCARD
@@ -2841,14 +2816,14 @@ namespace std
 }
 
 #define ST_LITERAL(str) \
-    ST::string::from_literal("" str "", sizeof(str) - 1)
+    ST::string::from_validated("" str "", sizeof(str) - 1)
 
 namespace ST { namespace literals
 {
     ST_NODISCARD
     inline ST::string operator"" _st(const char *str, size_t size)
     {
-        return ST::string::from_literal(str, size);
+        return ST::string::from_validated(str, size);
     }
 
     ST_NODISCARD
@@ -2873,7 +2848,7 @@ namespace ST { namespace literals
     ST_NODISCARD
     inline ST::string operator"" _st(const char8_t *str, size_t size)
     {
-        return ST::string::from_literal(str, size);
+        return ST::string::from_validated(str, size);
     }
 #endif
 }}
