@@ -2136,11 +2136,78 @@ TEST(string, split_char)
     EXPECT_EQ(expected9, ST_LITERAL("").split('-', 4));
 }
 
+TEST(string, nul_chars)
+{
+    // If this changes, this test may need to be updated to match
+    ASSERT_EQ(16, ST_MAX_SSO_LENGTH);
+
+    EXPECT_EQ( 7, ST_LITERAL("abc\0def").size());
+    EXPECT_EQ( 8, ST_LITERAL("abc\0def\0").size());
+    EXPECT_EQ(24, ST_LITERAL("abc\0def\0abc\0def\0abc\0def\0").size());
+
+    EXPECT_EQ( 7, ST::string("abc\0def", 7).size());
+    EXPECT_EQ( 8, ST::string("abc\0def\0", 8).size());
+    EXPECT_EQ(24, ST::string("abc\0def\0abc\0def\0abc\0def\0", 24).size());
+
+    // Comparisons with embedded nuls
+    EXPECT_EQ(0, ST_LITERAL("abc\0def\0").compare(ST_LITERAL("abc\0def\0")));
+    EXPECT_LT(0, ST_LITERAL("abc\0def\0").compare(ST_LITERAL("abc\0DEF\0")));
+    EXPECT_LT(0, ST_LITERAL("abc\0def\0").compare(ST_LITERAL("abc\0")));
+    EXPECT_GT(0, ST_LITERAL("abc\0").compare(ST_LITERAL("abc\0def\0")));
+    EXPECT_LT(0, ST_LITERAL("abc\0def\0").compare(ST_LITERAL("abc\0def")));
+    EXPECT_GT(0, ST_LITERAL("abc\0def").compare(ST_LITERAL("abc\0def\0")));
+
+    // Find nul character
+    EXPECT_EQ( 3, ST_LITERAL("abc\0def\0").find('\0', ST::case_sensitive));
+    EXPECT_EQ( 3, ST_LITERAL("abc\0def\0").find('\0', ST::case_insensitive));
+    EXPECT_EQ( 0, ST_LITERAL("\0abc\0def").find('\0', ST::case_sensitive));
+    EXPECT_EQ( 0, ST_LITERAL("\0abc\0def").find('\0', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdef").find('\0', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdef").find('\0', ST::case_insensitive));
+    EXPECT_EQ(-1, ST::string().find('\0', ST::case_sensitive));
+    EXPECT_EQ(-1, ST::string().find('\0', ST::case_insensitive));
+
+    // Reverse find nul character
+    EXPECT_EQ( 4, ST_LITERAL("\0abc\0def").find_last('\0', ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("\0abc\0def").find_last('\0', ST::case_insensitive));
+    EXPECT_EQ( 7, ST_LITERAL("abc\0def\0").find_last('\0', ST::case_sensitive));
+    EXPECT_EQ( 7, ST_LITERAL("abc\0def\0").find_last('\0', ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdef").find_last('\0', ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdef").find_last('\0', ST::case_insensitive));
+    EXPECT_EQ(-1, ST::string().find_last('\0', ST::case_sensitive));
+    EXPECT_EQ(-1, ST::string().find_last('\0', ST::case_insensitive));
+
+    // Find nul string
+    EXPECT_EQ( 3, ST_LITERAL("abc\0def\0").find("\0", 1, ST::case_sensitive));
+    EXPECT_EQ( 3, ST_LITERAL("abc\0def\0").find("\0", 1, ST::case_insensitive));
+    EXPECT_EQ( 0, ST_LITERAL("\0abc\0def").find("\0", 1, ST::case_sensitive));
+    EXPECT_EQ( 0, ST_LITERAL("\0abc\0def").find("\0", 1, ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdef").find("\0", 1, ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdef").find("\0", 1, ST::case_insensitive));
+    EXPECT_EQ(-1, ST::string().find("\0", 1, ST::case_sensitive));
+    EXPECT_EQ(-1, ST::string().find("\0", 1, ST::case_insensitive));
+
+    // Reverse find nul string
+    EXPECT_EQ( 4, ST_LITERAL("\0abc\0def").find_last("\0", 1, ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("\0abc\0def").find_last("\0", 1, ST::case_insensitive));
+    EXPECT_EQ( 7, ST_LITERAL("abc\0def\0").find_last("\0", 1, ST::case_sensitive));
+    EXPECT_EQ( 7, ST_LITERAL("abc\0def\0").find_last("\0", 1, ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdef").find_last("\0", 1, ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdef").find_last("\0", 1, ST::case_insensitive));
+    EXPECT_EQ(-1, ST::string().find_last("\0", 1, ST::case_sensitive));
+    EXPECT_EQ(-1, ST::string().find_last("\0", 1, ST::case_insensitive));
+
+    // NOTE: Other operations like replace, split, etc. are based on find.
+}
+
 TEST(string, fill)
 {
     EXPECT_EQ(ST_LITERAL(""), ST::string::fill(0, 'a'));
     EXPECT_EQ(ST_LITERAL("aaaaa"), ST::string::fill(5, 'a'));
     EXPECT_EQ(ST_LITERAL("aaaaaaaaaaaaaaaaaaaa"), ST::string::fill(20, 'a'));
+
+    // Fill with nul characters
+    EXPECT_EQ(ST_LITERAL("\0\0\0\0\0"), ST::string::fill(5, '\0'));
 }
 
 TEST(string, iterators)
