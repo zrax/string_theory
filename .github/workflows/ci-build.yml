@@ -44,18 +44,17 @@ jobs:
           make test
 
   build-macos:
-    runs-on: macOS-latest
+    runs-on: ${{ matrix.cfg.os }}
     strategy:
       matrix:
-        xcode:
-          - Xcode_10.3
-          - Xcode_11.3.1
-          - Xcode_11.5
+        cfg:
+          - { os: macOS-10.15, xcode: Xcode_11.7 }
+          - { os: macOS-10.15, xcode: Xcode_12.4 }
     steps:
       - uses: actions/checkout@v1
       - name: Build and Test
         run: |
-          export PATH="/Applications/${{ matrix.xcode }}.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH"
+          export PATH="/Applications/${{ matrix.cfg.xcode }}.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH"
           export CC=clang
           export CXX=clang++
           mkdir -p build && cd build
