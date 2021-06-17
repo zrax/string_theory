@@ -130,7 +130,7 @@ namespace ST
             m_chars[m_size] = 0;
         }
 
-        ~buffer<char_T>() noexcept
+        ~buffer() noexcept
         {
             if (is_reffed())
                 delete[] m_chars;
