@@ -18,7 +18,7 @@ jobs:
           - { os: ubuntu-20.04, compiler: gcc,        stdlib: default }   # GCC 9
           - { os: ubuntu-20.04, compiler: clang,      stdlib: default }   # Clang 10
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Install Compiler
         run: |
           sudo apt update
@@ -51,7 +51,7 @@ jobs:
           - { os: macOS-10.15, xcode: Xcode_12.4 }
           - { os: macOS-11,    xcode: Xcode_13.0 }
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Build and Test
         run: |
           export PATH="/Applications/${{ matrix.cfg.xcode }}.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH"
@@ -71,7 +71,7 @@ jobs:
           - { os: windows-2019, msvc: Visual Studio 16 2019, arch: Win32 }
           - { os: windows-2019, msvc: Visual Studio 16 2019, arch: x64 }
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Build and Test
         run: |
           mkdir build
@@ -82,7 +82,7 @@ jobs:
   build-mingw:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Build and Test
         run: |
           mkdir build
@@ -98,7 +98,7 @@ jobs:
           - { mingw: mingw32, arch: i686 }
           - { mingw: mingw64, arch: x86_64 }
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Install compiler and tools
         run: |
           $Env:Path = "C:\msys64\usr\bin;$Env:Path"
