@@ -305,7 +305,7 @@ namespace ST
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
-        string(const std::filesystem::path &path)
+        string(const std::filesystem::path &path) ST_FILESYSTEM_AVAILABILITY
         {
             set(path);
         }
@@ -500,7 +500,7 @@ namespace ST
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
-        void set(const std::filesystem::path &path)
+        void set(const std::filesystem::path &path) ST_FILESYSTEM_AVAILABILITY
         {
             auto path_utf8 = path.u8string();
             set_validated(path_utf8.c_str(), path_utf8.size());
@@ -685,7 +685,7 @@ namespace ST
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
-        string &operator=(const std::filesystem::path &path)
+        string &operator=(const std::filesystem::path &path) ST_FILESYSTEM_AVAILABILITY
         {
             set(path);
             return *this;
@@ -943,7 +943,7 @@ namespace ST
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
         ST_NODISCARD
-        static string from_path(const std::filesystem::path &path)
+        static string from_path(const std::filesystem::path &path) ST_FILESYSTEM_AVAILABILITY
         {
             string str;
             str.set(path);
@@ -1190,7 +1190,7 @@ namespace ST
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
         ST_NODISCARD
-        std::filesystem::path to_path() const
+        std::filesystem::path to_path() const ST_FILESYSTEM_AVAILABILITY
         {
 #if defined(ST_HAVE_CXX20_U8_FSPATH)
             return std::filesystem::path(u8_str(), u8_str() + size());

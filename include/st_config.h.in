@@ -47,6 +47,21 @@
 
 #define ST_ENUM_CONSTANT(type, name) constexpr type name = type::name
 
+#ifndef __has_feature
+#   define __has_feature(x) 0
+#endif
+#if __has_feature(attribute_availability_with_version_underscores) || (__has_feature(attribute_availability_with_message) && __clang__ && __clang_major__ >= 7)
+#   define ST_AVAILABILITY(...)  __attribute__((availability( __VA_ARGS__ )))
+#else
+#   define ST_AVAILABILITY(...)
+#endif
+
+#define ST_FILESYSTEM_AVAILABILITY \
+    ST_AVAILABILITY(macosx,strict,introduced=10.15) \
+    ST_AVAILABILITY(ios,strict,introduced=13.0) \
+    ST_AVAILABILITY(tvos,strict,introduced=13.0) \
+    ST_AVAILABILITY(watchos,strict,introduced=6.0)
+
 #if defined(_MSC_VER)
 #   define ST_DEPRECATED(message) __declspec(deprecated(message))
 #elif defined(__GNUC__)

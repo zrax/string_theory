@@ -618,7 +618,7 @@ namespace ST
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
-                            const std::filesystem::path &path)
+                            const std::filesystem::path &path) ST_FILESYSTEM_AVAILABILITY
     {
         auto u8path = path.u8string();
         ST::format_string(format, output, u8path.c_str(), u8path.size());
