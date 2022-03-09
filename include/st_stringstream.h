@@ -280,7 +280,7 @@ namespace ST
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
-        string_stream &operator<<(const std::filesystem::path &path)
+        string_stream &operator<<(const std::filesystem::path &path) ST_FILESYSTEM_AVAILABILITY
         {
             auto u8path = path.u8string();
             return append(reinterpret_cast<const char*>(u8path.c_str()), u8path.size());
