@@ -117,8 +117,11 @@ namespace ST
         buffer(const char_T *data, size_t size)
             : m_size(size), m_data()
         {
+            ST_ASSERT(data || (size == 0),
+                      "buffer cannot be constructed with non-zero size and NULL data");
             m_chars = is_reffed() ? new char_T[m_size + 1] : m_data;
-            traits_t::move(m_chars, data, m_size);
+            if (data)
+                traits_t::move(m_chars, data, m_size);
             m_chars[m_size] = 0;
         }
 
@@ -132,8 +135,16 @@ namespace ST
 
         ~buffer() noexcept
         {
+#if defined(__GNUC__)
+    // See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=98753
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic ignored "-Wfree-nonheap-object"
+#endif
             if (is_reffed())
                 delete[] m_chars;
+#if defined(__GNUC__)
+#   pragma GCC diagnostic pop
+#endif
         }
 
         void clear() noexcept
