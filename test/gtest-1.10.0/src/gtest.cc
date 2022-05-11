@@ -4368,7 +4368,14 @@ std::string StreamingListener::UrlEncode(const char* str) {
       case '=':
       case '&':
       case '\n':
+#if defined(__GNUC__) && (__GNUC__ >= 7)
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic warning "-Wrestrict"
+#endif
         result.append("%" + String::FormatByte(static_cast<unsigned char>(ch)));
+#if defined(__GNUC__) && (__GNUC__ >= 7)
+#   pragma GCC diagnostic pop
+#endif
         break;
       default:
         result.push_back(ch);
