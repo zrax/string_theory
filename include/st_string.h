@@ -1070,8 +1070,8 @@ namespace ST
         {
             if (utf8)
                 result = to_utf8();
-
-            result = to_latin_1(substitute_out_of_range);
+            else
+                result = to_latin_1(substitute_out_of_range);
         }
 
         ST_DEPRECATED_IN_3_0("use to_buffer(char_buffer &, bool, bool) instead")
@@ -1080,8 +1080,8 @@ namespace ST
         {
             if (utf8)
                 result = to_utf8();
-
-            result = to_latin_1(validation == substitute_invalid);
+            else
+                result = to_latin_1(validation == substitute_invalid);
         }
 
         void to_buffer(utf16_buffer &result) const
