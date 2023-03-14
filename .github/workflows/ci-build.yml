@@ -17,6 +17,8 @@ jobs:
           - { os: ubuntu-22.04, compiler: clang }   # Clang 14
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Install Compiler
         run: |
           sudo apt update
@@ -44,6 +46,8 @@ jobs:
           - { os: macOS-12, xcode: Xcode_14.2 }
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Build and Test
         run: |
           export PATH="/Applications/${{ matrix.cfg.xcode }}.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH"
@@ -64,6 +68,8 @@ jobs:
           - { os: windows-2022, msvc: Visual Studio 17 2022, arch: x64 }
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Build and Test
         run: |
           mkdir build
@@ -75,6 +81,8 @@ jobs:
     runs-on: windows-2019
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Build and Test
         run: |
           mkdir build
@@ -91,6 +99,8 @@ jobs:
           - { mingw: mingw64, arch: x86_64 }
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Install compiler and tools
         run: |
           $Env:Path = "C:\msys64\usr\bin;$Env:Path"
@@ -109,6 +119,8 @@ jobs:
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Build and Test
         uses: vmactions/solaris-vm@v0
         with:
