@@ -30,8 +30,14 @@ set(gtest_build_tests OFF CACHE INTERNAL "Override gtest default")
 set(gtest_disable_pthreads OFF CACHE INTERNAL "Override gtest default")
 set(gtest_hide_internal_symbols ON CACHE INTERNAL "Override gtest default")
 
+set(BUILD_GMOCK OFF CACHE INTERNAL "Override gtest default" FORCE)
 set(INSTALL_GTEST OFF CACHE INTERNAL "Override gtest default" FORCE)
 add_subdirectory(gtest EXCLUDE_FROM_ALL)
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    # Squash an error in gtest that surfaced in GCC 12
+    target_compile_options(gtest PRIVATE -Wno-restrict)
+endif()
 
 add_executable(st_gtests "")
 target_link_libraries(st_gtests PRIVATE gtest gtest_main string_theory)
