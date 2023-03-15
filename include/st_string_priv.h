@@ -154,7 +154,9 @@ namespace _ST_PRIVATE
     {
         typedef typename std::make_unsigned<int_T>::type uint_T;
         ST::uint_formatter<uint_T> formatter;
-        formatter.format(std::abs(value), radix, upper_case);
+        uint_T abs_value = value < 0 ? -static_cast<uint_T>(value)
+                                     :  static_cast<uint_T>(value);
+        formatter.format(abs_value, radix, upper_case);
 
         ST::char_buffer result;
         if (value < 0) {
