@@ -310,7 +310,8 @@ TEST(char_buffer, move)
     EXPECT_EQ(24U, wdest2.size());
 }
 
-#if defined(__clang__) && ((__clang_major__ > 3) || (__clang_major__ == 3 && __clang_minor__ > 5))
+#if (defined(__clang__) && ((__clang_major__ > 3) || (__clang_major__ == 3 && __clang_minor__ > 5))) \
+    || (defined(__GNUC__) && (__GNUC__ >= 13))
 #   pragma GCC diagnostic push
 #   pragma GCC diagnostic ignored "-Wself-move"
 #   if defined(__clang__) && (__clang_major__ > 6)
