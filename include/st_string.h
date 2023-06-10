@@ -24,12 +24,12 @@
 #include <vector>
 #include <functional>
 
+#include "st_string_priv.h"
+#include "st_utf_conv.h"
+
 #ifdef ST_HAVE_INT64
 #   include <cstdint>
 #endif
-
-#include "st_string_priv.h"
-#include "st_utf_conv.h"
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
 #   include <filesystem>
