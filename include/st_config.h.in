@@ -44,6 +44,7 @@
 
 #cmakedefine ST_ENABLE_STL_STRINGS
 #cmakedefine ST_ENABLE_STL_FILESYSTEM
+#cmakedefine ST_ENABLE_COREFOUNDATION
 
 #define ST_ENUM_CONSTANT(type, name) constexpr type name = type::name
 
@@ -102,6 +103,20 @@
 #   define ST_NODISCARD [[nodiscard]]
 #else
 #   define ST_NODISCARD
+#endif
+
+#if defined(ST_ENABLE_COREFOUNDATION)
+#   if __has_feature(objc_arc)
+#       define ST_BRIDGED_CAST(T) (__bridge T)
+#   else
+#       define ST_BRIDGED_CAST(T) (T)
+#   endif
+
+#   if __has_feature(attribute_cf_returns_retained)
+#       define ST_RETURNS_RETAINED __attribute__((cf_returns_retained))
+#   else
+#       define ST_RETURNS_RETAINED
+#   endif
 #endif
 
 #define ST_MAX_SSO_LENGTH       (16)

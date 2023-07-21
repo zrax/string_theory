@@ -625,6 +625,22 @@ namespace ST
     }
 #endif
 
+#ifdef ST_ENABLE_COREFOUNDATION
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const CFStringRef str)
+    {
+        ST::char_buffer utf8 = ST::string::from_CFString(str).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+
+    inline void format_type(const ST::format_spec &format, ST::format_writer &output,
+                            const NSString* str)
+    {
+        ST::char_buffer utf8 = ST::string::from_NSString(str).to_utf8();
+        ST::format_string(format, output, utf8.data(), utf8.size());
+    }
+#endif
+
     inline void format_type(const ST::format_spec &format, ST::format_writer &output,
                             bool value)
     {

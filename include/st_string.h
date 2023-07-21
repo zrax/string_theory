@@ -35,6 +35,15 @@
 #   include <filesystem>
 #endif
 
+#ifdef ST_ENABLE_COREFOUNDATION
+#   include <CoreFoundation/CoreFoundation.h>
+#   ifdef __OBJC__
+        @class NSString;
+#   else
+        class NSString;
+#   endif
+#endif // ST_ENABLE_COREFOUNDATION
+
 #define ST_WHITESPACE   " \t\r\n"
 
 namespace ST
@@ -311,6 +320,15 @@ namespace ST
         }
 #endif
 
+#ifdef ST_ENABLE_COREFOUNDATION
+        // Implemented in st_string_darwin.h
+        string(CFStringRef str,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION);
+
+        string(NSString* str,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION);
+#endif
+
         ST_DEPRECATED_IN_3_4("Use clear() instead")
         void set(const null_t &) noexcept { m_buffer.clear(); }
 
@@ -507,6 +525,15 @@ namespace ST
         }
 #endif
 
+#ifdef ST_ENABLE_COREFOUNDATION
+        // Implemented in st_string_darwin.h
+        void set(const CFStringRef cfstr,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION);
+
+        void set(const NSString* nsstr,
+               utf_validation_t validation = ST_DEFAULT_VALIDATION);
+#endif
+
         void set_validated(const char *text, size_t size)
         {
             m_buffer = ST::char_buffer(text, size);
@@ -690,6 +717,12 @@ namespace ST
             set(path);
             return *this;
         }
+#endif
+
+#ifdef ST_ENABLE_COREFOUNDATION
+        // Implemented in st_string_darwin.h
+        string &operator=(const CFStringRef cfstr);
+        string &operator=(const NSString* nsstr);
 #endif
 
         inline string &operator+=(const char *cstr);
@@ -951,6 +984,17 @@ namespace ST
         }
 #endif
 
+#ifdef ST_ENABLE_COREFOUNDATION
+        // Implemented in st_string_darwin.h
+        ST_NODISCARD
+        static string from_CFString(const CFStringRef cfstr,
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION);
+
+        ST_NODISCARD
+        static string from_NSString(const NSString* nsstr,
+                                      utf_validation_t validation = ST_DEFAULT_VALIDATION);
+#endif
+
         ST_NODISCARD
         const char *data() const noexcept
         {
@@ -1199,6 +1243,15 @@ namespace ST
 #endif
         }
 #endif // defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
+
+#ifdef ST_ENABLE_COREFOUNDATION
+        // Implemented in st_string_darwin.h
+        ST_NODISCARD ST_RETURNS_RETAINED
+        CFStringRef to_CFString() const;
+
+        ST_NODISCARD ST_RETURNS_RETAINED
+        NSString* to_NSString() const;
+#endif
 
         ST_NODISCARD
         size_t size() const noexcept { return m_buffer.size(); }

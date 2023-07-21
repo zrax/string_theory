@@ -51,6 +51,10 @@ endif()
 option(ST_ENABLE_STL_STRINGS "Enable std::*string and std::*string_view support" ON)
 option(ST_ENABLE_STL_FILESYSTEM "Enable std::filesystem::path support" ON)
 
+if(APPLE)
+    option(ST_ENABLE_COREFOUNDATION "Enable CFString/NSString support" OFF)
+endif()
+
 option(ST_BUILD_TEST_COVERAGE "Enable code coverage in string_theory and tests" OFF)
 if(ST_BUILD_TEST_COVERAGE)
     if(CMAKE_COMPILER_IS_GNUCXX)
@@ -109,6 +113,7 @@ set(ST_HEADERS_PRIV
     include/st_iostream.h
     include/st_stdio.h
     include/st_string.h
+    include/st_string_darwin.h
     include/st_string_priv.h
     include/st_stringstream.h
     include/st_utf_conv.h
@@ -125,6 +130,7 @@ set(ST_HEADERS_PUB
     include/string_theory/iostream
     include/string_theory/stdio
     include/string_theory/string
+    include/string_theory/string_darwin
     include/string_theory/string_stream
     include/string_theory/utf_conversion
 )
@@ -139,6 +145,10 @@ add_library(string_theory INTERFACE)
 target_include_directories(string_theory INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
+
+if(ST_ENABLE_COREFOUNDATION)
+    target_link_libraries(string_theory INTERFACE "-framework CoreFoundation")
+endif()
 
 install(TARGETS string_theory
         EXPORT string_theory-targets

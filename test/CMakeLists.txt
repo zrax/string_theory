@@ -75,6 +75,10 @@ if(WIN32)
     target_sources(st_gtests PRIVATE test_winheaders.cpp)
 endif()
 
+if(ST_ENABLE_COREFOUNDATION)
+    target_sources(st_gtests PRIVATE test_cfstring.cpp)
+endif()
+
 if(ST_HAVE_CXX17_FILESYSTEM AND ST_CXXFS_LIBS)
     target_link_libraries(st_gtests PRIVATE ${ST_CXXFS_LIBS})
 endif()
