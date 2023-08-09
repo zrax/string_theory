@@ -122,12 +122,11 @@ namespace _ST_PRIVATE
         const char *ep = haystack + size;
         for ( ;; ) {
             cp = find_cs(cp, ep - cp, needle[0]);
-            if (!cp)
+            if (!cp || cp + needle_size > ep)
                 return nullptr;
             if (compare_cs(cp, needle, needle_size) == 0)
                 return cp;
-            if (++cp + needle_size > ep)
-                return nullptr;
+            ++cp;
         }
     }
 
@@ -139,12 +138,11 @@ namespace _ST_PRIVATE
         const char *ep = haystack + size;
         for ( ;; ) {
             cp = find_ci(cp, ep - cp, needle[0]);
-            if (!cp)
+            if (!cp || cp + needle_size > ep)
                 return nullptr;
             if (compare_ci(cp, needle, needle_size) == 0)
                 return cp;
-            if (++cp + needle_size > ep)
-                return nullptr;
+            ++cp;
         }
     }
 

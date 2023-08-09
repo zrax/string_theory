@@ -1774,17 +1774,23 @@ TEST(string, find_last)
 
     // Starting position, case senstive
     EXPECT_EQ(-1, ST_LITERAL("abcdABCD").find_last(4, "ABCD", ST::case_sensitive));
-    EXPECT_EQ( 4, ST_LITERAL("abcdABCDABCDabcd").find_last(5, "ABCD", ST::case_sensitive));
+    EXPECT_EQ(-1, ST_LITERAL("abcdABCDABCDabcd").find_last(5, "ABCD", ST::case_sensitive));
     EXPECT_EQ( 4, ST_LITERAL("abcdABCDABCDabcd").find_last(8, "ABCD", ST::case_sensitive));
-    EXPECT_EQ( 8, ST_LITERAL("abcdABCDABCDabcd").find_last(9, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("abcdABCDABCDabcd").find_last(9, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 4, ST_LITERAL("abcdABCDABCDabcd").find_last(11, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 8, ST_LITERAL("abcdABCDABCDabcd").find_last(12, "ABCD", ST::case_sensitive));
+    EXPECT_EQ( 8, ST_LITERAL("abcdABCDABCDabcd").find_last(100, "ABCD", ST::case_sensitive));
     EXPECT_EQ(-1, ST_LITERAL("abcdABCDabcd").find_last(4, "ABCD", ST::case_sensitive));
     EXPECT_EQ(-1, ST_LITERAL("ABCDabcd").find_last(0, "ABCD", ST::case_sensitive));
 
     // Starting position, case insenstive
     EXPECT_EQ(-1, ST_LITERAL("xxxxabcd").find_last(4, "ABCD", ST::case_insensitive));
-    EXPECT_EQ( 4, ST_LITERAL("xxxxabcdabcdxxxx").find_last(5, "ABCD", ST::case_insensitive));
+    EXPECT_EQ(-1, ST_LITERAL("xxxxabcdabcdxxxx").find_last(5, "ABCD", ST::case_insensitive));
     EXPECT_EQ( 4, ST_LITERAL("xxxxabcdabcdxxxx").find_last(8, "ABCD", ST::case_insensitive));
-    EXPECT_EQ( 8, ST_LITERAL("xxxxabcdabcdxxxx").find_last(9, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 4, ST_LITERAL("xxxxabcdabcdxxxx").find_last(9, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 4, ST_LITERAL("xxxxabcdabcdxxxx").find_last(11, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 8, ST_LITERAL("xxxxabcdabcdxxxx").find_last(12, "ABCD", ST::case_insensitive));
+    EXPECT_EQ( 8, ST_LITERAL("xxxxabcdabcdxxxx").find_last(100, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("xxxxabcdxxxx").find_last(4, "ABCD", ST::case_insensitive));
     EXPECT_EQ(-1, ST_LITERAL("abcdxxxx").find_last(0, "ABCD", ST::case_insensitive));
 
