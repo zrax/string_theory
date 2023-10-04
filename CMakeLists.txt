@@ -159,6 +159,7 @@ install(FILES
         "${PROJECT_BINARY_DIR}/string_theory-config-version.cmake"
         DESTINATION "${ST_INSTALL_CMAKE_DIR}/string_theory" COMPONENT devel)
 install(EXPORT string_theory-targets
+        NAMESPACE string_theory::
         DESTINATION "${ST_INSTALL_CMAKE_DIR}/string_theory" COMPONENT devel)
 
 option(ST_BUILD_TESTS "Build string_theory test suite (recommended)" ON)
