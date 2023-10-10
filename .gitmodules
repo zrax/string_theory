@@ -1,5 +1,4 @@
 [submodule "gtest"]
 	path = test/gtest
 	url = https://github.com/google/googletest.git
-	branch = release-1.11.0
 	shallow = true
