@@ -26,5 +26,7 @@ set(STRING_THEORY_LIBRARIES string_theory::string_theory)
 
 # Backwards-compatibility target. CMake <3.11 doesn't allow ALIAS libraries to
 # imported targets, so this is another IMPORTED target.
-add_library(string_theory INTERFACE IMPORTED)
-target_link_libraries(string_theory INTERFACE string_theory::string_theory)
+if(NOT TARGET string_theory)
+    add_library(string_theory INTERFACE IMPORTED)
+    target_link_libraries(string_theory INTERFACE string_theory::string_theory)
+endif()
