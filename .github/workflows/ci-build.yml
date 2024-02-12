@@ -14,7 +14,7 @@ jobs:
           - { os: ubuntu-20.04, compiler: gcc   }   # GCC 9
           - { os: ubuntu-20.04, compiler: clang }   # Clang 10
           - { os: ubuntu-22.04, compiler: gcc   }   # GCC 11
-          - { os: ubuntu-22.04, compiler: clang }   # Clang 14
+          - { os: ubuntu-22.04, compiler: clang-15 }
     steps:
       - uses: actions/checkout@v3
         with:
