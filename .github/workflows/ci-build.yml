@@ -16,7 +16,7 @@ jobs:
           - { os: ubuntu-22.04, compiler: gcc   }   # GCC 11
           - { os: ubuntu-22.04, compiler: clang-15 }
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: Install Compiler
@@ -43,9 +43,10 @@ jobs:
         cfg:
           - { os: macOS-11, xcode: Xcode_12.5.1 }
           - { os: macOS-12, xcode: Xcode_13.4.1 }
-          - { os: macOS-12, xcode: Xcode_14.2 }
+          - { os: macOS-13, xcode: Xcode_14.3.1 }
+          - { os: macOS-14, xcode: Xcode_15.3 }
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: Build and Test
@@ -67,7 +68,7 @@ jobs:
           - { os: windows-2022, msvc: Visual Studio 17 2022, arch: Win32 }
           - { os: windows-2022, msvc: Visual Studio 17 2022, arch: x64 }
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: Build and Test
@@ -80,7 +81,7 @@ jobs:
   build-mingw:
     runs-on: windows-2019
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: Build and Test
@@ -98,7 +99,7 @@ jobs:
           - { mingw: mingw32, arch: i686 }
           - { mingw: mingw64, arch: x86_64 }
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: Install compiler and tools
@@ -118,7 +119,12 @@ jobs:
   build-solaris:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Enable KVM group perms
+        run: |
+            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --name-match=kvm
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: Build and Test
