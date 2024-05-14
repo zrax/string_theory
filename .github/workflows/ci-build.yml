@@ -10,11 +10,13 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - { os: ubuntu-20.04, compiler: gcc-7 }
-          - { os: ubuntu-20.04, compiler: gcc   }   # GCC 9
-          - { os: ubuntu-20.04, compiler: clang }   # Clang 10
-          - { os: ubuntu-22.04, compiler: gcc   }   # GCC 11
+          - { os: ubuntu-20.04, compiler: gcc-7    }
+          - { os: ubuntu-20.04, compiler: gcc      } # GCC 9
+          - { os: ubuntu-20.04, compiler: clang    } # Clang 10
+          - { os: ubuntu-22.04, compiler: gcc      } # GCC 11
           - { os: ubuntu-22.04, compiler: clang-15 }
+          - { os: ubuntu-24.04, compiler: gcc-14   }
+          - { os: ubuntu-24.04, compiler: clang    } # Clang 18
     steps:
       - uses: actions/checkout@v4
         with:
