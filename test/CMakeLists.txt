@@ -32,12 +32,13 @@ set(gtest_hide_internal_symbols ON CACHE INTERNAL "Override gtest default")
 
 set(BUILD_GMOCK OFF CACHE INTERNAL "Override gtest default" FORCE)
 set(INSTALL_GTEST OFF CACHE INTERNAL "Override gtest default" FORCE)
-add_subdirectory(gtest EXCLUDE_FROM_ALL)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-    # Squash an error in gtest that surfaced in GCC 12
-    target_compile_options(gtest PRIVATE -Wno-restrict)
-endif()
+include(FetchContent)
+FetchContent_Declare(gtest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.15.2
+)
+FetchContent_MakeAvailable(gtest)
 
 add_executable(st_gtests "")
 target_link_libraries(st_gtests PRIVATE gtest gtest_main string_theory)
@@ -124,11 +125,5 @@ if(ST_BUILD_PROFILE_TEST)
 endif()
 
 cmake_policy(PUSH)
-if(${CMAKE_VERSION} VERSION_LESS "3.11" AND POLICY CMP0037)
-    # The "test" target is reserved when ctest is included (CMake 3.11+),
-    # but older versions of CMake will reserve it always, so we must
-    # explicitly allow older CMake versions to allow the target name
-    cmake_policy(SET CMP0037 OLD)
-endif()
 add_custom_target(test "$<TARGET_FILE:st_gtests>")
 cmake_policy(POP)

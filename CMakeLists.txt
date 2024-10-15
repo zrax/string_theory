@@ -18,18 +18,12 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 project(string_theory)
 
 # We will detect and use optional features in newer C++ standards,
 # but C++11 is required at minimum
-if(${CMAKE_VERSION} VERSION_GREATER "3.11.99")
-    set(CMAKE_CXX_STANDARD 20)
-elseif(${CMAKE_VERSION} VERSION_GREATER "3.7.99")
-    set(CMAKE_CXX_STANDARD 17)
-else()
-    set(CMAKE_CXX_STANDARD 14)
-endif()
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
