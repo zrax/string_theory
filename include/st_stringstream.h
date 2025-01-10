@@ -49,7 +49,7 @@ namespace ST
             move.m_alloc = 0;
         }
 
-        string_stream &operator=(string_stream &&move) noexcept
+        string_stream &operator=(string_stream &&move) noexcept ST_LIFETIME_BOUND
         {
             if (is_heap())
                 delete[] m_chars;
@@ -63,6 +63,7 @@ namespace ST
         }
 
         string_stream &append(const char *data, size_t size = ST_AUTO_SIZE)
+            ST_LIFETIME_BOUND
         {
             if (size == 0)
                 return *this;
@@ -78,6 +79,7 @@ namespace ST
         }
 
         string_stream &append_char(char ch, size_t count = 1)
+            ST_LIFETIME_BOUND
         {
             if (count == 0)
                 return *this;
@@ -89,12 +91,12 @@ namespace ST
             return *this;
         }
 
-        string_stream &operator<<(const char *text)
+        string_stream &operator<<(const char *text) ST_LIFETIME_BOUND
         {
             return append(text);
         }
 
-        string_stream &operator<<(const wchar_t *text)
+        string_stream &operator<<(const wchar_t *text) ST_LIFETIME_BOUND
         {
             if (text) {
                 const auto length = std::char_traits<wchar_t>::length(text);
@@ -104,7 +106,7 @@ namespace ST
             return *this;
         }
 
-        string_stream &operator<<(const char16_t *text)
+        string_stream &operator<<(const char16_t *text) ST_LIFETIME_BOUND
         {
             if (text) {
                 const auto length = std::char_traits<char16_t>::length(text);
@@ -114,7 +116,7 @@ namespace ST
             return *this;
         }
 
-        string_stream &operator<<(const char32_t *text)
+        string_stream &operator<<(const char32_t *text) ST_LIFETIME_BOUND
         {
             if (text) {
                 const auto length = std::char_traits<char32_t>::length(text);
@@ -125,13 +127,13 @@ namespace ST
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        string_stream &operator<<(const char8_t *text)
+        string_stream &operator<<(const char8_t *text) ST_LIFETIME_BOUND
         {
             return append(reinterpret_cast<const char *>(text));
         }
 #endif
 
-        string_stream &operator<<(int num)
+        string_stream &operator<<(int num) ST_LIFETIME_BOUND
         {
             ST::uint_formatter<unsigned int> formatter;
             formatter.format(std::abs(num), 10, false);
@@ -140,14 +142,14 @@ namespace ST
             return append(formatter.text(), formatter.size());
         }
 
-        string_stream &operator<<(unsigned int num)
+        string_stream &operator<<(unsigned int num) ST_LIFETIME_BOUND
         {
             ST::uint_formatter<unsigned int> formatter;
             formatter.format(num, 10, false);
             return append(formatter.text(), formatter.size());
         }
 
-        string_stream &operator<<(long num)
+        string_stream &operator<<(long num) ST_LIFETIME_BOUND
         {
             ST::uint_formatter<unsigned long> formatter;
             formatter.format(std::abs(num), 10, false);
@@ -156,14 +158,14 @@ namespace ST
             return append(formatter.text(), formatter.size());
         }
 
-        string_stream &operator<<(unsigned long num)
+        string_stream &operator<<(unsigned long num) ST_LIFETIME_BOUND
         {
             ST::uint_formatter<unsigned long> formatter;
             formatter.format(num, 10, false);
             return append(formatter.text(), formatter.size());
         }
 
-        string_stream &operator<<(long long num)
+        string_stream &operator<<(long long num) ST_LIFETIME_BOUND
         {
             ST::uint_formatter<unsigned long long> formatter;
             formatter.format(std::abs(num), 10, false);
@@ -172,28 +174,28 @@ namespace ST
             return append(formatter.text(), formatter.size());
         }
 
-        string_stream &operator<<(unsigned long long num)
+        string_stream &operator<<(unsigned long long num) ST_LIFETIME_BOUND
         {
             ST::uint_formatter<unsigned long long> formatter;
             formatter.format(num, 10, false);
             return append(formatter.text(), formatter.size());
         }
 
-        string_stream &operator<<(float num)
+        string_stream &operator<<(float num) ST_LIFETIME_BOUND
         {
             ST::float_formatter<float> formatter;
             formatter.format(num, 'g');
             return append(formatter.text(), formatter.size());
         }
 
-        string_stream &operator<<(double num)
+        string_stream &operator<<(double num) ST_LIFETIME_BOUND
         {
             ST::float_formatter<double> formatter;
             formatter.format(num, 'g');
             return append(formatter.text(), formatter.size());
         }
 
-        string_stream &operator<<(char ch)
+        string_stream &operator<<(char ch) ST_LIFETIME_BOUND
         {
             return append_char(ch);
         }
@@ -208,62 +210,62 @@ namespace ST
         string_stream &operator<<(signed char) = delete;
         string_stream &operator<<(unsigned char) = delete;
 
-        string_stream &operator<<(const string &text)
+        string_stream &operator<<(const string &text) ST_LIFETIME_BOUND
         {
             return append(text.c_str(), text.size());
         }
 
 #if defined(ST_ENABLE_STL_STRINGS)
 
-        string_stream &operator<<(const std::string &text)
+        string_stream &operator<<(const std::string &text) ST_LIFETIME_BOUND
         {
             return append(text.c_str(), text.size());
         }
 
-        string_stream &operator<<(const std::wstring &text)
+        string_stream &operator<<(const std::wstring &text) ST_LIFETIME_BOUND
         {
             ST::char_buffer utf8 = ST::wchar_to_utf8(text.c_str(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
-        string_stream &operator<<(const std::u16string &text)
+        string_stream &operator<<(const std::u16string &text) ST_LIFETIME_BOUND
         {
             ST::char_buffer utf8 = ST::utf16_to_utf8(text.c_str(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
-        string_stream &operator<<(const std::u32string &text)
+        string_stream &operator<<(const std::u32string &text) ST_LIFETIME_BOUND
         {
             ST::char_buffer utf8 = ST::utf32_to_utf8(text.c_str(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        string_stream &operator<<(const std::u8string &text)
+        string_stream &operator<<(const std::u8string &text) ST_LIFETIME_BOUND
         {
             return append(reinterpret_cast<const char*>(text.c_str()), text.size());
         }
 #endif
 
 #ifdef ST_HAVE_CXX17_STRING_VIEW
-        string_stream &operator<<(const std::string_view &text)
+        string_stream &operator<<(const std::string_view &text) ST_LIFETIME_BOUND
         {
             return append(text.data(), text.size());
         }
 
-        string_stream &operator<<(const std::wstring_view &text)
+        string_stream &operator<<(const std::wstring_view &text) ST_LIFETIME_BOUND
         {
             ST::char_buffer utf8 = ST::wchar_to_utf8(text.data(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
-        string_stream &operator<<(const std::u16string_view &text)
+        string_stream &operator<<(const std::u16string_view &text) ST_LIFETIME_BOUND
         {
             ST::char_buffer utf8 = ST::utf16_to_utf8(text.data(), text.size());
             return append(utf8.data(), utf8.size());
         }
 
-        string_stream &operator<<(const std::u32string_view &text)
+        string_stream &operator<<(const std::u32string_view &text) ST_LIFETIME_BOUND
         {
             ST::char_buffer utf8 = ST::utf32_to_utf8(text.data(), text.size());
             return append(utf8.data(), utf8.size());
@@ -271,7 +273,7 @@ namespace ST
 #endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        string_stream &operator<<(const std::u8string_view &text)
+        string_stream &operator<<(const std::u8string_view &text) ST_LIFETIME_BOUND
         {
             return append(reinterpret_cast<const char*>(text.data()), text.size());
         }
@@ -280,7 +282,8 @@ namespace ST
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
-        string_stream &operator<<(const std::filesystem::path &path) ST_FILESYSTEM_AVAILABILITY
+        string_stream &operator<<(const std::filesystem::path &path)
+            ST_LIFETIME_BOUND ST_FILESYSTEM_AVAILABILITY
         {
             auto u8path = path.u8string();
             return append(reinterpret_cast<const char*>(u8path.c_str()), u8path.size());
@@ -288,7 +291,7 @@ namespace ST
 #endif
 
         ST_NODISCARD
-        const char *raw_buffer() const noexcept { return m_chars; }
+        const char *raw_buffer() const noexcept ST_LIFETIME_BOUND { return m_chars; }
 
         ST_NODISCARD
         size_t size() const noexcept { return m_size; }

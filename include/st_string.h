@@ -535,113 +535,113 @@ namespace ST
         }
 
         ST_DEPRECATED_IN_3_4("Use clear() instead")
-        string &operator=(const null_t &) noexcept
+        string &operator=(const null_t &) noexcept ST_LIFETIME_BOUND
         {
             m_buffer.clear();
             return *this;
         }
 
-        string &operator=(const char *cstr)
+        string &operator=(const char *cstr) ST_LIFETIME_BOUND
         {
             set(cstr);
             return *this;
         }
 
-        string &operator=(const wchar_t *wstr)
+        string &operator=(const wchar_t *wstr) ST_LIFETIME_BOUND
         {
             set(wstr);
             return *this;
         }
 
-        string &operator=(const char16_t *cstr)
+        string &operator=(const char16_t *cstr) ST_LIFETIME_BOUND
         {
             set(cstr);
             return *this;
         }
 
-        string &operator=(const char32_t *cstr)
+        string &operator=(const char32_t *cstr) ST_LIFETIME_BOUND
         {
             set(cstr);
             return *this;
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        string &operator=(const char8_t *cstr)
+        string &operator=(const char8_t *cstr) ST_LIFETIME_BOUND
         {
             set(cstr);
             return *this;
         }
 #endif
 
-        string &operator=(const string &copy)
+        string &operator=(const string &copy) ST_LIFETIME_BOUND
         {
             m_buffer = copy.m_buffer;
             return *this;
         }
 
-        string &operator=(string &&move) noexcept
+        string &operator=(string &&move) noexcept ST_LIFETIME_BOUND
         {
             m_buffer = std::move(move.m_buffer);
             return *this;
         }
 
-        string &operator=(const char_buffer &init)
+        string &operator=(const char_buffer &init) ST_LIFETIME_BOUND
         {
             set(init);
             return *this;
         }
 
-        string &operator=(char_buffer &&init)
+        string &operator=(char_buffer &&init) ST_LIFETIME_BOUND
         {
             set(std::move(init));
             return *this;
         }
 
-        string &operator=(const utf16_buffer &init)
+        string &operator=(const utf16_buffer &init) ST_LIFETIME_BOUND
         {
             set(init);
             return *this;
         }
 
-        string &operator=(const utf32_buffer &init)
+        string &operator=(const utf32_buffer &init) ST_LIFETIME_BOUND
         {
             set(init);
             return *this;
         }
 
-        string &operator=(const wchar_buffer &init)
+        string &operator=(const wchar_buffer &init) ST_LIFETIME_BOUND
         {
             set(init);
             return *this;
         }
 
 #if defined(ST_ENABLE_STL_STRINGS)
-        string &operator=(const std::string &init)
+        string &operator=(const std::string &init) ST_LIFETIME_BOUND
         {
             set(init);
             return *this;
         }
 
-        string &operator=(const std::wstring &init)
+        string &operator=(const std::wstring &init) ST_LIFETIME_BOUND
         {
             set(init);
             return *this;
         }
 
-        string &operator=(const std::u16string &init)
+        string &operator=(const std::u16string &init) ST_LIFETIME_BOUND
         {
             set(init);
             return *this;
         }
 
-        string &operator=(const std::u32string &init)
+        string &operator=(const std::u32string &init) ST_LIFETIME_BOUND
         {
             set(init);
             return *this;
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        string &operator=(const std::u8string &init)
+        string &operator=(const std::u8string &init) ST_LIFETIME_BOUND
         {
             set(init);
             return *this;
@@ -649,25 +649,25 @@ namespace ST
 #endif
 
 #ifdef ST_HAVE_CXX17_STRING_VIEW
-        string &operator=(const std::string_view &view)
+        string &operator=(const std::string_view &view) ST_LIFETIME_BOUND
         {
             set(view);
             return *this;
         }
 
-        string &operator=(const std::wstring_view &view)
+        string &operator=(const std::wstring_view &view) ST_LIFETIME_BOUND
         {
             set(view);
             return *this;
         }
 
-        string &operator=(const std::u16string_view &view)
+        string &operator=(const std::u16string_view &view) ST_LIFETIME_BOUND
         {
             set(view);
             return *this;
         }
 
-        string &operator=(const std::u32string_view &view)
+        string &operator=(const std::u32string_view &view) ST_LIFETIME_BOUND
         {
             set(view);
             return *this;
@@ -675,7 +675,7 @@ namespace ST
 #endif
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        string &operator=(const std::u8string_view &view)
+        string &operator=(const std::u8string_view &view) ST_LIFETIME_BOUND
         {
             set(view);
             return *this;
@@ -685,29 +685,30 @@ namespace ST
 #endif // defined(ST_ENABLE_STL_STRINGS)
 
 #if defined(ST_ENABLE_STL_FILESYSTEM) && defined(ST_HAVE_CXX17_FILESYSTEM)
-        string &operator=(const std::filesystem::path &path) ST_FILESYSTEM_AVAILABILITY
+        string &operator=(const std::filesystem::path &path)
+            ST_LIFETIME_BOUND ST_FILESYSTEM_AVAILABILITY
         {
             set(path);
             return *this;
         }
 #endif
 
-        inline string &operator+=(const char *cstr);
-        inline string &operator+=(const wchar_t *wstr);
+        inline string &operator+=(const char *cstr) ST_LIFETIME_BOUND;
+        inline string &operator+=(const wchar_t *wstr) ST_LIFETIME_BOUND;
 
-        inline string &operator+=(const char16_t *cstr);
-        inline string &operator+=(const char32_t *cstr);
+        inline string &operator+=(const char16_t *cstr) ST_LIFETIME_BOUND;
+        inline string &operator+=(const char32_t *cstr) ST_LIFETIME_BOUND;
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-        inline string &operator+=(const char8_t *cstr);
+        inline string &operator+=(const char8_t *cstr) ST_LIFETIME_BOUND;
 #endif
 
-        inline string &operator+=(const string &other);
+        inline string &operator+=(const string &other) ST_LIFETIME_BOUND;
 
-        inline string &operator+=(char ch);
-        inline string &operator+=(wchar_t ch);
-        inline string &operator+=(char16_t ch);
-        inline string &operator+=(char32_t ch);
+        inline string &operator+=(char ch) ST_LIFETIME_BOUND;
+        inline string &operator+=(wchar_t ch) ST_LIFETIME_BOUND;
+        inline string &operator+=(char16_t ch) ST_LIFETIME_BOUND;
+        inline string &operator+=(char32_t ch) ST_LIFETIME_BOUND;
 
         ST_NODISCARD
         static string from_validated(const char *text, size_t size)
@@ -952,84 +953,110 @@ namespace ST
 #endif
 
         ST_NODISCARD
-        const char *data() const noexcept
+        const char *data() const noexcept ST_LIFETIME_BOUND
         {
             return m_buffer.data();
         }
 
         ST_NODISCARD
-        const char *c_str() const noexcept
+        const char *c_str() const noexcept ST_LIFETIME_BOUND
         {
             return m_buffer.c_str();
         }
 
         ST_NODISCARD
-        const char *c_str(const char *substitute) const noexcept
+        const char *c_str(const char *substitute ST_LIFETIME_BOUND)
+            const noexcept ST_LIFETIME_BOUND
         {
             return m_buffer.c_str(substitute);
         }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
         ST_NODISCARD
-        const char8_t *u8_str() const noexcept
+        const char8_t *u8_str() const noexcept ST_LIFETIME_BOUND
         {
             return reinterpret_cast<const char8_t *>(m_buffer.data());
         }
 
         ST_NODISCARD
-        const char8_t *u8_str(const char8_t *substitute) const noexcept
+        const char8_t *u8_str(const char8_t *substitute ST_LIFETIME_BOUND)
+            const noexcept ST_LIFETIME_BOUND
         {
             return empty() ? substitute : u8_str();
         }
 #endif
 
         ST_NODISCARD
-        const char &at(size_t position) const
+        const char &at(size_t position) const ST_LIFETIME_BOUND
         {
             return m_buffer.at(position);
         }
 
         ST_NODISCARD
-        const char &operator[](size_t position) const noexcept
+        const char &operator[](size_t position) const noexcept ST_LIFETIME_BOUND
         {
             return m_buffer.operator[](position);
         }
 
         ST_NODISCARD
-        const char &front() const noexcept
+        const char &front() const noexcept ST_LIFETIME_BOUND
         {
             return m_buffer.front();
         }
 
         ST_NODISCARD
-        const char &back() const noexcept
+        const char &back() const noexcept ST_LIFETIME_BOUND
         {
             return m_buffer.back();
         }
 
         ST_NODISCARD
-        const_iterator begin() const noexcept { return m_buffer.begin(); }
+        const_iterator begin() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_buffer.begin();
+        }
 
         ST_NODISCARD
-        const_iterator cbegin() const noexcept { return m_buffer.cbegin(); }
+        const_iterator cbegin() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_buffer.cbegin();
+        }
 
         ST_NODISCARD
-        const_iterator end() const noexcept { return m_buffer.end(); }
+        const_iterator end() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_buffer.end();
+        }
 
         ST_NODISCARD
-        const_iterator cend() const noexcept { return m_buffer.cend(); }
+        const_iterator cend() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_buffer.cend();
+        }
 
         ST_NODISCARD
-        const_reverse_iterator rbegin() const noexcept { return m_buffer.rbegin(); }
+        const_reverse_iterator rbegin() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_buffer.rbegin();
+        }
 
         ST_NODISCARD
-        const_reverse_iterator crbegin() const noexcept { return m_buffer.crbegin(); }
+        const_reverse_iterator crbegin() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_buffer.crbegin();
+        }
 
         ST_NODISCARD
-        const_reverse_iterator rend() const noexcept { return m_buffer.rend(); }
+        const_reverse_iterator rend() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_buffer.rend();
+        }
 
         ST_NODISCARD
-        const_reverse_iterator crend() const noexcept { return m_buffer.crend(); }
+        const_reverse_iterator crend() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_buffer.crend();
+        }
 
         ST_NODISCARD
         char_buffer to_utf8() const noexcept { return m_buffer; }
@@ -1179,6 +1206,7 @@ namespace ST
 #if defined(ST_HAVE_CXX17_STRING_VIEW)
         ST_NODISCARD
         std::string_view view(size_t start = 0, size_t length = ST_AUTO_SIZE) const &
+            ST_LIFETIME_BOUND
         {
             return m_buffer.view(start, length);
         }
@@ -2740,63 +2768,63 @@ namespace ST
     }
 }
 
-ST::string &ST::string::operator+=(const char *cstr)
+ST::string &ST::string::operator+=(const char *cstr) ST_LIFETIME_BOUND
 {
     set(*this + cstr);
     return *this;
 }
 
-ST::string &ST::string::operator+=(const wchar_t *wstr)
+ST::string &ST::string::operator+=(const wchar_t *wstr) ST_LIFETIME_BOUND
 {
     set(*this + wstr);
     return *this;
 }
 
-ST::string &ST::string::operator+=(const char16_t *cstr)
+ST::string &ST::string::operator+=(const char16_t *cstr) ST_LIFETIME_BOUND
 {
     set(*this + cstr);
     return *this;
 }
 
-ST::string &ST::string::operator+=(const char32_t *cstr)
+ST::string &ST::string::operator+=(const char32_t *cstr) ST_LIFETIME_BOUND
 {
     set(*this + cstr);
     return *this;
 }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
-ST::string &ST::string::operator+=(const char8_t *cstr)
+ST::string &ST::string::operator+=(const char8_t *cstr) ST_LIFETIME_BOUND
 {
     set(*this + cstr);
     return *this;
 }
 #endif
 
-ST::string &ST::string::operator+=(const ST::string &other)
+ST::string &ST::string::operator+=(const ST::string &other) ST_LIFETIME_BOUND
 {
     set(*this + other);
     return *this;
 }
 
-ST::string &ST::string::operator+=(char ch)
+ST::string &ST::string::operator+=(char ch) ST_LIFETIME_BOUND
 {
     set(*this + ch);
     return *this;
 }
 
-ST::string &ST::string::operator+=(char16_t ch)
+ST::string &ST::string::operator+=(char16_t ch) ST_LIFETIME_BOUND
 {
     set(*this + ch);
     return *this;
 }
 
-ST::string &ST::string::operator+=(char32_t ch)
+ST::string &ST::string::operator+=(char32_t ch) ST_LIFETIME_BOUND
 {
     set(*this + ch);
     return *this;
 }
 
-ST::string &ST::string::operator+=(wchar_t ch)
+ST::string &ST::string::operator+=(wchar_t ch) ST_LIFETIME_BOUND
 {
     set(*this + ch);
     return *this;

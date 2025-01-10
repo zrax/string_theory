@@ -107,15 +107,15 @@ namespace ST
         format_writer& operator=(const format_writer&) = delete;
 
         format_writer(format_writer&&) = default;
-        format_writer& operator=(format_writer&&) = default;
+        format_writer& operator=(format_writer&&) ST_LIFETIME_BOUND = default;
 
         virtual ~format_writer() noexcept { }
 
-        virtual format_writer &append(const char *data, size_t size) = 0;
-        virtual format_writer &append_char(char ch, size_t count = 1) = 0;
+        virtual format_writer &append(const char *data, size_t size) ST_LIFETIME_BOUND = 0;
+        virtual format_writer &append_char(char ch, size_t count = 1) ST_LIFETIME_BOUND = 0;
 
         template <size_t size>
-        format_writer &append(const char (&literal)[size])
+        format_writer &append(const char (&literal)[size]) ST_LIFETIME_BOUND
         {
             return append(literal, size - 1);
         }

@@ -74,7 +74,7 @@ namespace ST
         }
 
         ST_NODISCARD
-        const char *text() const noexcept { return m_start; }
+        const char *text() const noexcept ST_LIFETIME_BOUND { return m_start; }
 
         ST_NODISCARD
         size_t size() const noexcept
@@ -106,7 +106,7 @@ namespace ST
         }
 
         ST_NODISCARD
-        const char *text() const noexcept { return m_buffer; }
+        const char *text() const noexcept ST_LIFETIME_BOUND { return m_buffer; }
 
         ST_NODISCARD
         size_t size() const noexcept { return m_size; }

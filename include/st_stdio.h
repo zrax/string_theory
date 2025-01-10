@@ -31,13 +31,15 @@ namespace _ST_PRIVATE
         stdio_format_writer(const char *format_str, FILE *stream)
             : ST::format_writer(format_str), m_stream(stream) { }
 
-        stdio_format_writer &append(const char *data, size_t size) override
+        stdio_format_writer &append(const char *data, size_t size)
+            ST_LIFETIME_BOUND override
         {
             (void)fwrite(data, sizeof(char), size, m_stream);
             return *this;
         }
 
-        stdio_format_writer &append_char(char ch, size_t count = 1) override
+        stdio_format_writer &append_char(char ch, size_t count = 1)
+            ST_LIFETIME_BOUND override
         {
             while (count) {
                 fputc(ch, m_stream);

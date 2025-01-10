@@ -32,13 +32,15 @@ namespace _ST_PRIVATE
         explicit string_format_writer(const char *format_str)
             : ST::format_writer(format_str) { }
 
-        string_format_writer &append(const char *data, size_t size) override
+        string_format_writer &append(const char *data, size_t size)
+            ST_LIFETIME_BOUND override
         {
             m_output.append(data, size);
             return *this;
         }
 
-        string_format_writer &append_char(char ch, size_t count = 1) override
+        string_format_writer &append_char(char ch, size_t count = 1)
+            ST_LIFETIME_BOUND override
         {
             m_output.append_char(ch, count);
             return *this;

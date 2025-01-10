@@ -104,6 +104,18 @@
 #   define ST_NODISCARD
 #endif
 
+#ifndef __has_cpp_attribute
+#   define ST_LIFETIME_BOUND
+#elif __has_cpp_attribute(msvc::lifetimebound)
+#   define ST_LIFETIME_BOUND [[msvc::lifetimebound]]
+#elif __has_cpp_attribute(clang::lifetimebound)
+#   define ST_LIFETIME_BOUND [[clang::lifetimebound]]
+#elif __has_cpp_attribute(lifetimebound)
+#   define ST_LIFETIME_BOUND [[lifetimebound]]
+#else
+#   define ST_LIFETIME_BOUND
+#endif
+
 #define ST_MAX_SSO_LENGTH       (16)
 #define ST_MAX_SSO_SIZE         (48)
 #define ST_STACK_STRING_SIZE    (256)
