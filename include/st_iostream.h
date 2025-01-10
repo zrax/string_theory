@@ -68,13 +68,15 @@ namespace _ST_PRIVATE
             m_stream.write(utf32.data(), utf32.size());
         }
 
-        ostream_format_writer &append(const char *data, size_t size) override
+        ostream_format_writer &append(const char *data, size_t size)
+            ST_LIFETIME_BOUND override
         {
             write_data<char_T>(data, size);
             return *this;
         }
 
-        ostream_format_writer &append_char(char ch, size_t count = 1) override
+        ostream_format_writer &append_char(char ch, size_t count = 1)
+            ST_LIFETIME_BOUND override
         {
             while (count) {
                 m_stream.put(char_T(ch));
@@ -101,7 +103,8 @@ namespace ST
 
 template <class char_T, class traits_T>
 std::basic_ostream<char_T, traits_T> &operator<<(
-        std::basic_ostream<char_T, traits_T> &stream, const ST::string &str)
+        std::basic_ostream<char_T, traits_T> &stream ST_LIFETIME_BOUND,
+        const ST::string &str)
 {
     ST::buffer<char_T> buffer;
     str.to_buffer(buffer);
@@ -110,7 +113,8 @@ std::basic_ostream<char_T, traits_T> &operator<<(
 
 template <class char_T, class traits_T>
 std::basic_istream<char_T, traits_T> &operator>>(
-        std::basic_istream<char_T, traits_T> &stream, ST::string &str)
+        std::basic_istream<char_T, traits_T> &stream ST_LIFETIME_BOUND,
+        ST::string &str)
 {
     std::basic_string<char_T, traits_T> stl_string;
     stream >> stl_string;

@@ -95,13 +95,13 @@ namespace _ST_PRIVATE
     }
 
     ST_NODISCARD
-    inline const char *find_cs(const char *haystack, size_t size, char ch)
+    inline const char *find_cs(const char *haystack ST_LIFETIME_BOUND, size_t size, char ch)
     {
         return std::char_traits<char>::find(haystack, size, ch);
     }
 
     ST_NODISCARD
-    inline const char *find_ci(const char *haystack, size_t size, char ch)
+    inline const char *find_ci(const char *haystack ST_LIFETIME_BOUND, size_t size, char ch)
     {
         const char *cp = haystack;
         const char *ep = haystack + size;
@@ -115,7 +115,7 @@ namespace _ST_PRIVATE
     }
 
     ST_NODISCARD
-    inline const char *find_cs(const char *haystack, size_t size,
+    inline const char *find_cs(const char *haystack ST_LIFETIME_BOUND, size_t size,
                                const char *needle, size_t needle_size)
     {
         const char *cp = haystack;
@@ -131,7 +131,7 @@ namespace _ST_PRIVATE
     }
 
     ST_NODISCARD
-    inline const char *find_ci(const char *haystack, size_t size,
+    inline const char *find_ci(const char *haystack ST_LIFETIME_BOUND, size_t size,
                                const char *needle, size_t needle_size)
     {
         const char *cp = haystack;

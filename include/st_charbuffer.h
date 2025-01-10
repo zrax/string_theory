@@ -158,13 +158,13 @@ namespace ST
         }
 
         ST_DEPRECATED_IN_3_4("Use clear() instead")
-        buffer<char_T> &operator=(const null_t &) noexcept
+        buffer<char_T> &operator=(const null_t &) noexcept ST_LIFETIME_BOUND
         {
             clear();
             return *this;
         }
 
-        buffer<char_T> &operator=(const buffer<char_T> &copy)
+        buffer<char_T> &operator=(const buffer<char_T> &copy) ST_LIFETIME_BOUND
         {
             if (this == &copy)
                 return *this;
@@ -186,7 +186,7 @@ namespace ST
             return *this;
         }
 
-        buffer<char_T> &operator=(buffer<char_T> &&move) noexcept
+        buffer<char_T> &operator=(buffer<char_T> &&move) noexcept ST_LIFETIME_BOUND
         {
             std::swap(m_chars, move.m_chars);
             std::swap(m_size, move.m_size);
@@ -275,16 +275,17 @@ namespace ST
         }
 
         ST_NODISCARD
-        char_T *data() noexcept { return m_chars; }
+        char_T *data() noexcept ST_LIFETIME_BOUND { return m_chars; }
 
         ST_NODISCARD
-        const char_T *data() const noexcept { return m_chars; }
+        const char_T *data() const noexcept ST_LIFETIME_BOUND { return m_chars; }
 
         ST_NODISCARD
-        const char_T *c_str() const noexcept { return m_chars; }
+        const char_T *c_str() const noexcept ST_LIFETIME_BOUND { return m_chars; }
 
         ST_NODISCARD
-        const char_T *c_str(const char_T *substitute) const noexcept
+        const char_T *c_str(const char_T *substitute ST_LIFETIME_BOUND)
+            const noexcept ST_LIFETIME_BOUND
         {
             return empty() ? substitute : m_chars;
         }
@@ -296,7 +297,7 @@ namespace ST
         bool empty() const noexcept { return m_size == 0; }
 
         ST_NODISCARD
-        char_T &at(size_t index)
+        char_T &at(size_t index) ST_LIFETIME_BOUND
         {
             if (index >= size())
                 throw std::out_of_range("Character index out of range");
@@ -304,7 +305,7 @@ namespace ST
         }
 
         ST_NODISCARD
-        const char_T &at(size_t index) const
+        const char_T &at(size_t index) const ST_LIFETIME_BOUND
         {
             if (index >= size())
                 throw std::out_of_range("Character index out of range");
@@ -312,91 +313,97 @@ namespace ST
         }
 
         ST_NODISCARD
-        char_T &operator[](size_t index) noexcept
+        char_T &operator[](size_t index) noexcept ST_LIFETIME_BOUND
         {
             return m_chars[index];
         }
 
         ST_NODISCARD
-        const char_T &operator[](size_t index) const noexcept
+        const char_T &operator[](size_t index) const noexcept ST_LIFETIME_BOUND
         {
             return m_chars[index];
         }
 
         ST_NODISCARD
-        char_T &front() noexcept
+        char_T &front() noexcept ST_LIFETIME_BOUND
         {
             return m_chars[0];
         }
 
         ST_NODISCARD
-        const char_T &front() const noexcept
+        const char_T &front() const noexcept ST_LIFETIME_BOUND
         {
             return m_chars[0];
         }
 
         ST_NODISCARD
-        char_T &back() noexcept
+        char_T &back() noexcept ST_LIFETIME_BOUND
         {
             return empty() ? m_chars[0] : m_chars[m_size - 1];
         }
 
         ST_NODISCARD
-        const char_T &back() const noexcept
+        const char_T &back() const noexcept ST_LIFETIME_BOUND
         {
             return empty() ? m_chars[0] : m_chars[m_size - 1];
         }
 
         ST_NODISCARD
-        iterator begin() noexcept { return m_chars; }
+        iterator begin() noexcept ST_LIFETIME_BOUND { return m_chars; }
 
         ST_NODISCARD
-        const_iterator begin() const noexcept { return m_chars; }
+        const_iterator begin() const noexcept ST_LIFETIME_BOUND { return m_chars; }
 
         ST_NODISCARD
-        const_iterator cbegin() const noexcept { return m_chars; }
+        const_iterator cbegin() const noexcept ST_LIFETIME_BOUND { return m_chars; }
 
         ST_NODISCARD
-        iterator end() noexcept { return m_chars + m_size; }
+        iterator end() noexcept ST_LIFETIME_BOUND { return m_chars + m_size; }
 
         ST_NODISCARD
-        const_iterator end() const noexcept { return m_chars + m_size; }
+        const_iterator end() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_chars + m_size;
+        }
 
         ST_NODISCARD
-        const_iterator cend() const noexcept { return m_chars + m_size; }
+        const_iterator cend() const noexcept ST_LIFETIME_BOUND
+        {
+            return m_chars + m_size;
+        }
 
         ST_NODISCARD
-        reverse_iterator rbegin() noexcept
+        reverse_iterator rbegin() noexcept ST_LIFETIME_BOUND
         {
             return reverse_iterator(end());
         }
 
         ST_NODISCARD
-        const_reverse_iterator rbegin() const noexcept
+        const_reverse_iterator rbegin() const noexcept ST_LIFETIME_BOUND
         {
             return const_reverse_iterator(end());
         }
 
         ST_NODISCARD
-        const_reverse_iterator crbegin() const noexcept
+        const_reverse_iterator crbegin() const noexcept ST_LIFETIME_BOUND
         {
             return const_reverse_iterator(cend());
         }
 
         ST_NODISCARD
-        reverse_iterator rend() noexcept
+        reverse_iterator rend() noexcept ST_LIFETIME_BOUND
         {
             return reverse_iterator(begin());
         }
 
         ST_NODISCARD
-        const_reverse_iterator rend() const noexcept
+        const_reverse_iterator rend() const noexcept ST_LIFETIME_BOUND
         {
             return const_reverse_iterator(begin());
         }
 
         ST_NODISCARD
-        const_reverse_iterator crend() const noexcept
+        const_reverse_iterator crend() const noexcept ST_LIFETIME_BOUND
         {
             return const_reverse_iterator(cbegin());
         }
@@ -437,6 +444,7 @@ namespace ST
         ST_NODISCARD
         std::basic_string_view<char_T> view(size_t start = 0,
                                             size_t length = ST_AUTO_SIZE) const &
+            ST_LIFETIME_BOUND
         {
             if (length == ST_AUTO_SIZE)
                 length = size() - start;
