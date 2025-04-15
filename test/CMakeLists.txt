@@ -33,15 +33,20 @@ set(gtest_hide_internal_symbols ON CACHE INTERNAL "Override gtest default")
 set(BUILD_GMOCK OFF CACHE INTERNAL "Override gtest default" FORCE)
 set(INSTALL_GTEST OFF CACHE INTERNAL "Override gtest default" FORCE)
 
-include(FetchContent)
-FetchContent_Declare(gtest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG v1.15.2
-)
-FetchContent_MakeAvailable(gtest)
+option(ST_USE_SYSTEM_GTEST "Find the GoogleTest library from the system rather than fetching it" OFF)
+if(ST_USE_SYSTEM_GTEST)
+    find_package(GTest REQUIRED)
+else()
+    include(FetchContent)
+    FetchContent_Declare(gtest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.15.2
+    )
+    FetchContent_MakeAvailable(gtest)
+endif()
 
 add_executable(st_gtests "")
-target_link_libraries(st_gtests PRIVATE gtest gtest_main string_theory)
+target_link_libraries(st_gtests PRIVATE GTest::gtest GTest::gtest_main string_theory)
 target_include_directories(st_gtests PRIVATE
     ${GTEST_INCLUDE_DIR}
     ${gtest_SOURCE_DIR}/include
@@ -51,12 +56,12 @@ target_include_directories(st_gtests PRIVATE
 if(WIN32 AND BUILD_SHARED_LIBS)
     add_custom_command(TARGET st_gtests POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:gtest>"
+        "$<TARGET_FILE:GTest::gtest>"
         "$<TARGET_FILE_DIR:st_gtests>"
     )
     add_custom_command(TARGET st_gtests POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:gtest_main>"
+        "$<TARGET_FILE:GTest::gtest_main>"
         "$<TARGET_FILE_DIR:st_gtests>"
     )
 endif()
