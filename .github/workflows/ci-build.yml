@@ -95,7 +95,8 @@ jobs:
       matrix:
         cfg:
           - { mingw: mingw32, arch: i686 }
-          - { mingw: mingw64, arch: x86_64 }
+          - { mingw: ucrt64, arch: ucrt-x86_64 }
+          - { mingw: clang64, arch: clang-x86_64 }
     steps:
       - uses: actions/checkout@v4
         with:
