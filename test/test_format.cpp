@@ -1008,10 +1008,10 @@ TEST(format, floating_point)
     EXPECT_EQ(ST_LITERAL("xx16384.00xx"), ST::format("xx{.2f}xx", 16384.0));
     EXPECT_EQ(ST_LITERAL("xx0.02xx"), ST::format("xx{.2f}xx", 0.0234));
 
-#if defined(__MINGW32__)
+#if defined(__MINGW32__) && !defined(_UCRT)
     // MSVC uses 3 digits for the exponent by default, up to VC 2013.
-    // We don't support MSVC versions older than 2015, but MinGW still
-    // uses the old format, presumably for MSVC compatibility.
+    // We don't support MSVC versions older than 2015, but MinGW still uses
+    // the old format in non-UCRT targets, presumably for MSVC compatibility.
     _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
