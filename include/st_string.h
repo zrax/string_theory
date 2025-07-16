@@ -2849,32 +2849,32 @@ namespace std
 namespace ST { namespace literals
 {
     ST_NODISCARD
-    inline ST::string operator"" _st(const char *str, size_t size)
+    inline ST::string operator ""_st(const char *str, size_t size)
     {
         return ST::string::from_validated(str, size);
     }
 
     ST_NODISCARD
-    inline ST::string operator"" _st(const wchar_t *str, size_t size)
+    inline ST::string operator ""_st(const wchar_t *str, size_t size)
     {
         return ST::string::from_wchar(str, size, ST::assume_valid);
     }
 
     ST_NODISCARD
-    inline ST::string operator"" _st(const char16_t *str, size_t size)
+    inline ST::string operator ""_st(const char16_t *str, size_t size)
     {
         return ST::string::from_utf16(str, size, ST::assume_valid);
     }
 
     ST_NODISCARD
-    inline ST::string operator"" _st(const char32_t *str, size_t size)
+    inline ST::string operator ""_st(const char32_t *str, size_t size)
     {
         return ST::string::from_utf32(str, size, ST::assume_valid);
     }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
     ST_NODISCARD
-    inline ST::string operator"" _st(const char8_t *str, size_t size)
+    inline ST::string operator ""_st(const char8_t *str, size_t size)
     {
         return ST::string::from_validated(str, size);
     }
