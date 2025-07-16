@@ -494,32 +494,32 @@ namespace ST
 namespace ST { namespace literals
 {
     ST_NODISCARD
-    inline ST::char_buffer operator"" _stbuf(const char *str, size_t size)
+    inline ST::char_buffer operator ""_stbuf(const char *str, size_t size)
     {
         return ST::char_buffer(str, size);
     }
 
     ST_NODISCARD
-    inline ST::utf16_buffer operator"" _stbuf(const char16_t *str, size_t size)
+    inline ST::utf16_buffer operator ""_stbuf(const char16_t *str, size_t size)
     {
         return ST::utf16_buffer(str, size);
     }
 
     ST_NODISCARD
-    inline ST::utf32_buffer operator"" _stbuf(const char32_t *str, size_t size)
+    inline ST::utf32_buffer operator ""_stbuf(const char32_t *str, size_t size)
     {
         return ST::utf32_buffer(str, size);
     }
 
     ST_NODISCARD
-    inline ST::wchar_buffer operator"" _stbuf(const wchar_t *str, size_t size)
+    inline ST::wchar_buffer operator ""_stbuf(const wchar_t *str, size_t size)
     {
         return ST::wchar_buffer(str, size);
     }
 
 #ifdef ST_HAVE_CXX20_CHAR8_TYPES
     ST_NODISCARD
-    inline ST::char_buffer operator"" _stbuf(const char8_t *str, size_t size)
+    inline ST::char_buffer operator ""_stbuf(const char8_t *str, size_t size)
     {
         return ST::char_buffer(reinterpret_cast<const char *>(str), size);
     }
