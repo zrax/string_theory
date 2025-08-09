@@ -10,12 +10,14 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - { os: ubuntu-22.04, compiler: gcc-9    }
-          - { os: ubuntu-22.04, compiler: gcc      } # GCC 11
-          - { os: ubuntu-22.04, compiler: clang-11 }
-          - { os: ubuntu-22.04, compiler: clang-15 }
-          - { os: ubuntu-24.04, compiler: gcc-14   }
-          - { os: ubuntu-24.04, compiler: clang    } # Clang 18
+          - { os: ubuntu-22.04,     compiler: gcc-9    }
+          - { os: ubuntu-22.04,     compiler: gcc      } # GCC 11
+          - { os: ubuntu-22.04,     compiler: clang-11 }
+          - { os: ubuntu-22.04,     compiler: clang-15 }
+          - { os: ubuntu-24.04,     compiler: gcc-14   }
+          - { os: ubuntu-24.04,     compiler: clang    } # Clang 18
+          - { os: ubuntu-24.04-arm, compiler: gcc-14   }
+          - { os: ubuntu-24.04-arm, compiler: clang    } # Clang 18
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,8 +65,9 @@ jobs:
     strategy:
       matrix:
         cfg:
-          - { os: windows-2022, msvc: Visual Studio 17 2022, arch: Win32 }
-          - { os: windows-2022, msvc: Visual Studio 17 2022, arch: x64 }
+          - { os: windows-2022,   msvc: Visual Studio 17 2022, arch: Win32 }
+          - { os: windows-2022,   msvc: Visual Studio 17 2022, arch: x64 }
+          - { os: windows-11-arm, msvc: Visual Studio 17 2022, arch: ARM64 }
     steps:
       - uses: actions/checkout@v4
         with:
