@@ -132,7 +132,7 @@ jobs:
       - name: Build and Test
         uses: vmactions/solaris-vm@v1
         with:
-          prepare: pkg install -q cmake gcc
+          prepare: pkg install -q cmake gcc git
           run: |
             mkdir -p build && cd build
             cmake -DCMAKE_BUILD_TYPE=Debug -DST_BUILD_TESTS=ON ..
